@@ -83,7 +83,20 @@ bash scripts/demo_audio_real.sh   # short synthetic speech through real faster-w
 bash scripts/demo_context_real.sh # actual offline GLiNER span extraction and risk cases (required by S3)
 ```
 
-**Before the agent implements them, these commands do not exist.** After implementation, replace this section with the exact observed commands, test counts, environment and outcomes. The required CLI entry points are `privacy-fixtures generate`, `privacy-fixtures directory`, `privacy-pipeline process` and `privacy-eval run`.
+**Implemented status (S0, observed 2026-11-11):**
+
+```bash
+bash scripts/setup.sh    # OK: venv, pinned deps, en_core_web_sm; real AnalyzerEngine smoke PASS (A01)
+bash scripts/test.sh     # 16 passed, exit 0 (5 unit + 3 integration + 2 E2E + 5 negative + parametrize)
+bash scripts/demo.sh    # OK: 18 seed sessions -> sanitized + decision (REVIEW_REQUIRED expected until S3); deliberate leak demo -> BLOCKED
+bash scripts/verify.sh  # OK from non-project cwd: tests + artifact/decision verification
+make test demo verify  # same via Makefile
+```
+
+- Environment: Python 3.11.2, Linux x86_64, 8 CPU cores, real Microsoft Presidio AnalyzerEngine + spaCy `en_core_web_sm` (no GPU, no paid API).
+- `privacy-pipeline process` CLI is working; `privacy-fixtures generate`, `privacy-fixtures directory`, `privacy-eval run` entry points are stubs until S1 (do not use yet).
+- Offline proof: all 18 seed sessions processed with `socket.socket`/`create_connection`/`getaddrinfo` hard-blocked and `HF_HUB_OFFLINE=1` ([docs/evidence/S0/offline.log](docs/evidence/S0/offline.log)).
+- Current decision policy: benign seed sessions are `REVIEW_REQUIRED` because the policy-mandated `context_rules` stage is only implemented in S3 — fail-closed honesty, not a defect. The required CLI entry points are `privacy-fixtures generate`, `privacy-fixtures directory`, `privacy-pipeline process` and `privacy-eval run`.
 
 ## Expected demonstration
 - Known direct identifiers are detected/redacted by **real Presidio/NLP**.

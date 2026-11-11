@@ -1,0 +1,7 @@
+# S0 regression + cross-cwd script check — 2026-11-11T21:50:18Z
+# command (from /tmp): bash <project>/scripts/verify.sh
+
+................                                                         [100%]
+16 passed in 9.40s
+verify OK: all demo sessions produced decision/report/sanitized; states observed: {'REVIEW_REQUIRED'}
+EXIT_CODE=0

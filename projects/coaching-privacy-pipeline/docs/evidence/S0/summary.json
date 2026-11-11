@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "slice": "S0",
+  "capability": "Fictional text transcript -> real Presidio redaction -> independent leak validation -> fail-closed decision and report",
+  "delivered_at": "2026-11-11T21:55:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64",
+    "cpu_cores": 8,
+    "models": {
+      "detector": "Microsoft Presidio AnalyzerEngine (real)",
+      "nlp_backend": "spaCy en_core_web_sm"
+    }
+  },
+  "commands": {
+    "red": {"command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q", "exit_code": 1, "result": "15 failed, 1 passed", "evidence": "docs/evidence/S0/red.log"},
+    "green": {"command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q", "exit_code": 0, "result": "16 passed", "evidence": "docs/evidence/S0/green.log"},
+    "e2e": {"command": "bash scripts/demo.sh", "exit_code": 0, "result": "18 sessions processed; leak demo BLOCKED; DEMO_OK", "evidence": "docs/evidence/S0/e2e.log"},
+    "negative": {"command": ".venv/bin/python -m pytest tests/negative -q", "exit_code": 0, "result": "5 passed", "evidence": "docs/evidence/S0/negative.log"},
+    "regression": {"command": "bash scripts/verify.sh (from /tmp, non-project cwd)", "exit_code": 0, "result": "16 passed + verify OK", "evidence": "docs/evidence/S0/regression.log"},
+    "offline": {"command": "HF_HUB_OFFLINE=1 python /tmp/offline_check.py (sockets blocked in-process)", "exit_code": 0, "result": "18/18 sessions processed offline, OFFLINE_PROOF_OK", "evidence": "docs/evidence/S0/offline.log"}
+  },
+  "test_counts": {"unit": 5, "integration": 3, "e2e": 2, "negative": 5, "total": 15, "note": "green.log reports 16 collected items; one parametrized collection counted twice by pytest, executed assertions are 15 test functions"},
+  "acceptance_ids": {
+    "A01": "PASS (setup.sh installs venv+deps+en_core_web_sm; smoke verifies real AnalyzerEngine)",
+    "A02": "PASS (unknown purpose, bad schema version, disallowed source_type rejected fail-closed; CLI exit 2)",
+    "A06": "PASS (real Presidio detected PERSON/EMAIL/PHONE/ADDRESS with exact offsets; +audited email/street-address backfill)",
+    "A07": "PASS (deliberate re-insertion of prohibited identifier -> BLOCKED; e2e.log Demo 2)",
+    "A08": "PASS (turn IDs/order/speaker IDs preserved; deterministic StableReplacer tokens)",
+    "A15": "PASS (validator unavailable -> FAILED; detector unavailable -> FAILED)",
+    "A17": "PASS-S0-scope (REVIEW_REQUIRED/BLOCKED/FAILED observed; RELEASE_CANDIDATE intentionally not emitted because context_rules stage is not implemented until S3 - fail-closed honesty)",
+    "A19": "PARTIAL (privacy-pipeline process works E2E; generate/directory/eval CLIs are S1 scope, NOT_IMPLEMENTED)",
+    "A22": "PASS (scripts run from non-project cwd; nonzero exit on errors)",
+    "A23": "PARTIAL (path traversal + size limits + no PII in validator reports; full logging audit is S6 scope)"
+  },
+  "detection_notes": "Presidio URL-classifies .test-TLD emails; relabeled to EMAIL via audited deterministic regex. Presidio misses fictional street addresses; deterministic street-address backfill added. Both extensions are non-generative and recorded as detector extensions in span metadata.",
+  "decisions_observed": {
+    "benign_seed_sessions": "REVIEW_REQUIRED (18/18; mandatory context_rules stage missing until S3, honest fail-closed)",
+    "deliberate_leak": "BLOCKED (1/1)",
+    "validator_unavailable": "FAILED (tested in negative suite)",
+    "external_sharing": "REVIEW_REQUIRED (tested in negative suite)"
+  },
+  "limitations": [
+    "RELEASE_CANDIDATE is not emitted in S0 because the policy-mandated context_rules stage is only implemented in S3; this is intentional fail-closed behavior, not a bug.",
+    "Detection coverage measured only on the 18 handoff seed fixtures, not on generated corpora (S1).",
+    "No semantic-fidelity scoring yet (S2), no contextual/cross-session risk (S3/S4), no audio (S5).",
+    "Presidio backfill extensions (email regex, street address) are heuristics; false positive/negative rates not yet benchmarked on generated data."
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/S0-text-redaction", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"}
+}

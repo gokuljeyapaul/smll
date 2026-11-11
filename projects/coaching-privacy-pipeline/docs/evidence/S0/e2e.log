@@ -1,0 +1,57 @@
+# S0 E2E demo — 2026-11-11T21:49:07Z
+# command: bash scripts/demo.sh
+
+== Demo 1: benign synthetic session -> sanitized output + decision ==
+fictional-S01: decision=REVIEW_REQUIRED leaks=0
+fictional-S02: decision=REVIEW_REQUIRED leaks=0
+fictional-S03: decision=REVIEW_REQUIRED leaks=0
+fictional-S04: decision=REVIEW_REQUIRED leaks=0
+fictional-S05: decision=REVIEW_REQUIRED leaks=0
+fictional-S06: decision=REVIEW_REQUIRED leaks=0
+fictional-S07: decision=REVIEW_REQUIRED leaks=0
+fictional-S08: decision=REVIEW_REQUIRED leaks=0
+fictional-S09a: decision=REVIEW_REQUIRED leaks=0
+fictional-S09b: decision=REVIEW_REQUIRED leaks=0
+fictional-S10: decision=REVIEW_REQUIRED leaks=0
+fictional-S11: decision=REVIEW_REQUIRED leaks=0
+fictional-S12: decision=REVIEW_REQUIRED leaks=0
+fictional-S13: decision=REVIEW_REQUIRED leaks=0
+fictional-S14: decision=REVIEW_REQUIRED leaks=0
+fictional-S15: decision=REVIEW_REQUIRED leaks=0
+fictional-S16: decision=REVIEW_REQUIRED leaks=0
+fictional-S17: decision=REVIEW_REQUIRED leaks=0
+
+== Demo 2: faulty transform re-inserts identifier -> BLOCKED ==
+leak demo decision: BLOCKED
+
+== Decisions ==
+artifacts/demo/results/fictional-S01: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S02: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S03: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S04: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S05: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S06: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S07: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S08: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S09a: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S09b: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S10: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S11: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S12: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S13: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S14: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S15: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S16: REVIEW_REQUIRED
+artifacts/demo/results/fictional-S17: REVIEW_REQUIRED
+artifacts/demo/leak_results/fictional-S01: BLOCKED
+
+== Sanitized sample (fictional-S01) ==
+{
+  "id": "u2",
+  "speaker_id": "S2",
+  "start_ms": null,
+  "end_ms": null,
+  "text": "My name is <PERSON_47dcbe81>, and my personal email is <EMAIL_385949ef>. I want to change how I lead meetings."
+}
+DEMO_OK
+EXIT_CODE=0
