@@ -1,0 +1,52 @@
+# Illustrative, synthetic-only versioned policies. Not proof of legal/ICF compliance.
+schema_version: '1.0'
+purpose_policies:
+  internal_coaching_analysis:
+    version: 0.1-poc
+    synthetic_only: true
+    external_distribution_permitted: false
+    requires_human_release_approval: false
+    mandatory_stages:
+    - real_pii_detector
+    - context_rules
+    - transformation
+    - independent_validator
+    - policy_gate
+    direct_pii:
+    - REPLACE
+    - SUPPRESS
+    quasi_identifiers:
+    - GENERALIZE
+    - SUPPRESS
+    - REVIEW
+    sensitive_experience: PRESERVE_IF_RELEVANT_ELSE_GENERALIZE_OR_REVIEW
+    confirmed_residual_pii: BLOCKED
+    high_risk_uncertainty: REVIEW_REQUIRED
+    mandatory_stage_error: FAILED
+    release_candidate_meaning: Synthetic validation passed for internal prototype
+      only; not permission to share
+  external_sharing:
+    version: 0.1-poc
+    synthetic_only: true
+    external_distribution_permitted: false
+    requires_human_release_approval: true
+    mandatory_stages:
+    - real_pii_detector
+    - context_rules
+    - transformation
+    - independent_validator
+    - policy_gate
+    direct_pii:
+    - SUPPRESS
+    - REPLACE
+    quasi_identifiers:
+    - GENERALIZE
+    - SUPPRESS
+    - REVIEW
+    sensitive_experience: GENERALIZE_IF_UNNECESSARY_OR_PRESERVE_ONLY_AFTER_HUMAN_REVIEW
+    confirmed_residual_pii: BLOCKED
+    high_risk_uncertainty: REVIEW_REQUIRED
+    mandatory_stage_error: FAILED
+    minimum_decision: REVIEW_REQUIRED
+note: Reference policy only; the implementing agent must validate the actual YAML
+  schema and block unknown or malformed policies.
