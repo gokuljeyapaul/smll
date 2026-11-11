@@ -35,18 +35,16 @@ def process_transcript(
     policy: dict[str, Any],
     prohibited_leaks: list[str] | None = None,
 ) -> SessionResult:
-    from .detect import PresidioDetector
     from .transform import StableReplacer, redact_utterance
     from .validator import IndependentLeakValidator
 
-    # Mandatory real detector stage (fail closed on unavailability)
-    try:
-        detector = PresidioDetector()
-        model_versions = detector.model_versions()
-    except Exception as exc:
+    # Mandatory real detector stage, cached per process (spaCy loads once).
+    # Fail closed on unavailability.
+    detector = _get_detector()
+    if detector is _FAILED_DETECTOR:
         gate = SafetyGate()
         decision = gate.decide(
-            {"validator_available": True, "error": f"detector_unavailable: {exc}"},
+            {"validator_available": True, "error": "detector_unavailable"},
             purpose=transcript.purpose,
         )
         return SessionResult(
@@ -54,8 +52,9 @@ def process_transcript(
             decision=decision,
             sanitized={"session_id": transcript.session_id, "utterances": []},
             report={"schema_version": "1.0", "session_id": transcript.session_id,
-                    "pipeline_version": __version__, "error": str(exc)},
+                    "pipeline_version": __version__, "error": "detector_unavailable"},
         )
+    model_versions = detector.model_versions()
 
     replacer = StableReplacer()
     sanitized_utterances = []
@@ -223,3 +222,19 @@ def run_pipeline(args: Any) -> int:
     if processed == 0:
         raise ContractError("no transcripts processed")
     return processed
+
+
+# --- detector cache (load spaCy once per process) ---
+_FAILED_DETECTOR = object()
+_DETECTOR_CACHE: dict[str, Any] = {}
+
+
+def _get_detector():
+    if "_det" in _DETECTOR_CACHE:
+        return _DETECTOR_CACHE["_det"]
+    try:
+        from .detect import PresidioDetector
+        _DETECTOR_CACHE["_det"] = PresidioDetector()
+    except Exception:
+        _DETECTOR_CACHE["_det"] = _FAILED_DETECTOR
+    return _DETECTOR_CACHE["_det"]

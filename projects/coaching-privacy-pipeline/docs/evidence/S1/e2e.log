@@ -1,0 +1,47 @@
+# S1 E2E: generate -> process -> eval on same-seed data — 2026-11-11T22:24:59Z
+# commands:
+#   privacy-fixtures generate --seed 42 --sessions 25 --output artifacts/demo/s1_dev.jsonl
+#   privacy-pipeline process --input artifacts/demo/s1_dev.jsonl --policy internal_coaching_analysis --output artifacts/demo/s1_results
+#   privacy-eval run --fixtures artifacts/demo/s1_dev.jsonl --results artifacts/demo/s1_results --output artifacts/demo/s1_reports
+
+generated 25 synthetic sessions (seed=42, locked=False, generator_version=1.0.0) -> artifacts/demo/s1_dev.jsonl
+synthetic-42-0000: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0001: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0002: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0003: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0004: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0005: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0006: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0007: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0008: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0009: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0010: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0011: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0012: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0013: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0014: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0015: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0016: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0017: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0018: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0019: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0020: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0021: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0022: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0023: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0024: decision=REVIEW_REQUIRED leaks=0
+evaluated 25 sessions; prohibited leaks: 0; categories: DIRECT_PII, QUASI_IDENTIFIER, RELATIONAL
+EXIT_CODE=0
+
+== report.txt ==
+Coaching Privacy Pipeline - evaluation report (synthetic data only)
+================================================================
+sessions evaluated: 25
+prohibited leaks surviving sanitization: 0
+
+detection recall per category (gold span removed from sanitized output):
+  DIRECT_PII: 10/10 (recall 1.0)
+  QUASI_IDENTIFIER: 6/18 (recall 0.3333)
+  RELATIONAL: 2/2 (recall 1.0)
+
+Note: recall here measures whether gold-annotated values were removed; it is not proof of anonymity or real-world privacy quality.
