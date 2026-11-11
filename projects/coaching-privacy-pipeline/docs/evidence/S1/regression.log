@@ -1,0 +1,6 @@
+# S1 regression (full S0+S1 suite, same as green.log) — 2026-11-11T22:25:06Z
+# command: .venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q
+
+.............................                                            [100%]
+29 passed in 26.14s
+EXIT_CODE=0

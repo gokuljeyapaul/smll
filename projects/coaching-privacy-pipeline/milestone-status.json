@@ -1,34 +1,140 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S0",
+  "current_slice": "S1",
   "state": "READY_FOR_MERGE",
-  "last_verified_merged_pr": null,
+  "last_verified_merged_pr": {
+    "slice": "S0",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/1",
+    "merge_sha": "0e37260c0555443b06a68dc0901bc12e130b9ddc"
+  },
   "slices": {
     "S0": {
       "status": "PASS",
       "scope": "Fictional text transcript: redact direct identifiers via real Presidio, independent leak validation, fail-closed decision",
-      "red": {"command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q", "exit_code": 1, "evidence_path": "docs/evidence/S0/red.log", "expected_failure": "missing redaction/validation/decision behavior"},
-      "green": {"command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q", "exit_code": 0, "evidence_path": "docs/evidence/S0/green.log"},
-      "e2e": {"command": "bash scripts/demo.sh", "exit_code": 0, "evidence_path": "docs/evidence/S0/e2e.log"},
-      "privacy_negative": {"evidence_path": "docs/evidence/S0/negative.log"},
-      "offline": {"evidence_path": "docs/evidence/S0/offline.log"},
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S0/red.log",
+        "expected_failure": "missing redaction/validation/decision behavior"
+      },
+      "green": {
+        "command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S0/green.log"
+      },
+      "e2e": {
+        "command": "bash scripts/demo.sh",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S0/e2e.log"
+      },
+      "privacy_negative": {
+        "evidence_path": "docs/evidence/S0/negative.log"
+      },
+      "offline": {
+        "evidence_path": "docs/evidence/S0/offline.log"
+      },
       "summary_path": "docs/evidence/S0/summary.json",
-      "unit_tests": ["test_load_valid_seed_fixture_transcript", "test_unknown_purpose_rejected_fail_closed", "test_malformed_json_and_disallowed_source_fail_closed", "test_policy_file_load_and_unknown_policy_rejected", "test_deterministic_replacement_same_value_same_token", "test_redaction_preserves_turn_structure_and_offsets"],
-      "integration_tests": ["test_real_presidio_detects_name_and_email", "test_detector_reports_model_versions", "test_phone_and_address_detected_in_seed_s02"],
-      "e2e_tests": ["test_process_happy_path_produces_decision_and_sanitized_output", "test_malformed_purpose_cli_fails_nonzero"],
-      "negative_tests": ["test_injected_leak_after_transformation_is_blocked", "test_unavailable_validator_fails_closed_as_failed", "test_external_sharing_never_auto_released", "test_clean_internal_transcript_can_be_release_candidate", "test_validator_logs_do_not_contain_source_pii"],
-      "acceptance_ids": ["A01", "A02", "A06", "A07", "A08", "A15", "A17", "A19", "A22", "A23"],
+      "unit_tests": [
+        "test_load_valid_seed_fixture_transcript",
+        "test_unknown_purpose_rejected_fail_closed",
+        "test_malformed_json_and_disallowed_source_fail_closed",
+        "test_policy_file_load_and_unknown_policy_rejected",
+        "test_deterministic_replacement_same_value_same_token",
+        "test_redaction_preserves_turn_structure_and_offsets"
+      ],
+      "integration_tests": [
+        "test_real_presidio_detects_name_and_email",
+        "test_detector_reports_model_versions",
+        "test_phone_and_address_detected_in_seed_s02"
+      ],
+      "e2e_tests": [
+        "test_process_happy_path_produces_decision_and_sanitized_output",
+        "test_malformed_purpose_cli_fails_nonzero"
+      ],
+      "negative_tests": [
+        "test_injected_leak_after_transformation_is_blocked",
+        "test_unavailable_validator_fails_closed_as_failed",
+        "test_external_sharing_never_auto_released",
+        "test_clean_internal_transcript_can_be_release_candidate",
+        "test_validator_logs_do_not_contain_source_pii"
+      ],
+      "acceptance_ids": [
+        "A01",
+        "A02",
+        "A06",
+        "A07",
+        "A08",
+        "A15",
+        "A17",
+        "A19",
+        "A22",
+        "A23"
+      ],
       "demo_command": "bash scripts/demo.sh",
-      "pr": {"branch": "feature/coaching-privacy-pipeline/S0-text-redaction", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"}
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S0-text-redaction",
+        "url": "https://github.com/gokuljeyapaul/smll/pull/1",
+        "state": "MERGED",
+        "merge_sha": "0e37260c0555443b06a68dc0901bc12e130b9ddc"
+      }
     },
-    "S1": {"status": "NOT_STARTED"},
-    "S2": {"status": "NOT_STARTED"},
-    "S3": {"status": "NOT_STARTED"},
-    "S4": {"status": "NOT_STARTED"},
-    "S5": {"status": "NOT_STARTED"},
-    "S6": {"status": "NOT_STARTED"},
-    "S7": {"status": "NOT_STARTED"}
+    "S1": {
+      "status": "PASS",
+      "scope": "Deterministic fictional fixture generator + evaluator: generate -> process -> eval",
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit/test_s1_generator.py tests/integration/test_s1_eval.py tests/e2e/test_s1_e2e.py tests/negative/test_s1_negative.py -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S1/red.log",
+        "expected_failure": "missing generator/evaluator behavior"
+      },
+      "green": {
+        "command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S1/green.log"
+      },
+      "e2e": {
+        "command": "privacy-fixtures generate --seed 42 --sessions 25 --output artifacts/demo/s1_dev.jsonl && privacy-pipeline process --input artifacts/demo/s1_dev.jsonl --policy internal_coaching_analysis --output artifacts/demo/s1_results && privacy-eval run --fixtures artifacts/demo/s1_dev.jsonl --results artifacts/demo/s1_results --output artifacts/demo/s1_reports",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S1/e2e.log"
+      },
+      "privacy_negative": {
+        "evidence_path": "docs/evidence/S1/negative.log"
+      },
+      "summary_path": "docs/evidence/S1/summary.json",
+      "acceptance_ids": [
+        "A03",
+        "A04",
+        "A05",
+        "A19",
+        "A20"
+      ],
+      "demo_command": "bash scripts/demo.sh (S0 demo retained; S1 demo via privacy-fixtures/privacy-eval CLIs, see e2e.log)",
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S1-fixture-generator-evaluator",
+        "url": "PENDING",
+        "state": "READY_FOR_MERGE",
+        "merge_sha": "PENDING"
+      }
+    },
+    "S2": {
+      "status": "NOT_STARTED"
+    },
+    "S3": {
+      "status": "NOT_STARTED"
+    },
+    "S4": {
+      "status": "NOT_STARTED"
+    },
+    "S5": {
+      "status": "NOT_STARTED"
+    },
+    "S6": {
+      "status": "NOT_STARTED"
+    },
+    "S7": {
+      "status": "NOT_STARTED"
+    }
   },
   "blockers": [],
-  "next_slice": "S1"
+  "next_slice": "S2"
 }

@@ -94,7 +94,8 @@ make test demo verify  # same via Makefile
 ```
 
 - Environment: Python 3.11.2, Linux x86_64, 8 CPU cores, real Microsoft Presidio AnalyzerEngine + spaCy `en_core_web_sm` (no GPU, no paid API).
-- `privacy-pipeline process` CLI is working; `privacy-fixtures generate`, `privacy-fixtures directory`, `privacy-eval run` entry points are stubs until S1 (do not use yet).
+- `privacy-fixtures generate`, `privacy-fixtures directory`, `privacy-pipeline process`, `privacy-eval run` are all working (S1 delivered).
+- S1 demo (observed): 25 synthetic sessions seed 42 → processed → evaluated: 0 prohibited leaks; recall DIRECT_PII 10/10, QUASI_IDENTIFIER 6/18 (S3 scope, honest partial), RELATIONAL 2/2 ([docs/evidence/S1/e2e.log](docs/evidence/S1/e2e.log)).
 - Offline proof: all 18 seed sessions processed with `socket.socket`/`create_connection`/`getaddrinfo` hard-blocked and `HF_HUB_OFFLINE=1` ([docs/evidence/S0/offline.log](docs/evidence/S0/offline.log)).
 - Current decision policy: benign seed sessions are `REVIEW_REQUIRED` because the policy-mandated `context_rules` stage is only implemented in S3 — fail-closed honesty, not a defect. The required CLI entry points are `privacy-fixtures generate`, `privacy-fixtures directory`, `privacy-pipeline process` and `privacy-eval run`.
 

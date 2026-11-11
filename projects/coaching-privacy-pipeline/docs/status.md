@@ -16,8 +16,8 @@
 
 | Slice | Complete observable functionality | Status | PR / merge state | Acceptance evidence | Gate |
 |---|---|---|---|---|
-| S0 | Fictional text → PII redaction → validation → decision | PASS (PR open) | `feature/coaching-privacy-pipeline/S0-text-redaction`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S0/](evidence/S0/) | 16 tests green, demo OK, offline OK |
-| S1 | Generate → process → evaluate synthetic sessions | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S0 | Fictional text → PII redaction → validation → decision | PASS, MERGED | PR [#1](https://github.com/gokuljeyapaul/smll/pull/1), squash SHA `0e37260c0555443b06a68dc0901bc12e130b9ddc`, CI `monorepo / verify` green | [evidence/S0/](evidence/S0/) | 16 tests green, demo OK, offline OK |
+| S1 | Generate → process → evaluate synthetic sessions | PASS (PR open) | `feature/coaching-privacy-pipeline/S1-fixture-generator-evaluator`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S1/](evidence/S1/) | 29 tests green, 25-session demo 0 leaks |
 | S2 | Purpose-specific privacy transformations | NOT_STARTED | NOT_OPENED | None | pending tests |
 | S3 | Contextual cross-turn GLiNER risk detection | NOT_STARTED | NOT_OPENED | None | pending tests |
 | S4 | Cross-session identity linkage and fail-closed decisions | NOT_STARTED | NOT_OPENED | None | pending tests |
@@ -33,9 +33,9 @@
 |---|---|---|---|
 | A01 | P0 | PASS | [evidence/S0/green.log](evidence/S0/green.log) (setup.sh venv+deps+en_core_web_sm, real AnalyzerEngine smoke) |
 | A02 | P0 | PASS | [evidence/S0/green.log](evidence/S0/green.log) (unknown purpose/bad schema/disallowed source → typed errors, CLI exit 2) |
-| A03 | P0 | NOT_RUN | None |
-| A04 | P0 | NOT_RUN | None |
-| A05 | P0 | NOT_RUN | None |
+| A03 | P0 | PASS | [evidence/S1/green.log](evidence/S1/green.log) (seed 42 twice byte-identical; deterministic ids) |
+| A04 | P0 | PASS | [evidence/S1/green.log](evidence/S1/green.log) (text[start:end]==gold_value all spans, char offsets) |
+| A05 | P0 | PASS | [evidence/S1/green.log](evidence/S1/green.log) (dev/holdout personas disjoint; no gold in runtime results) |
 | A06 | P0 | PASS | [evidence/S0/green.log](evidence/S0/green.log) (real Presidio: PERSON/EMAIL/PHONE/ADDRESS, exact offsets) |
 | A07 | P0 | PASS | [evidence/S0/e2e.log](evidence/S0/e2e.log) (deliberate re-insertion → BLOCKED) |
 | A08 | P0 | PASS | [evidence/S0/green.log](evidence/S0/green.log) (turn IDs/order/speaker IDs preserved; deterministic replacements) |
@@ -49,8 +49,8 @@
 | A16 | P0 | NOT_RUN | None |
 | A17 | P0 | PASS (S0 scope) | [evidence/S0/e2e.log](evidence/S0/e2e.log) (REVIEW_REQUIRED/BLOCKED/FAILED observed; RELEASE_CANDIDATE intentionally withheld until S3 context_rules exists) |
 | A18 | P0 | NOT_RUN | None |
-| A19 | P0 | PARTIAL | [evidence/S0/e2e.log](evidence/S0/e2e.log) (`privacy-pipeline process` E2E works; generate/directory/eval CLIs are S1, NOT_IMPLEMENTED) |
-| A20 | P0 | NOT_RUN | None |
+| A19 | P0 | PASS | [evidence/S1/e2e.log](evidence/S1/e2e.log) (generate → process → eval E2E exit 0 on aligned 25-session data) |
+| A20 | P0 | PARTIAL | [evidence/S1/e2e.log](evidence/S1/e2e.log) (per-category recall w/ denominators: DIRECT_PII 10/10, QUASI 6/18 honest partial, RELATIONAL 2/2; provenance in S6) |
 | A21 | P1 | NOT_RUN | None |
 | A22 | P0 | PASS | [evidence/S0/regression.log](evidence/S0/regression.log) (scripts run from /tmp cwd; nonzero exit on errors) |
 | A23 | P0 | PARTIAL | [evidence/S0/negative.log](evidence/S0/negative.log) (path traversal + size limits + no PII echo in reports; full logging audit in S6) |

@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "slice": "S1",
+  "capability": "Deterministic fictional fixture generator + gold-span evaluator: generate -> process -> evaluate reproducible synthetic sessions",
+  "delivered_at": "2026-11-11T22:30:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64",
+    "models": {"detector": "Microsoft Presidio AnalyzerEngine (real)", "nlp_backend": "spaCy en_core_web_sm"}
+  },
+  "commands": {
+    "red": {"command": ".venv/bin/python -m pytest tests/unit/test_s1_generator.py tests/integration/test_s1_eval.py tests/e2e/test_s1_e2e.py tests/negative/test_s1_negative.py -q", "exit_code": 1, "result": "12 failed, 1 passed", "evidence": "docs/evidence/S1/red.log"},
+    "green": {"command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q", "exit_code": 0, "result": "29 passed (S0+S1 full regression)", "evidence": "docs/evidence/S1/green.log"},
+    "e2e": {"command": "privacy-fixtures generate --seed 42 --sessions 25 ... && privacy-pipeline process ... && privacy-eval run ...", "exit_code": 0, "result": "25 sessions generated/processed/evaluated; 0 prohibited leaks", "evidence": "docs/evidence/S1/e2e.log"},
+    "negative": {"command": ".venv/bin/python -m pytest tests/negative -q", "exit_code": 0, "result": "7 passed", "evidence": "docs/evidence/S1/negative.log"},
+    "regression": {"command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q", "exit_code": 0, "result": "29 passed", "evidence": "docs/evidence/S1/regression.log"}
+  },
+  "measured_metrics": {
+    "demo_25_sessions_seed42": {
+      "sessions": 25,
+      "prohibited_leaks_surviving": 0,
+      "detection_recall": {
+        "DIRECT_PII": "10/10 (1.0)",
+        "QUASI_IDENTIFIER": "6/18 (0.3333)",
+        "RELATIONAL": "2/2 (1.0)"
+      },
+      "note": "QUASI_IDENTIFIER recall is intentionally partial: contextual/quasi detection is S3 scope; these are real measured misses, not fabricated scores"
+    }
+  },
+  "acceptance_ids": {
+    "A03": "PASS (same seed 42 twice -> byte-identical JSONL; session ids derive from seed; synthetic flags present)",
+    "A04": "PASS (every gold span verified: text[start:end]==gold_value across 30-session runs, char offsets)",
+    "A05": "PASS (dev seed 42 vs holdout seed 941 personas disjoint; gold/subject_id never in processed results; directory deterministic and evaluator-only)",
+    "A19": "PASS (generate -> process -> eval E2E exit 0, aligned 25-session same-seed data, summary.json/report.txt produced)",
+    "A20": "PARTIAL (per-category recall with denominators and leak counts reported; provenance fields arrive in S6)"
+  },
+  "scenario_families_implemented": 12,
+  "limitations": [
+    "QUASI_IDENTIFIER gold spans are largely not yet redacted (S3 GLiNER + context rules scope); recall 6/18 is an honest measured partial result.",
+    "Corpus sizes in this slice: 25-session demo; 100-dev/200-holdout locked generation commands exist but full-scale generation is exercised in S6 audit.",
+    "Attacker directory is generator-deterministic; linkage simulation is S4 scope.",
+    "No semantic-preservation scoring yet (S2)."
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/S1-fixture-generator-evaluator", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"}
+}
