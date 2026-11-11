@@ -1,0 +1,21 @@
+name: monorepo
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ${{ vars.MONOREPO_CI_RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Detect changed projects and run their setup/test/demo/verify
+        run: python3 .github/scripts/verify_changed_projects.py
