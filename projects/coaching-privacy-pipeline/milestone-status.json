@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S1",
+  "current_slice": "S2",
   "state": "READY_FOR_MERGE",
   "last_verified_merged_pr": {
-    "slice": "S0",
-    "url": "https://github.com/gokuljeyapaul/smll/pull/1",
-    "merge_sha": "0e37260c0555443b06a68dc0901bc12e130b9ddc"
+    "slice": "S1",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/2",
+    "merge_sha": "c206f3247357b7128b71eee59a83737f6d0940b9"
   },
   "slices": {
     "S0": {
@@ -111,13 +111,47 @@
       "demo_command": "bash scripts/demo.sh (S0 demo retained; S1 demo via privacy-fixtures/privacy-eval CLIs, see e2e.log)",
       "pr": {
         "branch": "feature/coaching-privacy-pipeline/S1-fixture-generator-evaluator",
+        "url": "https://github.com/gokuljeyapaul/smll/pull/2",
+        "state": "MERGED",
+        "merge_sha": "c206f3247357b7128b71eee59a83737f6d0940b9"
+      }
+    },
+    "S2": {
+      "status": "PASS",
+      "scope": "Purpose-aware cleansing: internal vs external policies, consistent third-party masking, deterministic meaning checks",
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit/test_s2_unit.py tests/e2e/test_s2_e2e.py tests/negative/test_s2_negative.py -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S2/red.log",
+        "expected_failure": "missing purpose-transform and fidelity behavior"
+      },
+      "green": {
+        "command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S2/green.log"
+      },
+      "e2e": {
+        "command": ".venv/bin/python -m pytest tests/e2e/test_s2_e2e.py -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S2/e2e.log"
+      },
+      "privacy_negative": {
+        "evidence_path": "docs/evidence/S2/negative.log"
+      },
+      "summary_path": "docs/evidence/S2/summary.json",
+      "acceptance_ids": [
+        "A08",
+        "A09",
+        "A16",
+        "A17"
+      ],
+      "demo_command": "see docs/evidence/S2/e2e.log",
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S2-purpose-policies",
         "url": "PENDING",
         "state": "READY_FOR_MERGE",
         "merge_sha": "PENDING"
       }
-    },
-    "S2": {
-      "status": "NOT_STARTED"
     },
     "S3": {
       "status": "NOT_STARTED"
@@ -136,5 +170,5 @@
     }
   },
   "blockers": [],
-  "next_slice": "S2"
+  "next_slice": "S3"
 }

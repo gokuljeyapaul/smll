@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "slice": "S2",
+  "capability": "Purpose-aware cleansing: same transcript sanitized differently for internal analysis vs external sharing, with third-party masking and meaning-preservation checks",
+  "delivered_at": "2026-11-11T23:10:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64",
+    "models": {"detector": "Microsoft Presidio AnalyzerEngine (real)", "nlp_backend": "spaCy en_core_web_sm"}
+  },
+  "commands": {
+    "red": {"command": ".venv/bin/python -m pytest tests/unit/test_s2_unit.py tests/e2e/test_s2_e2e.py tests/negative/test_s2_negative.py -q", "exit_code": 1, "result": "7 failed, 2 passed (behavioral, stubs importable)", "evidence": "docs/evidence/S2/red.log"},
+    "green": {"command": ".venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q", "exit_code": 0, "result": "38 passed (full S0+S1+S2 regression)", "evidence": "docs/evidence/S2/green.log"},
+    "e2e": {"command": ".venv/bin/python -m pytest tests/e2e/test_s2_e2e.py -q", "exit_code": 0, "result": "2 passed: two-purpose comparison; external never auto-released", "evidence": "docs/evidence/S2/e2e.log"},
+    "negative": {"command": ".venv/bin/python -m pytest tests/negative/test_s2_negative.py -q", "exit_code": 0, "result": "2 passed: meaning-mutant and missing-fact fail closed", "evidence": "docs/evidence/S2/negative.log"}
+  },
+  "acceptance_ids": {
+    "A08": "PASS (consistent third-party tokens across turns; turn IDs/order/speaker IDs preserved)",
+    "A09": "PASS (relevant lived experience preserved for internal purpose; no blanket erasure; no attribute inference)",
+    "A16": "PASS (scoped deterministic rubric: mutant flagged REVIEW_REQUIRED; missing required fact cannot silently pass)",
+    "A17": "PASS (external_sharing always REVIEW_REQUIRED with human-release reason, even when clean)"
+  },
+  "limitations": [
+    "Semantic fidelity uses a small deterministic keyword rubric (non-generative by design); broader rubric and human-review sampling arrive in S6.",
+    "Sensitive-disclosure PRESERVE logic relies on Presidio detection + policy; dedicated sensitive-category handling expands in S3.",
+    "Deterministic rubric can miss paraphrased meaning changes; human review remains mandatory for external release."
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/S2-purpose-policies", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"}
+}
