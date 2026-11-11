@@ -1,0 +1,431 @@
+# S1 RED phase — 2026-11-11T21:58:58Z
+# command: .venv/bin/python -m pytest tests/unit/test_s1_generator.py tests/integration/test_s1_eval.py tests/e2e/test_s1_e2e.py tests/negative/test_s1_negative.py -q
+
+FFFFFFFFFF.FF                                                            [100%]
+=================================== FAILURES ===================================
+_______________ test_generate_same_seed_twice_is_byte_identical ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_generate_same_seed_twice_0')
+
+    def test_generate_same_seed_twice_is_byte_identical(tmp_path):
+        out1 = tmp_path / "a.jsonl"
+        out2 = tmp_path / "b.jsonl"
+        r1 = run_fixtures_cli(["generate", "--seed", "42", "--sessions", "10", "--output", str(out1)])
+        r2 = run_fixtures_cli(["generate", "--seed", "42", "--sessions", "10", "--output", str(out2)])
+>       assert r1.returncode == 0, r1.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-fixtures", line 3, in <module>
+E             from coaching_privacy.fixtures_cli import main
+E         ModuleNotFoundError: No module named 'coaching_privacy.fixtures_cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-f...m coaching_privacy.fixtures_cli import main\nModuleNotFoundError: No module named \'coaching_privacy.fixtures_cli\'\n').returncode
+
+tests/unit/test_s1_generator.py:24: AssertionError
+____________ test_generated_fixture_has_generator_version_and_seed _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_generated_fixture_has_gen0')
+
+    def test_generated_fixture_has_generator_version_and_seed(tmp_path):
+        out = tmp_path / "dev.jsonl"
+        r = run_fixtures_cli(["generate", "--seed", "42", "--sessions", "5", "--output", str(out)])
+>       assert r.returncode == 0, r.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-fixtures", line 3, in <module>
+E             from coaching_privacy.fixtures_cli import main
+E         ModuleNotFoundError: No module named 'coaching_privacy.fixtures_cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-f...m coaching_privacy.fixtures_cli import main\nModuleNotFoundError: No module named \'coaching_privacy.fixtures_cli\'\n').returncode
+
+tests/unit/test_s1_generator.py:39: AssertionError
+___________________ test_every_gold_span_offset_matches_text ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_every_gold_span_offset_ma0')
+
+    def test_every_gold_span_offset_matches_text(tmp_path):
+        out = tmp_path / "dev.jsonl"
+        run_fixtures_cli(["generate", "--seed", "42", "--sessions", "30", "--output", str(out)])
+>       for line in out.read_text().splitlines():
+                    ^^^^^^^^^^^^^^^
+
+tests/unit/test_s1_generator.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.11/pathlib.py:1059: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-node/pytest-12/test_every_gold_span_offset_ma0/dev.jsonl')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-node/pytest-12/test_every_gold_span_offset_ma0/dev.jsonl'
+
+/usr/lib/python3.11/pathlib.py:1045: FileNotFoundError
+_________________ test_unicode_offsets_are_character_not_byte __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_unicode_offsets_are_chara0')
+
+    def test_unicode_offsets_are_character_not_byte(tmp_path):
+        out = tmp_path / "dev.jsonl"
+        run_fixtures_cli(["generate", "--seed", "7", "--sessions", "30", "--output", str(out)])
+>       for line in out.read_text().splitlines():
+                    ^^^^^^^^^^^^^^^
+
+tests/unit/test_s1_generator.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.11/pathlib.py:1059: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-node/pytest-12/test_unicode_offsets_are_chara0/dev.jsonl')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-node/pytest-12/test_unicode_offsets_are_chara0/dev.jsonl'
+
+/usr/lib/python3.11/pathlib.py:1045: FileNotFoundError
+_________________ test_dev_and_holdout_have_disjoint_personas __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_dev_and_holdout_have_disj0')
+
+    def test_dev_and_holdout_have_disjoint_personas(tmp_path):
+        dev = tmp_path / "dev.jsonl"
+        hold = tmp_path / "holdout.jsonl"
+        run_fixtures_cli(["generate", "--seed", "42", "--sessions", "50", "--output", str(dev)])
+        run_fixtures_cli(["generate", "--seed", "941", "--sessions", "100", "--output", str(hold), "--locked"])
+>       dev_subjects = {json.loads(l)["subject_id"] for l in dev.read_text().splitlines()}
+                                                             ^^^^^^^^^^^^^^^
+
+tests/unit/test_s1_generator.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.11/pathlib.py:1059: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-node/pytest-12/test_dev_and_holdout_have_disj0/dev.jsonl')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-node/pytest-12/test_dev_and_holdout_have_disj0/dev.jsonl'
+
+/usr/lib/python3.11/pathlib.py:1045: FileNotFoundError
+________ test_directory_generation_deterministic_and_disjoint_from_gold ________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_directory_generation_dete0')
+
+    def test_directory_generation_deterministic_and_disjoint_from_gold(tmp_path):
+        d1 = tmp_path / "d1.jsonl"
+        d2 = tmp_path / "d2.jsonl"
+        r1 = run_fixtures_cli(["directory", "--seed", "941", "--size", "60", "--output", str(d1)])
+        r2 = run_fixtures_cli(["directory", "--seed", "941", "--size", "60", "--output", str(d2)])
+>       assert r1.returncode == 0 and r2.returncode == 0
+E       AssertionError: assert (1 == 0)
+E        +  where 1 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-f...m coaching_privacy.fixtures_cli import main\nModuleNotFoundError: No module named \'coaching_privacy.fixtures_cli\'\n').returncode
+
+tests/unit/test_s1_generator.py:90: AssertionError
+________________________ test_scenario_families_covered ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_scenario_families_covered0')
+
+    def test_scenario_families_covered(tmp_path):
+        out = tmp_path / "dev.jsonl"
+        run_fixtures_cli(["generate", "--seed", "42", "--sessions", "100", "--output", str(out)])
+>       families = {json.loads(l)["scenario_family"] for l in out.read_text().splitlines()}
+                                                              ^^^^^^^^^^^^^^^
+
+tests/unit/test_s1_generator.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.11/pathlib.py:1059: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-node/pytest-12/test_scenario_families_covered0/dev.jsonl')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-node/pytest-12/test_scenario_families_covered0/dev.jsonl'
+
+/usr/lib/python3.11/pathlib.py:1045: FileNotFoundError
+________________ test_processed_results_contain_no_gold_labels _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_processed_results_contain0')
+
+    def test_processed_results_contain_no_gold_labels(tmp_path):
+        """The processor output must never embed gold labels/subject_id (leakage isolation)."""
+        import sys
+        sys.path.insert(0, str(PROJECT / "src"))
+        from coaching_privacy.contracts import Transcript
+        from coaching_privacy.engine import process_transcript
+        from coaching_privacy.policy import PolicyStore
+    
+        fixtures = tmp_path / "dev.jsonl"
+>       subprocess.run(
+            [str(VENV_BIN / "privacy-fixtures"), "generate", "--seed", "42",
+             "--sessions", "5", "--output", str(fixtures)],
+            check=True, capture_output=True,
+        )
+
+tests/integration/test_s1_eval.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = True, timeout = None, check = True
+popenargs = (['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-fixtures', 'generate', '--seed', '42', '--sessions', '5', ...],)
+kwargs = {'stdout': -1, 'stderr': -1}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-fixtures', 'generate', '--seed', '42', '--sessions', '5', '--output', '/tmp/pytest-of-node/pytest-12/test_processed_results_contain0/dev.jsonl']' returned non-zero exit status 1.
+
+/usr/lib/python3.11/subprocess.py:571: CalledProcessError
+_____________ test_eval_run_reports_detection_recall_against_gold ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_eval_run_reports_detectio0')
+
+    def test_eval_run_reports_detection_recall_against_gold(tmp_path):
+        """privacy-eval run compares results with evaluation-only gold and reports
+        real recall per category with denominators (A20-scoped)."""
+        fixtures = tmp_path / "dev.jsonl"
+        results = tmp_path / "results"
+        reports = tmp_path / "reports"
+>       subprocess.run(
+            [str(VENV_BIN / "privacy-fixtures"), "generate", "--seed", "42",
+             "--sessions", "20", "--output", str(fixtures)],
+            check=True, capture_output=True,
+        )
+
+tests/integration/test_s1_eval.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = True, timeout = None, check = True
+popenargs = (['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-fixtures', 'generate', '--seed', '42', '--sessions', '20', ...],)
+kwargs = {'stdout': -1, 'stderr': -1}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-fixtures', 'generate', '--seed', '42', '--sessions', '20', '--output', '/tmp/pytest-of-node/pytest-12/test_eval_run_reports_detectio0/dev.jsonl']' returned non-zero exit status 1.
+
+/usr/lib/python3.11/subprocess.py:571: CalledProcessError
+________________________ test_generate_process_eval_e2e ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-12/test_generate_process_eval_e2e0')
+
+    def test_generate_process_eval_e2e(tmp_path):
+        dev = tmp_path / "dev.jsonl"
+        results = tmp_path / "dev_results"
+        reports = tmp_path / "dev_reports"
+    
+        g = subprocess.run(
+            [str(VENV_BIN / "privacy-fixtures"), "generate",
+             "--seed", "42", "--sessions", "25", "--output", str(dev)],
+            capture_output=True, text=True,
+        )
+>       assert g.returncode == 0, g.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-fixtures", line 3, in <module>
+E             from coaching_privacy.fixtures_cli import main
+E         ModuleNotFoundError: No module named 'coaching_privacy.fixtures_cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-f...m coaching_privacy.fixtures_cli import main\nModuleNotFoundError: No module named \'coaching_privacy.fixtures_cli\'\n').returncode
+
+tests/e2e/test_s1_e2e.py:20: AssertionError
+______________________ test_malformed_gold_span_rejected _______________________
+
+    def test_malformed_gold_span_rejected():
+>       from coaching_privacy.generator import validate_fixture_record
+E       ModuleNotFoundError: No module named 'coaching_privacy.generator'
+
+tests/negative/test_s1_negative.py:11: ModuleNotFoundError
+________________________ test_persona_overlap_rejected _________________________
+
+    def test_persona_overlap_rejected():
+>       from coaching_privacy.generator import assert_disjoint_personas
+E       ModuleNotFoundError: No module named 'coaching_privacy.generator'
+
+tests/negative/test_s1_negative.py:40: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s1_generator.py::test_generate_same_seed_twice_is_byte_identical
+FAILED tests/unit/test_s1_generator.py::test_generated_fixture_has_generator_version_and_seed
+FAILED tests/unit/test_s1_generator.py::test_every_gold_span_offset_matches_text
+FAILED tests/unit/test_s1_generator.py::test_unicode_offsets_are_character_not_byte
+FAILED tests/unit/test_s1_generator.py::test_dev_and_holdout_have_disjoint_personas
+FAILED tests/unit/test_s1_generator.py::test_directory_generation_deterministic_and_disjoint_from_gold
+FAILED tests/unit/test_s1_generator.py::test_scenario_families_covered - File...
+FAILED tests/integration/test_s1_eval.py::test_processed_results_contain_no_gold_labels
+FAILED tests/integration/test_s1_eval.py::test_eval_run_reports_detection_recall_against_gold
+FAILED tests/e2e/test_s1_e2e.py::test_generate_process_eval_e2e - AssertionEr...
+FAILED tests/negative/test_s1_negative.py::test_malformed_gold_span_rejected
+FAILED tests/negative/test_s1_negative.py::test_persona_overlap_rejected - Mo...
+12 failed, 1 passed in 0.48s
+EXIT_CODE=1
