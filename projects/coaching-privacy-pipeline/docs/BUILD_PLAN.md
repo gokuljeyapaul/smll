@@ -1,8 +1,8 @@
 # BUILD_PLAN.md — Coaching Transcript Privacy Pipeline
 
-**Version:** 7.0 — offline, non-generative, strict TDD, functional slices, evidence-backed continuous delivery | **Audience:** OpenClaw implementation agent and human reviewer | **Status:** implementation specification, **not working code** | **Initial data:** synthetic only.
+**Version:** 8.0 — offline, non-generative, strict TDD, functional slices, per-slice merged PR delivery | **Audience:** OpenClaw implementation agent and human reviewer | **Status:** implementation specification, **not working code** | **Initial data:** synthetic only.
 
-> **Read first:** `../AGENTS.md`. This is the single source of technical requirements, feature-slice checkpoints, data contracts, acceptance criteria and production-migration gates. Implement the current unfinished feature slice first, then automatically continue through successive passing slices. Documentation precedence in case of contradiction: this file's **feature-slice TDD, checkpoint and safety rules**, then its **acceptance matrix**, then **binding schema**, then architecture suggestions; choose conservative fail-closed behavior and record discrepancies.
+> **Read first:** `../AGENTS.md`. This is the single source of technical requirements, feature-slice checkpoints, data contracts, acceptance criteria and production-migration gates. Implement the current unfinished feature slice first, then automatically continue only after its tested PR is confirmed merged; repeat for subsequent slices. Documentation precedence in case of contradiction: this file's **feature-slice TDD, checkpoint and safety rules**, then its **acceptance matrix**, then **binding schema**, then architecture suggestions; choose conservative fail-closed behavior and record discrepancies.
 
 ## Project-wide definition of success and scope
 - Develop one reusable Python 3.11 package with CPU CLI demos and tests, supporting both fictional text transcripts and synthetic audio through a transcriber adapter. The production service must be an orchestration/storage upgrade, not a rewrite of cleansing logic.
@@ -12,7 +12,7 @@
 - Produce traceable, actual test results and numeric errors/false negatives; never equate synthetic test scores with guaranteed anonymity or ICF/privacy-law conformance.
 - No real coaching data, no unapproved external APIs, no public upload app and no production deployment in this phase.
 - Documentation simplification: maintain three instructional Markdown documents (`AGENTS.md`, `README.md`, `docs/BUILD_PLAN.md`) plus **`docs/status.md`**, the mandatory per-slice human-readable delivery and conformance ledger. Keep reviewable test proof under **`docs/evidence/S#/`**, using logs, JSON, JUnit/XML and actual screenshots if produced. Non-Markdown code, YAML, fixtures, scripts and reports are allowed.
-- Repository and commit/push instructions will be provided separately by the owner. No remote URL assumed. A single Git repository at the monorepo root owns all projects; never initialize a nested project Git repository.
+- Repository PR delivery is mandatory: use the single monorepo remote configured by its owner. Create one feature branch and GitHub PR per slice, satisfy required CI/review, verify actual merge, and only then begin the next dependent slice. The monorepo-root AGENTS.md governs Git operations and authorization; never initialize a nested Git repository.
 
 ## Model choice and offline-commercial-use control (binding)
 
@@ -49,10 +49,36 @@ All runtime code is **local-only**; configure `HF_HUB_OFFLINE=1`, local paths an
 3. **GREEN:** implement the smallest real change that passes the new tests. Use **actual Presidio/spaCy from S0, GLiNER from S3, and actual short offline ASR from S5**, not a mock passing as a real model. Deterministic fakes are allowed for unit-level failure injection but are never replacements for mandatory real integration evidence.
 4. **REFACTOR:** refactor while retaining unit, integration, E2E, security and prior-slice regression success. Restore a clean state; no incomplete public endpoints or unapproved release decisions.
 5. **VERIFY:** run all affected unit tests, required real model integration tests, at least one E2E happy-path and one E2E negative-path with documented commands, plus full previously implemented slice regression. Save actual `green.log`, `e2e.log`, `negative.log` and `summary.json` under `docs/evidence/S#/`, with environment/model versions, exact counts/exit codes, absolute or repo-relative evidence paths, `NOT_RUN` reasons, and quality metrics. Add `regression.log`, `offline.log`, `test-results.xml` and genuine screenshots where available. Execute under network denial for model processing after controlled setup. A `PASS` cannot be based solely on mocks or synthetic privacy benchmarks that have not been executed. Before final S6, the verifier is **slice-aware**: enforce all requirements scheduled through the current slice and list later requirements as `NOT_IMPLEMENTED`; only S6/S7 may report full P0 completion. Partial stage pass is never described as full system compliance.
-6. **DELIVER:** update `README.md` (actual observed commands), **`docs/status.md`** (feature outcome, acceptance mapping, conformance results, known limitations, links to proof), and `milestone-status.json`; write reviewable evidence under `docs/evidence/S#/`. Link every applicable acceptance ID to an actual test case/run, include observed counts/exit codes, and provide commit/PR information only if owner authorized Git operations. Finish with one complete user-observable capability whose final state is green.
-7. **CONTINUE:** once the required tests and proof are green, set machine state to `READY_FOR_NEXT_SLICE`, report the delivered checkpoint concisely, and **begin the next slice without asking for approval**. Repeat S0–S7. If blocked by mandatory failures, lack of models, security constraints or required permissions, document `BLOCKED` and troubleshoot; do not claim PASS or skip a failing gate. At S7, produce the final conformance summary and finish. No background execution promise: this loop is performed only while the agent is actively running.
+6. **DELIVER:** update `README.md` (actual observed commands), **`docs/status.md`** (feature outcome, acceptance mapping, conformance results, known limitations, links to proof), and `milestone-status.json`; write reviewable evidence under `docs/evidence/S#/`. Link every applicable acceptance ID to an actual test case/run, include observed counts/exit codes, and provide real branch and PR information, never inventing merge data. Finish with one complete user-observable capability whose final state is green.
+7. **CONTINUE:** once required tests and proof are green, set `READY_FOR_MERGE`, open the slice PR, ensure CI/reviews pass, request authorized auto-merge, and **verify actual merge**. Only then set `READY_FOR_NEXT_SLICE` and begin the next dependent slice without routine prompting. Repeat S0–S7. If blocked by mandatory failures, lack of models, security constraints or required permissions, document `BLOCKED` and troubleshoot; do not claim PASS or skip a failing gate. At S7, produce the final conformance summary and finish. No background execution promise: this loop is performed only while the agent is actively running.
 
 **Do not merge failing code:** the RED run is an intermediate local/branch state or earlier commit; the final PR head must be green. Preserve RED evidence even after tests pass. If model resources are unavailable, report `PARTIAL`/`FAIL` and **do not** substitute a stub or label the slice ready. Do not lower holdout thresholds or move failing tests out of CI to make them pass. Every slice must have a working demo; a test-only or infra-only PR is not an accepted slice except an explicitly owner-authorized emergency repair.
+
+### GitHub monorepo PR lifecycle and scaffolding (binding)
+
+**Where the PR workflow lives:**
+
+- **Monorepo-root `AGENTS.md`:** universal RED/GREEN, feature scope, Git operations, PR creation, authorized merge and automatic continuation policy.
+- **This `BUILD_PLAN.md`:** S0–S7 feature boundaries, acceptance IDs, required evidence, per-slice PR checkpoints and requirements that the agent must implement.
+- **Monorepo-root `.github/workflows/monorepo-ci.yml`:** actual machine-enforced PR checks, not a description of them. The stable required check name is **`monorepo / verify`**.
+- **Monorepo-root `.github/scripts/verify_changed_projects.py`:** selects changed project(s), calls their real setup/test/demo/verify scripts and fails when required scripts are missing.
+- **Monorepo-root `.github/pull_request_template.md`:** human review checklist, links to actual RED/GREEN/E2E/negative evidence and privacy limitations.
+- **This project's `docs/status.md` and `docs/evidence/S#/`:** auditable real execution and conformance proof committed **inside the PR**.
+
+**At repository scaffolding / before the first feature PR:** ensure root `AGENTS.md`, `.github/workflows/monorepo-ci.yml`, `.github/scripts/verify_changed_projects.py`, and `.github/pull_request_template.md` exist. Configure the one GitHub remote, scoped credentials, protected integration branch (`main` by default), required `monorepo / verify` job, required independent reviews if applicable, and optional auto-merge. This bootstrap can be performed by the repo owner when uploading the handoff. GitHub rulesets, access tokens and repository variables cannot be configured by committing Markdown; the owner/operator must actually configure them. No `git init` or nested `.git` below `projects/`.
+
+**S0 must create functioning project scripts** `scripts/setup.sh`, `test.sh`, `demo.sh`, and `verify.sh`, so the first feature PR becomes green. The root CI intentionally fails if scripts are absent; never create placeholder scripts that claim success. For new projects, include functioning project tests/demo/verify in the first PR. CI runs for every PR to `main`, with internal change detection rather than path-filtering away the required job.
+
+**Exact per-slice PR protocol (S0 through S7):**
+
+1. Sync `main`, preserve unrelated work, create `feature/coaching-privacy-pipeline/S#-<slug>`.
+2. Write tests first; execute the legitimate behavioral **RED** run and preserve real logs and the nonzero result. Implement **GREEN**, refactor, run actual unit/integration/E2E/negative/regression tests and a reproducible demo. The final PR head must be green; intermediate RED commits may legitimately fail CI.
+3. Commit sanitized, bounded evidence in `docs/evidence/S#/`; update `docs/status.md`, `milestone-status.json`, acceptance traceability and README. Before merge the status is **`READY_FOR_MERGE`**, with checks and PR URL recorded when known, not `MERGED`.
+4. Push to the configured origin; open **one** PR targeting `main`, link actual evidence and use the standard PR template. Required stable `monorepo / verify` must pass. For GLiNER/ASR slices, mandatory real offline inference must execute; if the hosted CI runner is insufficient, obtain an approved capable runner (`MONOREPO_CI_RUNNER` repository variable) instead of skipping tests.
+5. Address CI and review comments on the same PR. When allowed, request `gh pr merge --auto --squash`; this is only a **request** and cannot bypass branch rules. Verify GitHub reports `MERGED`, record PR URL and actual merge SHA in the agent's checkpoint output, then begin the next dependent slice. If the PR is blocked by tests, reviews, permissions or runner limits, record `BLOCKED` and stop dependent development.
+6. The **current PR cannot record its own future merge SHA**. In the next PR's `docs/status.md` update, backfill the verified previous merge SHA and mark the previous slice `MERGED`. After S7, a final authorized documentation closeout PR may record its merge SHA; never push to protected `main` directly for bookkeeping.
+
+**CI is an engineering gate, not a privacy certification.** Preserve real smoke tests, synthetic quality metrics with denominators, and explicit missing/NOT_RUN conditions. Never lower thresholds, bypass reviews or treat a passing mocked test as real offline inference. No production deployment or real-client processing is authorized by this GitHub workflow.
 
 ### Continuous delivery state and fresh-session resumption
 
@@ -63,6 +89,7 @@ Keep `milestone-status.json` for machine-readable resumption; its entries repres
   "schema_version": "3.0",
   "current_slice": "S1",
   "state": "READY_FOR_NEXT_SLICE",
+  "last_verified_merged_pr": {"slice": "S0", "url": "https://github.com/EXAMPLE/REPO/pull/1", "merge_sha": "EXAMPLE-ONLY"},
   "slices": {
     "S0": {
       "status": "PASS",
@@ -73,14 +100,15 @@ Keep `milestone-status.json` for machine-readable resumption; its entries repres
       "privacy_negative": {"evidence_path": "docs/evidence/S0/negative.log"},
       "summary_path": "docs/evidence/S0/summary.json",
       "unit_tests": [], "integration_tests": [], "e2e_tests": [], "acceptance_ids": [],
-      "demo_command": "bash scripts/demo.sh"
+      "demo_command": "bash scripts/demo.sh",
+      "pr": {"branch": "feature/coaching-privacy-pipeline/S0-text-redaction", "url": "https://github.com/EXAMPLE/REPO/pull/1", "state": "MERGED", "merge_sha": "EXAMPLE-ONLY"}
     }
   },
   "blockers": [], "next_slice": "S1"
 }
 ```
 
-Valid slice statuses: `NOT_STARTED`, `IN_PROGRESS`, `PASS`, `PARTIAL`, `FAIL`, `BLOCKED`; progress states: `IN_PROGRESS`, `READY_FOR_NEXT_SLICE`, `BLOCKED`, `COMPLETE`. Never set `PASS` without real executed mandatory tests and an evidence bundle. An older `AWAITING_APPROVAL` state is not a pause instruction: check actual logs and tests, then migrate to `READY_FOR_NEXT_SLICE` only if verifiably green. On restart, reconcile `milestone-status.json`, `docs/status.md`, source/test changes and evidence. If contradictory, favor actual executed evidence, rerun checks, and document the correction. Never fabricate a screenshot, elapsed time, commit or test result.
+Valid slice statuses: `NOT_STARTED`, `IN_PROGRESS`, `PASS`, `PARTIAL`, `FAIL`, `BLOCKED`; progress states: `IN_PROGRESS`, `READY_FOR_MERGE`, `AWAITING_MERGE`, `READY_FOR_NEXT_SLICE`, `BLOCKED`, `COMPLETE`. Never set `PASS` without real executed mandatory tests and an evidence bundle. An older `AWAITING_APPROVAL` state is not a pause instruction: check actual logs and tests, then migrate to `READY_FOR_NEXT_SLICE` only if verifiably green. On restart, reconcile `milestone-status.json`, `docs/status.md`, source/test changes and evidence. If contradictory, favor actual executed evidence, rerun checks, and document the correction. Never fabricate a screenshot, elapsed time, commit or test result.
 
 ### Slice S0 / PR 1 — A fictional text transcript becomes a validated redacted result
 
@@ -90,7 +118,7 @@ Valid slice statuses: `NOT_STARTED`, `IN_PROGRESS`, `PASS`, `PARTIAL`, `FAIL`, `
 
 **GREEN scope:** minimal installable Python package and CLI, core data contracts and policy input, transcript parser for fictional fixtures, actual Presidio detector, deterministic redactor, independent critical-leak validator and decision/report writer; add working `scripts/setup.sh`, `test.sh`, `demo.sh`, `verify.sh` (they may have feature-limited coverage, never claim unimplemented features passed). Use the provided fictional seed fixture. No isolated framework/setup PR.
 
-**Acceptance focus:** **A01, A02, A06, A07, A08, A15** and the S0-relevant parts of **A17, A19, A22, A23**. Show at least one real transformed text result and one deliberate rejection in the same demo. Deliver evidence and continue to S1 when green.
+**Acceptance focus:** **A01, A02, A06, A07, A08, A15** and the S0-relevant parts of **A17, A19, A22, A23**. Show at least one real transformed text result and one deliberate rejection in the same demo. Deliver evidence through the S0 PR and continue to S1 only after the S0 PR is verified merged.
 
 ### Slice S1 / PR 2 — Generate and process reproducible fictional test sessions
 
@@ -100,7 +128,7 @@ Valid slice statuses: `NOT_STARTED`, `IN_PROGRESS`, `PASS`, `PARTIAL`, `FAIL`, `
 
 **GREEN scope:** at least 12 scenario families, 100-case dev and independently generated 200-case locked holdout, immutable seeds, 50-record fictional candidate directory, separate attacker/evaluator-only data, repeatable checksums and baseline reports. Holdout data must not drive rule tuning. Do not embed gold labels in runtime input. Only evaluate meaningful categories already implemented; mark others `NOT_IMPLEMENTED`/`NOT_RUN`.
 
-**Acceptance focus:** **A03, A04, A05, A19** and incremental **A20**. Demo actual reproducible result and metrics. Deliver evidence and continue when green.
+**Acceptance focus:** **A03, A04, A05, A19** and incremental **A20**. Demo actual reproducible result and metrics. Deliver evidence, open and verify the merged PR, and only then continue.
 
 ### Slice S2 / PR 3 — Purpose-aware and third-party-safe transcript cleansing
 
@@ -110,7 +138,7 @@ Valid slice statuses: `NOT_STARTED`, `IN_PROGRESS`, `PASS`, `PARTIAL`, `FAIL`, `
 
 **GREEN scope:** stable pseudonymization within session, configurable `SUPPRESS`/`REPLACE`/`GENERALIZE`/`PRESERVE`, third-party recognizers, clear purpose rule evaluation, minimal independent deterministic meaning checks and human-review gate.
 
-**Acceptance focus:** **A08, A09, A16** (scoped deterministic rubric), plus external-sharing **A17**. Demo both policies end-to-end; report over-redaction and known coverage gaps. Deliver evidence and continue when green.
+**Acceptance focus:** **A08, A09, A16** (scoped deterministic rubric), plus external-sharing **A17**. Demo both policies end-to-end; report over-redaction and known coverage gaps. Deliver evidence, open and verify the merged PR, and only then continue.
 
 ### Slice S3 / PR 4 — Detect contextual identification across a conversation
 
@@ -130,7 +158,7 @@ Valid slice statuses: `NOT_STARTED`, `IN_PROGRESS`, `PASS`, `PARTIAL`, `FAIL`, `
 
 **GREEN scope:** cross-session aggregation, independent residual/context risk evaluator, deterministic fictional identity-linkage simulation, separation from gold/attacker data at runtime, release gate with all four decision states and honest metrics. Avoid real-person web searches.
 
-**Acceptance focus:** **A11, A14, A17, A18, A20**; full four-status demo and evidence. Deliver and continue when green.
+**Acceptance focus:** **A11, A14, A17, A18, A20**; full four-status demo and evidence. Deliver evidence and continue only after the PR is verified merged.
 
 ### Slice S5 / PR 6 — Synthetic audio follows the same privacy pipeline as text
 
@@ -140,7 +168,7 @@ Valid slice statuses: `NOT_STARTED`, `IN_PROGRESS`, `PASS`, `PARTIAL`, `FAIL`, `
 
 **GREEN scope:** `faster-whisper` real CPU adapter, pinned model manifest, offline `espeak-ng` synthetic audio fixture, WER/CER/time reporting, short CPU smoke checkpoint (`tiny.en`/`base.en`) and separate optional `small.en` quality benchmark.
 
-**Acceptance focus:** **A13**, optional **A21**. Real CPU transcription required for `PASS`; mock ASR tests alone do not qualify. Deliver and continue when green.
+**Acceptance focus:** **A13**, optional **A21**. Real CPU transcription required for `PASS`; mock ASR tests alone do not qualify. Deliver evidence and continue only after the PR is verified merged.
 
 ### Slice S6 / PR 7 — One-command reproducible privacy demonstration and audit
 
@@ -160,7 +188,7 @@ bash scripts/verify.sh
 make test demo verify
 ```
 
-**DELIVER & CONTINUE:** include exit codes, per-test mapping, model versions, held-out privacy quality and unresolved risks. Continue when green.
+**DELIVER & CONTINUE:** include exit codes, per-test mapping, model versions, held-out privacy quality and unresolved risks. Continue only after the PR is verified merged.
 
 ### Slice S7 / PR 8 — Process a synthetic batch through production-shaped adapters
 
@@ -195,9 +223,9 @@ docs/
 
 Required log headers: slice, ISO 8601 timestamp, sanitized machine/software metadata, working directory, exact command, exit code, test names/counts, model package/revision, SHA-256 of log contents or files as appropriate. Capture the real command exit status even when output is piped through `tee` (`set -o pipefail` or equivalent). Keep the log output as an observation, not a generated narrative. When updating `.gitignore`, ensure safe `docs/evidence/**/*.log` and test `.xml`/`.json` are not inadvertently excluded while raw recordings, caches, large model weights, secrets and working data remain ignored. Cap evidence size and redact machine/user paths when needed. RED exit must be nonzero because of an **expected unmet assertion**; GREEN/E2E/negative safety scenarios must show the expected final behavior and exit status. Never fabricate logs, run counts, timestamps or screenshots. Keep logs concise and bounded, with only synthetic data and no secrets, tokens, customer details or actual coaching recordings. Screenshot is optional and must prove an actual UI/terminal run; text logs and JUnit results are preferred. Large/audio/model files remain outside Git; committed evidence should be small and safe. The agent must *not* auto-commit model weights or raw audio solely to prove execution.
 
-In `docs/status.md`, keep an at-a-glance slice table and a detailed entry for every delivered slice. Each entry includes: capability, PR/branch/commit if authorized, source/test files, test-first RED evidence, GREEN unit/integration evidence, E2E and privacy-negative evidence, all applicable acceptance IDs and outcomes, metrics with denominators, model versions, limitations, and links relative to `docs/status.md` such as `[E2E](evidence/S0/e2e.log)`. **Update this document before starting the next slice**, not just at the end of the project. `milestone-status.json` must point to exactly the same files and statuses.
+In `docs/status.md`, keep an at-a-glance slice table and a detailed entry for every delivered slice. Each entry includes: capability, PR/branch, actual merged status, and merge SHA when actually available, source/test files, test-first RED evidence, GREEN unit/integration evidence, E2E and privacy-negative evidence, all applicable acceptance IDs and outcomes, metrics with denominators, model versions, limitations, and links relative to `docs/status.md` such as `[E2E](evidence/S0/e2e.log)`. **Update this document before creating the slice PR**, not just at the end of the project. `milestone-status.json` must point to exactly the same files and statuses.
 
-Every completed slice includes a concise agent-visible checkpoint, then autonomous next-slice execution. Even if GitHub operations are not authorized, the evidence and status documentation are mandatory. If one PR per slice is requested but branches aren't merged between slices, prefer stacked PRs or one sequential branch/commit per slice, with accurate dependency status; never merge or push without permission.
+Every completed and **verified merged** slice includes a concise agent-visible checkpoint, then autonomous next-slice execution. Even if GitHub operations are blocked, evidence and status documentation remain mandatory, but the slice is NOT delivered until its PR is merged. This plan requires one **merged PR** per functional slice. Do not use unmerged stacked PRs as proof of delivery. Follow the monorepo root PR policy and do not bypass checks, reviews or permissions.
 
 ### Mandatory per-slice proof and docs/status.md report
 
@@ -214,11 +242,11 @@ REGRESSION: <previous slices' tests and result>
 QUALITY: <measured scores, denominators, false negatives, limitations>
 FILES: <modified paths only for this feature>
 MODEL: <real model ID/revision/checksum or NOT_RUN reason>
-GIT: <branch/commit/PR only if the owner provided Git permissions>
-STATE: docs/status.md + milestone-status.json updated; READY_FOR_NEXT_SLICE (or BLOCKED with reason)
+GIT: <branch/commit/PR URL, CI check result, actual merge state or blocked reason>
+STATE: docs/status.md + milestone-status.json updated; READY_FOR_MERGE until verified MERGED, then READY_FOR_NEXT_SLICE (or BLOCKED)
 ```
 
-**Automatic continuation:** after each passing slice and evidence-backed report, proceed to the next slice without requiring approval. A mandatory failed or unrun test remains a blocking gate; do not bypass it. A failing or unrun mandatory real-model integration makes the slice `PARTIAL`/`FAIL`. No released artifact may claim privacy safety based on a synthetic test pass, and no production-processed real data is authorized by this plan.
+**Automatic continuation:** after each passing slice, evidence-backed report and **verified PR merge**, proceed to the next slice without routine approval. A mandatory failed or unrun test remains a blocking gate; do not bypass it. A failing or unrun mandatory real-model integration makes the slice `PARTIAL`/`FAIL`. No released artifact may claim privacy safety based on a synthetic test pass, and no production-processed real data is authorized by this plan.
 
 ## Technical design and requirements
 
@@ -488,7 +516,7 @@ Run `privacy-pipeline process` with **real Presidio/NLP on CPU**, context rules 
 
 ### PoC: zero always-on hosting
 
-- Use a local or private development workspace; source-control hosting and remote actions are determined separately by the user. Include only fictional synthetic data in any shared development artifacts.
+- Use a local or private development workspace; source-control hosting and GitHub permissions are configured by the owner for the single monorepo. Include only fictional synthetic data in any shared development artifacts.
 - Development on a normal laptop, browser-hosted development machine or cloud notebook; CPU reference environment recommends 16 GB RAM; 8 GB with low concurrency may suffice; no GPU is required. CPU acceptance **does** require real Presidio/NLP and independent validation.
 - Optional CPU/GPU performance experiments may run temporarily on rented compute, but neither GLiNER nor short-form Whisper smoke tests require a dedicated GPU. As a planning ceiling, begin with **US$20–$50 for experimental compute/storage**, excluding labor; verify current provider rates, region, billing and privacy terms before using a service. Never represent an assumed rate as measured cost.
 - Free Colab is an optional synthetic-only demo, not a reliable GPU SLA nor an approved real-client processing environment.
@@ -506,7 +534,7 @@ Run `privacy-pipeline process` with **real Presidio/NLP on CPU**, context rules 
 
 ## Delivery contract — mandatory observable outputs
 
-The coding agent must implement executable software, not a plan, images, mocks or guessed command outputs. The **current repository folder** is the implementation target. Do not delete unrelated files or infer a remote repository.
+The coding agent must implement executable software, not a plan, images, mocks or guessed command outputs. The **current repository folder** is the implementation target. Do not delete unrelated files. Use only the monorepo remote confirmed by the owner; if unavailable, report a blocking delivery requirement.
 
 ### Mandatory CPU execution
 - Typed pipeline, policy loader and CLI; 12-family fictional fixture generator; fictional directory and evaluator-only gold labels.

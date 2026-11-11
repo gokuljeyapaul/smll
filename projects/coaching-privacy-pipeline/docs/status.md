@@ -1,29 +1,29 @@
 # Coaching Privacy Pipeline — delivery status and evidence ledger
 
-> **Status at handoff:** SPECIFICATION ONLY. No implementation, automated unit tests, E2E tests, offline inference, screenshots or privacy conformance evidence has been executed. Entries below are initial placeholders—not passing results. OpenClaw MUST update this file **after every functional slice** and before starting the next one.
+> **Status at handoff:** SPECIFICATION ONLY. No implementation, automated unit tests, E2E tests, offline inference, screenshots or privacy conformance evidence has been executed. Entries below are initial placeholders—not passing results. OpenClaw MUST update this file **after every functional slice** and before opening its PR; verify GitHub merge before starting the next dependent slice.
 
 ## Current status
 
 - **Active slice:** S0 (not started)
-- **Automation mode:** RED → GREEN → REFACTOR → VERIFY → DEMO → DELIVER → CONTINUE on a passing gate
+- **Automation mode:** RED → GREEN → REFACTOR → VERIFY → DEMO → PR → VERIFIED MERGE → CONTINUE
 - **Overall engineering result:** `NOT_IMPLEMENTED`
 - **Synthetic privacy quality:** `NOT_ASSESSED`
 - **Real-data / ICF / legal conformance:** `NOT_ASSESSED`
 - **Last verified proof:** None
-- **Next required action:** Implement S0 test-first; capture real evidence in `docs/evidence/S0/`; complete this ledger; continue to S1 only on actual PASS.
+- **Next required action:** Implement S0 test-first, store evidence in `docs/evidence/S0/`, open a verified feature PR and continue to S1 only after its PR is actually `MERGED`.
 
 ## Slice delivery overview
 
-| Slice | Complete observable functionality | Status | Acceptance evidence | Gate |
+| Slice | Complete observable functionality | Status | PR / merge state | Acceptance evidence | Gate |
 |---|---|---|---|---|
-| S0 | Fictional text → PII redaction → validation → decision | NOT_STARTED | None | pending tests |
-| S1 | Generate → process → evaluate synthetic sessions | NOT_STARTED | None | pending tests |
-| S2 | Purpose-specific privacy transformations | NOT_STARTED | None | pending tests |
-| S3 | Contextual cross-turn GLiNER risk detection | NOT_STARTED | None | pending tests |
-| S4 | Cross-session identity linkage and fail-closed decisions | NOT_STARTED | None | pending tests |
-| S5 | Offline synthetic audio → transcription → same privacy pipeline | NOT_STARTED | None | pending tests |
-| S6 | One-command reproducible evaluation and audit | NOT_STARTED | None | pending tests |
-| S7 | Batch processing with production-shaped adapters | NOT_STARTED | None | pending tests |
+| S0 | Fictional text → PII redaction → validation → decision | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S1 | Generate → process → evaluate synthetic sessions | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S2 | Purpose-specific privacy transformations | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S3 | Contextual cross-turn GLiNER risk detection | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S4 | Cross-session identity linkage and fail-closed decisions | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S5 | Offline synthetic audio → transcription → same privacy pipeline | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S6 | One-command reproducible evaluation and audit | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S7 | Batch processing with production-shaped adapters | NOT_STARTED | NOT_OPENED | None | pending tests |
 
 ## Acceptance-test conformance matrix
 
@@ -57,6 +57,12 @@
 | A24 | P1 | NOT_RUN | None |
 | A25 | P0 | NOT_RUN | None |
 
+## GitHub PR delivery ledger (one PR per complete functional slice)
+
+A passing test suite is **not** a delivered slice. Each S0–S7 feature requires its own PR. Before merge, commit this file with verified tests and `READY_FOR_MERGE`, PR URL when known, and **merge SHA = PENDING**. After GitHub reports `MERGED`, the agent must verify the actual merge SHA and include it in the checkpoint report. Backfill that verified SHA in the next slice PR (or a final documentation closeout PR for S7); do not push directly to `main` or invent the SHA. Missing required CI, reviews, resources or permissions makes the gate `BLOCKED`.
+
+**Required stable GitHub check:** `monorepo / verify`. Evidence for this project's slice remains in `docs/evidence/S#/`, including real RED/GREEN/E2E and negative test logs; GitHub PR and CI run URLs provide external verification. A model-heavy check not executed on an adequately provisioned runner remains a blocker, even if fast unit tests pass.
+
 ## Required delivery format for each slice
 
 ### Slice S# — [capability name]
@@ -73,8 +79,8 @@
 - **Machine report:** [summary.json](evidence/S#/summary.json) — observed commands, test IDs, counts, model versions, exit codes, measured metrics and denominators.
 - **Screenshots:** Optional link to a genuine captured screen; never fabricated.
 - **Changed implementation files:** Paths, short description.
-- **Git reference:** Branch/commit/PR only when authorized, otherwise `NOT_APPLICABLE`.
+- **Git reference:** Feature branch, PR URL, CI run URL/check name/result, `READY_FOR_MERGE | BLOCKED | MERGED`, and actual merge SHA when verified (otherwise `PENDING`).
 - **Limitations and unresolved risks:** Explicit list, including false negatives and unassessed checks.
-- **Next:** Continue automatically only after mandatory results are truly green; otherwise document blocker.
+- **Next:** Continue automatically only after mandatory results are truly green **and GitHub confirms the feature PR is MERGED**; otherwise document blocker.
 
 _Replace the section heading template with actual entries upon delivery. Do not create synthetic proof logs merely to populate placeholders._
