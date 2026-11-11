@@ -1,0 +1,26 @@
+# S0 offline processing check — 2026-11-11T21:50:44Z
+# Method: all network modules imported first, then socket.socket/create_connection/getaddrinfo
+# monkeypatched to raise (network egress impossible during processing); HF_HUB_OFFLINE=1;
+# full seed set processed with real Presidio + spaCy.
+
+processed 18 sessions fully offline; decisions:
+  fictional-S01 REVIEW_REQUIRED
+  fictional-S02 REVIEW_REQUIRED
+  fictional-S03 REVIEW_REQUIRED
+  fictional-S04 REVIEW_REQUIRED
+  fictional-S05 REVIEW_REQUIRED
+  fictional-S06 REVIEW_REQUIRED
+  fictional-S07 REVIEW_REQUIRED
+  fictional-S08 REVIEW_REQUIRED
+  fictional-S09a REVIEW_REQUIRED
+  fictional-S09b REVIEW_REQUIRED
+  fictional-S10 REVIEW_REQUIRED
+  fictional-S11 REVIEW_REQUIRED
+  fictional-S12 REVIEW_REQUIRED
+  fictional-S13 REVIEW_REQUIRED
+  fictional-S14 REVIEW_REQUIRED
+  fictional-S15 REVIEW_REQUIRED
+  fictional-S16 REVIEW_REQUIRED
+  fictional-S17 REVIEW_REQUIRED
+OFFLINE_PROOF_OK
+EXIT_CODE=0

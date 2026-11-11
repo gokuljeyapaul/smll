@@ -1,0 +1,6 @@
+# S0 negative/privacy tests — 2026-11-11T21:50:18Z
+# command: .venv/bin/python -m pytest tests/negative -q -v
+
+.....                                                                    [100%]
+5 passed in 0.02s
+EXIT_CODE=0

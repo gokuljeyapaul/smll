@@ -1,0 +1,373 @@
+# S0 RED phase — 2026-11-11T21:42:31Z
+# command: .venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q
+# CLI shell importable; stubs raise NotImplementedError for missing behavior
+
+FFFFFFFFFF.FFFFF                                                         [100%]
+=================================== FAILURES ===================================
+___________________ test_load_valid_seed_fixture_transcript ____________________
+
+    def test_load_valid_seed_fixture_transcript():
+        from coaching_privacy.contracts import Transcript
+        line = (FIXTURES / "seed_fixtures.jsonl").read_text().splitlines()[0]
+        record = json.loads(line)
+>       transcript = Transcript.parse(record["transcript"])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s0_unit.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'coaching_privacy.contracts.Transcript'>
+data = {'language': 'en', 'metadata': {'dataset_seed': 'handoff-v3', 'synthetic': True}, 'purpose': 'internal_coaching_analysis', 'schema_version': '1.0', ...}
+
+    @classmethod
+>   def parse(cls, data): raise NotImplementedError("transcript parsing not implemented")
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: transcript parsing not implemented
+
+src/coaching_privacy/contracts.py:6: NotImplementedError
+__________________ test_unknown_purpose_rejected_fail_closed ___________________
+
+    def test_unknown_purpose_rejected_fail_closed():
+        from coaching_privacy.contracts import PolicyError, Transcript
+        with pytest.raises(PolicyError):
+>           Transcript.parse({
+                "schema_version": "1.0",
+                "session_id": "x",
+                "source_type": "synthetic_text",
+                "purpose": "totally_unknown_purpose",
+                "language": "en",
+                "speakers": [{"id": "S1", "role": "COACH"}, {"id": "S2", "role": "CLIENT"}],
+                "utterances": [{"id": "u1", "speaker_id": "S1", "start_ms": None, "end_ms": None,
+                                "text": "Hello."}],
+                "metadata": {"synthetic": True},
+            })
+
+tests/unit/test_s0_unit.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'coaching_privacy.contracts.Transcript'>
+data = {'schema_version': '1.0', 'session_id': 'x', 'source_type': 'synthetic_text', 'purpose': 'totally_unknown_purpose', ...}
+
+    @classmethod
+>   def parse(cls, data): raise NotImplementedError("transcript parsing not implemented")
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: transcript parsing not implemented
+
+src/coaching_privacy/contracts.py:6: NotImplementedError
+____________ test_malformed_json_and_disallowed_source_fail_closed _____________
+
+    def test_malformed_json_and_disallowed_source_fail_closed():
+        from coaching_privacy.contracts import ContractError, Transcript
+        base = {
+            "schema_version": "1.0",
+            "session_id": "x",
+            "source_type": "synthetic_text",
+            "purpose": "internal_coaching_analysis",
+            "language": "en",
+            "speakers": [{"id": "S1", "role": "COACH"}, {"id": "S2", "role": "CLIENT"}],
+            "utterances": [{"id": "u1", "speaker_id": "S1", "start_ms": None, "end_ms": None,
+                            "text": "Hello."}],
+            "metadata": {"synthetic": True},
+        }
+        bad_version = dict(base, schema_version="999.0")
+        with pytest.raises(ContractError):
+>           Transcript.parse(bad_version)
+
+tests/unit/test_s0_unit.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'coaching_privacy.contracts.Transcript'>
+data = {'schema_version': '999.0', 'session_id': 'x', 'source_type': 'synthetic_text', 'purpose': 'internal_coaching_analysis', ...}
+
+    @classmethod
+>   def parse(cls, data): raise NotImplementedError("transcript parsing not implemented")
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: transcript parsing not implemented
+
+src/coaching_privacy/contracts.py:6: NotImplementedError
+______________ test_policy_file_load_and_unknown_policy_rejected _______________
+
+    def test_policy_file_load_and_unknown_policy_rejected():
+        from coaching_privacy.policy import PolicyStore
+>       store = PolicyStore(FIXTURES.parent / "policies" / "sample_policy.yaml")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s0_unit.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.policy.PolicyStore object at 0x782993419dd0>
+path = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/policies/sample_policy.yaml')
+
+>   def __init__(self, path): raise NotImplementedError("policy store not implemented")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: policy store not implemented
+
+src/coaching_privacy/policy.py:2: NotImplementedError
+_____________ test_deterministic_replacement_same_value_same_token _____________
+
+    def test_deterministic_replacement_same_value_same_token():
+        from coaching_privacy.transform import StableReplacer
+        replacer = StableReplacer()
+>       tok1 = replacer.replacement_for("PERSON", "Mira Solen")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s0_unit.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.transform.StableReplacer object at 0x782993425f10>
+label = 'PERSON', value = 'Mira Solen'
+
+>   def replacement_for(self, label, value): raise NotImplementedError("not implemented")
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/transform.py:2: NotImplementedError
+_____________ test_redaction_preserves_turn_structure_and_offsets ______________
+
+    def test_redaction_preserves_turn_structure_and_offsets():
+        from coaching_privacy.transform import redact_utterance
+        text = "My name is Mira Solen, and my email is mira.solen@example.test."
+        spans = [
+            {"start": 11, "end": 21, "label": "DIRECT_PII.PERSON", "value": "Mira Solen"},
+            {"start": 42, "end": 67, "label": "DIRECT_PII.EMAIL", "value": "mira.solen@example.test"},
+        ]
+>       result = redact_utterance(text, spans)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s0_unit.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = 'My name is Mira Solen, and my email is mira.solen@example.test.'
+spans = [{'start': 11, 'end': 21, 'label': 'DIRECT_PII.PERSON', 'value': 'Mira Solen'}, {'start': 42, 'end': 67, 'label': 'DIRECT_PII.EMAIL', 'value': 'mira.solen@example.test'}]
+
+>   def redact_utterance(text, spans): raise NotImplementedError("not implemented")
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/transform.py:3: NotImplementedError
+__________________ test_real_presidio_detects_name_and_email ___________________
+
+    def test_real_presidio_detects_name_and_email():
+        from coaching_privacy.detect import PresidioDetector
+        fixture = _first_fixture()
+        utterance = fixture["transcript"]["utterances"][1]
+        detector = PresidioDetector()
+>       spans = detector.detect(utterance["text"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_s0_presidio.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.detect.PresidioDetector object at 0x78299360b210>
+text = 'My name is Mira Solen, and my personal email is mira.solen@example.test. I want to change how I lead meetings.'
+
+>   def detect(self, text): raise NotImplementedError("not implemented")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/detect.py:2: NotImplementedError
+_____________________ test_detector_reports_model_versions _____________________
+
+    def test_detector_reports_model_versions():
+        from coaching_privacy.detect import PresidioDetector
+        detector = PresidioDetector()
+>       versions = detector.model_versions()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_s0_presidio.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.detect.PresidioDetector object at 0x782993427f10>
+
+>   def model_versions(self): raise NotImplementedError("not implemented")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/detect.py:3: NotImplementedError
+_________________ test_phone_and_address_detected_in_seed_s02 __________________
+
+    def test_phone_and_address_detected_in_seed_s02():
+        from coaching_privacy.detect import PresidioDetector
+        lines = (FIXTURES / "seed_fixtures.jsonl").read_text().splitlines()
+        fixture = json.loads(lines[1])
+        utterance = fixture["transcript"]["utterances"][0]
+        detector = PresidioDetector()
+>       spans = detector.detect(utterance["text"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_s0_presidio.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.detect.PresidioDetector object at 0x782993427890>
+text = 'Someone may call me on 202-555-0147 at 18 Maple Terrace, Suite 4. I want to set boundaries with colleagues.'
+
+>   def detect(self, text): raise NotImplementedError("not implemented")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/detect.py:2: NotImplementedError
+________ test_process_happy_path_produces_decision_and_sanitized_output ________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-1/test_process_happy_path_produc0')
+
+    def test_process_happy_path_produces_decision_and_sanitized_output(tmp_path):
+        input_file = _write_single_fixture_input(tmp_path)
+        out_dir = tmp_path / "results"
+        result = run_cli([
+            "process",
+            "--input", str(input_file),
+            "--policy", "internal_coaching_analysis",
+            "--output", str(out_dir),
+        ])
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: error: privacy pipeline processing is not implemented yet
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/privacy-p..._path_produc0/results'], returncode=2, stdout='', stderr='error: privacy pipeline processing is not implemented yet\n').returncode
+
+tests/e2e/test_s0_cli.py:35: AssertionError
+______________ test_injected_leak_after_transformation_is_blocked ______________
+
+    def test_injected_leak_after_transformation_is_blocked():
+        from coaching_privacy.pipeline import SafetyGate
+        from coaching_privacy.validator import IndependentLeakValidator
+        fixture = _first_fixture()
+        # Simulate a faulty transform output that re-inserts the identifier
+        sanitized_utterances = [
+            {"id": "u1", "speaker_id": "S1", "text": "What would you like to focus on today?"},
+            {"id": "u2", "speaker_id": "S2",
+             "text": "My name is Mira Solen, and my email is mira.solen@example.test."},
+        ]
+        validator = IndependentLeakValidator()
+>       report = validator.validate(
+            prohibited_leaks=fixture["prohibited_leaks"],
+            sanitized_utterances=sanitized_utterances,
+        )
+
+tests/negative/test_s0_negative.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.validator.IndependentLeakValidator object at 0x78299341a190>
+kw = {'prohibited_leaks': ['Mira Solen', 'mira.solen@example.test'], 'sanitized_utterances': [{'id': 'u1', 'speaker_id': 'S...today?'}, {'id': 'u2', 'speaker_id': 'S2', 'text': 'My name is Mira Solen, and my email is mira.solen@example.test.'}]}
+
+>   def validate(self, **kw): raise NotImplementedError("not implemented")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/validator.py:3: NotImplementedError
+______________ test_unavailable_validator_fails_closed_as_failed _______________
+
+    def test_unavailable_validator_fails_closed_as_failed():
+        from coaching_privacy.pipeline import SafetyGate
+        from coaching_privacy.validator import ValidatorUnavailable
+        gate = SafetyGate()
+>       decision = gate.decide(
+            {"validator_available": False, "error": str(ValidatorUnavailable("presidio unavailable"))},
+            purpose="internal_coaching_analysis",
+        )
+
+tests/negative/test_s0_negative.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.pipeline.SafetyGate object at 0x78299342c450>
+report = {'validator_available': False, 'error': 'presidio unavailable'}
+purpose = 'internal_coaching_analysis'
+
+>   def decide(self, report, purpose): raise NotImplementedError("not implemented")
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/pipeline.py:2: NotImplementedError
+__________________ test_external_sharing_never_auto_released ___________________
+
+    def test_external_sharing_never_auto_released():
+        from coaching_privacy.pipeline import SafetyGate
+        gate = SafetyGate()
+        clean_report = {"validator_available": True, "residual_pii": [], "context_risks": []}
+>       decision = gate.decide(clean_report, purpose="external_sharing")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/negative/test_s0_negative.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.pipeline.SafetyGate object at 0x7829934436d0>
+report = {'validator_available': True, 'residual_pii': [], 'context_risks': []}
+purpose = 'external_sharing'
+
+>   def decide(self, report, purpose): raise NotImplementedError("not implemented")
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/pipeline.py:2: NotImplementedError
+___________ test_clean_internal_transcript_can_be_release_candidate ____________
+
+    def test_clean_internal_transcript_can_be_release_candidate():
+        from coaching_privacy.pipeline import SafetyGate
+        gate = SafetyGate()
+        clean_report = {
+            "validator_available": True,
+            "residual_pii": [],
+            "context_risks": [],
+            "all_mandatory_stages_executed": True,
+        }
+>       decision = gate.decide(clean_report, purpose="internal_coaching_analysis")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/negative/test_s0_negative.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.pipeline.SafetyGate object at 0x78299342c650>
+report = {'validator_available': True, 'residual_pii': [], 'context_risks': [], 'all_mandatory_stages_executed': True}
+purpose = 'internal_coaching_analysis'
+
+>   def decide(self, report, purpose): raise NotImplementedError("not implemented")
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/pipeline.py:2: NotImplementedError
+________________ test_validator_logs_do_not_contain_source_pii _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-1/test_validator_logs_do_not_con0')
+
+    def test_validator_logs_do_not_contain_source_pii(tmp_path):
+        """Routine reports must not echo raw source transcript/PII (A23-relevant)."""
+        from coaching_privacy.validator import IndependentLeakValidator
+        fixture = _first_fixture()
+        sanitized_utterances = [
+            {"id": "u2", "speaker_id": "S2", "text": "My name is Mira Solen."},
+        ]
+        validator = IndependentLeakValidator()
+>       report = validator.validate(
+            prohibited_leaks=fixture["prohibited_leaks"],
+            sanitized_utterances=sanitized_utterances,
+        )
+
+tests/negative/test_s0_negative.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.validator.IndependentLeakValidator object at 0x782993424750>
+kw = {'prohibited_leaks': ['Mira Solen', 'mira.solen@example.test'], 'sanitized_utterances': [{'id': 'u2', 'speaker_id': 'S2', 'text': 'My name is Mira Solen.'}]}
+
+>   def validate(self, **kw): raise NotImplementedError("not implemented")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   NotImplementedError: not implemented
+
+src/coaching_privacy/validator.py:3: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s0_unit.py::test_load_valid_seed_fixture_transcript - ...
+FAILED tests/unit/test_s0_unit.py::test_unknown_purpose_rejected_fail_closed
+FAILED tests/unit/test_s0_unit.py::test_malformed_json_and_disallowed_source_fail_closed
+FAILED tests/unit/test_s0_unit.py::test_policy_file_load_and_unknown_policy_rejected
+FAILED tests/unit/test_s0_unit.py::test_deterministic_replacement_same_value_same_token
+FAILED tests/unit/test_s0_unit.py::test_redaction_preserves_turn_structure_and_offsets
+FAILED tests/integration/test_s0_presidio.py::test_real_presidio_detects_name_and_email
+FAILED tests/integration/test_s0_presidio.py::test_detector_reports_model_versions
+FAILED tests/integration/test_s0_presidio.py::test_phone_and_address_detected_in_seed_s02
+FAILED tests/e2e/test_s0_cli.py::test_process_happy_path_produces_decision_and_sanitized_output
+FAILED tests/negative/test_s0_negative.py::test_injected_leak_after_transformation_is_blocked
+FAILED tests/negative/test_s0_negative.py::test_unavailable_validator_fails_closed_as_failed
+FAILED tests/negative/test_s0_negative.py::test_external_sharing_never_auto_released
+FAILED tests/negative/test_s0_negative.py::test_clean_internal_transcript_can_be_release_candidate
+FAILED tests/negative/test_s0_negative.py::test_validator_logs_do_not_contain_source_pii
+15 failed, 1 passed in 0.17s
+EXIT_CODE=1
