@@ -1,0 +1,6 @@
+# S2 E2E: same transcript, two purposes — 2026-11-11T22:30:22Z
+# command: .venv/bin/python -m pytest tests/e2e/test_s2_e2e.py -q
+
+..                                                                       [100%]
+2 passed in 9.17s
+EXIT_CODE=0

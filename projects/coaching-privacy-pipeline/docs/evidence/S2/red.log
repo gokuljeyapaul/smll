@@ -1,0 +1,181 @@
+# S2 RED phase — 2026-11-11T22:28:28Z
+# command: .venv/bin/python -m pytest tests/unit/test_s2_unit.py tests/e2e/test_s2_e2e.py tests/negative/test_s2_negative.py -q
+# stubs importable; failures are behavioral (NotImplementedError from missing transform/fidelity behavior)
+
+FFFFF..FF                                                                [100%]
+=================================== FAILURES ===================================
+______________ test_third_party_masked_consistently_across_turns _______________
+
+    def test_third_party_masked_consistently_across_turns():
+        from coaching_privacy.policy_transform import transform_transcript
+        from coaching_privacy.contracts import Transcript
+    
+        t = Transcript.parse(TRANSCRIPT)
+>       result = transform_transcript(t, _load_policy("internal_coaching_analysis"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s2_unit.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+transcript = Transcript(schema_version='1.0', session_id='s2-test', source_type='synthetic_text', purpose='internal_coaching_analys...ms=None, end_ms=None, text='Mr. Alden also criticized my report in front of the team.')), metadata={'synthetic': True})
+policy = {'version': '0.1-poc', 'synthetic_only': True, 'external_distribution_permitted': False, 'requires_human_release_approval': False, ...}
+
+    def transform_transcript(transcript, policy):
+>       raise NotImplementedError("purpose-aware transformation not implemented")
+E       NotImplementedError: purpose-aware transformation not implemented
+
+src/coaching_privacy/policy_transform.py:3: NotImplementedError
+_________ test_external_policy_redacts_more_aggressively_than_internal _________
+
+    def test_external_policy_redacts_more_aggressively_than_internal():
+        from coaching_privacy.policy_transform import transform_transcript
+        from coaching_privacy.contracts import Transcript
+    
+        t = Transcript.parse(TRANSCRIPT)
+>       internal = transform_transcript(t, _load_policy("internal_coaching_analysis"))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s2_unit.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+transcript = Transcript(schema_version='1.0', session_id='s2-test', source_type='synthetic_text', purpose='internal_coaching_analys...ms=None, end_ms=None, text='Mr. Alden also criticized my report in front of the team.')), metadata={'synthetic': True})
+policy = {'version': '0.1-poc', 'synthetic_only': True, 'external_distribution_permitted': False, 'requires_human_release_approval': False, ...}
+
+    def transform_transcript(transcript, policy):
+>       raise NotImplementedError("purpose-aware transformation not implemented")
+E       NotImplementedError: purpose-aware transformation not implemented
+
+src/coaching_privacy/policy_transform.py:3: NotImplementedError
+____________ test_sensitive_relevant_experience_not_blankly_erased _____________
+
+    def test_sensitive_relevant_experience_not_blankly_erased():
+        from coaching_privacy.policy_transform import transform_transcript
+        from coaching_privacy.contracts import Transcript
+    
+        data = dict(TRANSCRIPT)
+        data = {
+            **TRANSCRIPT,
+            "utterances": TRANSCRIPT["utterances"] + [
+                {"id": "u4", "speaker_id": "S2", "start_ms": None, "end_ms": None,
+                 "text": "As a wheelchair user, accessible meeting rooms matter to my confidence at work."},
+            ],
+        }
+        t = Transcript.parse(data)
+>       result = transform_transcript(t, _load_policy("internal_coaching_analysis"))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s2_unit.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+transcript = Transcript(schema_version='1.0', session_id='s2-test', source_type='synthetic_text', purpose='internal_coaching_analys...text='As a wheelchair user, accessible meeting rooms matter to my confidence at work.')), metadata={'synthetic': True})
+policy = {'version': '0.1-poc', 'synthetic_only': True, 'external_distribution_permitted': False, 'requires_human_release_approval': False, ...}
+
+    def transform_transcript(transcript, policy):
+>       raise NotImplementedError("purpose-aware transformation not implemented")
+E       NotImplementedError: purpose-aware transformation not implemented
+
+src/coaching_privacy/policy_transform.py:3: NotImplementedError
+_________________ test_semantic_fidelity_flags_meaning_change __________________
+
+    def test_semantic_fidelity_flags_meaning_change():
+        from coaching_privacy.fidelity import SemanticFidelityChecker, REQUIRED_FACT_MISSING, MUTANT_FLAGGED
+    
+        original_facts = ["client wants clearer boundaries"]
+        # Mutant output that changes the meaning
+        mutant = "The client is happy with all current boundaries."
+        checker = SemanticFidelityChecker()
+>       result = checker.check(required_facts=original_facts, sanitized_text=mutant)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s2_unit.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.fidelity.SemanticFidelityChecker object at 0x7d680c403cd0>
+required_facts = ['client wants clearer boundaries']
+sanitized_text = 'The client is happy with all current boundaries.'
+
+    def check(self, required_facts, sanitized_text):
+>       raise NotImplementedError("semantic fidelity check not implemented")
+E       NotImplementedError: semantic fidelity check not implemented
+
+src/coaching_privacy/fidelity.py:7: NotImplementedError
+__________________ test_semantic_fidelity_passes_genuine_fact __________________
+
+    def test_semantic_fidelity_passes_genuine_fact():
+        from coaching_privacy.fidelity import SemanticFidelityChecker, OK
+    
+        checker = SemanticFidelityChecker()
+>       result = checker.check(
+            required_facts=["client wants clearer boundaries"],
+            sanitized_text="I want to set boundaries with colleagues.",
+        )
+
+tests/unit/test_s2_unit.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.fidelity.SemanticFidelityChecker object at 0x7d680c592010>
+required_facts = ['client wants clearer boundaries']
+sanitized_text = 'I want to set boundaries with colleagues.'
+
+    def check(self, required_facts, sanitized_text):
+>       raise NotImplementedError("semantic fidelity check not implemented")
+E       NotImplementedError: semantic fidelity check not implemented
+
+src/coaching_privacy/fidelity.py:7: NotImplementedError
+_______________ test_mutant_transcript_sent_to_review_or_blocked _______________
+
+    def test_mutant_transcript_sent_to_review_or_blocked():
+        from coaching_privacy.fidelity import SemanticFidelityChecker
+    
+        checker = SemanticFidelityChecker()
+        # A transform that invents facts / changes client sentiment
+>       result = checker.check(
+            required_facts=["client feels frustrated by rescheduled one-to-ones"],
+            sanitized_text="The client loves every meeting and has no concerns at all.",
+        )
+
+tests/negative/test_s2_negative.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.fidelity.SemanticFidelityChecker object at 0x7d680c446010>
+required_facts = ['client feels frustrated by rescheduled one-to-ones']
+sanitized_text = 'The client loves every meeting and has no concerns at all.'
+
+    def check(self, required_facts, sanitized_text):
+>       raise NotImplementedError("semantic fidelity check not implemented")
+E       NotImplementedError: semantic fidelity check not implemented
+
+src/coaching_privacy/fidelity.py:7: NotImplementedError
+________________ test_missing_required_fact_is_not_silent_pass _________________
+
+    def test_missing_required_fact_is_not_silent_pass():
+        from coaching_privacy.fidelity import SemanticFidelityChecker
+    
+        checker = SemanticFidelityChecker()
+>       result = checker.check(
+            required_facts=["client wants clearer boundaries"],
+            sanitized_text="We talked about the weather.",
+        )
+
+tests/negative/test_s2_negative.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.fidelity.SemanticFidelityChecker object at 0x7d680c454bd0>
+required_facts = ['client wants clearer boundaries']
+sanitized_text = 'We talked about the weather.'
+
+    def check(self, required_facts, sanitized_text):
+>       raise NotImplementedError("semantic fidelity check not implemented")
+E       NotImplementedError: semantic fidelity check not implemented
+
+src/coaching_privacy/fidelity.py:7: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s2_unit.py::test_third_party_masked_consistently_across_turns
+FAILED tests/unit/test_s2_unit.py::test_external_policy_redacts_more_aggressively_than_internal
+FAILED tests/unit/test_s2_unit.py::test_sensitive_relevant_experience_not_blankly_erased
+FAILED tests/unit/test_s2_unit.py::test_semantic_fidelity_flags_meaning_change
+FAILED tests/unit/test_s2_unit.py::test_semantic_fidelity_passes_genuine_fact
+FAILED tests/negative/test_s2_negative.py::test_mutant_transcript_sent_to_review_or_blocked
+FAILED tests/negative/test_s2_negative.py::test_missing_required_fact_is_not_silent_pass
+7 failed, 2 passed in 8.48s
+EXIT_CODE=1
