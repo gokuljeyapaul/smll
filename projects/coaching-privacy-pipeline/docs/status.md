@@ -18,8 +18,8 @@
 |---|---|---|---|---|
 | S0 | Fictional text → PII redaction → validation → decision | PASS, MERGED | PR [#1](https://github.com/gokuljeyapaul/smll/pull/1), squash SHA `0e37260c0555443b06a68dc0901bc12e130b9ddc`, CI `monorepo / verify` green | [evidence/S0/](evidence/S0/) | 16 tests green, demo OK, offline OK |
 | S1 | Generate → process → evaluate synthetic sessions | PASS, MERGED | PR [#2](https://github.com/gokuljeyapaul/smll/pull/2), squash SHA `c206f3247357b7128b71eee59a83737f6d0940b9`, CI green | [evidence/S1/](evidence/S1/) | 29 tests green, 25-session demo 0 leaks |
-| S2 | Purpose-specific privacy transformations | PASS (PR open) | `feature/coaching-privacy-pipeline/S2-purpose-policies`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S2/](evidence/S2/) | 38 tests green incl. two-purpose E2E |
-| S3 | Contextual cross-turn GLiNER risk detection | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S2 | Purpose-specific privacy transformations | PASS, MERGED | PR [#3](https://github.com/gokuljeyapaul/smll/pull/3), squash SHA `76794ee5ece42fb73bf5c9b1a272625dd562e34d`, CI green | [evidence/S2/](evidence/S2/) | 38 tests green incl. two-purpose E2E |
+| S3 | Contextual cross-turn GLiNER risk detection | PASS (PR open) | `feature/coaching-privacy-pipeline/S3-contextual-gliner`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S3/](evidence/S3/) | 48-test regression green; offline GLiNER proof |
 | S4 | Cross-session identity linkage and fail-closed decisions | NOT_STARTED | NOT_OPENED | None | pending tests |
 | S5 | Offline synthetic audio → transcription → same privacy pipeline | NOT_STARTED | NOT_OPENED | None | pending tests |
 | S6 | One-command reproducible evaluation and audit | NOT_STARTED | NOT_OPENED | None | pending tests |
@@ -40,9 +40,9 @@
 | A07 | P0 | PASS | [evidence/S0/e2e.log](evidence/S0/e2e.log) (deliberate re-insertion → BLOCKED) |
 | A08 | P0 | PASS | [evidence/S0/green.log](evidence/S0/green.log) (turn IDs/order/speaker IDs preserved; deterministic replacements) |
 | A09 | P0 | PASS | [evidence/S2/green.log](evidence/S2/green.log) (relevant lived experience preserved; external always review) |
-| A10 | P0 | NOT_RUN | None |
+| A10 | P0 | PASS | [evidence/S3/e2e.log](evidence/S3/e2e.log) (cross-turn combination -> REVIEW_REQUIRED; single clue/benign not overflagged) |
 | A11 | P0 | NOT_RUN | None |
-| A12 | P0 | NOT_RUN | None |
+| A12 | P0 | PASS | [evidence/S3/offline.log](evidence/S3/offline.log) (pinned GLiNER fully offline; malformed span/language fail closed; injection inert) |
 | A13 | P0 | NOT_RUN | None |
 | A14 | P0 | NOT_RUN | None |
 | A15 | P0 | PASS | [evidence/S0/negative.log](evidence/S0/negative.log) (validator/detector unavailable → FAILED) |

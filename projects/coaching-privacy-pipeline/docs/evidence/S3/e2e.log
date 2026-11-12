@@ -1,0 +1,6 @@
+# S3 E2E: cross-turn combination -> GLiNER -> risk rules -> review — 2026-11-12T01:04:17Z
+# command: .venv/bin/python -m pytest tests/e2e/test_s3_e2e.py -q
+
+..                                                                       [100%]
+2 passed in 43.72s
+EXIT_CODE=0

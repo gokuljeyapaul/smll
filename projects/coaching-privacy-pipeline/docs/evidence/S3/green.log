@@ -1,0 +1,17 @@
+# S3 GREEN phase (full S0–S3 regression, run in 3 chunks to respect tool timeouts) — 2026-11-12T00:54:42Z
+# command: .venv/bin/python -m pytest tests/unit tests/negative -q  (chunk 1)
+#         .venv/bin/python -m pytest tests/integration -q        (chunk 2)
+#         .venv/bin/python -m pytest tests/e2e -q                  (chunk 3)
+
+== chunk 1: unit + negative ==
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+31 passed, 2 warnings in 34.51s
+== chunk 2: integration ==
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+9 passed, 4 warnings in 222.25s (0:03:42)
+== chunk 3: e2e ==
+........                                                                 [100%]
+8 passed in 291.77s (0:04:51)
+TOTAL: 31 + 9 + 8 = 48 passed across chunks; EXIT_CODE=0

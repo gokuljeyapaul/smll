@@ -107,6 +107,27 @@ def process_transcript(
         "metadata": dict(transcript.metadata, sanitized_by=__version__),
     }
 
+    # S3: contextual detection with real offline GLiNER (fail closed).
+    from .context import RuleBasedContextRiskEngine, assert_supported_language
+    context_risks: list[dict[str, Any]] = []
+    context_error = None
+    try:
+        assert_supported_language(transcript.language)
+        extractor = _get_context_extractor()
+        if extractor is _FAILED_EXTRACTOR:
+            raise RuntimeError("gliner unavailable")
+        entities_by_turn = {}
+        for utt in transcript.utterances:
+            spans = extractor.extract(utt.text)
+            entities_by_turn[utt.id] = [
+                {"label": s.label, "value": s.value, "start": s.start,
+                 "end": s.end, "confidence": s.confidence, "detector": "gliner"}
+                for s in spans
+            ]
+        context_risks = RuleBasedContextRiskEngine().assess(entities_by_turn)
+    except Exception as exc:
+        context_error = f"context_stage_error: {exc}"
+
     # Independent validation (fail closed)
     validator = IndependentLeakValidator()
     try:
@@ -127,7 +148,8 @@ def process_transcript(
         "policy": transcript.purpose,
         "annotations": annotations,
         "residual_pii": validation.get("residual_pii", []),
-        "context_risks": [],  # implemented from S3
+        "context_risks": context_risks,
+        "context_stage_error": context_error,
         "cross_session_risks": [],  # implemented from S4
         "semantic_fidelity": {"turn_count_preserved": True},  # scoped checks from S2
         "review_reasons": [],
@@ -143,14 +165,16 @@ def process_transcript(
     executed_stages = {"real_pii_detector", "transformation", "policy_gate"}
     if validation.get("validator_available"):
         executed_stages.add("independent_validator")
+    if context_error is None:
+        executed_stages.add("context_rules")
     mandatory_stages = set(policy.get("mandatory_stages", []))
     all_mandatory = mandatory_stages.issubset(executed_stages)
     decision = gate.decide(
         {
             "validator_available": validation.get("validator_available", False),
-            "error": validation.get("error"),
+            "error": validation.get("error") or context_error,
             "residual_pii": validation.get("residual_pii", []),
-            "context_risks": [],
+            "context_risks": context_risks,
             "all_mandatory_stages_executed": all_mandatory,
         },
         purpose=transcript.purpose,
@@ -238,3 +262,19 @@ def _get_detector():
     except Exception:
         _DETECTOR_CACHE["_det"] = _FAILED_DETECTOR
     return _DETECTOR_CACHE["_det"]
+
+
+# --- GLiNER extractor cache (load once per process) ---
+_FAILED_EXTRACTOR = object()
+_EXTRACTOR_CACHE: dict[str, Any] = {}
+
+
+def _get_context_extractor():
+    if "ex" in _EXTRACTOR_CACHE:
+        return _EXTRACTOR_CACHE["ex"]
+    try:
+        from .context_extractor import GLiNERContextExtractor
+        _EXTRACTOR_CACHE["ex"] = GLiNERContextExtractor()
+    except Exception:
+        _EXTRACTOR_CACHE["ex"] = _FAILED_EXTRACTOR
+    return _EXTRACTOR_CACHE["ex"]

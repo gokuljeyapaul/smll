@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S2",
+  "current_slice": "S3",
   "state": "READY_FOR_MERGE",
   "last_verified_merged_pr": {
-    "slice": "S1",
-    "url": "https://github.com/gokuljeyapaul/smll/pull/2",
-    "merge_sha": "c206f3247357b7128b71eee59a83737f6d0940b9"
+    "slice": "S2",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/3",
+    "merge_sha": "76794ee5ece42fb73bf5c9b1a272625dd562e34d"
   },
   "slices": {
     "S0": {
@@ -148,13 +148,48 @@
       "demo_command": "see docs/evidence/S2/e2e.log",
       "pr": {
         "branch": "feature/coaching-privacy-pipeline/S2-purpose-policies",
+        "url": "https://github.com/gokuljeyapaul/smll/pull/3",
+        "state": "MERGED",
+        "merge_sha": "76794ee5ece42fb73bf5c9b1a272625dd562e34d"
+      }
+    },
+    "S3": {
+      "status": "PASS",
+      "scope": "Cross-turn contextual clue detection: real offline GLiNER Medium v2.1 + deterministic combination rules",
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit/test_s3_unit.py tests/integration/test_s3_gliner.py tests/e2e/test_s3_e2e.py -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S3/red.log",
+        "expected_failure": "missing GLiNER integration, context rules, fail-closed gates"
+      },
+      "green": {
+        "command": "pytest in 3 chunks: unit+negative (31), integration (9), e2e (8)",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S3/green.log"
+      },
+      "e2e": {
+        "command": ".venv/bin/python -m pytest tests/e2e/test_s3_e2e.py -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S3/e2e.log"
+      },
+      "privacy_negative": {
+        "evidence_path": "docs/evidence/S3/negative.log"
+      },
+      "offline": {
+        "evidence_path": "docs/evidence/S3/offline.log"
+      },
+      "summary_path": "docs/evidence/S3/summary.json",
+      "acceptance_ids": [
+        "A10",
+        "A12"
+      ],
+      "demo_command": "HF_HUB_OFFLINE=1 .venv/bin/python scripts/offline_gliner_proof.py",
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S3-contextual-gliner",
         "url": "PENDING",
         "state": "READY_FOR_MERGE",
         "merge_sha": "PENDING"
       }
-    },
-    "S3": {
-      "status": "NOT_STARTED"
     },
     "S4": {
       "status": "NOT_STARTED"
@@ -170,5 +205,5 @@
     }
   },
   "blockers": [],
-  "next_slice": "S3"
+  "next_slice": "S4"
 }
