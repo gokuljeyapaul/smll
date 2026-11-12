@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "slice": "S7",
+  "capability": "Batch adapters (JSON array / CSV directory) -> canonical transcripts -> same fail-closed pipeline",
+  "delivered_at": "2026-11-12T06:35:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64"
+  },
+  "commands": {
+    "red": {
+      "command": ".venv/bin/python -m pytest tests/unit/test_s7_unit.py tests/e2e/test_s7_e2e.py -q",
+      "exit_code": 1,
+      "result": "4 failed, 2 passed (behavioral, stubs importable)",
+      "evidence": "docs/evidence/S7/red.log"
+    },
+    "green": {
+      "command": "pytest in 3 chunks (unit+negative 55; integration 19; e2e 15)",
+      "exit_code": 0,
+      "result": "89 passed total, full S0-S7 regression",
+      "evidence": "docs/evidence/S7/green.log"
+    },
+    "e2e": {
+      "command": ".venv/bin/python -m pytest tests/e2e/test_s7_e2e.py tests/unit/test_s7_unit.py -q",
+      "exit_code": 0,
+      "result": "6 passed: batch dir in/out; malformed record fails closed, never partial-succeeds",
+      "evidence": "docs/evidence/S7/e2e.log"
+    }
+  },
+  "acceptance_ids": {
+    "A19": "PASS (complete CLI + batch surface: privacy-pipeline process batch JSONL/JSON/CSV; malformed records fail closed with nonzero exit; no silent partial processing)"
+  },
+  "limitations": [
+    "CSV adapter maps long-format (session_id, turn_index, speaker_role, utterance); richer CSV schemas need mapping config (future work).",
+    "Batch mode inherits PoC constraints: synthetic data only, no real-data claims."
+  ],
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/S7-batch-adapters",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  }
+}

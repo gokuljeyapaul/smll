@@ -1,0 +1,6 @@
+# S7 E2E: batch adapters through the pipeline — 2026-11-12T05:50:24Z
+# command: .venv/bin/python -m pytest tests/e2e/test_s7_e2e.py tests/unit/test_s7_unit.py -q
+
+......                                                                   [100%]
+6 passed in 67.01s (0:01:07)
+EXIT_CODE=0

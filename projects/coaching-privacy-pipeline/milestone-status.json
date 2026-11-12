@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S6",
+  "current_slice": "S7",
   "state": "READY_FOR_MERGE",
   "last_verified_merged_pr": {
-    "slice": "S5",
-    "url": "https://github.com/gokuljeyapaul/smll/pull/6",
-    "merge_sha": "5d7a42d029df678343e8f62b2f63db0a880ab395"
+    "slice": "S6",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/7",
+    "merge_sha": "e6ebc3fc9e04923309379261e25c4f94b8a0b8a9"
   },
   "slices": {
     "S0": {
@@ -304,15 +304,43 @@
       "demo_command": "bash scripts/audit.sh",
       "pr": {
         "branch": "feature/coaching-privacy-pipeline/S6-audit-batch",
+        "url": "https://github.com/gokuljeyapaul/smll/pull/7",
+        "state": "MERGED",
+        "merge_sha": "e6ebc3fc9e04923309379261e25c4f94b8a0b8a9"
+      }
+    },
+    "S7": {
+      "status": "PASS",
+      "scope": "Batch adapters (JSON/CSV) -> canonical transcripts -> fail-closed pipeline",
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit/test_s7_unit.py tests/e2e/test_s7_e2e.py -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S7/red.log",
+        "expected_failure": "missing batch adapters"
+      },
+      "green": {
+        "command": "pytest in 3 chunks: unit+negative (55), integration (19), e2e (15)",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S7/green.log"
+      },
+      "e2e": {
+        "command": ".venv/bin/python -m pytest tests/e2e/test_s7_e2e.py tests/unit/test_s7_unit.py -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S7/e2e.log"
+      },
+      "summary_path": "docs/evidence/S7/summary.json",
+      "acceptance_ids": [
+        "A19"
+      ],
+      "demo_command": "privacy-pipeline process --input <batch.jsonl|batch.json|batch.csv>",
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S7-batch-adapters",
         "url": "PENDING",
         "state": "READY_FOR_MERGE",
         "merge_sha": "PENDING"
       }
-    },
-    "S7": {
-      "status": "NOT_STARTED"
     }
   },
   "blockers": [],
-  "next_slice": "S7"
+  "next_slice": null
 }
