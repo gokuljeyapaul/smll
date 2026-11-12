@@ -1,0 +1,7 @@
+# S5 offline ASR proof — 2026-11-12T02:05:32Z
+# Method: scripts/offline_asr_proof.py — real faster-whisper tiny.en, CPU int8,
+# socket APIs monkeypatched to raise during load+transcription; HF_HUB_OFFLINE=1.
+
+transcribed: My name is Mira Solen, and I want to lead better meetings.
+OFFLINE_ASR_PROOF_OK
+EXIT_CODE=0

@@ -116,20 +116,31 @@ def process_transcript(
         extractor = _get_context_extractor()
         if extractor is _FAILED_EXTRACTOR:
             raise RuntimeError("gliner unavailable")
-        entities_by_turn = {}
-        context_spans_by_turn = {}
+        # Batch: one GLiNER inference call per session (all utterances joined),
+        # then map global spans back to per-turn offsets. Cuts CPU cost by
+        # the per-call overhead x utterance count.
+        sep = "\n"
+        offset_map = []  # (global_start, global_end, utterance_id, local_start)
+        parts = []
+        pos = 0
         for utt in transcript.utterances:
-            spans = extractor.extract(utt.text)
-            entities_by_turn[utt.id] = [
-                {"label": s.label, "value": s.value, "start": s.start,
-                 "end": s.end, "confidence": s.confidence, "detector": "gliner"}
-                for s in spans
-            ]
-            context_spans_by_turn[utt.id] = [
-                {"label": s.label, "value": s.value, "start": s.start,
-                 "end": s.end, "confidence": s.confidence, "detector": "gliner"}
-                for s in spans
-            ]
+            parts.append(utt.text)
+            offset_map.append((pos, pos + len(utt.text), utt.id))
+            pos += len(utt.text) + len(sep)
+        joined = sep.join(parts)
+        all_spans = extractor.extract(joined) if joined.strip() else []
+        entities_by_turn = {utt.id: [] for utt in transcript.utterances}
+        context_spans_by_turn = {utt.id: [] for utt in transcript.utterances}
+        for s in all_spans:
+            for g_start, g_end, utt_id in offset_map:
+                if s.start >= g_start and s.end <= g_end:
+                    local = s.start - g_start
+                    entry = {"label": s.label, "value": s.value, "start": local,
+                             "end": local + (s.end - s.start),
+                             "confidence": s.confidence, "detector": "gliner"}
+                    entities_by_turn[utt_id].append(entry)
+                    context_spans_by_turn[utt_id].append(entry)
+                    break
         context_risks = RuleBasedContextRiskEngine().assess(entities_by_turn)
     except Exception as exc:
         context_error = f"context_stage_error: {exc}"

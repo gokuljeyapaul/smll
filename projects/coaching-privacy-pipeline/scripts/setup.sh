@@ -11,6 +11,8 @@ python3 -m venv .venv
 .venv/bin/pip install --quiet "spacy>=3.7,<3.9" "presidio-analyzer" "presidio-anonymizer" "pydantic" "pyyaml" "pytest"
 # S3+: real GLiNER Medium v2.1 offline inference (CPU)
 .venv/bin/pip install --quiet "gliner==0.2.30" "transformers==4.57.6" "sentencepiece" "protobuf" "tiktoken"
+# S5: real offline ASR (faster-whisper tiny.en, CPU int8)
+.venv/bin/pip install --quiet "faster-whisper"
 .venv/bin/pip install --quiet -e .
 
 if ! .venv/bin/python -c "import spacy; spacy.load('en_core_web_sm')" 2>/dev/null; then
@@ -53,6 +55,15 @@ if [ ! -f models/gliner_medium-v2.1/model.safetensors ]; then
     sleep 10
   done
 fi
+
+# S5: pre-fetch the pinned Whisper tiny.en model during controlled setup
+# (the ASR adapter hard-blocks network at runtime; model must be local first)
+.venv/bin/python - <<'PYASR'
+from faster_whisper import WhisperModel
+m = WhisperModel("tiny.en", device="cpu", compute_type="int8",
+                 download_root="models/whisper-tiny.en")
+print("whisper tiny.en ready (local cache: models/whisper-tiny.en)")
+PYASR
 
 # Patch cached tokenizer_config with explicit class (avoids tiktoken misroute)
 .venv/bin/python - <<'PYFIX'

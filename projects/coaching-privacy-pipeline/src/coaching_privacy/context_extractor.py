@@ -73,6 +73,16 @@ class GLiNERContextExtractor:
         socket.socket = _Blocked
         os.environ["HF_HUB_OFFLINE"] = "1"  # never resolve remote models
         try:
+            import os as _os
+            ncpu = _os.cpu_count() or 1
+            if ncpu > 4:
+                # Thread oversubscription on shared hosts makes CPU inference
+                # ~20x slower; cap torch at 4 threads (measured).
+                try:
+                    import torch
+                    torch.set_num_threads(4)
+                except Exception:
+                    pass
             from gliner import GLiNER
             self._model = GLiNER.from_pretrained(
                 self.model_path, local_files_only=True

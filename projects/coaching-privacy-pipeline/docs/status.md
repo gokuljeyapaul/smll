@@ -20,8 +20,8 @@
 | S1 | Generate → process → evaluate synthetic sessions | PASS, MERGED | PR [#2](https://github.com/gokuljeyapaul/smll/pull/2), squash SHA `c206f3247357b7128b71eee59a83737f6d0940b9`, CI green | [evidence/S1/](evidence/S1/) | 29 tests green, 25-session demo 0 leaks |
 | S2 | Purpose-specific privacy transformations | PASS, MERGED | PR [#3](https://github.com/gokuljeyapaul/smll/pull/3), squash SHA `76794ee5ece42fb73bf5c9b1a272625dd562e34d`, CI green | [evidence/S2/](evidence/S2/) | 38 tests green incl. two-purpose E2E |
 | S3 | Contextual cross-turn GLiNER risk detection | PASS, MERGED | PR [#4](https://github.com/gokuljeyapaul/smll/pull/4), squash SHA `0f1e59584e2660495277570904ed8ec848f25b52`, CI green | [evidence/S3/](evidence/S3/) | 48-test regression green; offline GLiNER proof |
-| S4 | Cross-session identity linkage and fail-closed decisions | PASS (PR open) | `feature/coaching-privacy-pipeline/S4-cross-session-linkage`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S4/](evidence/S4/) | 63-test regression green; attack demo: top-1 rank-1 vs 0.02 chance |
-| S5 | Offline synthetic audio → transcription → same privacy pipeline | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S4 | Cross-session identity linkage and fail-closed decisions | PASS, MERGED | PR [#5](https://github.com/gokuljeyapaul/smll/pull/5), squash SHA `8f326d531a6e773c91573e02bf411098f8edae16`, CI green | [evidence/S4/](evidence/S4/) | 63-test regression green; attack demo: top-1 rank-1 vs 0.02 chance |
+| S5 | Synthetic WAV → real offline ASR → same pipeline | PASS (PR open) | `feature/coaching-privacy-pipeline/S5-synthetic-audio`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S5/](evidence/S5/) | 75-test regression green; offline ASR proof |
 | S6 | One-command reproducible evaluation and audit | NOT_STARTED | NOT_OPENED | None | pending tests |
 | S7 | Batch processing with production-shaped adapters | NOT_STARTED | NOT_OPENED | None | pending tests |
 
@@ -43,7 +43,7 @@
 | A10 | P0 | PASS | [evidence/S3/e2e.log](evidence/S3/e2e.log) (cross-turn combination -> REVIEW_REQUIRED; single clue/benign not overflagged) |
 | A11 | P0 | PASS | [evidence/S4/e2e.log](evidence/S4/e2e.log) (linked sessions -> MULTI_SESSION_LINK -> combined REVIEW; benign negatives usable) |
 | A12 | P0 | PASS | [evidence/S3/offline.log](evidence/S3/offline.log) (pinned GLiNER fully offline; malformed span/language fail closed; injection inert) |
-| A13 | P0 | NOT_RUN | None |
+| A13 | P0 | PASS | [evidence/S5/offline.log](evidence/S5/offline.log) (real faster-whisper tiny.en, offline, uncertainty -> REVIEW, fail-closed inputs) |
 | A14 | P0 | PASS | [evidence/S4/negative.log](evidence/S4/negative.log) (validator crash -> FAILED; transform-skip variant caught by independent re-scan) |
 | A15 | P0 | PASS | [evidence/S0/negative.log](evidence/S0/negative.log) (validator/detector unavailable → FAILED) |
 | A16 | P0 | PASS (scoped rubric) | [evidence/S2/negative.log](evidence/S2/negative.log) (mutant flagged; missing fact cannot silently pass) |

@@ -1,0 +1,6 @@
+# S5 negative tests — 2026-11-12T02:05:24Z
+# command: .venv/bin/python -m pytest tests/negative/test_s5_negative.py -q
+
+...                                                                      [100%]
+3 passed in 0.12s
+EXIT_CODE=0

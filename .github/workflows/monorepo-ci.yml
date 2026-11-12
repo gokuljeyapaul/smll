@@ -19,5 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install system TTS dependencies (espeak-ng for synthetic audio fixtures)
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng
       - name: Detect changed projects and run their setup/test/demo/verify
         run: python3 .github/scripts/verify_changed_projects.py
