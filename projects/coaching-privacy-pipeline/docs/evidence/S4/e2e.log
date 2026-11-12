@@ -1,0 +1,6 @@
+# S4 E2E: linked sessions -> combined risk; benign control usable — 2026-11-12T01:47:06Z
+# command: .venv/bin/python -m pytest tests/e2e/test_s4_e2e.py -q
+
+..                                                                       [100%]
+2 passed in 56.24s
+EXIT_CODE=0

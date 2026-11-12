@@ -1,0 +1,259 @@
+# S4 RED phase — 2026-11-12T01:33:03Z
+# command: .venv/bin/python -m pytest tests/unit/test_s4_unit.py tests/integration/test_s4_attack.py tests/e2e/test_s4_e2e.py tests/negative/test_s4_negative.py -q
+# stubs importable; failures are behavioral
+
+FFFFFFFF.F.....                                                          [100%]
+=================================== FAILURES ===================================
+_________________ test_linked_sessions_combination_is_flagged __________________
+
+    def test_linked_sessions_combination_is_flagged():
+        from coaching_privacy.linkage import CrossSessionLinker
+    
+        linker = CrossSessionLinker()
+        # Two individually low-risk sessions, same persona clues
+        session_entities = {
+            "s1": [{"label": "QUASI_IDENTIFIER.RARE_ROLE", "value": "Director of Lunar Logistics"},
+                   {"label": "QUASI_IDENTIFIER.EXACT_EMPLOYER", "value": "Auricwood Labs"}],
+            "s2": [{"label": "QUASI_IDENTIFIER.PRECISE_LOCATION", "value": "Sylvar City"},
+                   {"label": "QUASI_IDENTIFIER.UNIQUE_ACHIEVEMENT", "value": "Lantern Award"}],
+        }
+>       risks = linker.assess_sessions(session_entities)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s4_unit.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.linkage.CrossSessionLinker object at 0x7875f5938e10>
+session_entities = {'s1': [{'label': 'QUASI_IDENTIFIER.RARE_ROLE', 'value': 'Director of Lunar Logistics'}, {'label': 'QUASI_IDENTIFIER.E...RECISE_LOCATION', 'value': 'Sylvar City'}, {'label': 'QUASI_IDENTIFIER.UNIQUE_ACHIEVEMENT', 'value': 'Lantern Award'}]}
+
+    def assess_sessions(self, session_entities):
+>       raise NotImplementedError("cross-session linkage not implemented")
+E       NotImplementedError: cross-session linkage not implemented
+
+src/coaching_privacy/linkage.py:4: NotImplementedError
+______________________ test_unrelated_sessions_not_linked ______________________
+
+    def test_unrelated_sessions_not_linked():
+        from coaching_privacy.linkage import CrossSessionLinker
+    
+        linker = CrossSessionLinker()
+        session_entities = {
+            "s1": [{"label": "QUASI_IDENTIFIER.RARE_ROLE", "value": "accountant"}],
+            "s2": [{"label": "QUASI_IDENTIFIER.PRECISE_LOCATION", "value": "Northgate"}],
+        }
+>       risks = linker.assess_sessions(session_entities)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s4_unit.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.linkage.CrossSessionLinker object at 0x7875f596ed50>
+session_entities = {'s1': [{'label': 'QUASI_IDENTIFIER.RARE_ROLE', 'value': 'accountant'}], 's2': [{'label': 'QUASI_IDENTIFIER.PRECISE_LOCATION', 'value': 'Northgate'}]}
+
+    def assess_sessions(self, session_entities):
+>       raise NotImplementedError("cross-session linkage not implemented")
+E       NotImplementedError: cross-session linkage not implemented
+
+src/coaching_privacy/linkage.py:4: NotImplementedError
+_________________ test_release_gate_blocks_linked_combination __________________
+
+    def test_release_gate_blocks_linked_combination():
+        from coaching_privacy.linkage import ReleaseGate
+    
+        gate = ReleaseGate()
+>       decision = gate.gate(
+            per_session_decisions={"s1": "RELEASE_CANDIDATE", "s2": "RELEASE_CANDIDATE"},
+            linkage_risks=[{"code": "MULTI_SESSION_LINK", "sessions": ["s1", "s2"]}],
+        )
+
+tests/unit/test_s4_unit.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.linkage.ReleaseGate object at 0x7875f5978e90>
+per_session_decisions = {'s1': 'RELEASE_CANDIDATE', 's2': 'RELEASE_CANDIDATE'}
+linkage_risks = [{'code': 'MULTI_SESSION_LINK', 'sessions': ['s1', 's2']}]
+
+    def gate(self, per_session_decisions, linkage_risks):
+>       raise NotImplementedError("release gate not implemented")
+E       NotImplementedError: release gate not implemented
+
+src/coaching_privacy/linkage.py:9: NotImplementedError
+___________________ test_release_gate_passes_unlinked_benign ___________________
+
+    def test_release_gate_passes_unlinked_benign():
+        from coaching_privacy.linkage import ReleaseGate
+    
+        gate = ReleaseGate()
+>       decision = gate.gate(
+            per_session_decisions={"s1": "RELEASE_CANDIDATE", "s2": "RELEASE_CANDIDATE"},
+            linkage_risks=[],
+        )
+
+tests/unit/test_s4_unit.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.linkage.ReleaseGate object at 0x7875f5771c10>
+per_session_decisions = {'s1': 'RELEASE_CANDIDATE', 's2': 'RELEASE_CANDIDATE'}
+linkage_risks = []
+
+    def gate(self, per_session_decisions, linkage_risks):
+>       raise NotImplementedError("release gate not implemented")
+E       NotImplementedError: release gate not implemented
+
+src/coaching_privacy/linkage.py:9: NotImplementedError
+_________________ test_failed_session_never_promoted_by_group __________________
+
+    def test_failed_session_never_promoted_by_group():
+        from coaching_privacy.linkage import ReleaseGate
+    
+        gate = ReleaseGate()
+>       decision = gate.gate(
+            per_session_decisions={"s1": "FAILED", "s2": "RELEASE_CANDIDATE"},
+            linkage_risks=[],
+        )
+
+tests/unit/test_s4_unit.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.linkage.ReleaseGate object at 0x7875f5956090>
+per_session_decisions = {'s1': 'FAILED', 's2': 'RELEASE_CANDIDATE'}
+linkage_risks = []
+
+    def gate(self, per_session_decisions, linkage_risks):
+>       raise NotImplementedError("release gate not implemented")
+E       NotImplementedError: release gate not implemented
+
+src/coaching_privacy/linkage.py:9: NotImplementedError
+_______________ test_attack_simulation_reports_rank_and_baseline _______________
+
+    def test_attack_simulation_reports_rank_and_baseline():
+        from coaching_privacy.attack import AttackSimulator
+    
+        sim = AttackSimulator()
+>       result = sim.run(
+            directory=_directory(),
+            sanitized_clues=_sanitized_clues(),
+            true_subject_id="D-1",
+        )
+
+tests/integration/test_s4_attack.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.attack.AttackSimulator object at 0x7875f57734d0>
+directory = [{'subject_id': 'D-1', 'full_name': 'Mira Solen', 'occupation': 'Director of Lunar Logistics', 'place_or_company': 'Sy...}, {'subject_id': 'D-5', 'full_name': 'Lena Lindqvist', 'occupation': 'nurse', 'place_or_company': 'Fern Hollow', ...}]
+sanitized_clues = {'occupation': 'Director of Lunar Logistics', 'place': 'Sylvar City'}
+true_subject_id = 'D-1'
+
+    def run(self, directory, sanitized_clues, true_subject_id):
+>       raise NotImplementedError("attack simulation not implemented")
+E       NotImplementedError: attack simulation not implemented
+
+src/coaching_privacy/attack.py:5: NotImplementedError
+_______________________ test_attack_abstains_on_no_clues _______________________
+
+    def test_attack_abstains_on_no_clues():
+        from coaching_privacy.attack import AttackSimulator
+    
+        sim = AttackSimulator()
+>       result = sim.run(directory=_directory(), sanitized_clues={}, true_subject_id="D-1")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_s4_attack.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.attack.AttackSimulator object at 0x7875f575cbd0>
+directory = [{'subject_id': 'D-1', 'full_name': 'Mira Solen', 'occupation': 'Director of Lunar Logistics', 'place_or_company': 'Sy...}, {'subject_id': 'D-5', 'full_name': 'Lena Lindqvist', 'occupation': 'nurse', 'place_or_company': 'Fern Hollow', ...}]
+sanitized_clues = {}, true_subject_id = 'D-1'
+
+    def run(self, directory, sanitized_clues, true_subject_id):
+>       raise NotImplementedError("attack simulation not implemented")
+E       NotImplementedError: attack simulation not implemented
+
+src/coaching_privacy/attack.py:5: NotImplementedError
+______________________ test_attack_never_uses_gold_labels ______________________
+
+    def test_attack_never_uses_gold_labels():
+        """The simulator receives only sanitized-output clues + evaluator directory,
+        never runtime gold labels; its API must reject gold-bearing input."""
+        from coaching_privacy.attack import AttackSimulator
+    
+        sim = AttackSimulator()
+        try:
+>           sim.run(
+                directory=_directory(),
+                sanitized_clues={"gold_spans": ["Mira Solen"]},  # gold leakage attempt
+                true_subject_id="D-1",
+            )
+
+tests/integration/test_s4_attack.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.attack.AttackSimulator object at 0x7875f575fa50>
+directory = [{'subject_id': 'D-1', 'full_name': 'Mira Solen', 'occupation': 'Director of Lunar Logistics', 'place_or_company': 'Sy...}, {'subject_id': 'D-5', 'full_name': 'Lena Lindqvist', 'occupation': 'nurse', 'place_or_company': 'Fern Hollow', ...}]
+sanitized_clues = {'gold_spans': ['Mira Solen']}, true_subject_id = 'D-1'
+
+    def run(self, directory, sanitized_clues, true_subject_id):
+>       raise NotImplementedError("attack simulation not implemented")
+E       NotImplementedError: attack simulation not implemented
+
+src/coaching_privacy/attack.py:5: NotImplementedError
+____________________ test_linked_sessions_combined_risk_e2e ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-45/test_linked_sessions_combined_0')
+
+    def test_linked_sessions_combined_risk_e2e(tmp_path):
+        # Session A: rare role only; Session B: location + achievement (same persona path)
+        a = _session("s4-A", [_utt(1, "S2", "Years ago I worked as a Director of Lunar Logistics before moving into coaching.")])
+        b = _session("s4-B", [_utt(1, "S2", "I live near Sylvar City and won the Lantern Award last April.")])
+        inp = tmp_path / "linked.jsonl"
+        inp.write_text(json.dumps(a) + "\n" + json.dumps(b) + "\n")
+        out = tmp_path / "out"
+        r = subprocess.run(
+            [str(VENV_BIN / "privacy-pipeline"), "process",
+             "--input", str(inp), "--policy", "internal_coaching_analysis",
+             "--output", str(out)],
+            capture_output=True, text=True,
+        )
+        assert r.returncode == 0, r.stderr
+        # run the cross-session assessment over both processed sessions
+        from coaching_privacy.linkage import CrossSessionLinker, ReleaseGate
+        reports = {}
+        for sid in ("s4-A", "s4-B"):
+            reports[sid] = json.loads((out / sid / "validation_report.json").read_text())
+        entities = {
+            sid: [
+                {"label": a["label"], "value": a.get("value", "")}
+                for a in rep.get("annotations", [])
+            ] + [
+                {"label": cr_label, "value": ""}
+                for cr in rep.get("context_risks", [])
+                for cr_label in cr.get("labels", [])
+            ]
+            for sid, rep in reports.items()
+        }
+>       risks = CrossSessionLinker().assess_sessions(entities)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_s4_e2e.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.linkage.CrossSessionLinker object at 0x7875f579c250>
+session_entities = {'s4-A': [{'label': 'DIRECT_PII.DATE_OF_BIRTH', 'value': ''}, {'label': 'QUASI_IDENTIFIER.EXACT_EMPLOYER', 'value': ''...el': 'QUASI_IDENTIFIER.PRECISE_LOCATION', 'value': ''}, {'label': 'QUASI_IDENTIFIER.UNIQUE_ACHIEVEMENT', 'value': ''}]}
+
+    def assess_sessions(self, session_entities):
+>       raise NotImplementedError("cross-session linkage not implemented")
+E       NotImplementedError: cross-session linkage not implemented
+
+src/coaching_privacy/linkage.py:4: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s4_unit.py::test_linked_sessions_combination_is_flagged
+FAILED tests/unit/test_s4_unit.py::test_unrelated_sessions_not_linked - NotIm...
+FAILED tests/unit/test_s4_unit.py::test_release_gate_blocks_linked_combination
+FAILED tests/unit/test_s4_unit.py::test_release_gate_passes_unlinked_benign
+FAILED tests/unit/test_s4_unit.py::test_failed_session_never_promoted_by_group
+FAILED tests/integration/test_s4_attack.py::test_attack_simulation_reports_rank_and_baseline
+FAILED tests/integration/test_s4_attack.py::test_attack_abstains_on_no_clues
+FAILED tests/integration/test_s4_attack.py::test_attack_never_uses_gold_labels
+FAILED tests/e2e/test_s4_e2e.py::test_linked_sessions_combined_risk_e2e - Not...
+9 failed, 6 passed in 67.14s (0:01:07)
+EXIT_CODE=1

@@ -117,9 +117,15 @@ def process_transcript(
         if extractor is _FAILED_EXTRACTOR:
             raise RuntimeError("gliner unavailable")
         entities_by_turn = {}
+        context_spans_by_turn = {}
         for utt in transcript.utterances:
             spans = extractor.extract(utt.text)
             entities_by_turn[utt.id] = [
+                {"label": s.label, "value": s.value, "start": s.start,
+                 "end": s.end, "confidence": s.confidence, "detector": "gliner"}
+                for s in spans
+            ]
+            context_spans_by_turn[utt.id] = [
                 {"label": s.label, "value": s.value, "start": s.start,
                  "end": s.end, "confidence": s.confidence, "detector": "gliner"}
                 for s in spans
@@ -149,6 +155,7 @@ def process_transcript(
         "annotations": annotations,
         "residual_pii": validation.get("residual_pii", []),
         "context_risks": context_risks,
+        "context_spans": context_spans_by_turn if context_error is None else {},
         "context_stage_error": context_error,
         "cross_session_risks": [],  # implemented from S4
         "semantic_fidelity": {"turn_count_preserved": True},  # scoped checks from S2

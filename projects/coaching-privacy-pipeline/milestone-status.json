@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S3",
+  "current_slice": "S4",
   "state": "READY_FOR_MERGE",
   "last_verified_merged_pr": {
-    "slice": "S2",
-    "url": "https://github.com/gokuljeyapaul/smll/pull/3",
-    "merge_sha": "76794ee5ece42fb73bf5c9b1a272625dd562e34d"
+    "slice": "S3",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/4",
+    "merge_sha": "0f1e59584e2660495277570904ed8ec848f25b52"
   },
   "slices": {
     "S0": {
@@ -186,13 +186,51 @@
       "demo_command": "HF_HUB_OFFLINE=1 .venv/bin/python scripts/offline_gliner_proof.py",
       "pr": {
         "branch": "feature/coaching-privacy-pipeline/S3-contextual-gliner",
+        "url": "https://github.com/gokuljeyapaul/smll/pull/4",
+        "state": "MERGED",
+        "merge_sha": "0f1e59584e2660495277570904ed8ec848f25b52"
+      }
+    },
+    "S4": {
+      "status": "PASS",
+      "scope": "Cross-session identity linkage detection + fictional closed-world attack simulation",
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit/test_s4_unit.py tests/integration/test_s4_attack.py tests/e2e/test_s4_e2e.py tests/negative/test_s4_negative.py -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S4/red.log",
+        "expected_failure": "missing linkage, release gate, attack simulation behavior"
+      },
+      "green": {
+        "command": "pytest in 3 chunks: unit+negative (40), integration (13), e2e (10)",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S4/green.log"
+      },
+      "e2e": {
+        "command": ".venv/bin/python -m pytest tests/e2e/test_s4_e2e.py -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S4/e2e.log"
+      },
+      "privacy_negative": {
+        "evidence_path": "docs/evidence/S4/negative.log"
+      },
+      "attack_demo": {
+        "evidence_path": "docs/evidence/S4/attack-demo.log"
+      },
+      "summary_path": "docs/evidence/S4/summary.json",
+      "acceptance_ids": [
+        "A11",
+        "A14",
+        "A17",
+        "A18",
+        "A20"
+      ],
+      "demo_command": ".venv/bin/python scripts/attack_demo.py",
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S4-cross-session-linkage",
         "url": "PENDING",
         "state": "READY_FOR_MERGE",
         "merge_sha": "PENDING"
       }
-    },
-    "S4": {
-      "status": "NOT_STARTED"
     },
     "S5": {
       "status": "NOT_STARTED"
@@ -205,5 +243,5 @@
     }
   },
   "blockers": [],
-  "next_slice": "S4"
+  "next_slice": "S5"
 }

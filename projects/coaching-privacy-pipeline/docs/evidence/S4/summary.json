@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "slice": "S4",
+  "capability": "Cross-session identity linkage detection + fictional closed-world attack simulation with honest metrics",
+  "delivered_at": "2026-11-12T01:50:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64",
+    "models": {
+      "detector": "Microsoft Presidio AnalyzerEngine (real)",
+      "nlp_backend": "spaCy en_core_web_sm",
+      "context_extractor": "urchade/gliner_medium-v2.1 (Apache-2.0), local, offline only"
+    }
+  },
+  "commands": {
+    "red": {"command": ".venv/bin/python -m pytest tests/unit/test_s4_unit.py tests/integration/test_s4_attack.py tests/e2e/test_s4_e2e.py tests/negative/test_s4_negative.py -q", "exit_code": 1, "result": "9 failed, 6 passed (behavioral, stubs importable)", "evidence": "docs/evidence/S4/red.log"},
+    "green": {"command": "pytest in 3 chunks (unit+negative 40 passed; integration 13 passed; e2e 10 passed)", "exit_code": 0, "result": "63 passed total, full S0-S4 regression", "evidence": "docs/evidence/S4/green.log"},
+    "e2e": {"command": ".venv/bin/python -m pytest tests/e2e/test_s4_e2e.py -q", "exit_code": 0, "result": "2 passed: linked sessions -> combined REVIEW; benign unrelated sessions usable", "evidence": "docs/evidence/S4/e2e.log"},
+    "negative": {"command": ".venv/bin/python -m pytest tests/negative/test_s4_negative.py -q", "exit_code": 0, "result": "4 passed: validator failure -> FAILED; leak re-check; no runtime directory access; closed-world linker API", "evidence": "docs/evidence/S4/negative.log"},
+    "attack_demo": {"command": ".venv/bin/python scripts/attack_demo.py", "exit_code": 0, "result": "50-entry directory: top1_match=True, true_rank=1, chance_baseline=0.02; abstention case honest", "evidence": "docs/evidence/S4/attack-demo.log"}
+  },
+  "acceptance_ids": {
+    "A11": "PASS (linked persona sessions -> MULTI_SESSION_LINK -> combined REVIEW; benign negatives counted and not over-redacted)",
+    "A14": "PASS (validator crash -> FAILED; transform-skip variant caught by independent leak re-scan)",
+    "A17": "PASS (four decision states observed across suites: RELEASE_CANDIDATE, REVIEW_REQUIRED, BLOCKED, FAILED)",
+    "A18": "PASS (closed fictional directory: top-1, true rank, abstain, chance baseline, documented assumptions, denominators; no real-person search)",
+    "A20": "PARTIAL (attack metrics reported with denominators; full provenance fields in S6)"
+  },
+  "measured_metrics": {
+    "attack_simulation": {"directory_size": 50, "top1_match": true, "true_rank": 1, "chance_baseline": 0.02, "abstain_case": "abstained=true, top1=false"}
+  },
+  "limitations": [
+    "Linkage scoring is deterministic exact-string overlap (upper bound on a naive attacker); more sophisticated attackers modeled in later hardening.",
+    "MULTI_SESSION_LINK thresholds (2 sessions x 2 categories) are fixed; calibration on generated corpora is S6 scope.",
+    "The attack simulation is fictional and closed-world; it is not a claim about real-world re-identification resistance."
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/S4-cross-session-linkage", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"}
+}
