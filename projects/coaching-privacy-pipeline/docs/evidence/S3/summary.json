@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "slice": "S3",
+  "capability": "Cross-turn contextual clue detection: real offline GLiNER Medium v2.1 span extraction + deterministic combination rules -> REVIEW_REQUIRED/BLOCKED",
+  "delivered_at": "2026-11-12T01:10:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64",
+    "models": {
+      "detector": "Microsoft Presidio AnalyzerEngine (real)",
+      "nlp_backend": "spaCy en_core_web_sm",
+      "context_extractor": "urchade/gliner_medium-v2.1 (Apache-2.0), local self-contained dir, offline only"
+    }
+  },
+  "model_manifest": {
+    "gliner_weights_sha256": "922214c0c60f7835bb5c00f52ad1769d38518d5183f85de7bc03893a8403c023",
+    "gliner_config_sha256": "a8f3c2ecc57deb70077be6940962aa60e82d861a153a5cd2839b91795968ae7d",
+    "source": "https://huggingface.co/urchade/gliner_medium-v2.1",
+    "local_only": true,
+    "backbone_tokenizer": "microsoft/deberta-v3-base spm.model (vendored into checkpoint dir)"
+  },
+  "commands": {
+    "red": {"command": ".venv/bin/python -m pytest tests/unit/test_s3_unit.py tests/integration/test_s3_gliner.py tests/e2e/test_s3_e2e.py -q", "exit_code": 1, "result": "10 failed (behavioral, stubs importable)", "evidence": "docs/evidence/S3/red.log"},
+    "green": {"command": "pytest in 3 chunks (unit+negative 31 passed; integration 9 passed; e2e 8 passed)", "exit_code": 0, "result": "48 passed total, full S0-S3 regression", "evidence": "docs/evidence/S3/green.log"},
+    "e2e": {"command": ".venv/bin/python -m pytest tests/e2e/test_s3_e2e.py -q", "exit_code": 0, "result": "2 passed: cross-turn combination -> REVIEW; GLiNER unavailable -> FAILED", "evidence": "docs/evidence/S3/e2e.log"},
+    "negative": {"command": ".venv/bin/python -m pytest tests/unit/test_s3_unit.py -q", "exit_code": 0, "result": "4 passed: single clue not overflagged; benign no-risk; malformed span fail-closed; unsupported language fail-closed", "evidence": "docs/evidence/S3/negative.log"},
+    "offline": {"command": "HF_HUB_OFFLINE=1 .venv/bin/python scripts/offline_gliner_proof.py (sockets blocked)", "exit_code": 0, "result": "employer/location/award/team-size spans detected fully offline", "evidence": "docs/evidence/S3/offline.log"}
+  },
+  "acceptance_ids": {
+    "A10": "PASS (rare role + location + achievement across turns -> COMBINATION_OF_CLUES -> REVIEW_REQUIRED; single clue and benign transcripts not overflagged)",
+    "A12": "PASS (pinned local GLiNER executed with sockets blocked and HF_HUB_OFFLINE=1; malformed span raises; unsupported language fails closed; transcript instructions treated as inert text)"
+  },
+  "limitations": [
+    "GLiNER threshold 0.4 fixed for determinism; false positive/negative rates on generated corpora not yet benchmarked (S6 audit).",
+    "Context rules cover a fixed combination set (role/location/employer/team/achievement/date); additional patterns expand in later slices.",
+    "CPU inference cost: ~40s model load per process + ~2s per session utterance set; batch caching added but runtime is the main S6 optimization target.",
+    "GLiNER is a span extractor only; it does not infer protected characteristics and its output is never treated as instruction."
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/S3-contextual-gliner", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"}
+}

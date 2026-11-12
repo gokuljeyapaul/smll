@@ -1,0 +1,245 @@
+# S3 RED phase — 2026-11-11T22:39:40Z
+# command: .venv/bin/python -m pytest tests/unit/test_s3_unit.py tests/integration/test_s3_gliner.py tests/e2e/test_s3_e2e.py -q
+# stubs importable; failures are behavioral (missing GLiNER integration, risk rules, fail-closed gates)
+
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+__________________ test_rare_combination_flagged_across_turns __________________
+
+    def test_rare_combination_flagged_across_turns():
+        from coaching_privacy.context import RuleBasedContextRiskEngine
+    
+        engine = RuleBasedContextRiskEngine()
+        entities_by_turn = {
+            "u1": [{"label": "QUASI_IDENTIFIER.RARE_ROLE", "value": "Director of Lunar Logistics",
+                    "start": 14, "end": 41, "confidence": 0.54, "detector": "gliner"}],
+            "u2": [{"label": "QUASI_IDENTIFIER.PRECISE_LOCATION", "value": "Sylvar City",
+                    "start": 5, "end": 16, "confidence": 0.9, "detector": "gliner"}],
+            "u3": [{"label": "QUASI_IDENTIFIER.UNIQUE_ACHIEVEMENT", "value": "Lantern Award",
+                    "start": 7, "end": 20, "confidence": 0.8, "detector": "gliner"}],
+        }
+>       risks = engine.assess(entities_by_turn)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s3_unit.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.context.RuleBasedContextRiskEngine object at 0x7b3a29e50d10>
+entities_by_turn = {'u1': [{'label': 'QUASI_IDENTIFIER.RARE_ROLE', 'value': 'Director of Lunar Logistics', 'start': 14, 'end': 41, ...}],... ...}], 'u3': [{'label': 'QUASI_IDENTIFIER.UNIQUE_ACHIEVEMENT', 'value': 'Lantern Award', 'start': 7, 'end': 20, ...}]}
+
+    def assess(self, entities_by_turn):
+>       raise NotImplementedError("context risk rules not implemented")
+E       NotImplementedError: context risk rules not implemented
+
+src/coaching_privacy/context.py:4: NotImplementedError
+_____________________ test_single_clue_is_not_overflagged ______________________
+
+    def test_single_clue_is_not_overflagged():
+        from coaching_privacy.context import RuleBasedContextRiskEngine
+    
+        engine = RuleBasedContextRiskEngine()
+        entities_by_turn = {
+            "u1": [{"label": "QUASI_IDENTIFIER.RARE_ROLE", "value": "accountant",
+                    "start": 4, "end": 14, "confidence": 0.6, "detector": "gliner"}],
+        }
+>       risks = engine.assess(entities_by_turn)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s3_unit.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.context.RuleBasedContextRiskEngine object at 0x7b3a29e72b10>
+entities_by_turn = {'u1': [{'label': 'QUASI_IDENTIFIER.RARE_ROLE', 'value': 'accountant', 'start': 4, 'end': 14, ...}]}
+
+    def assess(self, entities_by_turn):
+>       raise NotImplementedError("context risk rules not implemented")
+E       NotImplementedError: context risk rules not implemented
+
+src/coaching_privacy/context.py:4: NotImplementedError
+_________________ test_benign_transcript_has_no_context_risks __________________
+
+    def test_benign_transcript_has_no_context_risks():
+        from coaching_privacy.context import RuleBasedContextRiskEngine
+    
+        engine = RuleBasedContextRiskEngine()
+        entities_by_turn = {"u1": [], "u2": []}
+>       risks = engine.assess(entities_by_turn)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s3_unit.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.context.RuleBasedContextRiskEngine object at 0x7b3a29e9dad0>
+entities_by_turn = {'u1': [], 'u2': []}
+
+    def assess(self, entities_by_turn):
+>       raise NotImplementedError("context risk rules not implemented")
+E       NotImplementedError: context risk rules not implemented
+
+src/coaching_privacy/context.py:4: NotImplementedError
+______________________ test_unknown_language_fails_closed ______________________
+
+    def test_unknown_language_fails_closed():
+        """GLiNER runs on en only; unsupported language must route to review, not run."""
+        from coaching_privacy.context import assert_supported_language
+    
+        try:
+>           assert_supported_language("fr")
+
+tests/unit/test_s3_unit.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+language = 'fr'
+
+    def assert_supported_language(language):
+>       raise NotImplementedError("language gate not implemented")
+E       NotImplementedError: language gate not implemented
+
+src/coaching_privacy/context.py:8: NotImplementedError
+___________________ test_real_gliner_extracts_expected_spans ___________________
+
+    def test_real_gliner_extracts_expected_spans():
+>       extractor = _load_gliner()
+                    ^^^^^^^^^^^^^^
+
+tests/integration/test_s3_gliner.py:17: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_s3_gliner.py:13: in _load_gliner
+    return GLiNERContextExtractor(model_path=str(MODEL_PATH))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.context_extractor.GLiNERContextExtractor object at 0x7b3a29c7ead0>
+model_path = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1'
+
+    def __init__(self, model_path=None):
+>       raise NotImplementedError("GLiNER extraction not implemented")
+E       NotImplementedError: GLiNER extraction not implemented
+
+src/coaching_privacy/context_extractor.py:4: NotImplementedError
+________________ test_gliner_reports_model_id_and_runs_offline _________________
+
+    def test_gliner_reports_model_id_and_runs_offline():
+>       extractor = _load_gliner()
+                    ^^^^^^^^^^^^^^
+
+tests/integration/test_s3_gliner.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_s3_gliner.py:13: in _load_gliner
+    return GLiNERContextExtractor(model_path=str(MODEL_PATH))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.context_extractor.GLiNERContextExtractor object at 0x7b3a29e7ba50>
+model_path = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1'
+
+    def __init__(self, model_path=None):
+>       raise NotImplementedError("GLiNER extraction not implemented")
+E       NotImplementedError: GLiNER extraction not implemented
+
+src/coaching_privacy/context_extractor.py:4: NotImplementedError
+___________________ test_malformed_model_output_fails_closed ___________________
+
+    def test_malformed_model_output_fails_closed():
+        """A fake extractor returning malformed spans must raise, not pass through."""
+        from coaching_privacy.context_extractor import validate_span
+    
+        try:
+>           validate_span({"label": "employer", "start": 10, "end": 5, "text": "x"})
+
+tests/integration/test_s3_gliner.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+span = {'label': 'employer', 'start': 10, 'end': 5, 'text': 'x'}
+
+    def validate_span(span):
+>       raise NotImplementedError("span validation not implemented")
+E       NotImplementedError: span validation not implemented
+
+src/coaching_privacy/context_extractor.py:14: NotImplementedError
+_________________ test_transcript_instructions_never_executed __________________
+
+    def test_transcript_instructions_never_executed():
+        """Prompt-injection text is treated as inert content: extracted as spans
+        at most, never executed or followed."""
+>       extractor = _load_gliner()
+                    ^^^^^^^^^^^^^^
+
+tests/integration/test_s3_gliner.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_s3_gliner.py:13: in _load_gliner
+    return GLiNERContextExtractor(model_path=str(MODEL_PATH))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.context_extractor.GLiNERContextExtractor object at 0x7b3a29c93e90>
+model_path = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1'
+
+    def __init__(self, model_path=None):
+>       raise NotImplementedError("GLiNER extraction not implemented")
+E       NotImplementedError: GLiNER extraction not implemented
+
+src/coaching_privacy/context_extractor.py:4: NotImplementedError
+_________________ test_cross_turn_combination_routes_to_review _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-29/test_cross_turn_combination_ro0')
+
+    def test_cross_turn_combination_routes_to_review(tmp_path):
+        inp = _write_fixture(tmp_path)
+        out = tmp_path / "out"
+        r = subprocess.run(
+            [str(VENV_BIN / "privacy-pipeline"), "process",
+             "--input", str(inp), "--policy", "internal_coaching_analysis",
+             "--output", str(out)],
+            capture_output=True, text=True,
+        )
+        assert r.returncode == 0, r.stderr
+        report = json.loads((out / "s3-e2e" / "validation_report.json").read_text())
+        decision = json.loads((out / "s3-e2e" / "decision.json").read_text())
+        # The composite clue must be visible in the report
+>       assert report["context_risks"], "no context risks recorded"
+E       AssertionError: no context risks recorded
+E       assert []
+
+tests/e2e/test_s3_e2e.py:60: AssertionError
+_____________________ test_gliner_unavailable_fails_closed _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-29/test_gliner_unavailable_fails_0')
+
+    def test_gliner_unavailable_fails_closed(tmp_path):
+        """A pipeline run with a broken GLiNER path must fail closed (FAILED),
+        never silently skip contextual detection."""
+        inp = _write_fixture(tmp_path)
+        out = tmp_path / "out_fail"
+        env = {"PATH": "/usr/bin:/bin", "COACHING_GLINER_PATH": "/nonexistent/model",
+               "HOME": str(tmp_path)}
+        r = subprocess.run(
+            [str(VENV_BIN / "privacy-pipeline"), "process",
+             "--input", str(inp), "--policy", "internal_coaching_analysis",
+             "--output", str(out)],
+            capture_output=True, text=True, env=env,
+        )
+        # Either FAILED decision recorded or nonzero exit — never a silent success
+        decision_file = out / "s3-e2e" / "decision.json"
+        if r.returncode == 0:
+            decision = json.loads(decision_file.read_text())
+>           assert decision["decision"] == "FAILED"
+E           AssertionError: assert 'REVIEW_REQUIRED' == 'FAILED'
+E             
+E             - FAILED
+E             + REVIEW_REQUIRED
+
+tests/e2e/test_s3_e2e.py:83: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s3_unit.py::test_rare_combination_flagged_across_turns
+FAILED tests/unit/test_s3_unit.py::test_single_clue_is_not_overflagged - NotI...
+FAILED tests/unit/test_s3_unit.py::test_benign_transcript_has_no_context_risks
+FAILED tests/unit/test_s3_unit.py::test_unknown_language_fails_closed - NotIm...
+FAILED tests/integration/test_s3_gliner.py::test_real_gliner_extracts_expected_spans
+FAILED tests/integration/test_s3_gliner.py::test_gliner_reports_model_id_and_runs_offline
+FAILED tests/integration/test_s3_gliner.py::test_malformed_model_output_fails_closed
+FAILED tests/integration/test_s3_gliner.py::test_transcript_instructions_never_executed
+FAILED tests/e2e/test_s3_e2e.py::test_cross_turn_combination_routes_to_review
+FAILED tests/e2e/test_s3_e2e.py::test_gliner_unavailable_fails_closed - Asser...
+10 failed in 23.85s
+EXIT_CODE=1

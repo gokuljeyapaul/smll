@@ -1,0 +1,7 @@
+# S3 negative/fail-closed tests — 2026-11-12T01:05:01Z
+# command: .venv/bin/python -m pytest tests/unit/test_s3_unit.py -q
+# (malformed span fail-closed, benign non-overflag, unsupported language, injection-inert)
+
+....                                                                     [100%]
+4 passed in 0.02s
+EXIT_CODE=0

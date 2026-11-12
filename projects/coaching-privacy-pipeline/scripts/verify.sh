@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# Verify schemas, gate decisions, and evidence for the delivered slices (S0-aware).
+# Verify schemas, gate decisions, and evidence for the delivered slices (S3-aware).
+# Test suite runs in 3 chunks to bound wall-clock on CPU (GLiNER inference).
 set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
-.venv/bin/python -m pytest tests/unit tests/integration tests/e2e tests/negative -q
+echo "== chunk 1: unit + negative =="
+.venv/bin/python -m pytest tests/unit tests/negative -q
+echo "== chunk 2: integration =="
+.venv/bin/python -m pytest tests/integration -q
+echo "== chunk 3: e2e =="
+.venv/bin/python -m pytest tests/e2e -q
 .venv/bin/python - <<'PY'
 import json, pathlib
 root = pathlib.Path("artifacts/demo/results")
