@@ -1,0 +1,6 @@
+# S4 negative tests — 2026-11-12T01:48:03Z
+# command: .venv/bin/python -m pytest tests/negative/test_s4_negative.py -q
+
+....                                                                     [100%]
+4 passed in 0.05s
+EXIT_CODE=0

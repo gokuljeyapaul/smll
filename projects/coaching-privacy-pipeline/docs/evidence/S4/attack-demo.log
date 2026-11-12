@@ -1,0 +1,8 @@
+# S4 attack simulation demo (closed fictional world) — 2026-11-12T01:48:13Z
+# command: .venv/bin/python scripts/attack_demo.py
+
+directory_size: 50
+top1_match: True | true_rank: 1 | chance_baseline: 0.02
+abstain case -> abstained: True top1: False
+ATTACK_DEMO_OK
+EXIT_CODE=0

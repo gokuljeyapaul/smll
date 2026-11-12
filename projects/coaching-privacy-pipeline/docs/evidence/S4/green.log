@@ -1,0 +1,10 @@
+# S4 GREEN phase (full S0–S4 regression, chunked) — 2026-11-12T01:37:15Z
+== chunk 1: unit + negative ==
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+40 passed, 2 warnings in 27.71s
+== chunk 2: integration ==
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+13 passed, 4 warnings in 240.57s (0:04:00)
+== chunk 3: e2e ==
+..........                                                               [100%]
+10 passed in 296.73s (0:04:56)
