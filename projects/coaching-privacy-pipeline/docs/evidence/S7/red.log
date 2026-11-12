@@ -1,0 +1,115 @@
+# S7 RED phase — 2026-11-12T05:47:35Z
+# command: .venv/bin/python -m pytest tests/unit/test_s7_unit.py tests/e2e/test_s7_e2e.py -q
+# stubs importable; failures are behavioral
+
+FFFF..                                                                   [100%]
+=================================== FAILURES ===================================
+___________________________ test_json_array_adapter ____________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-78/test_json_array_adapter0')
+
+    def test_json_array_adapter(tmp_path):
+        from coaching_privacy.batch import JSONBatchAdapter
+    
+        arr = [_transcript("s1"), _transcript("s2")]
+        p = tmp_path / "batch.json"
+        p.write_text(json.dumps(arr))
+        adapter = JSONBatchAdapter()
+>       transcripts = list(adapter.read(str(p)))
+                           ^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s7_unit.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.batch.JSONBatchAdapter object at 0x7d6ab64fcb90>
+path = '/tmp/pytest-of-node/pytest-78/test_json_array_adapter0/batch.json'
+
+    def read(self, path):
+>       raise NotImplementedError("JSON batch adapter not implemented")
+E       NotImplementedError: JSON batch adapter not implemented
+
+src/coaching_privacy/batch.py:8: NotImplementedError
+_____________________ test_csv_adapter_flattens_utterances _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-78/test_csv_adapter_flattens_utte0')
+
+    def test_csv_adapter_flattens_utterances(tmp_path):
+        from coaching_privacy.batch import CSVBatchAdapter
+    
+        csv_content = (
+            "session_id,turn_index,speaker_role,utterance\n"
+            "csv-1,0,COACH,How can I help?\n"
+            "csv-1,1,CLIENT,I feel overwhelmed by my calendar.\n"
+        )
+        p = tmp_path / "batch.csv"
+        p.write_text(csv_content)
+>       adapter = CSVBatchAdapter(purpose="internal_coaching_analysis")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s7_unit.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.batch.CSVBatchAdapter object at 0x7d6ab651c310>
+purpose = 'internal_coaching_analysis'
+
+    def __init__(self, purpose="internal_coaching_analysis"):
+>       raise NotImplementedError("CSV batch adapter not implemented")
+E       NotImplementedError: CSV batch adapter not implemented
+
+src/coaching_privacy/batch.py:13: NotImplementedError
+______________________ test_malformed_batch_fails_closed _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-78/test_malformed_batch_fails_clo0')
+
+    def test_malformed_batch_fails_closed(tmp_path):
+        from coaching_privacy.batch import JSONBatchAdapter, BatchError
+    
+        p = tmp_path / "bad.json"
+        p.write_text(json.dumps([{"broken": True}]))
+        adapter = JSONBatchAdapter()
+        try:
+>           list(adapter.read(str(p)))
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s7_unit.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.batch.JSONBatchAdapter object at 0x7d6ab653f850>
+path = '/tmp/pytest-of-node/pytest-78/test_malformed_batch_fails_clo0/bad.json'
+
+    def read(self, path):
+>       raise NotImplementedError("JSON batch adapter not implemented")
+E       NotImplementedError: JSON batch adapter not implemented
+
+src/coaching_privacy/batch.py:8: NotImplementedError
+____________________ test_empty_batch_is_reported_not_error ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-78/test_empty_batch_is_reported_n0')
+
+    def test_empty_batch_is_reported_not_error(tmp_path):
+        from coaching_privacy.batch import JSONBatchAdapter
+    
+        p = tmp_path / "empty.json"
+        p.write_text("[]")
+        adapter = JSONBatchAdapter()
+>       assert list(adapter.read(str(p))) == []
+                    ^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s7_unit.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.batch.JSONBatchAdapter object at 0x7d6ab634b210>
+path = '/tmp/pytest-of-node/pytest-78/test_empty_batch_is_reported_n0/empty.json'
+
+    def read(self, path):
+>       raise NotImplementedError("JSON batch adapter not implemented")
+E       NotImplementedError: JSON batch adapter not implemented
+
+src/coaching_privacy/batch.py:8: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s7_unit.py::test_json_array_adapter - NotImplementedEr...
+FAILED tests/unit/test_s7_unit.py::test_csv_adapter_flattens_utterances - Not...
+FAILED tests/unit/test_s7_unit.py::test_malformed_batch_fails_closed - NotImp...
+FAILED tests/unit/test_s7_unit.py::test_empty_batch_is_reported_not_error - N...
+4 failed, 2 passed in 65.87s (0:01:05)
+EXIT_CODE=1
