@@ -56,6 +56,15 @@ if [ ! -f models/gliner_medium-v2.1/model.safetensors ]; then
   done
 fi
 
+# S5: pre-fetch the pinned Whisper tiny.en model during controlled setup
+# (the ASR adapter hard-blocks network at runtime; model must be local first)
+.venv/bin/python - <<'PYASR'
+from faster_whisper import WhisperModel
+m = WhisperModel("tiny.en", device="cpu", compute_type="int8",
+                 download_root="models/whisper-tiny.en")
+print("whisper tiny.en ready (local cache: models/whisper-tiny.en)")
+PYASR
+
 # Patch cached tokenizer_config with explicit class (avoids tiktoken misroute)
 .venv/bin/python - <<'PYFIX'
 import json, glob, pathlib
