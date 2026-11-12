@@ -1,0 +1,9 @@
+# S5 GREEN phase (full S0–S5 regression, chunked) — 2026-11-12T04:20:29Z
+# note: torch threads capped at 4 (thread oversubscription made CPU inference ~20x slower; measured 21s -> 1s per extract call)
+== chunk 1: unit + negative ==
+47 passed, 2 warnings in 41.34s
+== chunk 2: integration ==
+16 passed, 4 warnings in 352.84s
+== chunk 3: e2e ==
+12 passed, 2 warnings in 496.76s
+TOTAL: 47 + 16 + 12 = 75 passed; EXIT_CODE=0

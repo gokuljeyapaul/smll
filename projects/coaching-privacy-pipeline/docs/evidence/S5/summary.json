@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "slice": "S5",
+  "capability": "Synthetic WAV -> real offline ASR (faster-whisper tiny.en) -> canonical transcript -> same privacy pipeline",
+  "delivered_at": "2026-11-12T03:30:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64",
+    "models": {
+      "detector": "Microsoft Presidio AnalyzerEngine (real)",
+      "nlp_backend": "spaCy en_core_web_sm",
+      "context_extractor": "urchade/gliner_medium-v2.1 (Apache-2.0), local, offline only",
+      "asr": "faster-whisper tiny.en (CPU int8), local, offline only",
+      "tts_fixtures": "espeak-ng 1.51 (synthetic speech generation, test-only)"
+    }
+  },
+  "commands": {
+    "red": {
+      "command": ".venv/bin/python -m pytest tests/unit/test_s5_unit.py tests/integration/test_s5_asr.py tests/e2e/test_s5_e2e.py tests/negative/test_s5_negative.py -q",
+      "exit_code": 1,
+      "result": "12 failed (behavioral, stubs importable)",
+      "evidence": "docs/evidence/S5/red.log"
+    },
+    "green": {
+      "command": "pytest in 3 chunks (unit+negative 47; integration 16; e2e 12)",
+      "exit_code": 0,
+      "result": "75 passed total, full S0-S5 regression",
+      "evidence": "docs/evidence/S5/green.log"
+    },
+    "e2e": {
+      "command": ".venv/bin/python -m pytest tests/e2e/test_s5_e2e.py tests/integration/test_s5_asr.py -q",
+      "exit_code": 0,
+      "result": "5 passed: WAV->ASR->pipeline E2E; corrupt audio, missing model, traversal, oversize all fail closed",
+      "evidence": "docs/evidence/S5/e2e.log"
+    },
+    "negative": {
+      "command": ".venv/bin/python -m pytest tests/negative/test_s5_negative.py -q",
+      "exit_code": 0,
+      "result": "3 passed: ASR uncertainty -> REVIEW; traversal/oversize rejected",
+      "evidence": "docs/evidence/S5/negative.log"
+    },
+    "offline": {
+      "command": "HF_HUB_OFFLINE=1 .venv/bin/python scripts/offline_asr_proof.py (sockets blocked)",
+      "exit_code": 0,
+      "result": "real transcription with all network egress blocked",
+      "evidence": "docs/evidence/S5/offline.log"
+    },
+    "regression": {
+      "command": "bash scripts/verify.sh",
+      "exit_code": 0,
+      "result": "75 passed across chunks; demo artifacts verified",
+      "evidence": "docs/evidence/S5/regression.log"
+    }
+  },
+  "acceptance_ids": {
+    "A13": "PASS (real faster-whisper tiny.en CPU int8 executed locally/offline; ASR uncertainty surfaced explicitly and routed to REVIEW_REQUIRED; no diarization claims; corrupt/missing/oversized inputs fail closed)"
+  },
+  "performance_note": "torch threads capped at 4 in context extractor: oversubscription (16 threads on shared host) made GLiNER inference ~20x slower (measured 21s->1s per call); full pipeline 3-session run 287s->64s.",
+  "limitations": [
+    "tiny.en ASR accuracy on synthetic espeak-ng speech is high for fixture text but WER on real speech is not measured (and real speech is out of PoC scope).",
+    "Speaker attribution is manual in fixtures (ASR does not diarize); diarization is explicitly not claimed.",
+    "Audio fixtures are espeak-ng synthetic speech only; no real recordings (PoC constraint)."
+  ],
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/S5-synthetic-audio",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  }
+}

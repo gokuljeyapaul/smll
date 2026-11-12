@@ -31,6 +31,10 @@ class SafetyGate:
         if not report.get("all_mandatory_stages_executed", False):
             return self._decision("REVIEW_REQUIRED", ["mandatory_stages_incomplete"])
 
+        if report.get("asr_uncertain"):
+            # No silent release of ambiguous audio-derived transcripts (A13/S5).
+            return self._decision("REVIEW_REQUIRED", ["asr_uncertainty_requires_review"])
+
         if report.get("context_risks"):
             return self._decision("REVIEW_REQUIRED", ["uncertain_context_risk"])
 

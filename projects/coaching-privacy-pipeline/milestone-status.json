@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S4",
+  "current_slice": "S5",
   "state": "READY_FOR_MERGE",
   "last_verified_merged_pr": {
-    "slice": "S3",
-    "url": "https://github.com/gokuljeyapaul/smll/pull/4",
-    "merge_sha": "0f1e59584e2660495277570904ed8ec848f25b52"
+    "slice": "S4",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/5",
+    "merge_sha": "8f326d531a6e773c91573e02bf411098f8edae16"
   },
   "slices": {
     "S0": {
@@ -227,13 +227,50 @@
       "demo_command": ".venv/bin/python scripts/attack_demo.py",
       "pr": {
         "branch": "feature/coaching-privacy-pipeline/S4-cross-session-linkage",
+        "url": "https://github.com/gokuljeyapaul/smll/pull/5",
+        "state": "MERGED",
+        "merge_sha": "8f326d531a6e773c91573e02bf411098f8edae16"
+      }
+    },
+    "S5": {
+      "status": "PASS",
+      "scope": "Synthetic WAV -> real offline ASR -> canonical transcript -> same privacy pipeline",
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit/test_s5_unit.py tests/integration/test_s5_asr.py tests/e2e/test_s5_e2e.py tests/negative/test_s5_negative.py -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S5/red.log",
+        "expected_failure": "missing audio schema, ASR adapter, metrics, fail-closed gates"
+      },
+      "green": {
+        "command": "pytest in 3 chunks: unit+negative (47), integration (16), e2e (12)",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S5/green.log"
+      },
+      "e2e": {
+        "command": ".venv/bin/python -m pytest tests/e2e/test_s5_e2e.py tests/integration/test_s5_asr.py -q",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S5/e2e.log"
+      },
+      "privacy_negative": {
+        "evidence_path": "docs/evidence/S5/negative.log"
+      },
+      "offline": {
+        "evidence_path": "docs/evidence/S5/offline.log"
+      },
+      "regression": {
+        "evidence_path": "docs/evidence/S5/regression.log"
+      },
+      "summary_path": "docs/evidence/S5/summary.json",
+      "acceptance_ids": [
+        "A13"
+      ],
+      "demo_command": "HF_HUB_OFFLINE=1 .venv/bin/python scripts/offline_asr_proof.py",
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S5-synthetic-audio",
         "url": "PENDING",
         "state": "READY_FOR_MERGE",
         "merge_sha": "PENDING"
       }
-    },
-    "S5": {
-      "status": "NOT_STARTED"
     },
     "S6": {
       "status": "NOT_STARTED"
@@ -243,5 +280,5 @@
     }
   },
   "blockers": [],
-  "next_slice": "S5"
+  "next_slice": "S6"
 }
