@@ -1,0 +1,6 @@
+# S6 E2E: one-command audit (12-session test scale) — 2026-11-12T05:23:45Z
+# command: .venv/bin/python -m pytest tests/e2e/test_s6_e2e.py tests/integration/test_s6_audit.py -q
+
+....                                                                     [100%]
+4 passed in 94.86s (0:01:34)
+EXIT_CODE=0

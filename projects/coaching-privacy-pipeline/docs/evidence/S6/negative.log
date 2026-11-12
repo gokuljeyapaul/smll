@@ -1,0 +1,6 @@
+# S6 unit + negative-scope tests — 2026-11-12T05:25:21Z
+# command: .venv/bin/python -m pytest tests/unit/test_s6_unit.py -q
+
+....                                                                     [100%]
+4 passed in 0.02s
+EXIT_CODE=0

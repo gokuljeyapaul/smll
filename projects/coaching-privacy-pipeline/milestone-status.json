@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S5",
+  "current_slice": "S6",
   "state": "READY_FOR_MERGE",
   "last_verified_merged_pr": {
-    "slice": "S4",
-    "url": "https://github.com/gokuljeyapaul/smll/pull/5",
-    "merge_sha": "8f326d531a6e773c91573e02bf411098f8edae16"
+    "slice": "S5",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/6",
+    "merge_sha": "5d7a42d029df678343e8f62b2f63db0a880ab395"
   },
   "slices": {
     "S0": {
@@ -267,18 +267,52 @@
       "demo_command": "HF_HUB_OFFLINE=1 .venv/bin/python scripts/offline_asr_proof.py",
       "pr": {
         "branch": "feature/coaching-privacy-pipeline/S5-synthetic-audio",
+        "url": "https://github.com/gokuljeyapaul/smll/pull/6",
+        "state": "MERGED",
+        "merge_sha": "5d7a42d029df678343e8f62b2f63db0a880ab395"
+      }
+    },
+    "S6": {
+      "status": "PASS",
+      "scope": "One-command audit: provenance, logging PII audit, gold-leak verification, corpus-scale report",
+      "red": {
+        "command": ".venv/bin/python -m pytest tests/unit/test_s6_unit.py tests/integration/test_s6_audit.py tests/e2e/test_s6_e2e.py -q",
+        "exit_code": 1,
+        "evidence_path": "docs/evidence/S6/red.log",
+        "expected_failure": "missing audit module and audit.sh"
+      },
+      "green": {
+        "command": "pytest in 3 chunks: unit+negative (51), integration (19), e2e (13)",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S6/green.log"
+      },
+      "e2e": {
+        "command": "bash scripts/audit.sh (test scale) + corpus-scale test",
+        "exit_code": 0,
+        "evidence_path": "docs/evidence/S6/e2e.log"
+      },
+      "privacy_negative": {
+        "evidence_path": "docs/evidence/S6/negative.log"
+      },
+      "summary_path": "docs/evidence/S6/summary.json",
+      "acceptance_ids": [
+        "A20",
+        "A21",
+        "A23",
+        "A24"
+      ],
+      "demo_command": "bash scripts/audit.sh",
+      "pr": {
+        "branch": "feature/coaching-privacy-pipeline/S6-audit-batch",
         "url": "PENDING",
         "state": "READY_FOR_MERGE",
         "merge_sha": "PENDING"
       }
-    },
-    "S6": {
-      "status": "NOT_STARTED"
     },
     "S7": {
       "status": "NOT_STARTED"
     }
   },
   "blockers": [],
-  "next_slice": "S6"
+  "next_slice": "S7"
 }

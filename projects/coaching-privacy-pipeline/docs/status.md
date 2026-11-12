@@ -21,8 +21,8 @@
 | S2 | Purpose-specific privacy transformations | PASS, MERGED | PR [#3](https://github.com/gokuljeyapaul/smll/pull/3), squash SHA `76794ee5ece42fb73bf5c9b1a272625dd562e34d`, CI green | [evidence/S2/](evidence/S2/) | 38 tests green incl. two-purpose E2E |
 | S3 | Contextual cross-turn GLiNER risk detection | PASS, MERGED | PR [#4](https://github.com/gokuljeyapaul/smll/pull/4), squash SHA `0f1e59584e2660495277570904ed8ec848f25b52`, CI green | [evidence/S3/](evidence/S3/) | 48-test regression green; offline GLiNER proof |
 | S4 | Cross-session identity linkage and fail-closed decisions | PASS, MERGED | PR [#5](https://github.com/gokuljeyapaul/smll/pull/5), squash SHA `8f326d531a6e773c91573e02bf411098f8edae16`, CI green | [evidence/S4/](evidence/S4/) | 63-test regression green; attack demo: top-1 rank-1 vs 0.02 chance |
-| S5 | Synthetic WAV → real offline ASR → same pipeline | PASS (PR open) | `feature/coaching-privacy-pipeline/S5-synthetic-audio`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S5/](evidence/S5/) | 75-test regression green; offline ASR proof |
-| S6 | One-command reproducible evaluation and audit | NOT_STARTED | NOT_OPENED | None | pending tests |
+| S5 | Synthetic WAV → real offline ASR → same pipeline | PASS, MERGED | PR [#6](https://github.com/gokuljeyapaul/smll/pull/6), squash SHA `5d7a42d029df678343e8f62b2f63db0a880ab395`, CI green | [evidence/S5/](evidence/S5/) | 75-test regression green; offline ASR proof |
+| S6 | One-command privacy audit with provenance | PASS (PR open) | `feature/coaching-privacy-pipeline/S6-audit-batch`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S6/](evidence/S6/) | 83-test regression green; audit_report.json verified |
 | S7 | Batch processing with production-shaped adapters | NOT_STARTED | NOT_OPENED | None | pending tests |
 
 ## Acceptance-test conformance matrix
@@ -50,11 +50,11 @@
 | A17 | P0 | PASS | [evidence/S4/green.log](evidence/S4/green.log) (all four states observed across suites: RELEASE_CANDIDATE, REVIEW_REQUIRED, BLOCKED, FAILED) |
 | A18 | P0 | PASS | [evidence/S4/attack-demo.log](evidence/S4/attack-demo.log) (closed fictional directory: top-1, true rank, abstain, chance 0.02, assumptions documented) |
 | A19 | P0 | PASS | [evidence/S1/e2e.log](evidence/S1/e2e.log) (generate → process → eval E2E exit 0 on aligned 25-session data) |
-| A20 | P0 | PARTIAL | [evidence/S1/e2e.log](evidence/S1/e2e.log) (per-category recall w/ denominators: DIRECT_PII 10/10, QUASI 6/18 honest partial, RELATIONAL 2/2; provenance in S6) |
-| A21 | P1 | NOT_RUN | None |
+| A20 | P0 | PASS | [evidence/S6/e2e.log](evidence/S6/e2e.log) (audit_report.json: pipeline_version, dataset_seed, models, policy, timestamp, host; metrics with denominators) |
+| A21 | P0 | PASS | [evidence/S6/negative.log](evidence/S6/negative.log) (gold-in-artifact check fails closed) |
 | A22 | P0 | PASS | [evidence/S0/regression.log](evidence/S0/regression.log) (scripts run from /tmp cwd; nonzero exit on errors) |
-| A23 | P0 | PARTIAL | [evidence/S0/negative.log](evidence/S0/negative.log) (path traversal + size limits + no PII echo in reports; full logging audit in S6) |
-| A24 | P1 | NOT_RUN | None |
+| A23 | P0 | PASS | [evidence/S6/negative.log](evidence/S6/negative.log) (log scanner audits for raw PII with line indexes; reports PII-free verified) |
+| A24 | P0 | PASS | [evidence/S6/e2e.log](evidence/S6/e2e.log) (one-command audit.sh -> provenance-complete machine report) |
 | A25 | P0 | NOT_RUN | None |
 
 ## GitHub PR delivery ledger (one PR per complete functional slice)
