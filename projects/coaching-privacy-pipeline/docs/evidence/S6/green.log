@@ -1,0 +1,8 @@
+# S6 GREEN phase (full S0–S6 regression, chunked) — 2026-11-12T05:35:38Z
+== chunk 1: unit + negative ==
+51 passed, 2 warnings in 35.16s
+== chunk 2: integration ==
+19 passed, 4 warnings in 190.09s
+== chunk 3: e2e ==
+13 passed, 2 warnings in 352.22s
+TOTAL: 51 + 19 + 13 = 83 passed; EXIT_CODE=0

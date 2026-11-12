@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "slice": "S6",
+  "capability": "One-command privacy audit: corpus generation -> processing -> evaluation -> provenance-complete machine report; logging PII audit; gold-leak verification",
+  "delivered_at": "2026-11-12T05:40:00Z",
+  "environment": {
+    "python": "3.11.2",
+    "os": "Linux x86_64"
+  },
+  "commands": {
+    "red": {
+      "command": ".venv/bin/python -m pytest tests/unit/test_s6_unit.py tests/integration/test_s6_audit.py tests/e2e/test_s6_e2e.py -q",
+      "exit_code": 1,
+      "result": "6 failed, 2 passed (behavioral, stub importable)",
+      "evidence": "docs/evidence/S6/red.log"
+    },
+    "green": {
+      "command": "pytest in 3 chunks (unit+negative 51; integration 19; e2e 13)",
+      "exit_code": 0,
+      "result": "83 passed total, full S0-S6 regression",
+      "evidence": "docs/evidence/S6/green.log"
+    },
+    "e2e": {
+      "command": "bash scripts/audit.sh (AUDIT_SESSIONS=12 test scale) + corpus-scale test",
+      "exit_code": 0,
+      "result": "4 passed: audit_report.json with provenance+honest metrics; 100-dev/200-holdout locked generation verified",
+      "evidence": "docs/evidence/S6/e2e.log"
+    },
+    "negative": {
+      "command": ".venv/bin/python -m pytest tests/unit/test_s6_unit.py -q",
+      "exit_code": 0,
+      "result": "4 passed: log scanner catches raw PII; gold-in-artifact check fails closed",
+      "evidence": "docs/evidence/S6/negative.log"
+    }
+  },
+  "acceptance_ids": {
+    "A20": "PASS (audit_report.json carries full provenance: pipeline_version, dataset_seed, models incl. GLiNER/ASR, policy, timestamp, host; metrics with denominators)",
+    "A21": "PASS (assert_no_gold_in_artifacts fails closed when any gold value appears in sanitized/decision/report artifacts)",
+    "A23": "PASS (scan_logs_for_pii finds raw PII in logs with line indexes; pipeline logs are designed PII-free and audited)",
+    "A24": "PASS (one-command scripts/audit.sh: generate -> process -> eval -> provenance-complete machine report; scale via AUDIT_SESSIONS)"
+  },
+  "audit_scale_note": "Corpus-scale test verifies spec scale (100 dev / 200 holdout locked, disjoint personas); audit.sh default 20 sessions balances CI runtime, spec scale available via AUDIT_SESSIONS=100.",
+  "limitations": [
+    "Audit metrics remain synthetic-fictional; no real-data claims.",
+    "Log scanning is deterministic substring matching over prohibited values; regex-based PII-pattern scanning is future hardening.",
+    "audit.sh at spec scale (100 sessions) takes ~1h on this CPU; CI uses reduced scale."
+  ],
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/S6-audit-batch",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  }
+}
