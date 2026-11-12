@@ -1,0 +1,148 @@
+# S6 RED phase — 2026-11-12T05:22:03Z
+# command: .venv/bin/python -m pytest tests/unit/test_s6_unit.py tests/integration/test_s6_audit.py tests/e2e/test_s6_e2e.py -q
+# stubs importable; failures are behavioral
+
+FFFF..FF                                                                 [100%]
+=================================== FAILURES ===================================
+__________________ test_provenance_report_includes_all_fields __________________
+
+    def test_provenance_report_includes_all_fields():
+        from coaching_privacy.audit import build_provenance
+    
+>       prov = build_provenance(
+            pipeline_version="0.6.0",
+            dataset_seed=42,
+            models={
+                "detector": "presidio-analyzer",
+                "nlp_backend": "en_core_web_sm",
+                "context_extractor": "urchade/gliner_medium-v2.1",
+                "asr": "tiny.en",
+            },
+            policy="internal_coaching_analysis",
+        )
+
+tests/unit/test_s6_unit.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+pipeline_version = '0.6.0', dataset_seed = 42
+models = {'detector': 'presidio-analyzer', 'nlp_backend': 'en_core_web_sm', 'context_extractor': 'urchade/gliner_medium-v2.1', 'asr': 'tiny.en'}
+policy = 'internal_coaching_analysis'
+
+    def build_provenance(pipeline_version, dataset_seed, models, policy):
+>       raise NotImplementedError("provenance builder not implemented")
+E       NotImplementedError: provenance builder not implemented
+
+src/coaching_privacy/audit.py:3: NotImplementedError
+______________________ test_log_scanner_finds_pii_in_logs ______________________
+
+    def test_log_scanner_finds_pii_in_logs():
+        from coaching_privacy.audit import scan_logs_for_pii
+    
+        logs = [
+            "2026-11-12 processing session synthetic-42-0000",
+            "DEBUG: raw text = 'My name is Mira Solen'",
+            "DEBUG: replacement map {'Mira Solen': '<PERSON_1>'}",
+        ]
+>       findings = scan_logs_for_pii(logs, prohibited=["Mira Solen"])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s6_unit.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+logs = ['2026-11-12 processing session synthetic-42-0000', "DEBUG: raw text = 'My name is Mira Solen'", "DEBUG: replacement map {'Mira Solen': '<PERSON_1>'}"]
+prohibited = ['Mira Solen']
+
+    def scan_logs_for_pii(logs, prohibited):
+>       raise NotImplementedError("log scanner not implemented")
+E       NotImplementedError: log scanner not implemented
+
+src/coaching_privacy/audit.py:7: NotImplementedError
+_______________________ test_log_scanner_clean_logs_pass _______________________
+
+    def test_log_scanner_clean_logs_pass():
+        from coaching_privacy.audit import scan_logs_for_pii
+    
+        logs = ["processing session synthetic-42-0000", "decision=REVIEW_REQUIRED"]
+>       findings = scan_logs_for_pii(logs, prohibited=["Mira Solen"])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s6_unit.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+logs = ['processing session synthetic-42-0000', 'decision=REVIEW_REQUIRED']
+prohibited = ['Mira Solen']
+
+    def scan_logs_for_pii(logs, prohibited):
+>       raise NotImplementedError("log scanner not implemented")
+E       NotImplementedError: log scanner not implemented
+
+src/coaching_privacy/audit.py:7: NotImplementedError
+_________________ test_gold_labels_never_in_release_artifacts __________________
+
+    def test_gold_labels_never_in_release_artifacts():
+        from coaching_privacy.audit import assert_no_gold_in_artifacts
+    
+        # sanitized + decision + report must never contain gold labels (A21)
+        artifacts = {
+            "sanitized.json": {"session_id": "x", "utterances": [{"id": "u1", "text": "hello"}]},
+            "decision.json": {"decision": "RELEASE_CANDIDATE"},
+            "validation_report.json": {"annotations": []},
+        }
+        gold_values = ["Mira Solen", "mira.solen@example.test"]
+>       assert_no_gold_in_artifacts(artifacts, gold_values)  # must not raise
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s6_unit.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+artifacts = {'sanitized.json': {'session_id': 'x', 'utterances': [{'id': 'u1', 'text': 'hello'}]}, 'decision.json': {'decision': 'RELEASE_CANDIDATE'}, 'validation_report.json': {'annotations': []}}
+gold_values = ['Mira Solen', 'mira.solen@example.test']
+
+    def assert_no_gold_in_artifacts(artifacts, gold_values):
+>       raise NotImplementedError("gold-leak check not implemented")
+E       NotImplementedError: gold-leak check not implemented
+
+src/coaching_privacy/audit.py:11: NotImplementedError
+______________________ test_one_command_audit_script_runs ______________________
+
+    def test_one_command_audit_script_runs():
+        """scripts/audit.sh must exist and produce a machine-readable report."""
+        audit = pathlib.Path(PROJECT) / "scripts" / "audit.sh"
+>       assert audit.is_file(), "scripts/audit.sh missing"
+E       AssertionError: scripts/audit.sh missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/audit.sh').is_file
+
+tests/integration/test_s6_audit.py:67: AssertionError
+____________________________ test_audit_command_e2e ____________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-72/test_audit_command_e2e0')
+
+    def test_audit_command_e2e(tmp_path):
+        """bash scripts/audit.sh must run end-to-end and emit audit_report.json."""
+        r = subprocess.run(
+            ["bash", str(PROJECT / "scripts" / "audit.sh")],
+            capture_output=True, text=True, cwd=str(PROJECT),
+            timeout=3000,
+            env={
+                **__import__("os").environ,
+                "AUDIT_SESSIONS": "12",  # small scale for test runtime; spec scale in docs
+            },
+        )
+>       assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+E       AssertionError: bash: /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/audit.sh: No such file or directory
+E         
+E       assert 127 == 0
+E        +  where 127 = CompletedProcess(args=['bash', '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/aud...me/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/audit.sh: No such file or directory\n').returncode
+
+tests/e2e/test_s6_e2e.py:20: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s6_unit.py::test_provenance_report_includes_all_fields
+FAILED tests/unit/test_s6_unit.py::test_log_scanner_finds_pii_in_logs - NotIm...
+FAILED tests/unit/test_s6_unit.py::test_log_scanner_clean_logs_pass - NotImpl...
+FAILED tests/unit/test_s6_unit.py::test_gold_labels_never_in_release_artifacts
+FAILED tests/integration/test_s6_audit.py::test_one_command_audit_script_runs
+FAILED tests/e2e/test_s6_e2e.py::test_audit_command_e2e - AssertionError: bas...
+6 failed, 2 passed in 54.05s
+EXIT_CODE=1
