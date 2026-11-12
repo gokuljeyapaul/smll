@@ -1,0 +1,8 @@
+# S7 GREEN phase (full S0–S7 regression, chunked) — 2026-11-12T06:02:45Z
+== chunk 1: unit + negative ==
+55 passed, 2 warnings in 28.34s
+== chunk 2: integration ==
+19 passed, 4 warnings in 172.52s
+== chunk 3: e2e ==
+15 passed, 2 warnings in 438.43s
+TOTAL: 55 + 19 + 15 = 89 passed; EXIT_CODE=0
