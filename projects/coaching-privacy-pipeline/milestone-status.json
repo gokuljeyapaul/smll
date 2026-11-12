@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "current_slice": "S7",
-  "state": "READY_FOR_MERGE",
+  "current_slice": null,
+  "state": "COMPLETE",
   "last_verified_merged_pr": {
-    "slice": "S6",
-    "url": "https://github.com/gokuljeyapaul/smll/pull/7",
-    "merge_sha": "e6ebc3fc9e04923309379261e25c4f94b8a0b8a9"
+    "slice": "S7",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/8",
+    "merge_sha": "b55f16496f5bdfa52c1dc3cb4ae7e42fed438e61"
   },
   "slices": {
     "S0": {
@@ -335,9 +335,9 @@
       "demo_command": "privacy-pipeline process --input <batch.jsonl|batch.json|batch.csv>",
       "pr": {
         "branch": "feature/coaching-privacy-pipeline/S7-batch-adapters",
-        "url": "PENDING",
-        "state": "READY_FOR_MERGE",
-        "merge_sha": "PENDING"
+        "url": "https://github.com/gokuljeyapaul/smll/pull/8",
+        "state": "MERGED",
+        "merge_sha": "b55f16496f5bdfa52c1dc3cb4ae7e42fed438e61"
       }
     }
   },

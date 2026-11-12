@@ -10,7 +10,7 @@
 - **Synthetic privacy quality:** `ASSESSSED_ON_SEED_FIXTURES_ONLY` (18/18 seed sessions leak-free after redaction; generated-corpus benchmark is S1)
 - **Real-data / ICF / legal conformance:** `NOT_ASSESSED`
 - **Last verified proof:** [docs/evidence/S0/](evidence/S0/) — RED (15 failed, exit 1), GREEN (16 passed, exit 0), E2E demo, negative, offline (18/18 sessions with sockets blocked), cross-cwd verify
-- **Next required action:** Merge S0 PR, record merge SHA here, then begin S1 (fixture generator + evaluator CLI).
+- **Next required action:** None — all slices S0–S7 delivered, merged and CI-verified. Remaining known limitations are documented in each slice's evidence summary.
 
 ## Slice delivery overview
 
@@ -23,7 +23,7 @@
 | S4 | Cross-session identity linkage and fail-closed decisions | PASS, MERGED | PR [#5](https://github.com/gokuljeyapaul/smll/pull/5), squash SHA `8f326d531a6e773c91573e02bf411098f8edae16`, CI green | [evidence/S4/](evidence/S4/) | 63-test regression green; attack demo: top-1 rank-1 vs 0.02 chance |
 | S5 | Synthetic WAV → real offline ASR → same pipeline | PASS, MERGED | PR [#6](https://github.com/gokuljeyapaul/smll/pull/6), squash SHA `5d7a42d029df678343e8f62b2f63db0a880ab395`, CI green | [evidence/S5/](evidence/S5/) | 75-test regression green; offline ASR proof |
 | S6 | One-command privacy audit with provenance | PASS, MERGED | PR [#7](https://github.com/gokuljeyapaul/smll/pull/7), squash SHA `e6ebc3fc9e04923309379261e25c4f94b8a0b8a9`, CI green | [evidence/S6/](evidence/S6/) | 83-test regression green; audit_report.json verified |
-| S7 | Batch adapters (JSON/CSV) + final wrap | PASS (PR open) | `feature/coaching-privacy-pipeline/S7-batch-adapters`, READY_FOR_MERGE, merge SHA PENDING | [evidence/S7/](evidence/S7/) | 89-test regression green |
+| S7 | Batch adapters (JSON/CSV) + final wrap | PASS, MERGED | PR [#8](https://github.com/gokuljeyapaul/smll/pull/8), squash SHA `b55f16496f5bdfa52c1dc3cb4ae7e42fed438e61`, CI green | [evidence/S7/](evidence/S7/) | 89-test regression green |
 
 ## Acceptance-test conformance matrix
 
