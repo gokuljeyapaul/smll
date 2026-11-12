@@ -1,0 +1,330 @@
+# S5 RED phase — 2026-11-12T02:02:41Z
+# command: .venv/bin/python -m pytest tests/unit/test_s5_unit.py tests/integration/test_s5_asr.py tests/e2e/test_s5_e2e.py tests/negative/test_s5_negative.py -q
+# stubs importable; failures are behavioral
+
+FFFFFFFFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+______________________ test_audio_transcript_schema_valid ______________________
+
+    def test_audio_transcript_schema_valid():
+        from coaching_privacy.audio import AudioTranscriptInput
+    
+        data = {
+            "schema_version": "1.0",
+            "session_id": "audio-s1",
+            "source_type": "synthetic_audio",
+            "purpose": "internal_coaching_analysis",
+            "language": "en",
+            "speakers": [
+                {"id": "S1", "role": "COACH"},
+                {"id": "S2", "role": "CLIENT"},
+            ],
+            "utterances": [
+                {"id": "u1", "speaker_id": "S2", "start_ms": 0, "end_ms": 2500,
+                 "text": "My name is Mira Solen, and I want to lead better meetings."},
+            ],
+            "metadata": {
+                "synthetic": True,
+                "audio_file": "session.wav",
+                "asr": {"model": "tiny.en", "engine": "faster-whisper",
+                        "speaker_attribution": "manual"},
+            },
+        }
+>       at = AudioTranscriptInput.parse(data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s5_unit.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'coaching_privacy.audio.AudioTranscriptInput'>
+data = {'schema_version': '1.0', 'session_id': 'audio-s1', 'source_type': 'synthetic_audio', 'purpose': 'internal_coaching_analysis', ...}
+
+    @classmethod
+    def parse(cls, data):
+>       raise NotImplementedError("audio transcript schema not implemented")
+E       NotImplementedError: audio transcript schema not implemented
+
+src/coaching_privacy/audio.py:7: NotImplementedError
+___________ test_audio_schema_requires_speaker_attribution_metadata ____________
+
+    def test_audio_schema_requires_speaker_attribution_metadata():
+        """ASR cannot diarize; speaker attribution must be explicit."""
+        from coaching_privacy.audio import AudioTranscriptInput, ContractError
+    
+        data = {
+            "schema_version": "1.0",
+            "session_id": "audio-s2",
+            "source_type": "synthetic_audio",
+            "purpose": "internal_coaching_analysis",
+            "language": "en",
+            "speakers": [{"id": "S1", "role": "COACH"}],
+            "utterances": [
+                {"id": "u1", "speaker_id": "S1", "start_ms": 0, "end_ms": 1000,
+                 "text": "hello"},
+            ],
+            "metadata": {"synthetic": True, "audio_file": "x.wav"},  # no asr block
+        }
+        try:
+>           AudioTranscriptInput.parse(data)
+
+tests/unit/test_s5_unit.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'coaching_privacy.audio.AudioTranscriptInput'>
+data = {'schema_version': '1.0', 'session_id': 'audio-s2', 'source_type': 'synthetic_audio', 'purpose': 'internal_coaching_analysis', ...}
+
+    @classmethod
+    def parse(cls, data):
+>       raise NotImplementedError("audio transcript schema not implemented")
+E       NotImplementedError: audio transcript schema not implemented
+
+src/coaching_privacy/audio.py:7: NotImplementedError
+_____________________ test_wer_and_cer_computed_correctly ______________________
+
+    def test_wer_and_cer_computed_correctly():
+        from coaching_privacy.audio_metrics import wer, cer
+    
+        ref = "my name is mira solen"
+        hyp = "my name is mira solem"
+        # 1 substitution of 4 words -> WER 0.25
+>       assert abs(wer(ref, hyp) - 0.25) < 1e-9
+                   ^^^^^^^^^^^^^
+
+tests/unit/test_s5_unit.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+reference = 'my name is mira solen', hypothesis = 'my name is mira solem'
+
+    def wer(reference, hypothesis):
+>       raise NotImplementedError("WER not implemented")
+E       NotImplementedError: WER not implemented
+
+src/coaching_privacy/audio_metrics.py:3: NotImplementedError
+________________________ test_fault_asr_adapter_raises _________________________
+
+    def test_fault_asr_adapter_raises():
+        """Fault injection: a broken ASR adapter must raise, never return empty success."""
+        from coaching_privacy.asr import FaultyASRAdapter
+    
+>       adapter = FaultyASRAdapter(error_type="corrupt_audio")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s5_unit.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FaultyASRAdapter object at 0x7c7f3da6f190>
+error_type = 'corrupt_audio'
+
+    def __init__(self, error_type="corrupt_audio"):
+>       raise NotImplementedError("fault ASR adapter not implemented")
+E       NotImplementedError: fault ASR adapter not implemented
+
+src/coaching_privacy/asr.py:17: NotImplementedError
+__________________ test_real_asr_transcribes_synthetic_speech __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-55/test_real_asr_transcribes_synt0')
+
+    def test_real_asr_transcribes_synthetic_speech(tmp_path):
+        from coaching_privacy.asr import FasterWhisperAdapter
+    
+        wav = _make_wav(tmp_path, "I want to set boundaries with my colleagues")
+>       adapter = FasterWhisperAdapter(model_dir=str(MODEL_DIR))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_s5_asr.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FasterWhisperAdapter object at 0x7c7f3dbe9690>
+model_dir = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/whisper-tiny.en'
+
+    def __init__(self, model_dir=None):
+>       raise NotImplementedError("faster-whisper adapter not implemented")
+E       NotImplementedError: faster-whisper adapter not implemented
+
+src/coaching_privacy/asr.py:7: NotImplementedError
+__________________ test_real_asr_reports_model_and_is_offline __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-55/test_real_asr_reports_model_an0')
+
+    def test_real_asr_reports_model_and_is_offline(tmp_path):
+        from coaching_privacy.asr import FasterWhisperAdapter
+    
+        wav = _make_wav(tmp_path, "hello there")
+>       adapter = FasterWhisperAdapter(model_dir=str(MODEL_DIR))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_s5_asr.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FasterWhisperAdapter object at 0x7c7f3da5f4d0>
+model_dir = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/whisper-tiny.en'
+
+    def __init__(self, model_dir=None):
+>       raise NotImplementedError("faster-whisper adapter not implemented")
+E       NotImplementedError: faster-whisper adapter not implemented
+
+src/coaching_privacy/asr.py:7: NotImplementedError
+_______________________ test_corrupt_audio_fails_closed ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-55/test_corrupt_audio_fails_close0')
+
+    def test_corrupt_audio_fails_closed(tmp_path):
+        """A corrupt/truncated WAV must raise, never produce a false success."""
+        from coaching_privacy.asr import FasterWhisperAdapter, ASRError
+    
+        bad = tmp_path / "corrupt.wav"
+        bad.write_bytes(b"RIFF" + b"\x00" * 100)  # truncated header junk
+>       adapter = FasterWhisperAdapter(model_dir=str(MODEL_DIR))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_s5_asr.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FasterWhisperAdapter object at 0x7c7f3da5eb50>
+model_dir = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/whisper-tiny.en'
+
+    def __init__(self, model_dir=None):
+>       raise NotImplementedError("faster-whisper adapter not implemented")
+E       NotImplementedError: faster-whisper adapter not implemented
+
+src/coaching_privacy/asr.py:7: NotImplementedError
+______________________ test_wav_to_sanitized_decision_e2e ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-55/test_wav_to_sanitized_decision0')
+
+    def test_wav_to_sanitized_decision_e2e(tmp_path):
+        from coaching_privacy.asr import FasterWhisperAdapter
+        from coaching_privacy.contracts import Transcript
+        from coaching_privacy.policy import PolicyStore
+        from coaching_privacy.engine import process_transcript
+    
+        # 1. synthetic audio via offline TTS
+        wav = tmp_path / "s5.wav"
+        subprocess.run(
+            ["espeak-ng", "-v", "en-us", "-s", "140",
+             "My name is Mira Solen and my email is mira dot solen at example dot test",
+             "-w", str(wav)],
+            check=True, capture_output=True,
+        )
+        # 2. real offline ASR
+>       adapter = FasterWhisperAdapter(model_dir=str(PROJECT / "models" / "whisper-tiny.en"))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_s5_e2e.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FasterWhisperAdapter object at 0x7c7f3da6d4d0>
+model_dir = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/whisper-tiny.en'
+
+    def __init__(self, model_dir=None):
+>       raise NotImplementedError("faster-whisper adapter not implemented")
+E       NotImplementedError: faster-whisper adapter not implemented
+
+src/coaching_privacy/asr.py:7: NotImplementedError
+____________________ test_missing_speech_model_fails_closed ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-55/test_missing_speech_model_fail0')
+
+    def test_missing_speech_model_fails_closed(tmp_path):
+        from coaching_privacy.asr import FasterWhisperAdapter, ASRError
+    
+        wav = tmp_path / "x.wav"
+        subprocess.run(
+            ["espeak-ng", "-v", "en-us", "-s", "140", "hello", "-w", str(wav)],
+            check=True, capture_output=True,
+        )
+>       adapter = FasterWhisperAdapter(model_dir=str(tmp_path / "no_such_model"))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_s5_e2e.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FasterWhisperAdapter object at 0x7c7f3da4ecd0>
+model_dir = '/tmp/pytest-of-node/pytest-55/test_missing_speech_model_fail0/no_such_model'
+
+    def __init__(self, model_dir=None):
+>       raise NotImplementedError("faster-whisper adapter not implemented")
+E       NotImplementedError: faster-whisper adapter not implemented
+
+src/coaching_privacy/asr.py:7: NotImplementedError
+__________________ test_uncertain_asr_output_routed_to_review __________________
+
+    def test_uncertain_asr_output_routed_to_review():
+        """Transcripts derived from uncertain/ambiguous ASR must never be RELEASE_CANDIDATE."""
+        from coaching_privacy.pipeline import SafetyGate
+    
+        gate = SafetyGate()
+        decision = gate.decide(
+            {
+                "validator_available": True,
+                "residual_pii": [],
+                "context_risks": [],
+                "asr_uncertain": True,
+                "all_mandatory_stages_executed": True,
+            },
+            purpose="internal_coaching_analysis",
+        )
+        # uncertain ASR cannot silently release; at minimum REVIEW_REQUIRED
+>       assert decision["decision"] in {"REVIEW_REQUIRED", "BLOCKED", "FAILED"}
+E       AssertionError: assert 'RELEASE_CANDIDATE' in {'BLOCKED', 'FAILED', 'REVIEW_REQUIRED'}
+
+tests/negative/test_s5_negative.py:25: AssertionError
+_______________________ test_wav_path_traversal_rejected _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-55/test_wav_path_traversal_reject0')
+
+    def test_wav_path_traversal_rejected(tmp_path):
+        from coaching_privacy.asr import FasterWhisperAdapter, ASRError
+    
+>       adapter = FasterWhisperAdapter(model_dir=str(PROJECT / "models" / "whisper-tiny.en"))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/negative/test_s5_negative.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FasterWhisperAdapter object at 0x7c7f3db0a450>
+model_dir = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/whisper-tiny.en'
+
+    def __init__(self, model_dir=None):
+>       raise NotImplementedError("faster-whisper adapter not implemented")
+E       NotImplementedError: faster-whisper adapter not implemented
+
+src/coaching_privacy/asr.py:7: NotImplementedError
+________________________ test_oversized_audio_rejected _________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-55/test_oversized_audio_rejected0')
+
+    def test_oversized_audio_rejected(tmp_path):
+        from coaching_privacy.asr import FasterWhisperAdapter, ASRError
+    
+        big = tmp_path / "big.wav"
+        big.write_bytes(b"RIFF" + b"\x00" * (60 * 1024 * 1024))  # > 50MB junk
+>       adapter = FasterWhisperAdapter(model_dir=str(PROJECT / "models" / "whisper-tiny.en"))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/negative/test_s5_negative.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <coaching_privacy.asr.FasterWhisperAdapter object at 0x7c7f3db1d950>
+model_dir = '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/whisper-tiny.en'
+
+    def __init__(self, model_dir=None):
+>       raise NotImplementedError("faster-whisper adapter not implemented")
+E       NotImplementedError: faster-whisper adapter not implemented
+
+src/coaching_privacy/asr.py:7: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s5_unit.py::test_audio_transcript_schema_valid - NotIm...
+FAILED tests/unit/test_s5_unit.py::test_audio_schema_requires_speaker_attribution_metadata
+FAILED tests/unit/test_s5_unit.py::test_wer_and_cer_computed_correctly - NotI...
+FAILED tests/unit/test_s5_unit.py::test_fault_asr_adapter_raises - NotImpleme...
+FAILED tests/integration/test_s5_asr.py::test_real_asr_transcribes_synthetic_speech
+FAILED tests/integration/test_s5_asr.py::test_real_asr_reports_model_and_is_offline
+FAILED tests/integration/test_s5_asr.py::test_corrupt_audio_fails_closed - No...
+FAILED tests/e2e/test_s5_e2e.py::test_wav_to_sanitized_decision_e2e - NotImpl...
+FAILED tests/e2e/test_s5_e2e.py::test_missing_speech_model_fails_closed - Not...
+FAILED tests/negative/test_s5_negative.py::test_uncertain_asr_output_routed_to_review
+FAILED tests/negative/test_s5_negative.py::test_wav_path_traversal_rejected
+FAILED tests/negative/test_s5_negative.py::test_oversized_audio_rejected - No...
+12 failed in 0.41s
+EXIT_CODE=1
