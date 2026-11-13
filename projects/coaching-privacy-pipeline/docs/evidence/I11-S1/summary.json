@@ -1,0 +1,31 @@
+{
+  "slice": "I11-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/11",
+  "scope": "Fail-closed per-session language gate: well-formed unsupported languages (e.g. de) process per-session (REVIEW_REQUIRED/unsupported_language, sanitized withheld, zero detector calls, honest language_gate report block) without aborting the batch; malformed language still ContractError; ASR language mismatch -> REVIEW/asr_language_mismatch",
+  "date": "2026-11-14",
+  "decision_note": "Per the revised plan: unsupported language -> REVIEW_REQUIRED with reason unsupported_language (not BLOCKED, which is reserved for confirmed residual PII). Owner may override before slice 2.",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/e2e/test_i11s1_e2e.py -q",
+    "exit_code": 1,
+    "result": "3 failed: German record aborted the whole CLI run (exit 2 ContractError); detector ran before any gate",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/e2e/test_i11s1_e2e.py -q  -> 4 passed",
+      ".venv/bin/python -m pytest tests/e2e/test_i11s1_e2e.py tests/e2e/test_i19_e2e.py -q  -> 9 passed",
+      "full suite chunks: fast 60 / integration 21 / e2e+negative 56, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {"evidence": "negative.log"},
+  "changed_files": [
+    "src/coaching_privacy/contracts.py (well-formed 2-letter codes parse; malformed still ContractError)",
+    "src/coaching_privacy/engine.py (language gate before detection; asr_language_mismatch)",
+    "tests/e2e/test_i11s1_e2e.py (new)"
+  ],
+  "gate_impact": "new gate for non-English sessions: previously impossible to process (ContractError abort); now REVIEW_REQUIRED — a strictly more restrictive outcome than the old abort-to-nothing for the batch, and per-session. English sessions unchanged (regression green).",
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I11-S1-language-gate", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "024a44944852c973b189e6593b58b3e715fc8a78 (PR #37, I23-S2)"
+}

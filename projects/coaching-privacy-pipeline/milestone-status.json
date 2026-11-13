@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I23-S2",
+    "current": "I11-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -672,6 +672,36 @@
         "summary_path": "docs/evidence/I23-S2/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I23-S2-batch-linkage",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/37",
+          "state": "MERGED",
+          "merge_sha": "024a44944852c973b189e6593b58b3e715fc8a78"
+        }
+      },
+      "I11-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #11 slice 1: per-session fail-closed language gate (REVIEW_REQUIRED/unsupported_language, sanitized withheld, zero detector calls) + asr_language_mismatch",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/e2e/test_i11s1_e2e.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I11-S1/red.log",
+          "expected_failure": "German session aborts whole run; detector runs pre-gate"
+        },
+        "green": {
+          "command": "test_i11s1_e2e 4 passed; full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I11-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I11-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I11-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I11-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I11-S1-language-gate",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

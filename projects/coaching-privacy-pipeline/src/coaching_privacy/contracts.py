@@ -65,8 +65,12 @@ class Transcript:
         if purpose not in KNOWN_PURPOSES:
             # Fail closed: unknown purpose can never be approved.
             raise PolicyError(f"unknown purpose: {purpose!r}")
-        if data.get("language") not in SUPPORTED_LANGUAGES:
-            raise ContractError(f"unsupported language: {data.get('language')!r}")
+        language = data.get("language")
+        # I11-S1: well-formed 2-letter codes parse even if unsupported;
+        # the engine's language gate handles them per-session. Malformed
+        # values remain a contract error (fail closed).
+        if not isinstance(language, str) or len(language) != 2 or not language.islower():
+            raise ContractError(f"unsupported language: {language!r}")
         metadata = data.get("metadata") or {}
         if not metadata.get("synthetic", False):
             raise ContractError("PoC accepts synthetic transcripts only")
