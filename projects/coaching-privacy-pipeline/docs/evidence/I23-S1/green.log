@@ -1,0 +1,71 @@
+== RED (2026-11-13) ==
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_cross_session_risks_not_claimed_clean_without_assessment _________
+
+    def test_cross_session_risks_not_claimed_clean_without_assessment():
+        result = _process()
+        csr = result.report.get("cross_session_risks")
+>       assert not isinstance(csr, list) or csr, (
+            "cross_session_risks must not be an empty 'clean' list unless the "
+            "linkage check ran; expected a NOT_ASSESSED marker"
+        )
+E       AssertionError: cross_session_risks must not be an empty 'clean' list unless the linkage check ran; expected a NOT_ASSESSED marker
+E       assert (not True or [])
+E        +  where True = isinstance([], list)
+
+tests/unit/test_i23s1_unit.py:45: AssertionError
+----------------------------- Captured stderr call -----------------------------
+The tokenizer you are loading from '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+------------------------------ Captured log call -------------------------------
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: pl, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNifRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNieRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItDriverLicenseRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItFiscalCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItVatCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItIdentityCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItPassportRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - PlPeselRecognizer supported languages: pl, registry supported languages: en
+________ test_semantic_fidelity_not_claimed_preserved_without_reference ________
+
+    def test_semantic_fidelity_not_claimed_preserved_without_reference():
+        result = _process()
+        sf = result.report.get("semantic_fidelity")
+>       assert isinstance(sf, dict) and sf.get("status") == "NOT_ASSESSED", (
+            f"semantic_fidelity must be NOT_ASSESSED (no reference facts at "
+            f"pipeline runtime), got: {sf}"
+        )
+E       AssertionError: semantic_fidelity must be NOT_ASSESSED (no reference facts at pipeline runtime), got: {'turn_count_preserved': True}
+E       assert (True and None == 'NOT_ASSESSED')
+E        +  where True = isinstance({'turn_count_preserved': True}, dict)
+E        +  and   None = <built-in method get of dict object at 0x7b4dcc663000>('status')
+E        +    where <built-in method get of dict object at 0x7b4dcc663000> = {'turn_count_preserved': True}.get
+
+tests/unit/test_i23s1_unit.py:56: AssertionError
+=============================== warnings summary ===============================
+tests/unit/test_i23s1_unit.py::test_cross_session_risks_not_claimed_clean_without_assessment
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/unit/test_i23s1_unit.py::test_cross_session_risks_not_claimed_clean_without_assessment
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_i23s1_unit.py::test_cross_session_risks_not_claimed_clean_without_assessment
+FAILED tests/unit/test_i23s1_unit.py::test_semantic_fidelity_not_claimed_preserved_without_reference
+2 failed, 2 warnings in 28.26s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/unit/test_i23s1_unit.py -q
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 2 warnings in 33.02s
+exit=0
+command: full suite chunks
+fast: 60 passed; integration: 21 passed; e2e+negative: 49 passed — all exit 0

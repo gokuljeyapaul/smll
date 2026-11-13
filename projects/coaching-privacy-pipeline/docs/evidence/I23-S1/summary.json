@@ -1,0 +1,29 @@
+{
+  "slice": "I23-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/23",
+  "scope": "Honest report markers: cross_session_risks and semantic_fidelity carry NOT_ASSESSED status + reasons instead of hardcoded pass-looking values",
+  "date": "2026-11-14",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_i23s1_unit.py -q",
+    "exit_code": 1,
+    "result": "2 failed: report claimed cross-session 'clean' empty list and turn_count_preserved: True for never-run checks",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/unit/test_i23s1_unit.py -q  -> 2 passed",
+      "full suite chunks: fast 60 / integration 21 / e2e+negative 49, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {"evidence": "negative.log"},
+  "changed_files": [
+    "src/coaching_privacy/engine.py (NOT_ASSESSED markers with reasons)",
+    "tests/unit/test_i23s1_unit.py (new)",
+    "docs/status.md (A09/A11 wording: where each check is exercised)"
+  ],
+  "gate_impact": "none: decisions unchanged (full suite green); only report field shapes changed",
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I23-S1-honest-report-markers", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "e76e89194ba550884c6902b78f19faa16ff76dea (PR #35, I12)"
+}

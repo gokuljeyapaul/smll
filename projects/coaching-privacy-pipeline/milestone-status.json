@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I12",
+    "current": "I23-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -612,6 +612,36 @@
         "summary_path": "docs/evidence/I12/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I12-csv-mapping",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/35",
+          "state": "MERGED",
+          "merge_sha": "e76e89194ba550884c6902b78f19faa16ff76dea"
+        }
+      },
+      "I23-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #23 slice 1: NOT_ASSESSED markers for cross_session_risks + semantic_fidelity (no unexecuted check claimed passed)",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i23s1_unit.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I23-S1/red.log",
+          "expected_failure": "hardcoded empty cross-session list + turn_count_preserved True"
+        },
+        "green": {
+          "command": "test_i23s1_unit 2 passed; full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I23-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I23-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I23-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I23-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I23-S1-honest-report-markers",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"
