@@ -31,9 +31,11 @@
   },
   "unit_test_ids": [
     "test_i18s2_unit.TestGlinerRuntimeVerification.test_tampered_checkpoint_fails_closed",
+    "test_i18s2_unit.TestGlinerRuntimeVerification.test_tampered_weights_fail_closed",
     "test_i18s2_unit.TestGlinerRuntimeVerification.test_missing_checkpoint_file_fails_closed",
     "test_i18s2_unit.TestGlinerRuntimeVerification.test_engine_decision_failed_on_tampered_context_model",
     "test_i18s2_unit.TestWhisperRuntimeVerification.test_tampered_whisper_file_fails_asrerror",
+    "test_i18s2_unit.TestWhisperRuntimeVerification.test_missing_whisper_snapshot_fails_asrerror",
     "test_i18s2_unit.TestWhisperRuntimeVerification.test_real_models_pass_runtime_verification"
   ],
   "hash_verification_cost": {
@@ -57,5 +59,8 @@
     "state": "READY_FOR_MERGE",
     "merge_sha": "PENDING"
   },
-  "previous_pr_merge_sha": "2be0f0dda21d2600f0599ce3dd3f5ae54301997c (PR #26, I18-S1)"
+  "previous_pr_merge_sha": "2be0f0dda21d2600f0599ce3dd3f5ae54301997c (PR #26, I18-S1)",
+  "ci_fix_attempts": {
+    "attempt_1": "CI failed twice (runs 43442743028 attempts 1-2) inside test.sh; GitHub job logs unavailable (Azure BlobNotFound for both attempts and reruns), failure not attributable from evidence. Analysis: tests duplicated the 780MB checkpoint twice via full copytree (2 x 780MB extra disk + en_core_web_lg 400MB + venv ~5GB on a ~14GB runner). Fix: disk-bounded hardlinked checkpoint copies (hardlink same-fs, copy2 fallback), tamper only tiny files (gliner_config.json/vocabulary.txt) or a head-modified safetensors copy; added missing-whisper-snapshot test. All 7 tests green locally (unit suite 51 passed)."
+  }
 }
