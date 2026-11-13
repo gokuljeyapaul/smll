@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I22-S1",
+    "current": "I19-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -462,6 +462,36 @@
         "summary_path": "docs/evidence/I22-S1/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I22-S1-independent-validator",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/30",
+          "state": "MERGED",
+          "merge_sha": "6e2f8ca065a3ab4622ecb940ef255e2f580b8741"
+        }
+      },
+      "I19-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #19 slice 1: real ASR confidence signals (per-segment aggregation + language probability), policy-YAML thresholds, computed uncertain; real-model calibration clean vs degraded",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i19_unit.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I19-S1/red.log",
+          "expected_failure": "info.avg_logprob missing; uncertain always False; no signals"
+        },
+        "green": {
+          "command": "test_i19_unit 5 passed; test_i19_asr 2 passed (real tiny.en); full suite chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I19-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I19-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I19-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I19-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I19-S1-asr-confidence",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

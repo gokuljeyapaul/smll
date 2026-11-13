@@ -58,11 +58,23 @@ def _install_fast_guards(monkeypatch):
     import coaching_privacy.context_extractor as ce
     import coaching_privacy.asr as asr_mod
 
-    monkeypatch.setattr(ce.GLiNERContextExtractor, "_ensure_loaded", _blocked)
+    def _blocked_gliner(*a, **k):
+        raise AssertionError(_GUARD_MSG)
+
+    import coaching_privacy.context_extractor as ce
+    import coaching_privacy.asr as asr_mod
+
+    monkeypatch.setattr(ce.GLiNERContextExtractor, "_ensure_loaded", _blocked_gliner)
     monkeypatch.setattr(
-        ce.GLiNERContextExtractor, "from_pretrained", _blocked, raising=False
+        ce.GLiNERContextExtractor, "from_pretrained", _blocked_gliner, raising=False
     )
-    monkeypatch.setattr(asr_mod.FasterWhisperAdapter, "_ensure_model", _blocked)
+
+    def _blocked_asr(self, *a, **k):
+        if self._model is None:  # would load a real model
+            raise AssertionError(_GUARD_MSG)
+        return None  # already-injected fake models are fine (no load)
+
+    monkeypatch.setattr(asr_mod.FasterWhisperAdapter, "_ensure_model", _blocked_asr)
 
     # Also block the engine's extractor cache from producing a real model.
     import coaching_privacy.engine as engine_mod

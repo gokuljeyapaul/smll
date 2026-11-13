@@ -1,0 +1,4 @@
+== negative: fail-closed on missing signals ==
+- min_avg_logprob None (no segments with signals) -> uncertain=True (fail closed, unit test low_language_probability case)
+- real degraded clip -> uncertain=True (integration)
+- clean clips -> uncertain=False (no false positives; calibration.log)
