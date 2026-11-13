@@ -1,0 +1,124 @@
+FFF.F                                                                    [100%]
+=================================== FAILURES ===================================
+_____________________ test_unmarked_test_fails_collection ______________________
+
+pytester = <Pytester PosixPath('/tmp/pytest-of-node/pytest-120/test_unmarked_test_fails_collection0')>
+
+    def test_unmarked_test_fails_collection(pytester):
+        _marker_setup(pytester, "")
+        (pytester.path / "test_x.py").write_text("def test_x(): assert True\n")
+        result = pytester.runpytest_subprocess("-p", "no:cacheprovider")
+>       result.assert_outcomes(failed=0)
+E       AssertionError: assert {'passed': 1,...rors': 0, ...} == {'passed': 0,...rors': 0, ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'passed': 1} != {'passed': 0}
+E         Use -v to get more diff
+
+/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/tests/unit/test_i16_markers.py:44: AssertionError
+----------------------------- Captured stdout call -----------------------------
+running: /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python -mpytest --basetemp=/tmp/pytest-of-node/pytest-120/test_unmarked_test_fails_collection0/runpytest-0 -p no:cacheprovider
+     in: /tmp/pytest-of-node/pytest-120/test_unmarked_test_fails_collection0
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: /tmp/pytest-of-node/pytest-120/test_unmarked_test_fails_collection0
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 1 item
+
+test_x.py .                                                              [100%]
+
+============================== 1 passed in 0.01s ===============================
+___________________ test_double_marked_test_fails_collection ___________________
+
+pytester = <Pytester PosixPath('/tmp/pytest-of-node/pytest-120/test_double_marked_test_fails_collection0')>
+
+    def test_double_marked_test_fails_collection(pytester):
+        _marker_setup(pytester, "")
+        (pytester.path / "test_x.py").write_text(
+            'import pytest\n'
+            '@pytest.mark.fast\n@pytest.mark.slow\ndef test_x(): assert True\n'
+        )
+        result = pytester.runpytest_subprocess("-p", "no:cacheprovider")
+>       assert result.ret != 0, "double-marked test must fail the run"
+E       AssertionError: double-marked test must fail the run
+E       assert <ExitCode.OK: 0> != 0
+E        +  where <ExitCode.OK: 0> = <RunResult ret=0 len(stdout.lines)=10 len(stderr.lines)=0 duration=0.57s>.ret
+
+/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/tests/unit/test_i16_markers.py:56: AssertionError
+----------------------------- Captured stdout call -----------------------------
+running: /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python -mpytest --basetemp=/tmp/pytest-of-node/pytest-120/test_double_marked_test_fails_collection0/runpytest-0 -p no:cacheprovider
+     in: /tmp/pytest-of-node/pytest-120/test_double_marked_test_fails_collection0
+============================= test session starts ==============================
+platform linux -- Python 3.11.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: /tmp/pytest-of-node/pytest-120/test_double_marked_test_fails_collection0
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 1 item
+
+test_x.py .                                                              [100%]
+
+============================== 1 passed in 0.02s ===============================
+_______________ test_fast_test_touching_model_loader_fails_guard _______________
+
+pytester = <Pytester PosixPath('/tmp/pytest-of-node/pytest-120/test_fast_test_touching_model_loader_fails_guard0')>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x71245e66e6d0>
+
+    def test_fast_test_touching_model_loader_fails_guard(pytester, monkeypatch):
+        _marker_setup(pytester, "")
+        # A fast test that triggers the GLiNER loader must fail with the guard
+        # message (the real package path is added so the guard's patches apply).
+        (pytester.path / "test_x.py").write_text(
+            'import pytest\n'
+            'import os\n'
+            'os.environ.setdefault("COACHING_GLINER_PATH", '
+            f'"{REPO / "models" / "gliner_medium-v2.1"}")\n'
+            '@pytest.mark.fast\n'
+            'def test_x():\n'
+            '    from coaching_privacy.context_extractor import GLiNERContextExtractor\n'
+            '    GLiNERContextExtractor()._ensure_loaded()\n'
+        )
+        result = pytester.runpytest_subprocess("-p", "no:cacheprovider",
+                                               "--python-path", str(REPO / "src"))
+>       result.stdout.fnmatch_lines(["*model loaded in a fast test*"])
+E       Failed: remains unmatched: '*model loaded in a fast test*'
+
+/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/tests/unit/test_i16_markers.py:75: Failed
+----------------------------- Captured stdout call -----------------------------
+running: /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python -mpytest --basetemp=/tmp/pytest-of-node/pytest-120/test_fast_test_touching_model_loader_fails_guard0/runpytest-0 -p no:cacheprovider --python-path /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/src
+     in: /tmp/pytest-of-node/pytest-120/test_fast_test_touching_model_loader_fails_guard0
+----------------------------- Captured stderr call -----------------------------
+ERROR: usage: python -m pytest [options] [file_or_dir] [file_or_dir] [...]
+python -m pytest: error: unrecognized arguments: --python-path
+  inifile: /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/pyproject.toml
+  rootdir: /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline
+
+______________ test_fast_lane_collects_more_than_zero_in_project _______________
+
+    def test_fast_lane_collects_more_than_zero_in_project():
+        """The real project must expose a non-empty fast lane."""
+        import subprocess
+        import sys
+    
+        out = subprocess.run(
+            [sys.executable, "-m", "pytest", "-m", "fast", "--collect-only", "-q",
+             "tests/unit", "tests/integration", "tests/e2e", "tests/negative"],
+            cwd=REPO, capture_output=True, text=True,
+        )
+        assert "no tests ran" not in out.stdout, out.stdout + out.stderr
+>       assert "::" in out.stdout, f"fast lane must collect tests, got: {out.stdout}"
+E       AssertionError: fast lane must collect tests, got: 
+E         no tests collected (106 deselected) in 0.10s
+E         
+E       assert '::' in '\nno tests collected (106 deselected) in 0.10s\n'
+E        +  where '\nno tests collected (106 deselected) in 0.10s\n' = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...n', 'tests/e2e', 'tests/negative'], returncode=5, stdout='\nno tests collected (106 deselected) in 0.10s\n', stderr='').stdout
+
+tests/unit/test_i16_markers.py:102: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_i16_markers.py::test_unmarked_test_fails_collection - ...
+FAILED tests/unit/test_i16_markers.py::test_double_marked_test_fails_collection
+FAILED tests/unit/test_i16_markers.py::test_fast_test_touching_model_loader_fails_guard
+FAILED tests/unit/test_i16_markers.py::test_fast_lane_collects_more_than_zero_in_project
+4 failed, 1 passed in 3.51s
+exit=1
