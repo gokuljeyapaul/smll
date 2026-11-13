@@ -1,6 +1,9 @@
 """S0 integration tests: real Presidio + spaCy analyzer (A06)."""
 import json
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES = PROJECT / "fixtures"

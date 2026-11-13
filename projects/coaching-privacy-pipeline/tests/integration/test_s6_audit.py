@@ -1,8 +1,11 @@
 """S6 integration tests: full-scale corpus audit + one-command audit script (A20, A21, A24)."""
 import json
+import pytest
 import subprocess
 import sys
 import pathlib
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

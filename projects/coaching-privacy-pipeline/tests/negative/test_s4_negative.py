@@ -1,6 +1,9 @@
 """S4 negative tests: validator failure injection, gold isolation, no silent release (A14, A18)."""
 import sys
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

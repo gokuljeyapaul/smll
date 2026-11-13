@@ -1,8 +1,11 @@
 """S0 E2E tests: CLI processing of a seed fixture (A17/A19-relevant, S0 scope)."""
 import json
+import pytest
 import pathlib
 import subprocess
 import sys
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

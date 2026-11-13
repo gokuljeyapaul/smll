@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I18-S2",
+    "current": "I16",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -402,6 +402,36 @@
         "summary_path": "docs/evidence/I18-S2/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I18-S2-runtime-fail-closed",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/28",
+          "state": "MERGED",
+          "merge_sha": "f959d526b524295d5ca293d12d9ff40d54f324ab"
+        }
+      },
+      "I16": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #16: fast/slow pytest markers + discipline guard + fast-lane model-load guard; engine context_extractor injection; test.sh explicit full suite; verify.sh deduplicated; make test-fast; README",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i16_markers.py -p pytester -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I16/red.log",
+          "expected_failure": "no markers/guard: unmarked tests pass, fast lane empty"
+        },
+        "green": {
+          "command": "pytest -m fast (55 in 1.92s); bash scripts/test.sh (106 passed, 643.84s); bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I16/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I16/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I16/negative.log"
+        },
+        "summary_path": "docs/evidence/I16/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I16-fast-slow-markers",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

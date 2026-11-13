@@ -1,6 +1,9 @@
 """S4 integration tests: fictional closed-world attack simulation (A18)."""
 import sys
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

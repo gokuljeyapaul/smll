@@ -1,7 +1,10 @@
 """S6 unit tests: provenance fields, logging audit, no-gold-leakage verification (A20, A21, A23)."""
 import json
+import pytest
 import sys
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

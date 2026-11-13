@@ -73,8 +73,18 @@ Root shared GitHub files are `.github/workflows/monorepo-ci.yml`, `.github/scrip
 bash scripts/setup.sh         # install Python .venv, pinned dependencies, Presidio/spaCy and verified GLiNER files
 bash scripts/test.sh          # offline pytest, including mandatory P0 checks
 bash scripts/demo.sh          # deterministic end-to-end synthetic demonstration
-bash scripts/verify.sh        # validate schemas, gate decisions, traceability, evidence
+bash scripts/verify.sh        # validate model manifest, artifacts, traceability, evidence
 make test demo verify
+```
+
+**Fast dev loop (issue #16):** tests are marked `fast` (no real model inference)
+or `slow` (real GLiNER/Whisper inference, CLI e2e, demo scripts). Every test
+must carry exactly one marker; an unmarked test fails the run and a `fast`
+test that loads a model fails with `model loaded in a fast test`.
+
+```bash
+make test-fast      # or: .venv/bin/python -m pytest -m fast -q  (seconds)
+bash scripts/test.sh  # full suite (fast or slow) — what CI runs
 ```
 
 Optional demonstrations:

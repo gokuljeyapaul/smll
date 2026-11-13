@@ -1,8 +1,11 @@
 """S3 E2E: transcript with cross-turn clues -> GLiNER -> risk rules -> review decision (A10)."""
 import json
+import pytest
 import pathlib
 import subprocess
 import sys
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

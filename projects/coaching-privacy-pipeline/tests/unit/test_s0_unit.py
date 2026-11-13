@@ -8,6 +8,8 @@ import pathlib
 
 import pytest
 
+pytestmark = pytest.mark.fast
+
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES = PROJECT / "fixtures"
 

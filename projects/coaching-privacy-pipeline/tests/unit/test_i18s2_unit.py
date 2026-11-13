@@ -20,6 +20,8 @@ import shutil
 
 import pytest
 
+pytestmark = pytest.mark.slow
+
 REPO = pathlib.Path(__file__).resolve().parents[2]
 
 

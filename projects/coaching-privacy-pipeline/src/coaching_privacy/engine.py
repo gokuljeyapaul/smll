@@ -34,6 +34,7 @@ def process_transcript(
     transcript: Transcript,
     policy: dict[str, Any],
     prohibited_leaks: list[str] | None = None,
+    context_extractor: Any = None,
 ) -> SessionResult:
     from .transform import StableReplacer, redact_utterance
     from .validator import IndependentLeakValidator
@@ -113,7 +114,13 @@ def process_transcript(
     context_error = None
     try:
         assert_supported_language(transcript.language)
-        extractor = _get_context_extractor()
+        # I16: fast tests may inject a stub extractor (never model evidence);
+        # default is the real GLiNER via the process-wide cache.
+        extractor = (
+            context_extractor
+            if context_extractor is not None
+            else _get_context_extractor()
+        )
         if extractor is _FAILED_EXTRACTOR:
             raise RuntimeError("gliner unavailable")
         # Batch: one GLiNER inference call per session (all utterances joined),

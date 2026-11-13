@@ -1,8 +1,11 @@
 """S5 E2E: synthetic WAV -> real ASR -> canonical transcript -> same privacy pipeline (A13)."""
 import json
+import pytest
 import subprocess
 import sys
 import pathlib
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

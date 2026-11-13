@@ -1,0 +1,4 @@
+command: .venv/bin/python -m pytest tests/unit/test_i16_markers.py -q (marker discipline + fast-lane guard tests; RED evidence in red.log)
+.....                                                                    [100%]
+5 passed in 3.73s
+exit=0

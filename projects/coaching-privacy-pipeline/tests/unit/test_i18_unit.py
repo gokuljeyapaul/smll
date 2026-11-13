@@ -10,6 +10,8 @@ import sys
 
 import pytest
 
+pytestmark = pytest.mark.fast
+
 REPO = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = REPO / "scripts" / "verify_models.py"
 

@@ -1,7 +1,10 @@
 """S7 unit tests: batch adapters (JSON array / CSV) -> canonical transcript -> pipeline."""
 import json
+import pytest
 import sys
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

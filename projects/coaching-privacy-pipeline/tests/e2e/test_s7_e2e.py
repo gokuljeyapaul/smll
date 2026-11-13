@@ -1,7 +1,10 @@
 """S7 E2E: batch directory input -> per-session results, same fail-closed guarantees (A19)."""
 import json
+import pytest
 import pathlib
 import subprocess
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

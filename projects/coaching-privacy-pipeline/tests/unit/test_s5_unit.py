@@ -1,6 +1,9 @@
 """S5 unit tests: audio input schema, ASR adapter contract, WER/CER metrics."""
 import sys
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))
