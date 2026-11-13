@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I11-S1",
+    "current": "I13-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -702,6 +702,36 @@
         "summary_path": "docs/evidence/I11-S1/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I11-S1-language-gate",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/38",
+          "state": "MERGED",
+          "merge_sha": "9c3899cab85d31c46a2d2091e3a4f86f94fc74d1"
+        }
+      },
+      "I13-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #13 slice 1: bench_asr.py + 32-utterance seeded espeak fixture set; tiny/base/small WER/CER/runtime measured",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/integration/test_i13_bench.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I13-S1/red.log",
+          "expected_failure": "no bench script, no fixture references"
+        },
+        "green": {
+          "command": "test_i13_bench 2 passed; bench run real models; full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I13-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I13-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I13-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I13-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I13-S1-asr-benchmark",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

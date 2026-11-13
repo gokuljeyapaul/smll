@@ -1,0 +1,62 @@
+== RED (2026-11-14) ==
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__________________ test_bench_asr_produces_multi_model_report __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-208/test_bench_asr_produces_multi_0')
+
+    def test_bench_asr_produces_multi_model_report(tmp_path):
+        bench = REPO / "scripts" / "bench_asr.py"
+        out = tmp_path / "bench_report.json"
+        r = subprocess.run(
+            [sys.executable, str(bench), "--output", str(out),
+             "--models", "tiny.en", "base.en"],
+            capture_output=True, text=True, cwd=REPO, timeout=1500,
+        )
+>       assert r.returncode == 0, (r.stdout, r.stderr)
+E       AssertionError: ('', "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python: can't open file '/h...aw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/bench_asr.py': [Errno 2] No such file or directory
+E         ")
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...aw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/bench_asr.py': [Errno 2] No such file or directory\n").returncode
+
+tests/integration/test_i13_bench.py:28: AssertionError
+__________________ test_bench_fixture_set_has_reference_texts __________________
+
+    def test_bench_fixture_set_has_reference_texts():
+        """The seeded espeak fixture set (>= 30 utterances) exists with refs."""
+        refs = REPO / "fixtures" / "audio" / "bench_references.json"
+>       assert refs.is_file(), "benchmark fixture set missing"
+E       AssertionError: benchmark fixture set missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/fixtures/audio/bench_references.json').is_file
+
+tests/integration/test_i13_bench.py:43: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_i13_bench.py::test_bench_asr_produces_multi_model_report
+FAILED tests/integration/test_i13_bench.py::test_bench_fixture_set_has_reference_texts
+2 failed in 0.20s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/integration/test_i13_bench.py -q
+..                                                                       [100%]
+2 passed in 131.60s (0:02:11)
+exit=0
+
+== benchmark run (real models, seeded 32-utterance espeak set) ==
+command: .venv/bin/python scripts/bench_asr.py --models tiny.en base.en small.en --output docs/evidence/I13-S1/benchmark.json
+tiny.en: WER=0.079 CER=0.0325 runtime=48.297s utterances=32
+base.en: WER=0.0709 CER=0.0203 runtime=105.071s utterances=32
+small.en: WER=0.0412 CER=0.0144 runtime=241.701s utterances=32
+exit=0 (full report: benchmark.json)
+
+command: full suite chunks
+fast: 60 passed; integration: 23 passed; e2e+negative: 56 passed — all exit 0
+
+== CI fix attempt 1 (2026-11-14) ==
+CI failure: bench subprocess inherited HF_HUB_OFFLINE=1 (set permanently by earlier
+adapter tests in the same pytest process) -> base.en download blocked.
+Fix: bench test subprocess sets HF_HUB_OFFLINE=0 explicitly (bench is a controlled
+setup-time benchmark tool; runtime adapters still hard-block network).
+Local re-run: 2 passed.

@@ -1,0 +1,32 @@
+command: .venv/bin/python scripts/bench_asr.py --models tiny.en base.en small.en (2026-11-14)
+[
+  {
+    "model": "tiny.en",
+    "wer": 0.079,
+    "cer": 0.0325,
+    "runtime_s": 48.297,
+    "avg_runtime_s": 1.509,
+    "peak_rss_kb": 254756,
+    "utterances": 32
+  },
+  {
+    "model": "base.en",
+    "wer": 0.0709,
+    "cer": 0.0203,
+    "runtime_s": 105.071,
+    "avg_runtime_s": 3.283,
+    "peak_rss_kb": 418028,
+    "utterances": 32
+  },
+  {
+    "model": "small.en",
+    "wer": 0.0412,
+    "cer": 0.0144,
+    "runtime_s": 241.701,
+    "avg_runtime_s": 7.553,
+    "peak_rss_kb": 922132,
+    "utterances": 32
+  }
+]
+report written: docs/evidence/I13-S1/benchmark.json
+exit=0
