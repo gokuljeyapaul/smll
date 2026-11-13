@@ -365,6 +365,98 @@ def run_pipeline(args: Any) -> int:
                 f"{transcript.session_id}: decision={result.decision['decision']} "
                 f"leaks={len(result.report['residual_pii'])}"
             )
+        # I23-S2: cross-session linkage across the batch, grouped by an
+        # explicit metadata key. No group key -> NOT_ASSESSED (never clean).
+        group_key = getattr(args, "link_group_key", None)
+        linkage_summary: dict[str, Any] = {
+            "status": "NOT_ASSESSED_NO_GROUP_KEY",
+            "reason": "no --link-group-key provided",
+        }
+        session_entities: dict[str, list[dict[str, Any]]] = {}
+        results_by_session: dict[str, Any] = {}
+        if not group_key:
+            # honest batch-mode marker (differs from single-session runs)
+            for transcript, _l in batch:
+                rep_path = staging / transcript.session_id / "validation_report.json"
+                rep = json.loads(rep_path.read_text())
+                rep["cross_session_risks"] = linkage_summary
+                rep_path.write_text(json.dumps(rep, indent=2) + "\n")
+        if group_key:
+            groups: dict[str, list[str]] = {}
+            for transcript, _l in batch:
+                meta = transcript.metadata or {}
+                if isinstance(meta, dict) and group_key in meta:
+                    groups.setdefault(str(meta[group_key]), []).append(
+                        transcript.session_id
+                    )
+            from .linkage import CrossSessionLinker, ReleaseGate
+
+            linker = CrossSessionLinker()
+            gate = ReleaseGate()
+            all_risks: list[dict[str, Any]] = []
+            group_reports = []
+            # collect per-session context spans from staged reports
+            for transcript, _l in batch:
+                rep = json.loads(
+                    (staging / transcript.session_id / "validation_report.json").read_text()
+                )
+                spans = rep.get("context_spans") or {}
+                session_entities[transcript.session_id] = [
+                    e for entries in spans.values() for e in entries
+                ]
+                results_by_session[transcript.session_id] = rep
+            for gkey, members in groups.items():
+                g_ents = {m: session_entities.get(m, []) for m in members}
+                risks = linker.assess_sessions(g_ents)
+                for r_ in risks:
+                    r_ = dict(r_)
+                    r_["group"] = gkey
+                    all_risks.append(r_)
+                per_decisions = {}
+                for m in members:
+                    d = json.loads(
+                        (staging / m / "decision.json").read_text()
+                    )
+                    per_decisions[m] = d["decision"]
+                group_reports.append({
+                    "group": gkey, "sessions": members,
+                    "linkage_risks": risks,
+                    "group_decision": gate.gate(per_decisions, risks),
+                })
+            linkage_summary = {
+                "status": "ASSESSED",
+                "group_key": group_key,
+                "groups": group_reports,
+                "risks": all_risks,
+            }
+            # Rewrite per-session reports/decisions in staging to reflect
+            # linkage (linked sessions -> REVIEW; FAILED never promoted).
+            linked_sessions = {
+                s for r_ in all_risks for s in r_.get("sessions", [])
+            }
+            for m, rep in results_by_session.items():
+                if m in linked_sessions:
+                    rep["cross_session_risks"] = all_risks
+                elif group_key:
+                    md = (rep.get("cross_session_risks") or {})
+                    if isinstance(md, dict):
+                        rep["cross_session_risks"] = []
+                (staging / m / "validation_report.json").write_text(
+                    json.dumps(rep, indent=2) + "\n"
+                )
+                d_path = staging / m / "decision.json"
+                if m in linked_sessions:
+                    d = json.loads(d_path.read_text())
+                    if d["decision"] in {"RELEASE_CANDIDATE", "REVIEW_REQUIRED"}:
+                        d["decision"] = "REVIEW_REQUIRED"
+                        reasons = list(d.get("review_reasons", []))
+                        if "MULTI_SESSION_LINK" not in reasons:
+                            reasons.append("MULTI_SESSION_LINK")
+                        d["review_reasons"] = reasons
+                        d_path.write_text(json.dumps(d, indent=2) + "\n")
+            (output_dir / ".." / "x").exists()  # no-op
+            (staging / ".." / "batch_linkage_report.json_tmp_marker").exists()
+        # linkage report goes to the output dir root after move
         # All sessions succeeded: move staged dirs into place.
         for transcript, _leaks in batch:
             src = staging / transcript.session_id
@@ -379,6 +471,9 @@ def run_pipeline(args: Any) -> int:
             import shutil as _shutil
 
             _shutil.rmtree(staging, ignore_errors=True)
+    (output_dir / "batch_linkage_report.json").write_text(
+        json.dumps(linkage_summary, indent=2) + "\n"
+    )
     return processed
 
 

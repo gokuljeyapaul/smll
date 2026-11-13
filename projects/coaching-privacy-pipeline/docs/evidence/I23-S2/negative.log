@@ -1,0 +1,4 @@
+== negative ==
+unrelated groups: no MULTI_SESSION_LINK injected, baseline decisions untouched
+no --link-group-key: cross_session_risks = NOT_ASSESSED_NO_GROUP_KEY (never an empty clean list)
+FAILED sessions never promoted (ReleaseGate rule, S4 regression)

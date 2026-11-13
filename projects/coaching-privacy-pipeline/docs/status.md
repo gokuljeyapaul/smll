@@ -218,3 +218,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I23-S1/e2e.log). **Negative:** [negative.log](evidence/I23-S1/negative.log). **Machine report:** [summary.json](evidence/I23-S1/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I23-S1-honest-report-markers`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** issue #23 slice 2 — cross-session linkage in batch runs (deps #21 ✅).
+
+### I23-S2 — Cross-session linkage in batch runs (issue #23 slice 2)
+
+- **Delivered at:** 2026-11-14T02:50+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #36 merged as `82d8df23fea4e31b5856276a2e8d32d2d94d118d`)
+- **Scope:** `process --link-group-key <metadata key>` groups batch sessions; `CrossSessionLinker.assess_sessions` + `ReleaseGate.gate` run across each group; linked sessions are rewritten to REVIEW_REQUIRED with `MULTI_SESSION_LINK` (FAILED/BLOCKED never promoted); per-session reports get real `cross_session_risks` lists; `batch_linkage_report.json` (groups, risks, group decisions) written to the output root; no group key → `NOT_ASSESSED_NO_GROUP_KEY` (never an empty clean list). Single-session pipeline unchanged.
+- **RED proof:** [evidence/I23-S2/red.log](evidence/I23-S2/red.log) — 3 failed. **GREEN:** [green.log](evidence/I23-S2/green.log) — 3 passed; full chunks fast 60 / integration 21 / e2e+negative 52, exit 0.
+- **E2E:** [e2e.log](evidence/I23-S2/e2e.log). **Negative:** [negative.log](evidence/I23-S2/negative.log). **Machine report:** [summary.json](evidence/I23-S2/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I23-S2-batch-linkage`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** #11 slice 1 (after #19 ✅) — language-consistency gate.

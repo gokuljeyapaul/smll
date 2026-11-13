@@ -1,0 +1,29 @@
+{
+  "slice": "I23-S2",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/23",
+  "scope": "Cross-session linkage in batch runs: --link-group-key groups sessions (metadata key); CrossSessionLinker + ReleaseGate applied across the batch; linked sessions -> REVIEW_REQUIRED with MULTI_SESSION_LINK; batch_linkage_report.json emitted; no group key -> NOT_ASSESSED_NO_GROUP_KEY",
+  "date": "2026-11-14",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/e2e/test_i23s2_e2e.py -q",
+    "exit_code": 1,
+    "result": "3 failed: --link-group-key unknown; no linkage in batch runs; batch marker differed",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/e2e/test_i23s2_e2e.py -q  -> 3 passed",
+      "full suite chunks: fast 60 / integration 21 / e2e+negative 52, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {"evidence": "negative.log"},
+  "changed_files": [
+    "src/coaching_privacy/cli.py (--link-group-key)",
+    "src/coaching_privacy/engine.py (batch linkage via CrossSessionLinker/ReleaseGate; per-session report/decision rewrite in staging; batch_linkage_report.json)",
+    "tests/e2e/test_i23s2_e2e.py (new)"
+  ],
+  "gate_impact": "batch-mode only; single-session pipeline untouched. Linked groups: REVIEW_REQUIRED (more restrictive, never more permissive). Full regression green.",
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I23-S2-batch-linkage", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "82d8df23fea4e31b5856276a2e8d32d2d94d118d (PR #36, I23-S1)"
+}
