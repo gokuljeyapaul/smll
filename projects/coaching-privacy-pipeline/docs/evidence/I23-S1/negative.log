@@ -1,0 +1,2 @@
+== negative: honesty ==
+no report field asserts a pass for a stage not in executed_stages; cross_session_risks and semantic_fidelity carry NOT_ASSESSED markers with reasons

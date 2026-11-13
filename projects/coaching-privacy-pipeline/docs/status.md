@@ -208,3 +208,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I12/e2e.log). **Negative:** [negative.log](evidence/I12/negative.log). **Machine report:** [summary.json](evidence/I12/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I12-csv-mapping`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** #23 slice 2 (deps #21 ✅).
+
+### I23-S1 — Honest report markers (issue #23 slice 1)
+
+- **Delivered at:** 2026-11-14T01:05+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #35 merged as `e76e89194ba550884c6902b78f19faa16ff76dea`)
+- **Scope:** `cross_session_risks` and `semantic_fidelity` no longer hardcode pass-looking values; both carry `{"status": "NOT_ASSESSED", "reason": ...}` unless the check actually ran. Cross-session linkage runs only in batch mode with a group key (slice 2); fidelity needs reference facts (evaluation harness only — A09 wording: exercised by the eval CLI/tests, not the pipeline).
+- **RED proof:** [evidence/I23-S1/red.log](evidence/I23-S1/red.log) — 2 failed. **GREEN:** [green.log](evidence/I23-S1/green.log) — 2 passed; full chunks fast 60 / integration 21 / e2e+negative 49, exit 0.
+- **E2E:** [e2e.log](evidence/I23-S1/e2e.log). **Negative:** [negative.log](evidence/I23-S1/negative.log). **Machine report:** [summary.json](evidence/I23-S1/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I23-S1-honest-report-markers`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** issue #23 slice 2 — cross-session linkage in batch runs (deps #21 ✅).

@@ -194,8 +194,14 @@ def process_transcript(
         "context_risks": context_risks,
         "context_spans": context_spans_by_turn if context_error is None else {},
         "context_stage_error": context_error,
-        "cross_session_risks": [],  # implemented from S4
-        "semantic_fidelity": {"turn_count_preserved": True},  # scoped checks from S2
+        "cross_session_risks": {  # I23: honest marker — linkage runs only in batch mode with a group key (slice 2)
+            "status": "NOT_ASSESSED",
+            "reason": "cross-session linkage not executed for a single-session run",
+        },
+        "semantic_fidelity": {  # I23: honest marker — fidelity needs reference facts (evaluation only)
+            "status": "NOT_ASSESSED",
+            "reason": "no reference preservation facts available at pipeline runtime (evaluation-mode check)",
+        },
         "review_reasons": [],
         "stage_timings_ms": {},
         "created_at": _now(),
