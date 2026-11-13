@@ -1,0 +1,3 @@
+== negative: fail-closed ==
+missing metadata.asr.uncertain on synthetic_audio -> treated as uncertain -> REVIEW_REQUIRED, never RELEASE_CANDIDATE (test_missing_uncertain_flag_fail_closed)
+uncertain=True -> REVIEW_REQUIRED with reason asr_uncertainty_requires_review; differential baseline uncertain=False -> RELEASE_CANDIDATE proves the ASR path is the cause

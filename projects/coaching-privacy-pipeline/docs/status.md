@@ -162,3 +162,16 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I19-S1-asr-confidence`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Limitations:** engine does not yet consume `uncertain` for `synthetic_audio` transcripts (issue #19 slice 2); tiny.en confidence under moderate clipping documented.
 - **Next:** issue #19 slice 2 — carry uncertainty to the gate.
+
+### I19-S2 — ASR uncertainty carried to the gate (issue #19 slice 2)
+
+- **Delivered at:** 2026-11-13T19:30+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #31 merged as `1ee49c08ccf4f8174fa591394a1e84ec6a3259d9`)
+- **Scope:** new `transcript_from_asr` helper builds the canonical `Transcript` with `metadata.asr` provenance (model/engine/speaker_attribution/uncertain/signals/language/language_probability); `engine.process_transcript` reads `metadata.asr.uncertain` for `source_type == synthetic_audio` and passes `asr_uncertain` to the SafetyGate — missing or non-boolean value is treated as **uncertain (fail closed)** → `REVIEW_REQUIRED` with `asr_uncertainty_requires_review`; report records `report["asr"]` provenance; S5 e2e uses the helper instead of hand-built dicts.
+- **RED proof:** [evidence/I19-S2/red.log](evidence/I19-S2/red.log) — 4 failed (uncertain audio released as RELEASE_CANDIDATE; missing flag released; no provenance).
+- **GREEN proof:** [evidence/I19-S2/green.log](evidence/I19-S2/green.log) — 5 passed; full chunks fast 60 / integration 21 / e2e+negative 36, all exit 0.
+- **E2E proof:** [evidence/I19-S2/e2e.log](evidence/I19-S2/e2e.log). **Negative proof:** [evidence/I19-S2/negative.log](evidence/I19-S2/negative.log).
+- **Machine report:** [evidence/I19-S2/summary.json](evidence/I19-S2/summary.json).
+- **Gate impact:** none on the 18 text seed fixtures (all `synthetic_text`; `asr_uncertain=False` path identical); audio path proven by differential e2e (uncertain → REVIEW_REQUIRED; certain → RELEASE_CANDIDATE).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I19-S2-asr-gate-wiring`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** #20 GLiNER windowing (deps #18 ✅, #19 ✅ after this merge).
