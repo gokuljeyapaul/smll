@@ -1,0 +1,79 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+_______________________ test_json_array_batch_end_to_end _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-163/test_json_array_batch_end_to_e0')
+
+    def test_json_array_batch_end_to_end(tmp_path):
+        batch = tmp_path / "batch.json"
+        batch.write_text(json.dumps([TRANSCRIPT_A]))
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(batch), "--policy",
+                  "internal_coaching_analysis", "--output", str(out)])
+>       assert r.returncode == 0, r.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/src/coaching_privacy/cli.py", line 36, in <module>
+E             raise SystemExit(main())
+E                              ^^^^^^
+E           File "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/src/coaching_privacy/cli.py", line 28, in main
+E             run_pipeline(args)
+E           File "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/src/coaching_privacy/engine.py", line 292, in run_pipeline
+E             transcript = Transcript.parse(record["transcript"])
+E                                           ~~~~~~^^^^^^^^^^^^^^
+E         TypeError: list indices must be integers or slices, not str
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...                                  ~~~~~~^^^^^^^^^^^^^^\nTypeError: list indices must be integers or slices, not str\n').returncode
+
+tests/e2e/test_i21_e2e.py:40: AssertionError
+__________________________ test_csv_batch_end_to_end ___________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-163/test_csv_batch_end_to_end0')
+
+    def test_csv_batch_end_to_end(tmp_path):
+        csv_content = (
+            "session_id,turn_index,speaker_role,utterance\n"
+            'i21-c,1,CLIENT,"I want clearer boundaries."\n'
+        )
+        batch = tmp_path / "batch.csv"
+        batch.write_text(csv_content)
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(batch), "--policy",
+                  "internal_coaching_analysis", "--output", str(out)])
+>       assert r.returncode == 0, r.stderr
+E       AssertionError: error: Expecting value: line 1 column 1 (char 0)
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...test_csv_batch_end_to_end0/out'], returncode=2, stdout='', stderr='error: Expecting value: line 1 column 1 (char 0)\n').returncode
+
+tests/e2e/test_i21_e2e.py:56: AssertionError
+_______________ test_malformed_record_leaves_no_partial_outputs ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-163/test_malformed_record_leaves_n0')
+
+    def test_malformed_record_leaves_no_partial_outputs(tmp_path):
+        good = dict(TRANSCRIPT_A)
+        bad = {"transcript": {"session_id": "i21-b", "not": "a transcript"}}
+        batch = tmp_path / "batch.json"
+        batch.write_text(json.dumps([good, bad]))
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(batch), "--policy",
+                  "internal_coaching_analysis", "--output", str(out)])
+>       assert r.returncode == 2, (r.returncode, r.stdout, r.stderr)
+E       AssertionError: (1, '', 'Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<froze...                                  ~~~~~~^^^^^^^^^^^^^^
+E         TypeError: list indices must be integers or slices, not str
+E         ')
+E       assert 1 == 2
+E        +  where 1 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...                                  ~~~~~~^^^^^^^^^^^^^^\nTypeError: list indices must be integers or slices, not str\n').returncode
+
+tests/e2e/test_i21_e2e.py:68: AssertionError
+=========================== short test summary info ============================
+FAILED tests/e2e/test_i21_e2e.py::test_json_array_batch_end_to_end - Assertio...
+FAILED tests/e2e/test_i21_e2e.py::test_csv_batch_end_to_end - AssertionError:...
+FAILED tests/e2e/test_i21_e2e.py::test_malformed_record_leaves_no_partial_outputs
+3 failed, 1 passed in 41.78s
+exit=1
