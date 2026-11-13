@@ -118,10 +118,55 @@ class VerifyEvidenceTests(unittest.TestCase):
         self.assertTrue(any("unknown acceptance ID A99" in p for p in probs))
         self.assertTrue(any("invalid status" in p for p in probs))
 
-    def test_complete_phase_requires_all_ids(self):
+    def test_complete_phase_requires_all_ids_in_final_summary(self):
         self.set_phase("COMPLETE")
         self.write_summary({"A30": {"status": "NOT_RUN", "notes": "no device"}})
         self.assertTrue(any("COMPLETE phase" in p for p in verify_evidence.verify(self.tmp)))
+        full = {a: {"status": "NOT_RUN", "notes": "n/a"} for a in verify_evidence.plan_ids(self.tmp)}
+        self.write_summary(full)
+        self.assertEqual(verify_evidence.verify(self.tmp), [])
+
+    def _write_slice_summary(self, name, acceptance, digest):
+        d = self.tmp / "docs" / "evidence" / name
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "summary.json").write_text(json.dumps(
+            {"slice": name, "source_digest": digest, "acceptance": acceptance}))
+
+    def test_old_slice_digest_is_historical_current_slice_is_enforced(self):
+        # S0 evidence was produced from older code; S1 is current and fresh -> OK.
+        self._write_slice_summary("S0", {"A30": {"status": "NOT_RUN", "notes": "x"}}, "old-digest")
+        self._write_slice_summary("S1", {"A30": {"status": "NOT_RUN", "notes": "x"}},
+                                  verify_evidence.source_digest(self.tmp))
+        (self.tmp / "docs" / "evidence" / "S0" / "summary.json").exists()
+        self.set_phase("BUILDING")
+        probs = verify_evidence.verify(self.tmp)
+        self.assertEqual([p for p in probs if "stale" in p], [])
+
+    def test_stale_digest_on_current_slice_fails_even_with_old_slices(self):
+        self._write_slice_summary("S0", {"A30": {"status": "NOT_RUN", "notes": "x"}}, "old-digest")
+        self._write_slice_summary("S1", {"A30": {"status": "NOT_RUN", "notes": "x"}}, "also-old")
+        self.assertTrue(any("S1/summary.json" in p and "stale" in p
+                            for p in verify_evidence.verify(self.tmp)))
+
+    def test_ready_for_merge_slice_requires_summary(self):
+        (self.tmp / "milestone-status.json").write_text(json.dumps(
+            {"phase": "BUILDING", "current_slice": "S1",
+             "slices": {"S1": {"status": "READY_FOR_MERGE"}}}))
+        self.assertTrue(any("has no docs/evidence/S1/summary.json" in p
+                            for p in verify_evidence.verify(self.tmp)))
+
+    def test_platform_judged_from_junit_path_not_testcase_name(self):
+        # 'radios_off' contains the letters 'ios' but must not satisfy the iOS requirement.
+        self.write_junit("android.xml", '<testsuite><testcase name="radios_off"/></testsuite>')
+        self.write_junit("ios.xml", JUNIT_OK)
+        self.write_summary({"A02": {"status": "PASS", "tests": [
+            "junit:docs/evidence/S0/junit/android.xml::radios_off"]}})
+        probs = verify_evidence.verify(self.tmp)
+        self.assertTrue(any("ios test reference" in p for p in probs))
+        self.assertEqual(verify_evidence.ref_platforms(
+            "junit:docs/evidence/S0/junit/android.xml::radios_off"), {"android"})
+        self.assertEqual(verify_evidence.ref_platforms(
+            "junit:docs/evidence/S0/junit/radios.xml::x"), set())
 
     def test_video_must_be_in_manifest_with_passing_test(self):
         self.write_junit("ios.xml", JUNIT_OK)

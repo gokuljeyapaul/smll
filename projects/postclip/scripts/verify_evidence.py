@@ -13,9 +13,14 @@ Phase BUILDING / COMPLETE: for every docs/evidence/<slice>/summary.json:
     path contains the platform name for each required platform;
   * a video reference "video:<id>" must exist in docs/evidence/video_manifest.json
     with sha256, size_bytes and a junit testcase that passed;
-  * summary.json `source_digest` must equal the digest recomputed from the
-    working tree (evidence produced from different code is stale);
-  * COMPLETE phase: every acceptance ID must be accounted for in some summary.
+  * the CURRENT slice's summary.json `source_digest` must equal the digest
+    recomputed from the working tree (evidence produced from different code is
+    stale). Earlier slices' summaries are historical and are not re-checked
+    against the digest. The current slice is milestone-status.json
+    `current_slice`, else the newest slice that has a summary. A slice whose
+    status is READY_FOR_MERGE/MERGED must have a summary;
+  * COMPLETE phase: the newest (final) summary must account for every
+    acceptance ID on the final tree.
 
 Usage:
   verify_evidence.py [--root DIR] [--print-digest]
@@ -59,6 +64,23 @@ def source_digest(root):
         h.update(str(f.relative_to(root)).encode("utf-8") + b"\0")
         h.update(hashlib.sha256(f.read_bytes()).hexdigest().encode("ascii") + b"\n")
     return h.hexdigest()
+
+
+def ref_platforms(ref):
+    """Platforms a test reference belongs to, judged from the JUnit FILE PATH only
+    (never the testcase name: 'radios_off' must not count as 'ios')."""
+    m = re.fullmatch(r"junit:(.+?)::(.+)", ref)
+    path = m.group(1).lower() if m else ""
+    found = set()
+    for plat in ("ios", "android"):
+        if re.search(r"(^|[/_\-.])" + plat + r"([/_\-.]|$)", path):
+            found.add(plat)
+    return found
+
+
+def slice_num(name):
+    m = re.fullmatch(r"S(\d+)", name or "")
+    return int(m.group(1)) if m else -1
 
 
 def junit_testcase_passed(root, ref):
@@ -113,6 +135,19 @@ def verify(root):
         manifest = {v["id"]: v for v in json.loads(mf.read_text()).get("videos", [])}
     current_digest = source_digest(root)
     accounted = set()
+    status_doc = json.loads(status_file.read_text())
+    by_slice = {sf.parent.name: sf for sf in summaries}
+    current = status_doc.get("current_slice")
+    if not current and by_slice:
+        current = max(by_slice, key=slice_num)
+    # A slice that claims to be ready/merged must have evidence.
+    for sname, sinfo in (status_doc.get("slices") or {}).items():
+        if (sinfo or {}).get("status") in ("READY_FOR_MERGE", "MERGED", "DELIVERED") \
+                and sname not in by_slice:
+            problems.append("slice %s is %s but has no docs/evidence/%s/summary.json"
+                            % (sname, sinfo["status"], sname))
+    newest = max(by_slice, key=slice_num) if by_slice else None
+    newest_accounted = set()
 
     for sf in summaries:
         rel = str(sf.relative_to(root))
@@ -121,7 +156,7 @@ def verify(root):
         except ValueError as exc:
             problems.append("%s: invalid JSON (%s)" % (rel, exc))
             continue
-        if data.get("source_digest") != current_digest:
+        if sf.parent.name == current and data.get("source_digest") != current_digest:
             problems.append("%s: stale evidence (source_digest does not match working tree)" % rel)
         for aid, entry in (data.get("acceptance") or {}).items():
             if aid not in ids:
@@ -132,6 +167,8 @@ def verify(root):
                 problems.append("%s: %s has invalid status %r" % (rel, aid, status))
                 continue
             accounted.add(aid)
+            if sf.parent.name == newest:
+                newest_accounted.add(aid)
             tests = entry.get("tests") or []
             if status == "PASS":
                 if not tests:
@@ -144,7 +181,7 @@ def verify(root):
                 needed = {"both": ["ios", "android"], "ios": ["ios"],
                           "android": ["android"]}.get(plat, [])
                 for p in needed:
-                    if not any(p in t.lower() for t in tests):
+                    if not any(p in ref_platforms(t) for t in tests):
                         problems.append("%s: %s needs a %s test reference (platform %s)"
                                         % (rel, aid, p, plat))
             elif status in ("PARTIAL", "NOT_RUN", "BLOCKED") and not entry.get("notes"):
@@ -164,9 +201,12 @@ def verify(root):
                         problems.append("video %s: %s" % (vid, why))
 
     if phase == "COMPLETE":
+        if not newest:
+            problems.append("COMPLETE phase: no summary.json exists")
         for aid in ids:
-            if aid not in accounted:
-                problems.append("COMPLETE phase: %s has no status in any summary.json" % aid)
+            if aid not in newest_accounted:
+                problems.append("COMPLETE phase: %s is not accounted for in the final "
+                                "summary (%s)" % (aid, newest))
     return problems
 
 

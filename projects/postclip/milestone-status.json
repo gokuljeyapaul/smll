@@ -4,7 +4,7 @@
   "phase": "PLAN_ONLY",
   "current_slice": null,
   "owner_decisions": {
-    "D1_ci_strategy": "PENDING_OWNER_CONFIRMATION (default: split — see docs/BUILD_PLAN.md)"
+    "D1_ci_strategy": "PENDING_OWNER_CONFIRMATION (choose self_hosted_mac_runner or split_with_root_exception; see docs/BUILD_PLAN.md)"
   },
   "slices": {
     "S0": {"status": "NOT_STARTED"},

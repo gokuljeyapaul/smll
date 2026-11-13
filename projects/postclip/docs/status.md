@@ -5,7 +5,7 @@
 - **Phase:** `PLAN_ONLY` — specification and verification tooling only. **No app code, no device tests, no video, no model evidence exists.**
 - **Active slice:** none
 - **Overall engineering result:** `NOT_STARTED`
-- **Open owner decision:** D1 CI strategy (default: split; needs confirmation before S0 touches `.github/`)
+- **Open owner decision:** D1 CI strategy (`self_hosted_mac_runner` or `split_with_root_exception`) — must be recorded in `milestone-status.json` before the build starts
 - **Next required action:** run the building agent with `docs/HERMES_PROMPT.md` after the plan PR is merged; start with S0.
 
 ## Slice overview
