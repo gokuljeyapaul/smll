@@ -1,0 +1,3 @@
+== negative ==
+missing/malformed language -> ContractError, exit 2, zero session dirs (unchanged fail-closed contract)
+unsupported language -> sanitized withheld (empty), zero detector calls, REVIEW_REQUIRED/unsupported_language; English batch continues (per-session, no abort)

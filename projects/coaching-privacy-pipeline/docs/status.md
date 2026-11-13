@@ -228,3 +228,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I23-S2/e2e.log). **Negative:** [negative.log](evidence/I23-S2/negative.log). **Machine report:** [summary.json](evidence/I23-S2/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I23-S2-batch-linkage`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** #11 slice 1 (after #19 ✅) — language-consistency gate.
+
+### I11-S1 — Fail-closed per-session language gate (issue #11 slice 1)
+
+- **Delivered at:** 2026-11-14T04:45+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #37 merged as `024a44944852c973b189e6593b58b3e715fc8a78`)
+- **Scope:** well-formed but unsupported languages (e.g. `de`) now process **per-session**: sanitized output withheld (empty), honest `language_gate: {status: UNSUPPORTED}` report block, decision `REVIEW_REQUIRED` / `unsupported_language`, **zero detector calls** (gate short-circuits before Presidio/GLiNER); other sessions in the batch continue. Malformed/missing language remains `ContractError` (exit 2, no outputs). `asr_language_mismatch` (ASR-detected language ≠ declared) routes to REVIEW. Decision per the revised plan: REVIEW_REQUIRED, not BLOCKED (reserved for confirmed residual PII).
+- **RED proof:** [evidence/I11-S1/red.log](evidence/I11-S1/red.log) — 3 failed. **GREEN:** [green.log](evidence/I11-S1/green.log) — 4 passed; full chunks fast 60 / integration 21 / e2e+negative 56, exit 0.
+- **E2E:** [e2e.log](evidence/I11-S1/e2e.log). **Negative:** [negative.log](evidence/I11-S1/negative.log). **Machine report:** [summary.json](evidence/I11-S1/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I11-S1-language-gate`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** #13 (deps #18 ✅, #19 ✅) — runtime ASR quality budget.

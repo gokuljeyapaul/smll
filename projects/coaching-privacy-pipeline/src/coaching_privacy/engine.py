@@ -39,6 +39,45 @@ def process_transcript(
     from .transform import StableReplacer, redact_utterance
     from .validator import IndependentLeakValidator
 
+    # I11-S1: per-session language gate. Unsupported languages must
+    # short-circuit BEFORE any English detector runs: sanitized output
+    # withheld (empty), honest language_gate report block, REVIEW_REQUIRED.
+    if transcript.language not in {"en"}:
+        gate = SafetyGate()
+        decision = gate.decide(
+            {"validator_available": True, "asr_uncertain": False,
+             "all_mandatory_stages_executed": False},
+            purpose=transcript.purpose,
+        )
+        decision = dict(decision)
+        reasons = list(decision.get("review_reasons", []))
+        if "unsupported_language" not in reasons:
+            reasons.append("unsupported_language")
+        decision["review_reasons"] = reasons
+        return SessionResult(
+            session_id=transcript.session_id,
+            decision=decision,
+            sanitized={"session_id": transcript.session_id, "utterances": []},
+            report={
+                "schema_version": "1.0",
+                "session_id": transcript.session_id,
+                "pipeline_version": __version__,
+                "policy": transcript.purpose,
+                "language": transcript.language,
+                "language_gate": {
+                    "status": "UNSUPPORTED",
+                    "language": transcript.language,
+                    "reason": "language not in SUPPORTED_LANGUAGES; detection withheld",
+                },
+                "residual_pii": [],
+                "context_risks": [],
+                "cross_session_risks": {"status": "NOT_ASSESSED", "reason": "language gate withheld processing"},
+                "semantic_fidelity": {"status": "NOT_ASSESSED", "reason": "language gate withheld processing"},
+                "executed_stages": [],
+                "review_reasons": decision["review_reasons"],
+            },
+        )
+
     # Mandatory real detector stage, cached per process (spaCy loads once).
     # Fail closed on unavailability.
     detector = _get_detector()
@@ -208,6 +247,19 @@ def process_transcript(
     }
     # I19-S2: audio transcripts carry ASR uncertainty in metadata; the gate
     # consumes it (fail closed: missing/non-boolean = uncertain).
+    # I11-S1: an ASR-detected language that contradicts the declared
+    # language routes to REVIEW (asr_language_mismatch).
+    if (
+        transcript.source_type == "synthetic_audio"
+        and isinstance(asr_md_lookup(transcript), dict)
+        and asr_md_lookup(transcript).get("language")
+        and asr_md_lookup(transcript).get("language") != transcript.language
+    ):
+        decision = dict(decision)
+        reasons = list(decision.get("review_reasons", []))
+        if "asr_language_mismatch" not in reasons:
+            reasons.append("asr_language_mismatch")
+        decision["review_reasons"] = reasons
     asr_md = (transcript.metadata or {}).get("asr")
     if transcript.source_type == "synthetic_audio":
         asr_uncertain = (
@@ -507,6 +559,10 @@ def _get_context_extractor():
     except Exception:
         _EXTRACTOR_CACHE["ex"] = _FAILED_EXTRACTOR
     return _EXTRACTOR_CACHE["ex"]
+
+
+def asr_md_lookup(transcript: Any) -> Any:
+    return (transcript.metadata or {}).get("asr")
 
 
 # --- I20: whole-turn windowing for the contextual stage ---
