@@ -1,0 +1,92 @@
+FF.F                                                                     [100%]
+=================================== FAILURES ===================================
+_____________________ test_german_session_review_not_abort _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-198/test_german_session_review_not0')
+
+    def test_german_session_review_not_abort(tmp_path):
+        r, out = _run([_record("de-1", "de")], tmp_path)
+>       assert r.returncode == 0, (r.returncode, r.stdout, r.stderr)
+E       AssertionError: (2, '', "error: unsupported language: 'de'
+E         ")
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...ytest-198/test_german_session_review_not0/out'], returncode=2, stdout='', stderr="error: unsupported language: 'de'\n").returncode
+
+tests/e2e/test_i11s1_e2e.py:54: AssertionError
+_______________ test_german_session_does_not_abort_english_batch _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-198/test_german_session_does_not_a0')
+
+    def test_german_session_does_not_abort_english_batch(tmp_path):
+        records = [_record("en-1", "en", "I want to lead my team better."),
+                   _record("de-1", "de")]
+        r, out = _run(records, tmp_path)
+>       assert r.returncode == 0, (r.returncode, r.stdout, r.stderr)
+E       AssertionError: (2, '', "error: unsupported language: 'de'
+E         ")
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...ytest-198/test_german_session_does_not_a0/out'], returncode=2, stdout='', stderr="error: unsupported language: 'de'\n").returncode
+
+tests/e2e/test_i11s1_e2e.py:69: AssertionError
+_____________ test_detector_never_called_for_unsupported_language ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-198/test_detector_never_called_for0')
+
+    def test_detector_never_called_for_unsupported_language(tmp_path):
+        """The language gate must short-circuit before any English detector."""
+        from coaching_privacy.contracts import Transcript
+        from coaching_privacy.engine import process_transcript
+        from coaching_privacy.policy import PolicyStore
+    
+        calls = {"n": 0}
+    
+        import coaching_privacy.engine as engine_mod
+    
+        class _SpyDetector:
+            def detect(self, text):
+                calls["n"] += 1
+                return []
+    
+            def model_versions(self):
+                return {}
+    
+        orig = engine_mod._get_detector
+        engine_mod._get_detector = lambda: _SpyDetector()
+        try:
+>           t = Transcript.parse(_record("de-2", "de")["transcript"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_i11s1_e2e.py:104: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'coaching_privacy.contracts.Transcript'>
+data = {'schema_version': '1.0', 'session_id': 'de-2', 'source_type': 'synthetic_text', 'purpose': 'internal_coaching_analysis', ...}
+
+    @classmethod
+    def parse(cls, data: dict[str, Any]) -> "Transcript":
+        if not isinstance(data, dict):
+            raise ContractError("transcript must be a JSON object")
+        if data.get("schema_version") != SUPPORTED_SCHEMA_VERSION:
+            raise ContractError(
+                f"unsupported schema_version: {data.get('schema_version')!r}"
+            )
+        source = data.get("source_type")
+        if source not in ALLOWED_SOURCE_TYPES:
+            raise ContractError(f"disallowed source_type: {source!r}")
+        purpose = data.get("purpose")
+        if not isinstance(purpose, str) or not purpose:
+            raise PolicyError(f"missing or invalid purpose: {purpose!r}")
+        if purpose not in KNOWN_PURPOSES:
+            # Fail closed: unknown purpose can never be approved.
+            raise PolicyError(f"unknown purpose: {purpose!r}")
+        if data.get("language") not in SUPPORTED_LANGUAGES:
+>           raise ContractError(f"unsupported language: {data.get('language')!r}")
+E           coaching_privacy.contracts.ContractError: unsupported language: 'de'
+
+src/coaching_privacy/contracts.py:69: ContractError
+=========================== short test summary info ============================
+FAILED tests/e2e/test_i11s1_e2e.py::test_german_session_review_not_abort - As...
+FAILED tests/e2e/test_i11s1_e2e.py::test_german_session_does_not_abort_english_batch
+FAILED tests/e2e/test_i11s1_e2e.py::test_detector_never_called_for_unsupported_language
+3 failed, 1 passed in 0.53s
+exit=1
