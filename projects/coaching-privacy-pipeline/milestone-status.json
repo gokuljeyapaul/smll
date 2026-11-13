@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I16",
+    "current": "I22-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -432,6 +432,36 @@
         "summary_path": "docs/evidence/I16/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I16-fast-slow-markers",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/29",
+          "state": "MERGED",
+          "merge_sha": "efea5e0291b845108e339e2b27befedb21b926a5"
+        }
+      },
+      "I22-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #22 slice 1: validator second pass (structured-identifier rescan + echo check), BLOCKED reachable without gold lists; 18-fixture decisions unchanged",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i22_unit.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I22-S1/red.log",
+          "expected_failure": "re-inserted identifiers released with prohibited_leaks=[]"
+        },
+        "green": {
+          "command": "test_i22_unit 5 passed; test.sh 111 passed; fast lane 55 passed",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I22-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I22-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I22-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I22-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I22-S1-independent-validator",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

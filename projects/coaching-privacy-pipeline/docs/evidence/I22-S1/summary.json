@@ -1,0 +1,53 @@
+{
+  "slice": "I22-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/22",
+  "scope": "Independent validator second pass: structured-identifier rescan (email/phone/URL/@handle/IPv4/card-Luhn/long-digit tokens) + replaced-value echo check; validator docstring fixed; engine passes replaced values in-process",
+  "date": "2026-11-13",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_i22_unit.py -q",
+    "exit_code": 1,
+    "result": "4 failed: re-inserted email/phone with prohibited_leaks=[] released (not BLOCKED); echo check did not exist; card finding not reported",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/unit/test_i22_unit.py -q  -> 5 passed, exit 0",
+      "bash scripts/test.sh  -> 111 passed, exit 0 (734.69s)",
+      ".venv/bin/python -m pytest -m fast -q  -> 55 passed (1.71s)"
+    ],
+    "evidence": "green.log"
+  },
+  "gate_impact": {
+    "validator_changed": true,
+    "18_fixture_decision_table": "green.log (before main efea5e0 vs after): all 18 UNCHANGED, 0 more-permissive changes; benign fixtures (S01,S02,S07,S10,S15,S16 actual pipeline decisions) unchanged",
+    "raw_files": ["before-18fixtures.log", "after-18fixtures.log"]
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {
+    "result": "BLOCKED reachable with prohibited_leaks=[] (faulty re-insertion seam); findings record label+length+utterance id only, raw values never in reports",
+    "evidence": "negative.log"
+  },
+  "unit_test_ids": [
+    "test_i22_unit.test_reinserted_email_blocked_without_gold_list",
+    "test_i22_unit.test_reinserted_phone_blocked_without_gold_list",
+    "test_i22_unit.test_clean_text_no_findings",
+    "test_i22_unit.test_echo_check_catches_leaked_detected_value",
+    "test_i22_unit.test_reported_findings_never_contain_raw_values"
+  ],
+  "blind_spots_documented": [
+    "person names not present in the run's replaced-values list",
+    "contextual/quasi-identifier combinations (handled by the GLiNER context stage, not the validator)",
+    "non-English patterns and free-text attributes"
+  ],
+  "changed_files": [
+    "src/coaching_privacy/validator.py (second pass + honest docstring)",
+    "src/coaching_privacy/engine.py (replaced_values collected in-process, passed to validator)",
+    "tests/unit/test_i22_unit.py (RED tests)"
+  ],
+  "limitations": [
+    "Fail-closed bias: conservative patterns may flag rare benign long numbers; measured zero false positives on the 18 seed fixtures",
+    "replaced_values travel in-process only (never disk/logs/reports)"
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I22-S1-independent-validator", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "efea5e0291b845108e339e2b27befedb21b926a5 (PR #29, I16)"
+}

@@ -1,0 +1,6 @@
+== negative: BLOCKED reachable without gold list (2026-11-13) ==
+command: .venv/bin/python -m pytest tests/unit/test_i22_unit.py -q
+test_reinserted_email_blocked_without_gold_list and test_reinserted_phone_blocked_without_gold_list assert decision == BLOCKED
+with prohibited_leaks=[] — the pre-I22 behavior was RELEASE_CANDIDATE (see red.log).
+raw values never appear in reports (test_reported_findings_never_contain_raw_values, test_echo_check_catches_leaked_detected_value).
+exit=0
