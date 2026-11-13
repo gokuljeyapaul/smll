@@ -1,6 +1,9 @@
 """S2 unit tests: purpose-aware transformation policy matrix (A08, A09, A16-scoped)."""
 import sys
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))
@@ -22,6 +25,8 @@ TRANSCRIPT = {
     ],
     "metadata": {"synthetic": True},
 }
+
+
 
 
 def _load_policy(name):

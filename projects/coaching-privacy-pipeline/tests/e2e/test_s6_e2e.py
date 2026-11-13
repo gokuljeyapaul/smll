@@ -1,7 +1,10 @@
 """S6 E2E: one-command audit produces an honest, provenance-complete report (A24)."""
 import json
+import pytest
 import subprocess
 import pathlib
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 

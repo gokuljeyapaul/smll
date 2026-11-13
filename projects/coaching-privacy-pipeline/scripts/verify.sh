@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
-# Verify schemas, gate decisions, and evidence for the delivered slices (S3-aware).
-# Test suite runs in 3 chunks to bound wall-clock on CPU (GLiNER inference).
+# Verify model manifest, artifacts and evidence (I16: the pytest suite is run
+# once, authoritatively, by scripts/test.sh; verify.sh no longer duplicates it).
 set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
-echo "== chunk 0: model manifest sha256 verification (issue #18) =="
+echo "== model manifest sha256 verification (issue #18) =="
 .venv/bin/python scripts/verify_models.py
-echo "== chunk 1: unit + negative =="
-.venv/bin/python -m pytest tests/unit tests/negative -q
-echo "== chunk 2: integration =="
-.venv/bin/python -m pytest tests/integration -q
-echo "== chunk 3: e2e =="
-.venv/bin/python -m pytest tests/e2e -q
+echo "== fast lane bounded check (I16) =="
+timeout 120 .venv/bin/python -m pytest -m fast -q
 .venv/bin/python - <<'PY'
 import json, pathlib
 root = pathlib.Path("artifacts/demo/results")

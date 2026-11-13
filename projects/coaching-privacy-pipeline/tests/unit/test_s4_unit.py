@@ -1,6 +1,9 @@
 """S4 unit tests: cross-session aggregation + linkage rules (A11, A18)."""
 import sys
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

@@ -1,7 +1,10 @@
 """S2 E2E: same transcript processed under two purposes yields different outputs (A08/A09/A17)."""
 import json
+import pytest
 import pathlib
 import subprocess
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

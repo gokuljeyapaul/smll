@@ -15,3 +15,11 @@ privacy-eval = "coaching_privacy.eval_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+markers = [
+    "fast: no real model inference (Presidio/spaCy allowed)",
+    "slow: real GLiNER/Whisper inference, CLI e2e or demo scripts",
+]
+# Deliberately NO `-m` in addopts: CI (scripts/test.sh) runs the full suite
+# (fast or slow); `make test-fast` / `pytest -m fast` selects the fast lane.

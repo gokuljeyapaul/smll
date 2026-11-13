@@ -1,7 +1,10 @@
 """S1 integration tests: data isolation between runtime and evaluator (A05)."""
 import json
+import pytest
 import pathlib
 import subprocess
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

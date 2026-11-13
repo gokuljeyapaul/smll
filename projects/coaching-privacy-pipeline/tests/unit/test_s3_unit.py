@@ -1,6 +1,9 @@
 """S3 unit tests: deterministic cross-turn combination rules + benign negatives (A10)."""
 import sys
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

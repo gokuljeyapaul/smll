@@ -1,8 +1,11 @@
 """S4 E2E: two linkable sessions -> combined release reviewed/blocked; four decision states demo (A11, A17, A18)."""
 import json
+import pytest
 import pathlib
 import subprocess
 import sys
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

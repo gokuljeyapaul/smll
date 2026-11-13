@@ -1,0 +1,10 @@
+== fast lane timing (I16 acceptance) ==
+command: .venv/bin/python -m pytest -m fast -q
+.......................................................                  [100%]
+55 passed, 51 deselected in 1.92s
+exit=0 wall=2s (acceptance: <60s)
+
+== collected counts ==
+55/106 tests collected (51 deselected) in 0.12s
+51/106 tests collected (55 deselected) in 0.11s
+106 tests collected in 0.14s

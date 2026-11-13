@@ -1,7 +1,10 @@
 """S1 negative tests: malformed annotations, persona overlap fail closed."""
 import json
+import pytest
 import pathlib
 import sys
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

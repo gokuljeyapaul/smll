@@ -1,7 +1,10 @@
 """S1 E2E: generate -> process -> eval pipeline on aligned same-seed data (A19)."""
 import json
+import pytest
 import pathlib
 import subprocess
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

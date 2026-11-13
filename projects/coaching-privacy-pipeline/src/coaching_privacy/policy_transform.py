@@ -23,10 +23,16 @@ class TransformResult:
     report: dict[str, Any]
 
 
-def transform_transcript(transcript: Transcript, policy: dict[str, Any]) -> TransformResult:
+def transform_transcript(
+    transcript: Transcript,
+    policy: dict[str, Any],
+    context_extractor: Any = None,
+) -> TransformResult:
     from .engine import process_transcript
 
-    result = process_transcript(transcript, policy)
+    result = process_transcript(
+        transcript, policy, context_extractor=context_extractor
+    )
     return TransformResult(
         sanitized_utterances=result.sanitized.get("utterances", []),
         sanitized=result.sanitized,

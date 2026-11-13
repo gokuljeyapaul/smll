@@ -1,6 +1,9 @@
 """S0 negative/privacy tests: fail-closed decisions (A07, A15)."""
 import json
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURES = PROJECT / "fixtures"

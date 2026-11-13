@@ -1,7 +1,10 @@
 """S1 unit tests: deterministic fixture generation, gold spans, isolation (A03-A05)."""
 import json
+import pytest
 import pathlib
 import subprocess
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 VENV_BIN = PROJECT / ".venv" / "bin"

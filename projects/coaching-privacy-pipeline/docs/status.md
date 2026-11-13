@@ -118,3 +118,18 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I18-S2-runtime-fail-closed`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Limitations:** verification cached per process on success only; spaCy model wheel-pinned (see I18-S1).
 - **Next:** issue #18 complete after merge → proceed to #16 fast/slow markers per the post-S7 order.
+
+### I16 — Fast/slow test markers (issue #16)
+
+- **Delivered at:** 2026-11-13T15:40+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #28 merged as `f959d526b524295d5ca293d12d9ff40d54f324ab`)
+- **Scope:** every test carries exactly one `fast`/`slow` marker (unmarked/double-marked fails the run); `fast` tests get an autouse guard blocking GLiNER/Whisper loads ("model loaded in a fast test"); `engine.process_transcript(..., context_extractor=)` allows stub injection for engine-logic tests (stubs never count as model evidence); `test.sh` runs `-m "fast or slow"` explicitly (CI unchanged in scope); `verify.sh` runs the verifier + fast lane under a 120s timeout + artifact checks, no longer duplicating the suite; `make test-fast`; README documents the split.
+- **Measured:** fast lane 55 tests in 1.92s (acceptance <60s PASS); full suite 106 tests in 643.84s, exit 0 (same 106 collected as before the split — no coverage loss).
+- **RED proof:** [evidence/I16/red.log](evidence/I16/red.log) — 4 failed (no markers, no guard, empty fast lane).
+- **GREEN proof:** [evidence/I16/green.log](evidence/I16/green.log).
+- **E2E proof:** [evidence/I16/e2e.log](evidence/I16/e2e.log).
+- **Negative proof:** [evidence/I16/negative.log](evidence/I16/negative.log) — marker discipline + guard behavioral tests, 5 passed.
+- **Machine report:** [evidence/I16/summary.json](evidence/I16/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I16-fast-slow-markers`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Limitations:** `test_s2_unit.py` moved to the slow lane (its expected outcomes depend on real GLiNER spans); marker discipline skipped during `--collect-only`.
+- **Next:** #22 independent validator (after #18, #16).

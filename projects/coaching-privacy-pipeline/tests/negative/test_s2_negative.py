@@ -1,6 +1,9 @@
 """S2 negative tests: meaning-changing transform is flagged, never silently released."""
 import sys
+import pytest
 import pathlib
+
+pytestmark = pytest.mark.fast
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

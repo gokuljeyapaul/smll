@@ -1,7 +1,10 @@
 """S5 integration tests: real faster-whisper CPU transcription contract (A13)."""
 import subprocess
+import pytest
 import sys
 import pathlib
+
+pytestmark = pytest.mark.slow
 
 PROJECT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT / "src"))

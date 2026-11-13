@@ -1,0 +1,65 @@
+{
+  "slice": "I16",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/16",
+  "scope": "Fast/slow test markers with discipline guard and fast-lane model-load guard; injected extractor parameter for engine; test.sh explicit full suite; verify.sh no longer duplicates the pytest suite; make test-fast; README docs",
+  "date": "2026-11-13",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_i16_markers.py -p pytester -q",
+    "exit_code": 1,
+    "result": "4 failed / 1 passed: unmarked test passed collection; double-marked accepted; fast test loading GLiNER unguarded; -m fast collected 0 tests",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest -m fast -q  -> 55 passed in 1.92s (wall ~2s; acceptance <60s PASS)",
+      "bash scripts/test.sh  -> 106 passed in 643.84s, exit 0 (full suite unchanged in scope)",
+      "bash scripts/verify.sh  -> verifier OK + fast-lane bounded check + artifact verification, exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {
+    "command": "bash scripts/verify.sh",
+    "exit_code": 0,
+    "evidence": "e2e.log"
+  },
+  "negative": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_i16_markers.py -q",
+    "result": "5 passed: unmarked test fails the run; double-marked fails; fast test touching GLiNER loader fails with 'model loaded in a fast test'; slow lane marker-only collection works; real project fast lane non-empty",
+    "evidence": "negative.log"
+  },
+  "counts": {
+    "fast": 55,
+    "slow": 51,
+    "total": 106,
+    "coverage_note": "test.sh runs -m 'fast or slow' explicitly: same 106 tests as before the split (101 at plan time + 5 I18-S2-restructured + 5 I16 marker tests)"
+  },
+  "timing": {
+    "fast_lane": "1.92s (acceptance <60s)",
+    "full_suite": "643.84s (was ~10min before; unchanged scope)"
+  },
+  "ci_timing_step": "verify.sh runs the fast lane under a 120s hard timeout (measured 2.39s)",
+  "changed_files": [
+    "pyproject.toml (markers registered; no -m in addopts)",
+    "tests/conftest.py (marker discipline + fast-lane autouse guard)",
+    "tests/** (every test file: exactly one fast/slow marker)",
+    "src/coaching_privacy/engine.py (process_transcript context_extractor injection)",
+    "src/coaching_privacy/policy_transform.py (transform_transcript context_extractor pass-through)",
+    "scripts/test.sh (explicit -m 'fast or slow')",
+    "scripts/verify.sh (verifier + fast-lane bounded check + artifacts; suite duplication removed)",
+    "Makefile (test-fast target)",
+    "README.md (fast/slow split documented)",
+    "tests/unit/test_i16_markers.py (behavioral marker tests)"
+  ],
+  "gate_impact": "none: pipeline.py/validator.py/thresholds untouched; full-suite decisions identical (106 passed, same expectation values)",
+  "limitations": [
+    "Fast-lane stub extractors are allowed for engine-logic tests and never count as model evidence (project AGENTS.md); no test currently uses a stub — test_s2_unit moved to the slow lane instead because its expected outcomes depend on real GLiNER spans",
+    "Marker discipline does not apply during --collect-only runs (deliberate; selection still requires marks)"
+  ],
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I16-fast-slow-markers",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "f959d526b524295d5ca293d12d9ff40d54f324ab (PR #28, I18-S2)"
+}
