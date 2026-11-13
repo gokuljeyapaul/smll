@@ -1,0 +1,125 @@
+== RED (2026-11-13) ==
+FFFFF.                                                                   [100%]
+=================================== FAILURES ===================================
+_____________________ test_wide_csv_processes_via_mapping ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-175/test_wide_csv_processes_via_ma0')
+
+    def test_wide_csv_processes_via_mapping(tmp_path):
+        csv_path, map_path = _write(tmp_path, WIDE_MAP)
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(csv_path), "--policy",
+                  "internal_coaching_analysis", "--output", str(out),
+                  "--csv-column-map", str(map_path)])
+>       assert r.returncode == 0, (r.stdout, r.stderr)
+E       AssertionError: ('', 'usage: privacy-pipeline [-h] {process} ...
+E         privacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_wide_csv_processes_via_ma0/map.json
+E         ')
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...r: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_wide_csv_processes_via_ma0/map.json\n').returncode
+
+tests/e2e/test_i12_e2e.py:49: AssertionError
+____________ test_mapping_missing_mandatory_field_fails_before_rows ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-175/test_mapping_missing_mandatory0')
+
+    def test_mapping_missing_mandatory_field_fails_before_rows(tmp_path):
+        bad_map = {"format": "long", "session_id": "sid", "turn_index": "n",
+                   "speaker_role": "who"}  # no utterance
+        csv_path = tmp_path / "x.csv"
+        csv_path.write_text("sid,n,who,text\n1,0,CLIENT,hi\n")
+        map_path = tmp_path / "badmap.json"
+        map_path.write_text(json.dumps(bad_map))
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(csv_path), "--policy",
+                  "internal_coaching_analysis", "--output", str(out),
+                  "--csv-column-map", str(map_path)])
+        assert r.returncode == 2, (r.returncode, r.stdout)
+>       assert "utterance" in (r.stderr + r.stdout), r.stderr + r.stdout
+E       AssertionError: usage: privacy-pipeline [-h] {process} ...
+E         privacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_missing_mandatory0/badmap.json
+E         
+E       assert 'utterance' in ('usage: privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_missing_mandatory0/badmap.json\n' + '')
+E        +  where 'usage: privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_missing_mandatory0/badmap.json\n' = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_missing_mandatory0/badmap.json\n').stderr
+E        +  and   '' = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_missing_mandatory0/badmap.json\n').stdout
+
+tests/e2e/test_i12_e2e.py:69: AssertionError
+_________________ test_mapping_referencing_absent_header_fails _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-175/test_mapping_referencing_absen0')
+
+    def test_mapping_referencing_absent_header_fails(tmp_path):
+        map_ = dict(WIDE_MAP)
+        map_["turns"] = [{"column": "coach_1", "role": "COACH"},
+                         {"column": "nonexistent", "role": "CLIENT"}]
+        csv_path, map_path = _write(tmp_path, map_)
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(csv_path), "--policy",
+                  "internal_coaching_analysis", "--output", str(out),
+                  "--csv-column-map", str(map_path)])
+        assert r.returncode == 2
+>       assert "nonexistent" in (r.stderr + r.stdout)
+E       AssertionError: assert 'nonexistent' in ('usage: privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_referencing_absen0/map.json\n' + '')
+E        +  where 'usage: privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_referencing_absen0/map.json\n' = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...r: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_referencing_absen0/map.json\n').stderr
+E        +  and   '' = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...r: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_mapping_referencing_absen0/map.json\n').stdout
+
+tests/e2e/test_i12_e2e.py:84: AssertionError
+___________________ test_duplicate_session_rows_in_wide_fail ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-175/test_duplicate_session_rows_in0')
+
+    def test_duplicate_session_rows_in_wide_fail(tmp_path):
+        csv_path = tmp_path / "wide.csv"
+        csv_path.write_text(
+            WIDE_CSV + 'csv-wide-1,"again","dup"\n'
+        )
+        map_path = tmp_path / "map.json"
+        map_path.write_text(json.dumps(WIDE_MAP))
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(csv_path), "--policy",
+                  "internal_coaching_analysis", "--output", str(out),
+                  "--csv-column-map", str(map_path)])
+        assert r.returncode == 2
+>       assert "csv-wide-1" in (r.stderr + r.stdout)
+E       AssertionError: assert 'csv-wide-1' in ('usage: privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_duplicate_session_rows_in0/map.json\n' + '')
+E        +  where 'usage: privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_duplicate_session_rows_in0/map.json\n' = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...r: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_duplicate_session_rows_in0/map.json\n').stderr
+E        +  and   '' = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...r: unrecognized arguments: --csv-column-map /tmp/pytest-of-node/pytest-175/test_duplicate_session_rows_in0/map.json\n').stdout
+
+tests/e2e/test_i12_e2e.py:99: AssertionError
+____________________ test_duplicate_turn_index_in_long_fail ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-175/test_duplicate_turn_index_in_l0')
+
+    def test_duplicate_turn_index_in_long_fail(tmp_path):
+        csv_path = tmp_path / "long.csv"
+        csv_path.write_text(
+            "session_id,turn_index,speaker_role,utterance\n"
+            's,0,CLIENT,"one"\n'
+            's,0,CLIENT,"two"\n'
+        )
+        out = tmp_path / "out"
+        r = _run(["process", "--input", str(csv_path), "--policy",
+                  "internal_coaching_analysis", "--output", str(out)])
+>       assert r.returncode == 2
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ..._length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.\n").returncode
+
+tests/e2e/test_i12_e2e.py:112: AssertionError
+=========================== short test summary info ============================
+FAILED tests/e2e/test_i12_e2e.py::test_wide_csv_processes_via_mapping - Asser...
+FAILED tests/e2e/test_i12_e2e.py::test_mapping_missing_mandatory_field_fails_before_rows
+FAILED tests/e2e/test_i12_e2e.py::test_mapping_referencing_absent_header_fails
+FAILED tests/e2e/test_i12_e2e.py::test_duplicate_session_rows_in_wide_fail - ...
+FAILED tests/e2e/test_i12_e2e.py::test_duplicate_turn_index_in_long_fail - as...
+5 failed, 1 passed in 38.61s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/e2e/test_i12_e2e.py -q
+......                                                                   [100%]
+6 passed in 27.27s
+exit=0
+command: wide-CSV demo (fixtures/wide_csv_demo.csv + fixtures/wide_csv_map.json)
+csv-wide-demo: decision=RELEASE_CANDIDATE leaks=0 (exit 0)
+command: full suite chunks
+fast: 60 passed; integration: 21 passed; e2e+negative: 49 passed — all exit 0

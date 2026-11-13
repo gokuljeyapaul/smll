@@ -21,6 +21,8 @@ def build_parser() -> argparse.ArgumentParser:
     proc.add_argument("--output", required=True, help="Output directory for results")
     proc.add_argument("--policy-file", default=None, help="Policies YAML file")
     proc.add_argument("--session-id", default=None, help="Process only this session")
+    proc.add_argument("--csv-column-map", default=None,
+                      help="CSV column-mapping JSON file (csv input only; issue #12)")
     return parser
 
 

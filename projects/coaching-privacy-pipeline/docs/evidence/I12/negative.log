@@ -1,0 +1,2 @@
+== negative: fail-closed mapping cases ==
+missing mandatory field named in error; absent referenced header named; duplicate session rows and duplicate (session_id, turn_index) rows rejected; --csv-column-map with non-csv input exits 2; all failures leave zero session dirs

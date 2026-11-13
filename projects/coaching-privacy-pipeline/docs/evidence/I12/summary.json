@@ -1,0 +1,37 @@
+{
+  "slice": "I12",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/12",
+  "scope": "CSV column mapping: JSON mapping files for renamed long-format headers and wide one-row-per-session CSVs; CLI --csv-column-map (csv-only, else exit 2); duplicate-row fail-closed checks incl. default path; demo fixture",
+  "date": "2026-11-13",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/e2e/test_i12_e2e.py -q",
+    "exit_code": 1,
+    "result": "5 failed: wide CSV unprocessable; missing-field/absent-header errors absent; duplicate rows accepted",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/e2e/test_i12_e2e.py -q  -> 6 passed",
+      "wide-CSV demo: fixtures/wide_csv_demo.csv + fixtures/wide_csv_map.json -> RELEASE_CANDIDATE, exit 0",
+      "full suite chunks: fast 60 / integration 21 / e2e+negative 49, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {"evidence": "negative.log"},
+  "mapping_schema": {
+    "long": '{"format":"long","session_id":"sid","turn_index":"n","speaker_role":"who","utterance":"text"}',
+    "wide": '{"format":"wide","session_id":"id","turns":[{"column":"coach_1","role":"COACH"}]}',
+    "default": "zero-config canonical long format unchanged"
+  },
+  "changed_files": [
+    "src/coaching_privacy/batch.py (load_csv_mapping + CSVBatchAdapter mapping/wide support + duplicate-key fail-closed)",
+    "src/coaching_privacy/cli.py (--csv-column-map)",
+    "src/coaching_privacy/engine.py (mapping wiring + csv-only guard)",
+    "tests/e2e/test_i12_e2e.py (new)",
+    "fixtures/wide_csv_demo.csv, fixtures/wide_csv_map.json (demo)"
+  ],
+  "gate_impact": "none: process_transcript/SafetyGate unchanged; long-format default behavior unchanged (S7 tests green)",
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I12-csv-mapping", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "1e8bac544ef23d86c86395b15101863a45d714e4 (PR #34, I21)"
+}

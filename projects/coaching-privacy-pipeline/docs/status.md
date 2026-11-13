@@ -198,3 +198,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I21-batch-cli-wiring`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Limitations:** bare batches carry no gold leak list (validator second pass from I22 applies, not a completeness guarantee); CSV sessions take the `--policy` purpose.
 - **Next:** #12 CSV mapping (deps #21 merged after this).
+
+### I12 — CSV column mapping (issue #12)
+
+- **Delivered at:** 2026-11-14T00:05+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #34 merged as `1e8bac544ef23d86c86395b15101863a45d714e4`)
+- **Scope:** `--csv-column-map <file.json>` supports renamed long-format headers and wide one-row-per-session CSVs (`{"format":"wide","session_id":...,"turns":[{"column","role"}...]}`). Mapping validated before any row is read (unknown keys/format, missing mandatory fields, absent referenced headers, duplicate targets, oversize files → `BatchError` → exit 2, zero outputs). Duplicate `session_id` rows (wide) and duplicate `(session_id, turn_index)` rows (long, incl. default path) now fail closed. Zero-config long format unchanged. Demo: `fixtures/wide_csv_demo.csv` + `fixtures/wide_csv_map.json`.
+- **RED proof:** [evidence/I12/red.log](evidence/I12/red.log) — 5 failed. **GREEN:** [green.log](evidence/I12/green.log) — 6 passed; full chunks fast 60 / integration 21 / e2e+negative 49, exit 0.
+- **E2E:** [e2e.log](evidence/I12/e2e.log). **Negative:** [negative.log](evidence/I12/negative.log). **Machine report:** [summary.json](evidence/I12/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I12-csv-mapping`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** #23 slice 2 (deps #21 ✅).
