@@ -52,7 +52,7 @@ These scripts do **not** exist in the seed handoff; S0 must create functioning v
 
 ## Post-S7 issue-driven work (hardening and follow-ups)
 
-`milestone-status.json` state `COMPLETE` and the S0–S7 ledger describe the original slices only. Further work is tracked as GitHub issues in this repository (`gh issue list`). These rules override the "continue automatically to the next slice" behavior above for this work.
+`milestone-status.json` state `COMPLETE` and the S0–S7 ledger describe the original slices only. Further work is tracked as GitHub issues in this repository (`gh issue list`). These rules add to, and where they conflict take precedence over, the S0–S7 rules above for this work.
 
 ### Which plan to follow
 - Open issues #9–#17 each have an older plan comment and a later comment titled **"Revised Solution Plan (supersedes the earlier plan comment)"**. Follow **only the latest revised comment**. Issues #18–#23 carry their plan in the issue body.
@@ -66,16 +66,28 @@ These scripts do **not** exist in the seed handoff; S0 must create functioning v
 5. #17 design doc (after #20) → #11 slice 2 (after #18, #19, #9) → #15 release (last; after #14, #16, #22)
 
 ### Pacing and scope
-- **One issue slice = one PR.** Issues with several slices (#9, #10, #11, #13, #23, #17) get one PR per slice. After opening a PR, **stop and report**; do not start the next slice or issue until the PR is MERGED and the owner tells you to continue.
+- **One issue slice = one PR.** Issues with several slices (#9, #10, #11, #13, #23, #17) get one PR per slice. The owner has authorized **autonomous operation**: after a PR is merged and verified `MERGED`, continue automatically to the next item in the order above, without asking, until the list is finished or a stop condition below occurs.
 - Branch: `feature/coaching-privacy-pipeline/I<issue>-S<slice>-<short-name>` (e.g. `I18-S1-verify-models`). Evidence: `docs/evidence/I<issue>-S<slice>/` with the usual `red.log`, `green.log`, `e2e.log`, `negative.log`, `summary.json`. Do not invent new `S#` slice numbers.
 - Tooling, test-infrastructure and honesty-fix slices (#16, #18, #19, #20, #21, #22, #23 slice 1, #14, #15, #17) are owner-requested and authorized under the root `AGENTS.md` exceptions for non-capability work. They still need RED-first behavioral tests (where code changes), evidence, and status updates.
 - Real-model claims must come from real inference. Stubs or injected extractors (#16) are allowed only in the fast lane and never count as model evidence. Hashes, revisions and calibration values must come from real downloads/runs and be recorded with the command that produced them.
 - Do not tag, create releases, push tags, or upload release assets (#15) without explicit owner confirmation in the session.
 
-### Merging
-- Repository auto-merge is **disabled** and branch rulesets/protection are unavailable on this plan, so "request auto-merge" cannot be done and `monorepo / verify` is not an enforced required check. Do not try to enable these settings.
-- **The owner merges.** The agent opens the PR with `READY_FOR_MERGE` status and green `monorepo / verify`, reports the PR URL, and waits. The agent must not merge its own PR. After the owner merges, the agent verifies GitHub reports `MERGED`, records the merge SHA in the next PR's status update (never in its own PR), and continues only when told to.
-- Changes to the safety gate (`pipeline.py`), validator (`validator.py`) or language/ASR gates warrant owner review of the diff before merge, not just green CI.
+### Merging (agent merges its own PRs — owner-authorized)
+- Repository auto-merge is **disabled** and branch rulesets/protection are unavailable on this plan, so `monorepo / verify` is not an enforced required check. Do not try to enable these settings. The agent is therefore the merge gate and must enforce the conditions below itself.
+- The agent **may merge its own PR** (`gh pr merge <PR> --squash`) only when ALL hold: (1) `gh pr checks <PR>` shows `monorepo / verify` **passed** on the current PR head (wait for it; never merge on pending/failed/missing checks); (2) the PR contains the RED/GREEN/e2e/negative evidence and updated `docs/status.md` / `milestone-status.json` (`READY_FOR_MERGE`); (3) the diff touches only files in scope (review `git diff origin/main...HEAD --stat` for stray files, secrets, models, large data); (4) no unresolved BLOCKED item.
+- Never push to `main`, force-push, bypass checks, use admin override, or merge a PR you did not open. After merging, verify with `gh pr view <PR> --json state,mergeCommit` that GitHub reports `MERGED`, then `git checkout main && git pull --ff-only`. Record the merge SHA in the **next** PR's status update (never in its own PR).
+- **Gate-impact rule** for changes to `pipeline.py`, `validator.py`, language/ASR gates or detection thresholds: the PR body must include a before/after decision table for all 18 seed fixtures. No fixture decision may become more permissive (e.g. REVIEW_REQUIRED → RELEASE_CANDIDATE, BLOCKED → anything lower) unless that fixture is named and justified in the plan (e.g. #10 slice 2). Any unexplained more-permissive change is a **stop condition**.
+
+### Stop conditions (stop the run and report BLOCKED — do not improvise)
+- `monorepo / verify` still failing after 3 genuine fix attempts on the same PR, or a failure you cannot attribute.
+- A dependency in the order list is not merged, or a required model/download/permission is unavailable after retries.
+- A plan's "Step 0" finding or any code fact invalidates the plan beyond the alternatives the plan itself allows (post an issue comment with the evidence, then stop).
+- Anything requiring weakening, skipping or mocking a required test, or inventing a log/hash/number.
+- Issue #15 (tag/release): **always stop and ask the owner** before `git push --tags` or `gh release create`; also stop if the repo/CI state does not match the plan's preconditions. Everything else in the order list may proceed autonomously.
+- A gate-impact violation (see above), or a diff that touches files outside the project plus necessary `.github/` changes.
+
+### Reporting
+After each merged PR, post a short report (project, issue/slice, branch, PR URL, test commands with exit codes, evidence paths, merge SHA from GitHub, limitations, next item). At the end of the run (list finished or BLOCKED), give a summary table of issue → PR → merged SHA → status.
 
 ### CI note
 Any change under `projects/coaching-privacy-pipeline/**`, including docs-only PRs, runs the full setup/test/demo/verify cycle (model downloads, no cache). Expect long CI runs; do not weaken tests to speed them up.
