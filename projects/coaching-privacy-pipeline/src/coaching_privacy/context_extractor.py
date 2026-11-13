@@ -10,9 +10,69 @@ from __future__ import annotations
 
 import dataclasses
 import os
+import pathlib
 from typing import Any
 
 MODEL_ID = "urchade/gliner_medium-v2.1"
+
+# Issue #18 slice 2: runtime fail-closed model verification. Both adapters
+# verify the manifest sha256 of the files they load, once per process, before
+# touching the model. Missing/tampered files fail closed instead of loading.
+_DEFAULT_MANIFEST = (
+    pathlib.Path(__file__).resolve().parents[2] / "scripts" / "model_manifest.json"
+)
+_DEFAULT_MODELS_ROOT = pathlib.Path(__file__).resolve().parents[2] / "models"
+_VERIFIED: set[str] = set()
+
+
+def _model_manifest_path() -> pathlib.Path:
+    return pathlib.Path(
+        os.environ.get("COACHING_MODEL_MANIFEST", str(_DEFAULT_MANIFEST))
+    )
+
+
+def _verify_model_entry(model_key: str, resolved_dir: pathlib.Path) -> None:
+    """Raise RuntimeError naming the offending file if the model directory's
+    files do not match the pinned manifest (sha256). Runs once per
+    (manifest, dir) per process; results cached on success only."""
+    import hashlib
+    import json
+
+    cache_key = f"{model_key}:{resolved_dir}:{_model_manifest_path()}"
+    if cache_key in _VERIFIED:
+        return
+    manifest_path = _model_manifest_path()
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            f"model manifest missing: {manifest_path} (cannot verify {model_key})"
+        ) from exc
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(
+            f"model manifest malformed: {manifest_path} ({exc})"
+        ) from exc
+    entry = manifest.get("models", {}).get(model_key)
+    if not isinstance(entry, dict) or not entry.get("files"):
+        raise RuntimeError(
+            f"model manifest has no file entries for '{model_key}'"
+        )
+    for rel_file, expected in entry["files"].items():
+        target = resolved_dir / rel_file
+        if not target.is_file():
+            raise RuntimeError(f"model file missing: {model_key}/{rel_file}")
+        digest = hashlib.sha256()
+        with target.open("rb") as fh:
+            for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+                digest.update(chunk)
+        actual = digest.hexdigest()
+        expected_hash = str(expected).lower().removeprefix("sha256:")
+        if actual != expected_hash:
+            raise RuntimeError(
+                f"model file hash mismatch: {model_key}/{rel_file} "
+                f"(expected sha256:{expected_hash}, got sha256:{actual})"
+            )
+    _VERIFIED.add(cache_key)
 
 # GLiNER prompt label -> canonical quasi-identifier taxonomy
 LABEL_MAP = {
@@ -59,9 +119,15 @@ class GLiNERContextExtractor:
             str(_default_model_path()),
         )
 
+    def _verify_model_files(self) -> None:
+        """Issue #18 slice 2: fail closed if the checkpoint files do not
+        match the pinned manifest before loading (once per process)."""
+        _verify_model_entry("gliner_medium_v2_1", pathlib.Path(self.model_path))
+
     def _ensure_loaded(self):
         if self._model is not None:
             return
+        self._verify_model_files()
         import socket
 
         # Fail closed: hard-block network during model load; local files only.
