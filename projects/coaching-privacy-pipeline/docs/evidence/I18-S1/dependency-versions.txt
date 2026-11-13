@@ -1,0 +1,8 @@
+command: .venv/bin/pip list | grep -Ei '^(faster-whisper|ctranslate2|en-core|...)' (2026-11-13)
+command: .venv/bin/pip show en_core_web_sm | grep Version (2026-11-13)
+ctranslate2      4.9.0   (pinned in setup.sh: ctranslate2==4.9.0)
+faster-whisper   1.2.1   (pinned in setup.sh: faster-whisper==1.2.1)
+gliner           0.2.30  (pinned in setup.sh: gliner==0.2.30)
+spacy            3.8.18  (pinned range: spacy>=3.7,<3.9)
+transformers     4.57.6  (pinned in setup.sh: transformers==4.57.6)
+en_core_web_sm   3.8.0   (pinned wheel URL in setup.sh: en_core_web_sm-3.8.0-py3-none-any.whl; direct-URL pin, verified reinstallable)

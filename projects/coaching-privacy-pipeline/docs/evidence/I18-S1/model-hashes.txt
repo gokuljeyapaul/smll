@@ -1,0 +1,9 @@
+command: python3 hashlib.sha256 over real downloaded files (2026-11-13)
+gliner	models/gliner_medium-v2.1/model.safetensors	922214c0c60f7835bb5c00f52ad1769d38518d5183f85de7bc03893a8403c023
+gliner	models/gliner_medium-v2.1/gliner_config.json	a8f3c2ecc57deb70077be6940962aa60e82d861a153a5cd2839b91795968ae7d
+gliner	models/gliner_medium-v2.1/spm.model	c679fbf93643d19aab7ee10c0b99e460bdbc02fedf34b92b05af343b4af586fd
+gliner	models/gliner_medium-v2.1/tokenizer_config.json	9971ef46e6a36e48444ededc8a83065435b4a29543f93420d5afbf9134bb7ba0
+whisper	models/whisper-tiny.en/models--Systran--faster-whisper-tiny.en/snapshots/0d3d19a32d3338f10357c0889762bd8d64bbdeba/model.bin	1a5afae06a4db91c975c9a9d78be5cc110ee4ea022ad57d55492e4550e936b2a
+whisper	models/whisper-tiny.en/models--Systran--faster-whisper-tiny.en/snapshots/0d3d19a32d3338f10357c0889762bd8d64bbdeba/config.json	14b1b421a90349bc551b881461426b561a874049cb9e4c4864f2ca384f6a7cc5
+whisper	models/whisper-tiny.en/models--Systran--faster-whisper-tiny.en/snapshots/0d3d19a32d3338f10357c0889762bd8d64bbdeba/tokenizer.json	929c5252409436dce1b38a75d1abbcb5e132d170d8e324e4e04ed915fa2d22df
+whisper	models/whisper-tiny.en/models--Systran--faster-whisper-tiny.en/snapshots/0d3d19a32d3338f10357c0889762bd8d64bbdeba/vocabulary.txt	ff77588746d3a2595d32ab5b69ffd7b95ce2441ac57533cb66fc3eb575a115cf

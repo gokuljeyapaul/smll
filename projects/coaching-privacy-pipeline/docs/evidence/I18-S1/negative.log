@@ -1,0 +1,10 @@
+== negative-path: verifier against tampered real model file (issue #18 acceptance) ==
+MODEL VERIFICATION FAILED: hash mismatch: gliner_medium_v2_1/gliner_config.json (expected sha256:a8f3c2ecc57deb70077be6940962aa60e82d861a153a5cd2839b91795968ae7d, got sha256:a59ffa3720a38ef41a9cf174f7188288315f9ad8b6886c73875006d27fba3dd0)
+exit=1
+model verification OK: 8 files match manifest /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/model_manifest.json
+exit=0
+== missing-file path ==
+MODEL VERIFICATION FAILED: missing file: whisper_tiny_en/vocabulary.txt (/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/whisper-tiny.en/models--Systran--faster-whisper-tiny.en/snapshots/0d3d19a32d3338f10357c0889762bd8d64bbdeba/vocabulary.txt)
+exit=1
+model verification OK: 8 files match manifest /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/model_manifest.json
+exit=0
