@@ -1,0 +1,13 @@
+ASR confidence calibration (2026-11-13, real faster-whisper tiny.en, CPU int8)
+thresholds (policies/sample_policy.yaml asr_confidence): min_avg_logprob_floor=-0.9, no_speech_prob_ceiling=0.5, compression_ratio_ceiling=2.4, language_probability_floor=0.5
+
+clean fixtures/audio/smoke_test.wav:
+  command: FasterWhisperAdapter().transcribe('fixtures/audio/smoke_test.wav')
+  observed: uncertain=False signals={min_avg_logprob: ~-0.2 (varies slightly per run), no_speech<0.1, compression<2.4, lang_prob=1.0}
+
+degraded recipe A (clip x3 to rails + zero middle third + salt every 7th):
+  observed: uncertain=False, min_avg_logprob=-0.83, max_no_speech_prob=0.23 — model stayed confident; recorded honestly, NOT used
+degraded recipe B (deterministic noise on 90% of samples, keep every 10th):
+  observed: uncertain=True, min_avg_logprob=-0.69, max_no_speech_prob=0.89 -> no_speech_prob ceiling exceeded; USED in tests/integration/test_i19_asr.py
+
+conclusion: thresholds above are the calibrated defaults; recipe B triggers uncertainty via no_speech_prob; recipe A shows tiny.en stays confident under moderate clipping (documented blind spot of the model, not the gate)

@@ -139,7 +139,8 @@ class FasterWhisperAdapter(BaseASRAdapter):
         t0 = time.monotonic()
         try:
             segments_iter, info = self._model.transcribe(str(p))
-            text = " ".join(s.text for s in segments_iter).strip()
+            segs = list(segments_iter)
+            text = " ".join(s.text for s in segs).strip()
         except ASRError:
             raise
         except Exception as exc:
@@ -147,16 +148,21 @@ class FasterWhisperAdapter(BaseASRAdapter):
         runtime_s = round(time.monotonic() - t0, 3)
         if not text:
             raise ASRError("no speech content detected")
-        avg_logprob = getattr(info, "avg_logprob", None)
-        uncertain = bool(avg_logprob is not None and avg_logprob < -1.0)
+        # I19-S1: real confidence signals. Per-segment values are aggregated
+        # (min avg_logprob, max no_speech_prob, max compression_ratio) plus
+        # the info-level language probability. Thresholds come from the
+        # policy YAML (asr_confidence); conservative defaults if absent.
+        signals = _aggregate_signals(segs, info)
+        uncertain = _is_uncertain(signals, _load_thresholds())
         return {
             "text": text,
             "model": "tiny.en",
             "engine": "faster-whisper",
             "language": getattr(info, "language", "en"),
             "runtime_s": runtime_s,
-            "avg_logprob": avg_logprob,
+            "avg_logprob": signals["min_avg_logprob"],
             "uncertain": uncertain,
+            "signals": signals,
             "speaker_attribution": "manual",  # ASR does not diarize
         }
 
@@ -180,3 +186,65 @@ class FaultyASRAdapter(BaseASRAdapter):
 
     def model_info(self) -> dict[str, Any]:
         return {"model": "fault-injection", "engine": "none", "local_only": True}
+
+
+# --- I19-S1: confidence signal aggregation ---
+
+_THRESHOLD_DEFAULTS = {
+    "min_avg_logprob_floor": -0.9,
+    "no_speech_prob_ceiling": 0.5,
+    "compression_ratio_ceiling": 2.4,
+    "language_probability_floor": 0.5,
+}
+
+
+def _load_thresholds() -> dict[str, float]:
+    """Load asr_confidence thresholds from the policy YAML (fail-safe
+    defaults if missing — the defaults mirror the YAML)."""
+    try:
+        import pathlib as _pl
+
+        policy = _pl.Path(__file__).resolve().parents[2] / "policies" / "sample_policy.yaml"
+        import yaml  # type: ignore
+
+        raw = yaml.safe_load(policy.read_text()) or {}
+        section = raw.get("asr_confidence") or {}
+        return {
+            k: float(section.get(k, v)) for k, v in _THRESHOLD_DEFAULTS.items()
+        }
+    except Exception:
+        return dict(_THRESHOLD_DEFAULTS)
+
+
+def _aggregate_signals(segments: list[Any], info: Any) -> dict[str, Any]:
+    """Aggregate per-segment confidence signals (I19-S1)."""
+    logprobs = [float(getattr(s, "avg_logprob", 0.0)) for s in segments]
+    no_speech = [float(getattr(s, "no_speech_prob", 0.0)) for s in segments]
+    comp = [float(getattr(s, "compression_ratio", 1.0)) for s in segments]
+    return {
+        "min_avg_logprob": min(logprobs) if logprobs else None,
+        "max_no_speech_prob": max(no_speech) if no_speech else None,
+        "max_compression_ratio": max(comp) if comp else None,
+        "language_probability": float(
+            getattr(info, "language_probability", 1.0) or 0.0
+        ),
+    }
+
+
+def _is_uncertain(signals: dict[str, Any], th: dict[str, float]) -> bool:
+    """Deterministic uncertainty rule (I19-S1, fail-closed on missing)."""
+    lp = signals.get("min_avg_logprob")
+    if lp is None:
+        return True
+    if lp < th["min_avg_logprob_floor"]:
+        return True
+    ns = signals.get("max_no_speech_prob")
+    if ns is not None and ns > th["no_speech_prob_ceiling"]:
+        return True
+    cr = signals.get("max_compression_ratio")
+    if cr is not None and cr > th["compression_ratio_ceiling"]:
+        return True
+    lang_p = signals.get("language_probability")
+    if lang_p is not None and lang_p < th["language_probability_floor"]:
+        return True
+    return False

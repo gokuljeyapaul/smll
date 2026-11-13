@@ -1,0 +1,156 @@
+== RED ==
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_____________________ test_low_avg_logprob_flags_uncertain _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-140/test_low_avg_logprob_flags_unc0')
+
+    def test_low_avg_logprob_flags_uncertain(tmp_path):
+        segs = [_FakeSegment("hello there", avg_logprob=-1.4, no_speech_prob=0.05,
+                             compression_ratio=1.2)]
+        a = _adapter_with(_FakeModel(segs, _FakeInfo()))
+>       out = a.transcribe(_wav(tmp_path))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_i19_unit.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/coaching_privacy/asr.py:138: in transcribe
+    self._ensure_model()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<coaching_privacy.asr.FasterWhisperAdapter object at 0x74a44d0dfe50>,)
+k = {}
+
+    def _blocked(*a, **k):
+>       raise AssertionError(_GUARD_MSG)
+E       AssertionError: model loaded in a fast test
+
+tests/conftest.py:56: AssertionError
+___________________ test_high_no_speech_prob_flags_uncertain ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-140/test_high_no_speech_prob_flags0')
+
+    def test_high_no_speech_prob_flags_uncertain(tmp_path):
+        segs = [_FakeSegment("uh", avg_logprob=-0.2, no_speech_prob=0.7,
+                             compression_ratio=1.1)]
+        a = _adapter_with(_FakeModel(segs, _FakeInfo()))
+>       out = a.transcribe(_wav(tmp_path))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_i19_unit.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/coaching_privacy/asr.py:138: in transcribe
+    self._ensure_model()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<coaching_privacy.asr.FasterWhisperAdapter object at 0x74a44d0940d0>,)
+k = {}
+
+    def _blocked(*a, **k):
+>       raise AssertionError(_GUARD_MSG)
+E       AssertionError: model loaded in a fast test
+
+tests/conftest.py:56: AssertionError
+______________________ test_clean_segments_not_uncertain _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-140/test_clean_segments_not_uncert0')
+
+    def test_clean_segments_not_uncertain(tmp_path):
+        segs = [
+            _FakeSegment("My name is Mira.", avg_logprob=-0.15, no_speech_prob=0.02,
+                         compression_ratio=1.3),
+            _FakeSegment("I want better meetings.", avg_logprob=-0.2,
+                         no_speech_prob=0.03, compression_ratio=1.4),
+        ]
+        a = _adapter_with(_FakeModel(segs, _FakeInfo()))
+>       out = a.transcribe(_wav(tmp_path))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_i19_unit.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/coaching_privacy/asr.py:138: in transcribe
+    self._ensure_model()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<coaching_privacy.asr.FasterWhisperAdapter object at 0x74a44d2a2ad0>,)
+k = {}
+
+    def _blocked(*a, **k):
+>       raise AssertionError(_GUARD_MSG)
+E       AssertionError: model loaded in a fast test
+
+tests/conftest.py:56: AssertionError
+___________________________ test_signals_aggregated ____________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-140/test_signals_aggregated0')
+
+    def test_signals_aggregated(tmp_path):
+        segs = [
+            _FakeSegment("a", avg_logprob=-0.1, no_speech_prob=0.2,
+                         compression_ratio=1.5),
+            _FakeSegment("b", avg_logprob=-0.9, no_speech_prob=0.6,
+                         compression_ratio=2.5),
+        ]
+        a = _adapter_with(_FakeModel(segs, _FakeInfo(language_probability=0.9)))
+>       out = a.transcribe(_wav(tmp_path))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_i19_unit.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/coaching_privacy/asr.py:138: in transcribe
+    self._ensure_model()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<coaching_privacy.asr.FasterWhisperAdapter object at 0x74a44cf3c490>,)
+k = {}
+
+    def _blocked(*a, **k):
+>       raise AssertionError(_GUARD_MSG)
+E       AssertionError: model loaded in a fast test
+
+tests/conftest.py:56: AssertionError
+________________ test_low_language_probability_flags_uncertain _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-140/test_low_language_probability_0')
+
+    def test_low_language_probability_flags_uncertain(tmp_path):
+        segs = [_FakeSegment("text", avg_logprob=-0.1, no_speech_prob=0.05,
+                             compression_ratio=1.2)]
+        a = _adapter_with(_FakeModel(segs, _FakeInfo(language_probability=0.41)))
+>       out = a.transcribe(_wav(tmp_path))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_i19_unit.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/coaching_privacy/asr.py:138: in transcribe
+    self._ensure_model()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<coaching_privacy.asr.FasterWhisperAdapter object at 0x74a44cf34cd0>,)
+k = {}
+
+    def _blocked(*a, **k):
+>       raise AssertionError(_GUARD_MSG)
+E       AssertionError: model loaded in a fast test
+
+tests/conftest.py:56: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_i19_unit.py::test_low_avg_logprob_flags_uncertain - As...
+FAILED tests/unit/test_i19_unit.py::test_high_no_speech_prob_flags_uncertain
+FAILED tests/unit/test_i19_unit.py::test_clean_segments_not_uncertain - Asser...
+FAILED tests/unit/test_i19_unit.py::test_signals_aggregated - AssertionError:...
+FAILED tests/unit/test_i19_unit.py::test_low_language_probability_flags_uncertain
+5 failed in 0.21s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/unit/test_i19_unit.py -q
+.....                                                                    [100%]
+5 passed in 0.11s
+exit=0
+command: .venv/bin/python -m pytest tests/integration/test_i19_asr.py -q (real tiny.en)
+..                                                                       [100%]
+2 passed in 4.77s
+exit=0
+command: full suite chunks
+fast: 60 passed; integration: 21 passed; e2e+negative: 31 passed — all exit 0

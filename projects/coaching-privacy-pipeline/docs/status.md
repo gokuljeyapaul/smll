@@ -148,3 +148,17 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I22-S1-independent-validator`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Limitations:** conservative patterns → fail-closed bias (zero false positives measured on the 18 fixtures); blind spots documented.
 - **Next:** #19 ASR confidence (deps #18 merged).
+
+### I19-S1 — Real ASR confidence signals (issue #19 slice 1)
+
+- **Delivered at:** 2026-11-13T18:10+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #30 merged as `6e2f8ca065a3ab4622ecb940ef255e2f580b8741`)
+- **Scope:** Step 0 verified and recorded ([evidence/I19-S1/step0-transcriptioninfo.log](evidence/I19-S1/step0-transcriptioninfo.log)): `TranscriptionInfo` has no `avg_logprob` → `uncertain` was always `False`. Now `FasterWhisperAdapter.transcribe` aggregates per-segment `avg_logprob`/`no_speech_prob`/`compression_ratio` plus `info.language_probability` into `result["signals"]` and computes `uncertain` against policy-YAML thresholds (`asr_confidence`). Calibration on real tiny.en: clean clip → `False`; noise-degraded clip → `True` via `no_speech_prob=0.89` (moderate clipping stayed confident — recorded honestly in [calibration.log](evidence/I19-S1/calibration.log)).
+- **RED proof:** [evidence/I19-S1/red.log](evidence/I19-S1/red.log) — 5 failed (no signals, uncertain always False).
+- **GREEN proof:** [evidence/I19-S1/green.log](evidence/I19-S1/green.log) — unit 5 passed (fake model, fast lane); integration 2 passed (real tiny.en); full chunks: fast 60 / integration 21 / e2e+negative 31, all exit 0.
+- **E2E proof:** [evidence/I19-S1/e2e.log](evidence/I19-S1/e2e.log). **Negative proof:** [evidence/I19-S1/negative.log](evidence/I19-S1/negative.log).
+- **Machine report:** [evidence/I19-S1/summary.json](evidence/I19-S1/summary.json).
+- **Changed files:** `src/coaching_privacy/asr.py`, `policies/sample_policy.yaml`, `tests/conftest.py` (fast-lane ASR guard allows pre-injected fakes; real loads still blocked), new tests.
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I19-S1-asr-confidence`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Limitations:** engine does not yet consume `uncertain` for `synthetic_audio` transcripts (issue #19 slice 2); tiny.en confidence under moderate clipping documented.
+- **Next:** issue #19 slice 2 — carry uncertainty to the gate.

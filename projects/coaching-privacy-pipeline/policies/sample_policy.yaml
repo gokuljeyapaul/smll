@@ -50,3 +50,10 @@ purpose_policies:
     minimum_decision: REVIEW_REQUIRED
 note: Reference policy only; the implementing agent must validate the actual YAML
   schema and block unknown or malformed policies.
+asr_confidence:
+  # I19-S1: ASR uncertainty thresholds (calibrated on fixtures/audio +
+  # degraded clips; see docs/evidence/I19-S1/calibration.log).
+  min_avg_logprob_floor: -0.9       # below this a segment is low-confidence
+  no_speech_prob_ceiling: 0.5      # above this a segment may be silence
+  compression_ratio_ceiling: 2.4  # above this repeats/garbage likely
+  language_probability_floor: 0.5 # below this language detection is unstable
