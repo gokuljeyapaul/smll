@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I20-S1",
+    "current": "I21",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -552,6 +552,36 @@
         "summary_path": "docs/evidence/I20-S1/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I20-S1-gliner-windowing",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/33",
+          "state": "MERGED",
+          "merge_sha": "60f9a06b57b657fd23c4d4172bcd91580d1e531f"
+        }
+      },
+      "I21": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #21: batch CLI wiring + all-or-nothing processing + wrapped-record leaks + doc fixes",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/e2e/test_i21_e2e.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I21/red.log",
+          "expected_failure": "JSON/CSV unreachable from CLI; partial outputs on malformed record"
+        },
+        "green": {
+          "command": "test_i21_e2e 4 passed; test_s7_e2e 2 passed (tightened); full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I21/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I21/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I21/negative.log"
+        },
+        "summary_path": "docs/evidence/I21/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I21-batch-cli-wiring",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

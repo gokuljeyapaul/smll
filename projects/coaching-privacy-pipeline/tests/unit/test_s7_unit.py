@@ -33,7 +33,7 @@ def test_json_array_adapter(tmp_path):
     p = tmp_path / "batch.json"
     p.write_text(json.dumps(arr))
     adapter = JSONBatchAdapter()
-    transcripts = list(adapter.read(str(p)))
+    transcripts = [tr for tr, _leaks in adapter.read(str(p))]
     assert len(transcripts) == 2
     assert transcripts[0].session_id == "s1"
     assert transcripts[1].session_id == "s2"
@@ -50,7 +50,7 @@ def test_csv_adapter_flattens_utterances(tmp_path):
     p = tmp_path / "batch.csv"
     p.write_text(csv_content)
     adapter = CSVBatchAdapter(purpose="internal_coaching_analysis")
-    transcripts = list(adapter.read(str(p)))
+    transcripts = [tr for tr, _leaks in adapter.read(str(p))]
     assert len(transcripts) == 1
     t = transcripts[0]
     assert t.session_id == "csv-1"

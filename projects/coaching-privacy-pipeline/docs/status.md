@@ -49,7 +49,7 @@
 | A16 | P0 | PASS (scoped rubric) | [evidence/S2/negative.log](evidence/S2/negative.log) (mutant flagged; missing fact cannot silently pass) |
 | A17 | P0 | PASS | [evidence/S4/green.log](evidence/S4/green.log) (all four states observed across suites: RELEASE_CANDIDATE, REVIEW_REQUIRED, BLOCKED, FAILED) |
 | A18 | P0 | PASS | [evidence/S4/attack-demo.log](evidence/S4/attack-demo.log) (closed fictional directory: top-1, true rank, abstain, chance 0.02, assumptions documented) |
-| A19 | P0 | PASS | [evidence/S7/e2e.log](evidence/S7/e2e.log) (batch JSONL/JSON/CSV in; malformed records fail closed, no partial success) |
+| A19 | P0 | PASS | [evidence/S7/e2e.log](evidence/S7/e2e.log) + [evidence/I21/green.log](evidence/I21/green.log) (CLI processes JSONL/JSON/CSV end-to-end since I21; malformed records exit 2 with zero partial outputs; bare batches carry no gold leak list — validator second-pass from I22 applies) |
 | A20 | P0 | PASS | [evidence/S6/e2e.log](evidence/S6/e2e.log) (audit_report.json: pipeline_version, dataset_seed, models, policy, timestamp, host; metrics with denominators) |
 | A21 | P0 | PASS | [evidence/S6/negative.log](evidence/S6/negative.log) (gold-in-artifact check fails closed) |
 | A22 | P0 | PASS | [evidence/S0/regression.log](evidence/S0/regression.log) (scripts run from /tmp cwd; nonzero exit on errors) |
@@ -187,3 +187,14 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I20-S1-gliner-windowing`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Limitations:** one extract call per window (batch API deprecated); character-based token estimate is conservative.
 - **Next:** #21 batch CLI wiring (deps #16, #18, #20 merged).
+
+### I21 — Batch CLI wiring + all-or-nothing processing (issue #21)
+
+- **Delivered at:** 2026-11-13T22:35+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #33 merged as `60f9a06b57b657fd23c4d4172bcd91580d1e531f`)
+- **Scope:** `process --input-format {auto,jsonl,json,csv}` (auto by suffix); JSON/CSV adapters reachable from the CLI; `run_pipeline` materialises and validates the whole batch first, stages results under `--output/.staging` and moves session dirs into place only after every session succeeded (malformed record → exit 2, zero partial outputs); `JSONBatchAdapter` carries wrapped-record `prohibited_leaks` (bare transcripts → `[]`); stale `cli.py` docstring fixed; A19 status wording corrected; S7 e2e tightened to `returncode == 2` + no outputs.
+- **RED proof:** [evidence/I21/red.log](evidence/I21/red.log) — 3 failed. **GREEN:** [green.log](evidence/I21/green.log) — i21 4 passed; s7 2 passed; full chunks fast 60 / integration 21 / e2e+negative 43, exit 0.
+- **E2E:** [e2e.log](evidence/I21/e2e.log). **Negative:** [negative.log](evidence/I21/negative.log). **Machine report:** [summary.json](evidence/I21/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I21-batch-cli-wiring`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Limitations:** bare batches carry no gold leak list (validator second pass from I22 applies, not a completeness guarantee); CSV sessions take the `--policy` purpose.
+- **Next:** #12 CSV mapping (deps #21 merged after this).

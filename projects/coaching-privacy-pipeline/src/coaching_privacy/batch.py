@@ -38,8 +38,18 @@ class JSONBatchAdapter:
         if not isinstance(data, list):
             raise BatchError(f"{path}: expected a JSON array of transcripts")
         for item in data:
-            record = item.get("transcript", item) if isinstance(item, dict) else item
-            yield _row_to_transcript(record, f"json:{p.name}")
+            if isinstance(item, dict) and "transcript" in item:
+                record = item["transcript"]
+                leaks = item.get("prohibited_leaks", [])
+                if not isinstance(leaks, list):
+                    raise BatchError(
+                        f"json:{p.name}: prohibited_leaks must be a list"
+                    )
+            else:
+                record = item
+                leaks = []
+            transcript = _row_to_transcript(record, f"json:{p.name}")
+            yield transcript, leaks
 
 
 class CSVBatchAdapter:
@@ -99,4 +109,4 @@ class CSVBatchAdapter:
                 speakers=speakers,
                 utterances=tuple(utterances),
                 metadata={"synthetic": True, "batch_source": str(p)},
-            )
+            ), []

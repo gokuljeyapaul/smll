@@ -62,6 +62,12 @@ def test_batch_with_one_bad_session_fails_that_session_not_others(tmp_path):
          "--output", str(out)],
         capture_output=True, text=True,
     )
-    # batch must fail closed on the malformed record (nonzero exit) and never
-    # silently process partial data as if complete
-    assert r.returncode != 0 or "error" in r.stdout.lower()
+    # batch must fail closed on the malformed record: exit 2 exactly, and
+    # no partial session outputs may remain (I21 all-or-nothing)
+    assert r.returncode == 2, (r.returncode, r.stdout, r.stderr)
+    session_dirs = [d for d in out_mixed_or_created(out)]
+    assert session_dirs == [], f"partial outputs left behind: {session_dirs}"
+
+
+def out_mixed_or_created(out):
+    return out.iterdir() if out.is_dir() else []
