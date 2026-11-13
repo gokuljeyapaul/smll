@@ -1,0 +1,90 @@
+{
+  "slice": "I18-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/18",
+  "scope": "Authoritative model manifest (repo_id + revision + per-file sha256) + scripts/verify_models.py verifier; wired into setup.sh and verify.sh; pip version pins; README model-statement fix",
+  "date": "2026-11-13",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/unit/test_i18_unit.py -q",
+    "exit_code": 1,
+    "result": "5 failed (scripts/verify_models.py did not exist; subprocess tests asserted exit codes/messages)",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/unit -q  -> 44 passed, exit 0",
+      ".venv/bin/python -m pytest tests/negative -q  -> 16 passed, exit 0",
+      ".venv/bin/python -m pytest tests/integration -q  -> 19 passed, exit 0",
+      ".venv/bin/python -m pytest tests/e2e -q  -> 15 passed, exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {
+    "command": "bash scripts/verify.sh",
+    "exit_code": 0,
+    "result": "chunk 0 runs scripts/verify_models.py against the real downloaded models: 8 files match manifest; then 60+19+15 tests pass; artifact verification OK",
+    "evidence": "e2e.log"
+  },
+  "negative": {
+    "command": "tamper gliner_config.json (append one byte) -> verify_models.py exit 1 naming the file; restore -> exit 0; remove whisper vocabulary.txt -> exit 1 naming the file; restore -> exit 0",
+    "evidence": "negative.log"
+  },
+  "unit_test_ids": [
+    "test_i18_unit.test_all_files_match_exits_zero",
+    "test_i18_unit.test_flipped_byte_fails_naming_file",
+    "test_i18_unit.test_missing_file_fails_naming_file",
+    "test_i18_unit.test_malformed_manifest_fails",
+    "test_i18_unit.test_missing_manifest_entry_file_fails"
+  ],
+  "models": {
+    "gliner_medium_v2_1": {
+      "repo_id": "urchade/gliner_medium-v2.1",
+      "revision": "40ec419335d09393f298636f471328b722c6da9e",
+      "files": ["model.safetensors", "gliner_config.json", "spm.model", "tokenizer_config.json"]
+    },
+    "whisper_tiny_en": {
+      "repo_id": "Systran/faster-whisper-tiny.en",
+      "revision": "0d3d19a32d3338f10357c0889762bd8d64bbdeba",
+      "files": ["model.bin", "config.json", "tokenizer.json", "vocabulary.txt"]
+    },
+    "spacy_en_core_web_sm": {"version": "3.8.0", "pin": "direct wheel URL in setup.sh"}
+  },
+  "hash_provenance": "All sha256 computed 2026-11-13 with python hashlib.sha256 over the real downloaded files in this workspace; command + values recorded verbatim in model-hashes.txt",
+  "dependency_versions": {
+    "faster-whisper": "1.2.1 (pinned in setup.sh)",
+    "ctranslate2": "4.9.0 (pinned in setup.sh)",
+    "en_core_web_sm": "3.8.0 (pinned wheel URL in setup.sh)",
+    "gliner": "0.2.30",
+    "transformers": "4.57.6",
+    "spacy": "3.8.18",
+    "evidence": "dependency-versions.txt"
+  },
+  "verification_timing": {
+    "verify_models.py full run (8 files, ~780MB)": "~2s wall (hashing measured acceptable per issue plan)"
+  },
+  "changed_files": [
+    "scripts/verify_models.py (new)",
+    "scripts/model_manifest.json (revisions + real sha256 + whisper/tokenizer files)",
+    "scripts/setup.sh (revision= pins, en_core_web_sm wheel pin, faster-whisper/ctranslate2 pins, vendored+patched tokenizer_config, verifier gate)",
+    "scripts/verify.sh (chunk 0 verifier gate)",
+    "README.md (small.en -> tiny.en fix; optional demo commands point to real proof scripts)",
+    "tests/unit/test_i18_unit.py (RED tests)",
+    "docs/status.md, milestone-status.json"
+  ],
+  "acceptance": {
+    "tampered_or_missing_model_file_fails": "PASS (negative.log, e2e.log)",
+    "whisper_and_tokenizer_files_pinned": "PASS (model_manifest.json, model-hashes.txt)",
+    "readme_matches_code": "PASS (README.md says tiny.en; code loads tiny.en)",
+    "ci_runs_verifier": "PASS locally via verify.sh chunk 0; CI expected via monorepo verify",
+    "no_model_binaries_committed": "PASS (manifest + verifier only; models/ gitignored)"
+  },
+  "limitations": [
+    "Runtime fail-closed hash checks in GLiNERContextExtractor/FasterWhisperAdapter are issue #18 slice 2 (next PR).",
+    "spaCy en_core_web_sm is version-pinned by wheel URL, not sha256 (pip-installed package, not a plain file under models/); explicit hash_verification=false entry in manifest."
+  ],
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I18-S1-verify-models",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  }
+}

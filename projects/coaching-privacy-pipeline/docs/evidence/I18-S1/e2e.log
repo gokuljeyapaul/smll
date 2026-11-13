@@ -1,0 +1,45 @@
+== e2e: setup-time verifier wired into verify.sh (chunk 0) ==
+== chunk 0: model manifest sha256 verification (issue #18) ==
+model verification OK: 8 files match manifest /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/model_manifest.json
+== chunk 1: unit + negative ==
+............................................................             [100%]
+=============================== warnings summary ===============================
+tests/unit/test_s2_unit.py::test_third_party_masked_consistently_across_turns
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/unit/test_s2_unit.py::test_third_party_masked_consistently_across_turns
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+60 passed, 2 warnings in 30.26s
+== chunk 2: integration ==
+...................                                                      [100%]
+=============================== warnings summary ===============================
+tests/integration/test_s0_presidio.py::test_real_presidio_detects_name_and_email
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/integration/test_s1_eval.py::test_processed_results_contain_no_gold_labels
+tests/integration/test_s3_gliner.py::test_real_gliner_extracts_expected_spans
+tests/integration/test_s3_gliner.py::test_transcript_instructions_never_executed
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+19 passed, 4 warnings in 166.42s (0:02:46)
+== chunk 3: e2e ==
+...............                                                          [100%]
+=============================== warnings summary ===============================
+tests/e2e/test_s5_e2e.py::test_wav_to_sanitized_decision_e2e
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/e2e/test_s5_e2e.py::test_wav_to_sanitized_decision_e2e
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+15 passed, 2 warnings in 379.20s (0:06:19)
+verify OK: all demo sessions produced decision/report/sanitized; states observed: {'RELEASE_CANDIDATE', 'REVIEW_REQUIRED'}

@@ -84,3 +84,22 @@ A passing test suite is **not** a delivered slice. Each S0–S7 feature requires
 - **Next:** Continue automatically only after mandatory results are truly green **and GitHub confirms the feature PR is MERGED**; otherwise document blocker.
 
 _Replace the section heading template with actual entries upon delivery. Do not create synthetic proof logs merely to populate placeholders._
+
+## Post-S7 issue-driven work
+
+### I18-S1 — Model manifest + sha256 verifier (issue #18 slice 1)
+
+- **Delivered at:** 2026-11-13T13:20+08:00
+- **Status:** `READY_FOR_MERGE`
+- **Scope:** `scripts/model_manifest.json` is now authoritative: per-model `repo_id`, `revision` (commit SHA) and per-file `sha256` for every runtime-loaded model file (GLiNER weights/config/vendored tokenizer; Whisper tiny.en model.bin/config/tokenizer/vocabulary). New `scripts/verify_models.py` (`--manifest/--root`) exits 0 only if every listed file exists and matches; non-zero naming the file on missing/mismatch/malformed manifest; no network. Wired into `setup.sh` (revision-pinned `snapshot_download`, verifier gate after download, vendored+patched tokenizer_config instead of in-place HF-cache patch) and `verify.sh` (chunk 0). Pinned `faster-whisper==1.2.1`, `ctranslate2==4.9.0`, `en_core_web_sm==3.8.0` wheel. README model statement fixed: `tiny.en` (code truth), optional demo commands now point to the real proof scripts.
+- **Hash provenance:** all sha256 computed 2026-11-13 with python hashlib over the real downloaded files; command + values in [evidence/I18-S1/model-hashes.txt](evidence/I18-S1/model-hashes.txt).
+- **RED proof:** [evidence/I18-S1/red.log](evidence/I18-S1/red.log) — 5 failed, exit 1 (verifier did not exist).
+- **GREEN proof:** [evidence/I18-S1/green.log](evidence/I18-S1/green.log) — unit 44 / negative 16 / integration 19 / e2e 15, all exit 0.
+- **E2E proof:** [evidence/I18-S1/e2e.log](evidence/I18-S1/e2e.log) — `bash scripts/verify.sh`: chunk 0 verifier OK (8 files match), full suite + artifact verification pass.
+- **Negative proof:** [evidence/I18-S1/negative.log](evidence/I18-S1/negative.log) — tampered gliner_config.json → exit 1 naming file; missing vocabulary.txt → exit 1 naming file; restored → exit 0.
+- **Machine report:** [evidence/I18-S1/summary.json](evidence/I18-S1/summary.json).
+- **Dependency versions:** [evidence/I18-S1/dependency-versions.txt](evidence/I18-S1/dependency-versions.txt) (faster-whisper 1.2.1, ctranslate2 4.9.0, en_core_web_sm 3.8.0, gliner 0.2.30, transformers 4.57.6, spacy 3.8.18).
+- **Changed implementation files:** `scripts/verify_models.py` (new), `scripts/model_manifest.json`, `scripts/setup.sh`, `scripts/verify.sh`, `README.md`, `tests/unit/test_i18_unit.py`.
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I18-S1-verify-models`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING` (recorded in next slice PR).
+- **Limitations:** runtime fail-closed hash checks are issue #18 slice 2; spaCy model is wheel-pinned, not sha256-pinned (explicit `hash_verification: false` manifest entry).
+- **Next:** merge I18-S1, then issue #18 slice 2 (runtime fail-closed checks), per the post-S7 order.

@@ -66,7 +66,7 @@ Root shared GitHub files are `.github/workflows/monorepo-ci.yml`, `.github/scrip
 - Python 3.11; Linux x86-64 reference environment; about 8 GB RAM (more helps). Browser/remote development environment is fine; no powerful local computer required. A CPU machine with 16 GB RAM is recommended for GLiNER Medium and audio experiments; 8 GB may work with reduced concurrency.
 - Internet permitted only to install dependencies and download explicitly approved open models before local/offline execution.
 - Default tests and demo: no GPU, no commercial API key, no real personal information, no always-running VM.
-- Chosen models: Presidio (MIT) + spaCy `en_core_web_sm` (MIT) for direct PII; `urchade/gliner_medium-v2.1` (Apache-2.0) for contextual entity spans; deterministic risk rules/transformations; and faster-whisper `small.en` (MIT model card) for optional audio (a smaller model may be used for a short CPU smoke test). No generative LLM or inference API. The full dependency/model license inventory and SBOM are required before commercial deployment. Setup downloads version-pinned artifacts once; runtime and tests work offline. `scripts/setup.sh` must verify model availability and record exact IDs/checksums. Optional GPU benchmarking does not affect CPU acceptance.
+- Chosen models: Presidio (MIT) + spaCy `en_core_web_sm` (MIT, wheel-pinned 3.8.0) for direct PII; `urchade/gliner_medium-v2.1` (Apache-2.0, revision-pinned + sha256-verified) for contextual entity spans; deterministic risk rules/transformations; and faster-whisper `tiny.en` (MIT model card, revision-pinned + sha256-verified via `scripts/model_manifest.json`) for optional audio. No generative LLM or inference API. The full dependency/model license inventory and SBOM are required before commercial deployment. Setup downloads version- and revision-pinned artifacts once and runs `scripts/verify_models.py` to enforce sha256 checksums; runtime and tests work offline. Optional GPU benchmarking may use a larger Whisper model; it does not affect CPU acceptance.
 
 ## Commands the agent must implement and verify
 ```bash
@@ -79,8 +79,8 @@ make test demo verify
 
 Optional demonstrations:
 ```bash
-bash scripts/demo_audio_real.sh   # short synthetic speech through real faster-whisper
-bash scripts/demo_context_real.sh # actual offline GLiNER span extraction and risk cases (required by S3)
+.venv/bin/python scripts/offline_asr_proof.py  # short synthetic speech through real faster-whisper
+.venv/bin/python scripts/offline_gliner_proof.py # actual offline GLiNER span extraction and risk cases (required by S3)
 ```
 
 **Implemented status (S0, observed 2026-11-11):**

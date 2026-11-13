@@ -1,0 +1,30 @@
+== fresh-runner setup proof (CI fix attempt 1, 2026-11-13) ==
+precondition: rm -rf ~/.cache/huggingface/hub/models--microsoft--deberta-v3-base; rm models/gliner_medium-v2.1/model.safetensors; rm -rf models/whisper-tiny.en (fresh runner simulation)
+
+model download attempt 1/3
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]
+Fetching 3 files:  67%|██████▋   | 2/3 [00:00<00:00,  8.71it/s]
+Fetching 3 files: 100%|██████████| 3/3 [00:04<00:00,  1.37s/it]
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]
+Fetching 3 files:  33%|███▎      | 1/3 [00:00<00:00,  7.35it/s]
+Fetching 3 files: 100%|██████████| 3/3 [00:00<00:00,  5.32it/s]
+Fetching 3 files: 100%|██████████| 3/3 [00:00<00:00,  5.31it/s]
+backbone ref pinned to 8ccc9b6f36199bec6961081d44eb72fb3f7353f3
+models ready; backbone tokenizer vendored
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]
+Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 1390.80it/s]
+whisper tiny.en ready at pinned revision (local cache: models/whisper-tiny.en)
+vendored patched tokenizer_config into models/gliner_medium-v2.1/tokenizer_config.json
+model verification OK: 8 files match manifest /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/model_manifest.json
+setup OK: presidio analyzer ready; spacy 3.8.18 en_core_web_sm loaded
+exit=0
+
+== GLiNER offline load after fresh pinned download ==
+command: HF_HUB_OFFLINE=1 .venv/bin/python -c "from gliner import GLiNER; GLiNER.from_pretrained('models/gliner_medium-v2.1', local_files_only=True).eval()"
+output: GLiNER offline load OK after fresh pinned download with refs/main; exit=0
+
+== ASR offline after fresh pinned download ==
+output: ASR OK: My name is Mira Solen, and I want to lead better meetings.; exit=0
+
+== regression after fix ==
+unit: 44 passed; negative: 16 passed; integration: 19 passed; e2e: 15 passed (all exit 0, see green.log)

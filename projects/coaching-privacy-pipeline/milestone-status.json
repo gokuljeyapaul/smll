@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "3.1",
   "current_slice": null,
   "state": "COMPLETE",
   "last_verified_merged_pr": {
@@ -342,5 +342,41 @@
     }
   },
   "blockers": [],
-  "next_slice": null
+  "next_slice": null,
+  "issue_driven": {
+    "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
+    "current": "I18-S1",
+    "items": {
+      "I18-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #18 slice 1: authoritative model manifest (repo_id+revision+per-file sha256) + scripts/verify_models.py verifier, wired into setup.sh/verify.sh; version pins (faster-whisper==1.2.1, ctranslate2==4.9.0, en_core_web_sm==3.8.0 wheel); README small.en/tiny.en fix",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i18_unit.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I18-S1/red.log",
+          "expected_failure": "scripts/verify_models.py missing; all 5 behavioral subprocess tests fail"
+        },
+        "green": {
+          "command": "pytest in chunks: unit (44), negative (16), integration (19), e2e (15)",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I18-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh (chunk 0 runs verify_models.py against real models)",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I18-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I18-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I18-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I18-S1-verify-models",
+          "url": "PENDING",
+          "state": "READY_FOR_MERGE",
+          "merge_sha": "PENDING"
+        }
+      }
+    }
+  }
 }
