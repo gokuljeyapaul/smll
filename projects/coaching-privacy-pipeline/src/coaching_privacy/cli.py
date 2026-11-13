@@ -23,6 +23,8 @@ def build_parser() -> argparse.ArgumentParser:
     proc.add_argument("--session-id", default=None, help="Process only this session")
     proc.add_argument("--csv-column-map", default=None,
                       help="CSV column-mapping JSON file (csv input only; issue #12)")
+    proc.add_argument("--link-group-key", default=None,
+                      help="Metadata key grouping sessions for cross-session linkage (issue #23)")
     return parser
 
 

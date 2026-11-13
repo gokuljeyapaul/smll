@@ -1,0 +1,70 @@
+== RED (2026-11-14) ==
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+__________________ test_linked_group_sessions_route_to_review __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-186/test_linked_group_sessions_rou0')
+
+    def test_linked_group_sessions_route_to_review(tmp_path):
+        r, out = _run(LINK_BATCH, tmp_path)
+>       assert r.returncode == 0, (r.stdout, r.stderr)
+E       AssertionError: ('', 'usage: privacy-pipeline [-h] {process} ...
+E         privacy-pipeline: error: unrecognized arguments: --link-group-key subject_ref
+E         ')
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ... privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --link-group-key subject_ref\n').returncode
+
+tests/e2e/test_i23s2_e2e.py:57: AssertionError
+____________________ test_unrelated_sessions_stay_unlinked _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-186/test_unrelated_sessions_stay_u0')
+
+    def test_unrelated_sessions_stay_unlinked(tmp_path):
+        r, out = _run(UNLINKED_BATCH, tmp_path)
+>       assert r.returncode == 0, (r.stdout, r.stderr)
+E       AssertionError: ('', 'usage: privacy-pipeline [-h] {process} ...
+E         privacy-pipeline: error: unrecognized arguments: --link-group-key subject_ref
+E         ')
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ... privacy-pipeline [-h] {process} ...\nprivacy-pipeline: error: unrecognized arguments: --link-group-key subject_ref\n').returncode
+
+tests/e2e/test_i23s2_e2e.py:70: AssertionError
+________________ test_missing_group_key_not_assessed_not_clean _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-186/test_missing_group_key_not_ass0')
+
+    def test_missing_group_key_not_assessed_not_clean(tmp_path):
+        inp = tmp_path / "batch.json"
+        inp.write_text(json.dumps(LINK_BATCH))
+        out = tmp_path / "out"
+        r = subprocess.run(
+            CLI + ["process", "--input", str(inp), "--policy",
+                   "internal_coaching_analysis", "--output", str(out)],
+            capture_output=True, text=True, cwd=REPO,
+        )
+        assert r.returncode == 0, r.stderr
+        report = json.loads((out / "link-a" / "validation_report.json").read_text())
+        csr = report["cross_session_risks"]
+>       assert isinstance(csr, dict) and csr.get("status") == "NOT_ASSESSED_NO_GROUP_KEY", csr
+E       AssertionError: {'status': 'NOT_ASSESSED', 'reason': 'cross-session linkage not executed for a single-session run'}
+E       assert (True and 'NOT_ASSESSED' == 'NOT_ASSESSED_NO_GROUP_KEY'
+E        +  where True = isinstance({'status': 'NOT_ASSESSED', 'reason': 'cross-session linkage not executed for a single-session run'}, dict)
+E         
+E         - NOT_ASSESSED_NO_GROUP_KEY
+E         + NOT_ASSESSED)
+
+tests/e2e/test_i23s2_e2e.py:90: AssertionError
+=========================== short test summary info ============================
+FAILED tests/e2e/test_i23s2_e2e.py::test_linked_group_sessions_route_to_review
+FAILED tests/e2e/test_i23s2_e2e.py::test_unrelated_sessions_stay_unlinked - A...
+FAILED tests/e2e/test_i23s2_e2e.py::test_missing_group_key_not_assessed_not_clean
+3 failed in 26.20s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/e2e/test_i23s2_e2e.py -q
+...                                                                      [100%]
+3 passed in 78.85s (0:01:18)
+exit=0
+command: full suite chunks
+fast: 60 passed; integration: 21 passed; e2e+negative: 52 passed — all exit 0
