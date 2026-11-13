@@ -1,0 +1,7 @@
+== negative: runtime fail-closed on tampered/missing model files (2026-11-13) ==
+see red.log for the pre-implementation behavioral failures; post-implementation the same scenarios fail closed:
+command: .venv/bin/python -m pytest tests/unit/test_i18s2_unit.py -q
+5 passed: tampered GLiNER safetensors -> RuntimeError naming model.safetensors -> engine context_stage_error -> decision FAILED;
+          missing gliner_config.json -> RuntimeError naming the file; tampered whisper vocabulary.txt -> ASRError naming the file;
+          real pinned models pass runtime verification
+exit=0 (tests green; the fail-closed negative paths are asserted inside them)

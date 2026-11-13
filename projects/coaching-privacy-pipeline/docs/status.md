@@ -103,3 +103,18 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I18-S1-verify-models`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING` (recorded in next slice PR).
 - **Limitations:** runtime fail-closed hash checks are issue #18 slice 2; spaCy model is wheel-pinned, not sha256-pinned (explicit `hash_verification: false` manifest entry).
 - **Next:** merge I18-S1, then issue #18 slice 2 (runtime fail-closed checks), per the post-S7 order.
+
+### I18-S2 — Runtime fail-closed model verification (issue #18 slice 2)
+
+- **Delivered at:** 2026-11-13T14:15+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #26 merged as `2be0f0dda21d2600f0599ce3dd3f5ae54301997c`)
+- **Scope:** `GLiNERContextExtractor._ensure_loaded` and `FasterWhisperAdapter._ensure_model` now verify the manifest sha256 of every file they load (once per process, cached on success only) before touching the model. Tampered/missing files fail closed: RuntimeError naming the file → engine `context_stage_error` → decision `FAILED`; ASRError for Whisper. `COACHING_MODEL_MANIFEST` env var supports test-time synthetic manifests; production default `scripts/model_manifest.json`.
+- **RED proof:** [evidence/I18-S2/red.log](evidence/I18-S2/red.log) — 5 failed, exit 1 (tampered models loaded or failed with unrelated opaque errors; no verification existed).
+- **GREEN proof:** [evidence/I18-S2/green.log](evidence/I18-S2/green.log) — unit 49 / negative 16 / integration 19 / e2e 15, all exit 0.
+- **E2E proof:** [evidence/I18-S2/e2e.log](evidence/I18-S2/e2e.log) — `bash scripts/verify.sh` exit 0; decision states unchanged (`RELEASE_CANDIDATE`, `REVIEW_REQUIRED`) — no gate impact.
+- **Negative proof:** [evidence/I18-S2/negative.log](evidence/I18-S2/negative.log) — tampered safetensors → FAILED naming the file; missing config → error naming the file; tampered vocabulary → ASRError.
+- **Machine report:** [evidence/I18-S2/summary.json](evidence/I18-S2/summary.json).
+- **Changed implementation files:** `src/coaching_privacy/context_extractor.py`, `src/coaching_privacy/asr.py`, `tests/unit/test_i18s2_unit.py`.
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I18-S2-runtime-fail-closed`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Limitations:** verification cached per process on success only; spaCy model wheel-pinned (see I18-S1).
+- **Next:** issue #18 complete after merge → proceed to #16 fast/slow markers per the post-S7 order.

@@ -1,0 +1,12 @@
+command: .venv/bin/python -m pytest tests/unit/test_i18s2_unit.py -q (2026-11-13)
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+5 passed, 1 warning in 45.24s
+exit=0
+
+== full unit suite ==
+49 passed, 2 warnings in 55.18s
+exit=0
+command: .venv/bin/python -m pytest tests/unit/test_i18s2_unit.py -q (2026-11-13, after CI fix attempt 1: disk-bounded hardlink checkpoints + missing-snapshot test)
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7 passed, 1 warning in 47.33s
+exit=0
