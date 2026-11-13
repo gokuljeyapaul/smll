@@ -14,6 +14,8 @@ root = pathlib.Path("artifacts/demo/results")
 assert root.is_dir(), "demo results missing; run scripts/demo.sh first"
 states = set()
 for d in root.iterdir():
+    if not d.is_dir():  # e.g. batch_linkage_report.json (I23-S2) at the root
+        continue
     decision = json.loads((d / "decision.json").read_text())["decision"]
     states.add(decision)
     assert (d / "sanitized.json").is_file()

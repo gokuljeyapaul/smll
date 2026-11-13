@@ -68,3 +68,9 @@ command: .venv/bin/python -m pytest tests/e2e/test_i23s2_e2e.py -q
 exit=0
 command: full suite chunks
 fast: 60 passed; integration: 21 passed; e2e+negative: 52 passed — all exit 0
+
+== CI fix attempt 1 (2026-11-14) ==
+CI verify.sh failure: artifact check treated the new batch_linkage_report.json FILE at the
+demo results root as a session dir -> NotADirectoryError reading decision.json.
+Fix: verify.sh iterates only directories (files at results root are legal).
+Local re-run: bash scripts/verify.sh -> exit 0 (60 fast passed; artifact verification OK).
