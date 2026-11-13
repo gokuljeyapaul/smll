@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I21",
+    "current": "I12",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -582,6 +582,36 @@
         "summary_path": "docs/evidence/I21/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I21-batch-cli-wiring",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/34",
+          "state": "MERGED",
+          "merge_sha": "1e8bac544ef23d86c86395b15101863a45d714e4"
+        }
+      },
+      "I12": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #12: CSV column mapping (long-renamed + wide formats) + --csv-column-map + duplicate-row fail-closed + demo fixture",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/e2e/test_i12_e2e.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I12/red.log",
+          "expected_failure": "wide CSV unprocessable; malformed mappings accepted"
+        },
+        "green": {
+          "command": "test_i12_e2e 6 passed; demo wide CSV processed; full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I12/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I12/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I12/negative.log"
+        },
+        "summary_path": "docs/evidence/I12/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I12-csv-mapping",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

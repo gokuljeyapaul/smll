@@ -1,0 +1,6 @@
+== model manifest sha256 verification (issue #18) ==
+model verification OK: 8 files match manifest /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/model_manifest.json
+== fast lane bounded check (I16) ==
+............................................................             [100%]
+60 passed, 76 deselected in 2.20s
+verify OK: all demo sessions produced decision/report/sanitized; states observed: {'REVIEW_REQUIRED', 'RELEASE_CANDIDATE'}

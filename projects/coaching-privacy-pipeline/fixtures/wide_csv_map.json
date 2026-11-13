@@ -1,0 +1,8 @@
+{
+  "format": "wide",
+  "session_id": "id",
+  "turns": [
+    {"column": "coach_1", "role": "COACH"},
+    {"column": "client_1", "role": "CLIENT"}
+  ]
+}

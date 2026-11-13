@@ -319,12 +319,16 @@ def run_pipeline(args: Any) -> int:
                 transcript = Transcript.parse(record["transcript"])
                 batch.append((transcript, record.get("prohibited_leaks", [])))
     else:
-        from .batch import CSVBatchAdapter, JSONBatchAdapter
+        from .batch import CSVBatchAdapter, JSONBatchAdapter, load_csv_mapping
 
+        csv_map = getattr(args, "csv_column_map", None)
+        if csv_map and fmt != "csv":
+            raise ContractError("--csv-column-map is only valid with csv input")
         if fmt == "json":
             adapter = JSONBatchAdapter()
         else:
-            adapter = CSVBatchAdapter(purpose=args.policy)
+            mapping = load_csv_mapping(csv_map) if csv_map else None
+            adapter = CSVBatchAdapter(purpose=args.policy, mapping=mapping)
         batch = list(adapter.read(str(input_path)))  # BatchError fails here, before any output
 
     if args.session_id:
