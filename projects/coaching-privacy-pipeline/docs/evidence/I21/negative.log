@@ -1,0 +1,3 @@
+== negative: all-or-nothing ==
+good+malformed JSON batch -> exit 2, output dir contains ZERO session dirs (test_malformed_record_leaves_no_partial_outputs; staging removed)
+S7 e2e tightened: mixed jsonl -> returncode == 2 and no partial session dirs

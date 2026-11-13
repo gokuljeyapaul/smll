@@ -1,0 +1,39 @@
+{
+  "slice": "I21",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/21",
+  "scope": "Batch CLI wiring: process --input-format {auto,jsonl,json,csv}; adapters reachable from the CLI; all-or-nothing batch processing (staging + atomic move); wrapped-record prohibited_leaks carried; stale CLI docstring fixed; A19 status wording corrected; S7 e2e tightened",
+  "date": "2026-11-13",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/e2e/test_i21_e2e.py -q",
+    "exit_code": 1,
+    "result": "3 failed: JSON array and CSV not processed from CLI; malformed record left partial outputs on disk",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/e2e/test_i21_e2e.py -q  -> 4 passed",
+      ".venv/bin/python -m pytest tests/e2e/test_s7_e2e.py -q  -> 2 passed (tightened exit==2 + no outputs)",
+      "full suite chunks: fast 60 / integration 21 / e2e+negative 43, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {
+    "result": "malformed record -> exit 2, zero partial session dirs (staging dir removed); JSONL path unchanged",
+    "evidence": "negative.log"
+  },
+  "gate_impact": "none: process_transcript/SafetyGate unchanged; all fixture decisions identical (full suite green)",
+  "changed_files": [
+    "src/coaching_privacy/cli.py (--input-format; docstring fixed)",
+    "src/coaching_privacy/engine.py (run_pipeline rewritten: batch materialise-validate-stage-move all-or-nothing)",
+    "src/coaching_privacy/batch.py (adapters yield (transcript, prohibited_leaks); wrapped-record leaks carried)",
+    "tests/e2e/test_i21_e2e.py (new), tests/e2e/test_s7_e2e.py (tightened), tests/unit/test_s7_unit.py (adapter tuple API)",
+    "docs/status.md (A19 wording corrected)"
+  ],
+  "limitations": [
+    "Bare batches carry no gold leak list; the validator's second pass (I22) applies but is documented as not a completeness guarantee",
+    "CSV sessions are assigned the --policy purpose (no per-row purpose in long format)"
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I21-batch-cli-wiring", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "60f9a06b57b657fd23c4d4172bcd91580d1e531f (PR #33, I20-S1)"
+}

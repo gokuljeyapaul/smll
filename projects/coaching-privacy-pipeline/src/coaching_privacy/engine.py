@@ -261,6 +261,30 @@ def process_transcript(
     )
 
 
+def _input_format(args: Any, input_path: pathlib.Path) -> str:
+    fmt = getattr(args, "input_format", "auto")
+    if fmt != "auto":
+        return fmt
+    if input_path.suffix.lower() == ".json":
+        return "json"
+    if input_path.suffix.lower() == ".csv":
+        return "csv"
+    return "jsonl"
+
+
+def _write_session_result(session_dir: pathlib.Path, result: Any) -> None:
+    session_dir.mkdir(parents=True, exist_ok=True)
+    (session_dir / "sanitized.json").write_text(
+        json.dumps(result.sanitized, indent=2) + "\n"
+    )
+    (session_dir / "validation_report.json").write_text(
+        json.dumps(result.report, indent=2) + "\n"
+    )
+    (session_dir / "decision.json").write_text(
+        json.dumps(result.decision, indent=2) + "\n"
+    )
+
+
 def run_pipeline(args: Any) -> int:
     input_path = pathlib.Path(args.input)
     if not input_path.is_file():
@@ -280,42 +304,71 @@ def run_pipeline(args: Any) -> int:
     output_dir = pathlib.Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # I21: materialise + validate the whole batch FIRST (all-or-nothing), then
+    # stage results and move them into the output dir only after every
+    # session succeeded. A malformed record leaves no partial outputs.
+    batch: list[tuple[Any, list[str]]] = []
+    fmt = _input_format(args, input_path)
+    if fmt == "jsonl":
+        with input_path.open() as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                record = json.loads(line)
+                transcript = Transcript.parse(record["transcript"])
+                batch.append((transcript, record.get("prohibited_leaks", [])))
+    else:
+        from .batch import CSVBatchAdapter, JSONBatchAdapter
+
+        if fmt == "json":
+            adapter = JSONBatchAdapter()
+        else:
+            adapter = CSVBatchAdapter(purpose=args.policy)
+        batch = list(adapter.read(str(input_path)))  # BatchError fails here, before any output
+
+    if args.session_id:
+        batch = [(t, l) for t, l in batch if t.session_id == args.session_id]
+
+    for transcript, _leaks in batch:
+        if transcript.purpose != args.policy:
+            raise ContractError(
+                f"transcript purpose {transcript.purpose!r} does not match "
+                f"requested policy {args.policy!r}"
+            )
+    if not batch:
+        raise ContractError("no transcripts processed")
+
+    staging = output_dir / ".staging"
+    if staging.exists():
+        import shutil as _shutil
+
+        _shutil.rmtree(staging)
+    staging.mkdir(parents=True)
     processed = 0
-    with input_path.open() as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            record = json.loads(line)
-            if args.session_id and record["transcript"]["session_id"] != args.session_id:
-                continue
-            transcript = Transcript.parse(record["transcript"])
-            if transcript.purpose != args.policy:
-                raise ContractError(
-                    f"transcript purpose {transcript.purpose!r} does not match "
-                    f"requested policy {args.policy!r}"
-                )
-            result = process_transcript(
-                transcript, policy, prohibited_leaks=record.get("prohibited_leaks")
-            )
-            session_dir = output_dir / transcript.session_id
-            session_dir.mkdir(parents=True, exist_ok=True)
-            (session_dir / "sanitized.json").write_text(
-                json.dumps(result.sanitized, indent=2) + "\n"
-            )
-            (session_dir / "validation_report.json").write_text(
-                json.dumps(result.report, indent=2) + "\n"
-            )
-            (session_dir / "decision.json").write_text(
-                json.dumps(result.decision, indent=2) + "\n"
-            )
+    try:
+        for transcript, leaks in batch:
+            result = process_transcript(transcript, policy, prohibited_leaks=leaks)
+            _write_session_result(staging / transcript.session_id, result)
             processed += 1
             print(
                 f"{transcript.session_id}: decision={result.decision['decision']} "
                 f"leaks={len(result.report['residual_pii'])}"
             )
-    if processed == 0:
-        raise ContractError("no transcripts processed")
+        # All sessions succeeded: move staged dirs into place.
+        for transcript, _leaks in batch:
+            src = staging / transcript.session_id
+            dst = output_dir / transcript.session_id
+            if dst.exists():
+                import shutil as _shutil
+
+                _shutil.rmtree(dst)
+            src.rename(dst)
+    finally:
+        if staging.exists():
+            import shutil as _shutil
+
+            _shutil.rmtree(staging, ignore_errors=True)
     return processed
 
 
