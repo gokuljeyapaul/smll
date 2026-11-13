@@ -53,3 +53,10 @@ exit=0 (full report: benchmark.json)
 
 command: full suite chunks
 fast: 60 passed; integration: 23 passed; e2e+negative: 56 passed — all exit 0
+
+== CI fix attempt 1 (2026-11-14) ==
+CI failure: bench subprocess inherited HF_HUB_OFFLINE=1 (set permanently by earlier
+adapter tests in the same pytest process) -> base.en download blocked.
+Fix: bench test subprocess sets HF_HUB_OFFLINE=0 explicitly (bench is a controlled
+setup-time benchmark tool; runtime adapters still hard-block network).
+Local re-run: 2 passed.

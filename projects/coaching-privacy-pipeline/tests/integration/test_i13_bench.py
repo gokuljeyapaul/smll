@@ -17,13 +17,20 @@ pytestmark = pytest.mark.slow
 REPO = pathlib.Path(__file__).resolve().parents[2]
 
 
-def test_bench_asr_produces_multi_model_report(tmp_path):
+def test_bench_asr_produces_multi_model_report(tmp_path, monkeypatch):
+    import os
+
     bench = REPO / "scripts" / "bench_asr.py"
     out = tmp_path / "bench_report.json"
+    # The benchmark is a controlled-setup-time tool: it may download models
+    # that setup.sh has not prefetched (only tiny.en is pinned/verified at
+    # setup). Earlier tests in this process set HF_HUB_OFFLINE=1; the bench
+    # subprocess explicitly re-enables hub access for its downloads.
+    env = {**os.environ, "HF_HUB_OFFLINE": "0"}
     r = subprocess.run(
         [sys.executable, str(bench), "--output", str(out),
          "--models", "tiny.en", "base.en"],
-        capture_output=True, text=True, cwd=REPO, timeout=1500,
+        capture_output=True, text=True, cwd=REPO, timeout=1500, env=env,
     )
     assert r.returncode == 0, (r.stdout, r.stderr)
     report = json.loads(out.read_text())
