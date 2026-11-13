@@ -4,6 +4,8 @@
 set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
+echo "== chunk 0: model manifest sha256 verification (issue #18) =="
+.venv/bin/python scripts/verify_models.py
 echo "== chunk 1: unit + negative =="
 .venv/bin/python -m pytest tests/unit tests/negative -q
 echo "== chunk 2: integration =="

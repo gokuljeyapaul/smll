@@ -11,12 +11,15 @@ python3 -m venv .venv
 .venv/bin/pip install --quiet "spacy>=3.7,<3.9" "presidio-analyzer" "presidio-anonymizer" "pydantic" "pyyaml" "pytest"
 # S3+: real GLiNER Medium v2.1 offline inference (CPU)
 .venv/bin/pip install --quiet "gliner==0.2.30" "transformers==4.57.6" "sentencepiece" "protobuf" "tiktoken"
-# S5: real offline ASR (faster-whisper tiny.en, CPU int8)
-.venv/bin/pip install --quiet "faster-whisper"
+# S5: real offline ASR (faster-whisper tiny.en, CPU int8) — versions pinned
+.venv/bin/pip install --quiet "faster-whisper==1.2.1" "ctranslate2==4.9.0"
 .venv/bin/pip install --quiet -e .
 
+# spaCy NER backend for Presidio — wheel version pinned (issue #18)
+.venv/bin/pip install --quiet "en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
 if ! .venv/bin/python -c "import spacy; spacy.load('en_core_web_sm')" 2>/dev/null; then
   .venv/bin/python -m spacy download en_core_web_sm
+  .venv/bin/pip install --quiet "en_core_web_sm==3.8.0" 2>/dev/null || true
 fi
 
 # GLiNER checkpoint + backbone tokenizer: download once during controlled setup.
@@ -24,10 +27,14 @@ fi
 download_models() {
   .venv/bin/python - <<'PYSETUP'
 from huggingface_hub import snapshot_download
+# Revision-pinned downloads (issue #18): exact commit SHAs recorded in
+# scripts/model_manifest.json; sha256 enforced by scripts/verify_models.py.
 snapshot_download(repo_id="urchade/gliner_medium-v2.1",
+                  revision="40ec419335d09393f298636f471328b722c6da9e",
                   local_dir="models/gliner_medium-v2.1",
                   allow_patterns=["*.json", "*.safetensors", "*.txt", "*.md"])
 tok_dir = snapshot_download(repo_id="microsoft/deberta-v3-base",
+                  revision="8ccc9b6f36199bec6961081d44eb72fb3f7353f3",
                   allow_patterns=["tokenizer_config.json", "spm.model",
                                   "special_tokens_map.json", "added_tokens.json",
                                   "config.json"])
@@ -65,23 +72,26 @@ m = WhisperModel("tiny.en", device="cpu", compute_type="int8",
 print("whisper tiny.en ready (local cache: models/whisper-tiny.en)")
 PYASR
 
-# Patch cached tokenizer_config with explicit class (avoids tiktoken misroute)
+# Vendor the patched tokenizer_config into the checkpoint dir and hash it:
+# the manifest pins the *vendored, patched* file (issue #18) — no in-place
+# HF-cache mutation that a re-download could silently revert.
 .venv/bin/python - <<'PYFIX'
-import json, glob, pathlib
-snaps = glob.glob(str(pathlib.Path.home() / ".cache/huggingface/hub/models--microsoft--deberta-v3-base/snapshots/*/"))
-for snap in snaps:
-    p = pathlib.Path(snap) / "tokenizer_config.json"
-    if p.is_file():
-        try:
-            cfg = json.loads(p.read_text())
-        except Exception:
-            cfg = {}
-        cfg["tokenizer_class"] = "DebertaV2Tokenizer"
-        cfg.setdefault("do_lower_case", False)
-        cfg.setdefault("vocab_type", "spm")
-        p.write_text(json.dumps(cfg))
-        print("patched", p)
+import json, pathlib
+tok_src = pathlib.Path.home() / ".cache/huggingface/hub/models--microsoft--deberta-v3-base"
+snaps = sorted(tok_src.glob("snapshots/*/tokenizer_config.json"))
+assert snaps, "deberta-v3-base tokenizer_config not found after download"
+cfg = json.loads(snaps[0].read_text())
+cfg["tokenizer_class"] = "DebertaV2Tokenizer"
+cfg.setdefault("do_lower_case", False)
+cfg.setdefault("vocab_type", "spm")
+dst = pathlib.Path("models/gliner_medium-v2.1/tokenizer_config.json")
+dst.write_text(json.dumps(cfg))
+print("vendored patched tokenizer_config into", dst)
 PYFIX
+
+# Issue #18: fail closed if any manifest-listed model file is missing or its
+# sha256 does not match scripts/model_manifest.json.
+.venv/bin/python scripts/verify_models.py
 
 .venv/bin/python - <<'PY'
 from presidio_analyzer import AnalyzerEngine
