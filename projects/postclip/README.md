@@ -15,20 +15,26 @@ No cloud, no accounts, nothing stored. English only (v1). iOS and Android via Ex
 
 | What | Where |
 |---|---|
-| Full plan (use cases, acceptance IDs, slices S0–S6, test strategy) | [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) |
+| Full plan (use cases, acceptance IDs, slices S0–S6 + D0–D3, test strategy) | [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) |
 | Operating rules for the building agent | [AGENTS.md](AGENTS.md) |
 | Ledger of delivered slices | [docs/status.md](docs/status.md) |
-| One-shot prompt for the building agent | [docs/HERMES_PROMPT.md](docs/HERMES_PROMPT.md) |
+| One-shot prompt for Hermes (Stage L, Linux) | [docs/HERMES_PROMPT.md](docs/HERMES_PROMPT.md) |
+| How the device stage (Mac, with Claude Code) works | [docs/STAGE_D.md](docs/STAGE_D.md) |
+
+## How it gets built
+
+1. **Stage L — Hermes on openclawlaunch (Linux), autonomous:** all code, fixtures, tests, host-side LLM evaluation. Device-dependent checks stay `NOT_RUN`.
+2. **Stage D — owner + Claude Code on a Mac:** builds both apps, runs every flow on iOS simulator and Android emulator, records video, re-evaluates on real OCR output, final conformance.
 
 ## Commands
 
 ```bash
-bash scripts/preflight.sh        # prerequisite check (Mac toolchain); BLOCKED if anything is missing
+bash scripts/preflight.sh        # prerequisite check (auto: Linux = Stage L, macOS = Stage D); BLOCKED if a required tool is missing
 bash scripts/setup.sh            # preflight + npm ci (once the app exists)
 bash scripts/test.sh             # tool self-tests; Jest, typecheck, lint once the app exists
-bash scripts/demo.sh             # PLAN_ONLY: reports NOT_RUN honestly; later: runs the real flows
+bash scripts/demo.sh             # PLAN_ONLY: NOT_RUN; Stage L: host demo; Stage D on a Mac: the real device flows
 bash scripts/verify.sh           # plan lint + evidence integrity (CI-safe)
-bash scripts/verify.sh --device  # also the full device suite on the Mac
+bash scripts/verify.sh --device  # Stage D on the Mac only: also the full device suite
 make test demo verify
 ```
 

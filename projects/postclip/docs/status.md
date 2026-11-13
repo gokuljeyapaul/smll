@@ -6,7 +6,7 @@
 - **Active slice:** none
 - **Overall engineering result:** `NOT_STARTED`
 - **Owner decisions:** D1 CI strategy = `split_with_root_exception` (decided; recorded in `milestone-status.json` and the root `AGENTS.md`). No open decisions.
-- **Next required action:** run the building agent with `docs/HERMES_PROMPT.md` after the plan PR is merged; start with S0.
+- **Next required action:** after the plan PR is merged, run Hermes (openclawlaunch, Linux) with `docs/HERMES_PROMPT.md` for Stage L (S0–S6). Stage D (D0–D3) is done later with Claude Code on the owner's Mac, after Xcode and the Android SDK are installed.
 
 ## Slice overview
 
@@ -18,11 +18,15 @@
 | S3 | Model download/verify/offline, OCR-only fallback | NOT_STARTED | — | — |
 | S4 | Local LLM cleanup with safety guards (model selected by measurement) | NOT_STARTED | — | — |
 | S5 | Hardening, large inputs, accessibility, Release build | NOT_STARTED | — | — |
-| S6 | Conformance report and full-use-case videos | NOT_STARTED | — | — |
+| S6 | Host conformance (deps/licenses, audits) + Stage D handoff | NOT_STARTED | — | — |
+| D0 | Device bring-up: pick/OCR/review/share/edit/export/errors (Mac) | NOT_STARTED | — | — |
+| D1 | Device: share-in, paste, offer-latest, permissions, model download, offline | NOT_STARTED | — | — |
+| D2 | Device: on-device LLM, hardening, Release build | NOT_STARTED | — | — |
+| D3 | Final conformance, real-OCR re-evaluation, full-use-case video | NOT_STARTED | — | — |
 
 ## Acceptance traceability
 
-All 31 acceptance IDs (A01–A31) are defined in `docs/BUILD_PLAN.md` with status `NOT_RUN`. This table is replaced by real per-ID statuses, backed by JUnit testcases, as slices are delivered (`scripts/verify_evidence.py` enforces the link).
+All 32 acceptance IDs (A01–A32) are defined in `docs/BUILD_PLAN.md` with status `NOT_RUN`. This table is replaced by real per-ID statuses, backed by JUnit testcases, as slices are delivered (`scripts/verify_evidence.py` enforces the link).
 
 ## Known limitations (planned, not yet measured)
 

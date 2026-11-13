@@ -1,30 +1,53 @@
 #!/usr/bin/env bash
-# Prerequisite check. Reports BLOCKED (exit 1) for anything missing; never installs.
-#   bash scripts/preflight.sh          # full device toolchain check (the Mac)
-#   bash scripts/preflight.sh ci       # minimal check (python3) for CI / plan-only phase
+# Prerequisite check. Reports BLOCKED (exit 1) for anything REQUIRED that is missing; never installs.
+#   bash scripts/preflight.sh            # auto: Linux -> linux mode, macOS -> device mode
+#   bash scripts/preflight.sh ci         # python3 only (CI / plan-only phase)
+#   bash scripts/preflight.sh linux      # Stage L: Hermes on a Linux container
+#   bash scripts/preflight.sh device     # Stage D: Mac with Xcode + Android SDK
 # Writes artifacts/preflight.json. Safe from any cwd; bash 3.2 compatible (macOS).
 set -uo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
-MODE="${1:-device}"
+MODE="${1:-auto}"
+if [ "$MODE" = "auto" ]; then
+  case "$(uname -s)" in Linux) MODE=linux ;; Darwin) MODE=device ;; *) MODE=ci ;; esac
+fi
 mkdir -p artifacts
 REPORT="artifacts/preflight.tsv"
 : > "$REPORT"
 missing=0
 
-check() { # name | test command | remediation
+check() { # REQUIRED: name | test command | remediation
   local name="$1" cmd="$2" fix="$3" status="OK"
   if ! eval "$cmd" >/dev/null 2>&1; then status="MISSING"; missing=$((missing + 1)); fi
   printf '%s\t%s\t%s\n' "$name" "$status" "$fix" >> "$REPORT"
   printf '  [%s] %s%s\n' "$status" "$name" "$([ "$status" = MISSING ] && echo " -> $fix")"
 }
+info() { # NOT required: name | test command | note
+  local name="$1" cmd="$2" note="$3" status="PRESENT"
+  eval "$cmd" >/dev/null 2>&1 || status="ABSENT"
+  printf '%s\tINFO_%s\t%s\n' "$name" "$status" "$note" >> "$REPORT"
+  printf '  [info:%s] %s (%s)\n' "$status" "$name" "$note"
+}
 
 echo "preflight ($MODE)"
 check "python3" "command -v python3" "install Python 3"
 
-if [ "$MODE" != "ci" ]; then
-  check "macOS" '[ "$(uname -s)" = Darwin ]' "iOS builds and video recording need a Mac"
+if [ "$MODE" = "linux" ]; then
   check "node" "command -v node" "install Node (version in .nvmrc once S0 creates it)"
+  check "npm" "command -v npm" "install npm"
+  check "git" "command -v git" "install git"
+  check "disk >= 15 GB free" '[ "$(df -Pk . | awk "NR==2{print \$4}")" -ge 15728640 ]' "free up disk space"
+  info "RAM (MB)" "[ -r /proc/meminfo ] && awk '/MemTotal/{exit !(\$2/1024 >= 3500)}' /proc/meminfo" "needs ~4 GB for Gradle / llama.cpp evaluation; record the real number in versions.json"
+  info "/dev/kvm" "[ -r /dev/kvm ]" "Android emulator needs KVM; absence means device flows are Stage D"
+  info "JDK" "command -v java" "optional: only for the Android debug build"
+  info "Android SDK" "command -v sdkmanager || [ -n \"\${ANDROID_HOME:-}\" ]" "optional: only if disk >= 30 GB and RAM >= 4 GB (plan D5)"
+  info "cmake + g++" "command -v cmake && command -v g++" "needed only to build llama.cpp from source"
+fi
+
+if [ "$MODE" = "device" ]; then
+  check "macOS" '[ "$(uname -s)" = Darwin ]' "iOS builds and video recording need a Mac"
+  check "node" "command -v node" "install Node (version in .nvmrc)"
   check "npm" "command -v npm" "install npm"
   check "git" "command -v git" "install git"
   check "xcodebuild" "xcodebuild -version" "install Xcode and run: sudo xcode-select -s /Applications/Xcode.app"
@@ -43,13 +66,13 @@ python3 - "$REPORT" "$MODE" <<'PY'
 import json, sys
 rows = [l.rstrip("\n").split("\t") for l in open(sys.argv[1]) if l.strip()]
 report = {"mode": sys.argv[2],
-          "checks": [{"name": r[0], "status": r[1], "remediation": r[2]} for r in rows],
-          "blocked": any(r[1] != "OK" for r in rows)}
+          "checks": [{"name": r[0], "status": r[1], "note": r[2]} for r in rows],
+          "blocked": any(r[1] == "MISSING" for r in rows)}
 json.dump(report, open("artifacts/preflight.json", "w"), indent=2)
 PY
 
 if [ "$missing" -gt 0 ]; then
-  echo "preflight: BLOCKED ($missing prerequisite(s) missing; nothing was installed)"
+  echo "preflight: BLOCKED ($missing required prerequisite(s) missing; nothing was installed)"
   exit 1
 fi
-echo "preflight: OK"
+echo "preflight: OK ($MODE)"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Project setup. PLAN_ONLY: tool prerequisites only. BUILDING/COMPLETE: preflight + npm ci.
+# Project setup. PLAN_ONLY or CI: minimal prerequisites. Otherwise: host-appropriate preflight + npm ci.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_phase.sh"
 echo "setup: phase=$PHASE"

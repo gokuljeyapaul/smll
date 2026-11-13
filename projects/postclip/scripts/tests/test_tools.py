@@ -27,17 +27,16 @@ class PlanLintTests(unittest.TestCase):
         self.assertEqual(plan_lint.lint(self.text), [])
 
     def test_uncovered_use_case_detected(self):
-        broken = self.text.replace("| A17 | P0 | both | UC13 |", "| A17 | P0 | both | - |")
+        broken = self.text.replace("| A17 | P0 | host | UC13 |", "| A17 | P0 | host | - |")
         self.assertTrue(any("UC13" in p for p in plan_lint.lint(broken)))
 
     def test_undelivered_acceptance_detected(self):
-        broken = self.text.replace("**Acceptance IDs:** A22, A23, A27, A28, A29",
-                                   "**Acceptance IDs:** A22, A23, A27, A28")
-        self.assertTrue(any("A29" in p and "not delivered" in p
+        broken = self.text.replace("A21, A25, A31", "A21, A25")
+        self.assertTrue(any("A31" in p and "not delivered" in p
                             for p in plan_lint.lint(broken)))
 
     def test_missing_red_part_detected(self):
-        broken = self.text.replace("- **RED**: Jest — OCR result normalizer", "- **XRED**: Jest — OCR result normalizer")
+        broken = self.text.replace("- **RED**: Jest tests for the OCR-result normalizer", "- **XRED**: Jest tests for the OCR-result normalizer")
         self.assertTrue(any("S0" in p and "RED" in p for p in plan_lint.lint(broken)))
 
 
@@ -154,6 +153,14 @@ class VerifyEvidenceTests(unittest.TestCase):
              "slices": {"S1": {"status": "READY_FOR_MERGE"}}}))
         self.assertTrue(any("has no docs/evidence/S1/summary.json" in p
                             for p in verify_evidence.verify(self.tmp)))
+
+    def test_device_slices_sort_after_linux_slices(self):
+        self.assertTrue(verify_evidence.slice_num("D0") > verify_evidence.slice_num("S6"))
+        self._write_slice_summary("S6", {"A26": {"status": "NOT_RUN", "notes": "x"}}, "old")
+        self._write_slice_summary("D0", {"A26": {"status": "NOT_RUN", "notes": "x"}},
+                                  verify_evidence.source_digest(self.tmp))
+        self.set_phase("DEVICE_VERIFICATION")
+        self.assertEqual([p for p in verify_evidence.verify(self.tmp) if "stale" in p], [])
 
     def test_platform_judged_from_junit_path_not_testcase_name(self):
         # 'radios_off' contains the letters 'ios' but must not satisfy the iOS requirement.

@@ -11,6 +11,19 @@ This plan is written to be executed autonomously, slice by slice, with TDD, evid
 - A passing test suite proves behavior on the fixtures and on the simulator/emulator used. It does **not** prove accuracy on arbitrary real screenshots, real-device LLM performance, or delivery into third-party apps (Telegram etc.). Anything not actually run is `NOT_RUN`; anything partly run is `PARTIAL`. Never write `PASS` for an unexecuted check.
 - Non-goals (v1): cloud AI, accounts, sync, storage/library of past posts, languages other than English, scraping LinkedIn or any site, App Store / Play Store submission, deployment.
 
+## Two-stage execution
+
+The building agent (Hermes on openclawlaunch.com) runs in a small **Linux container** (about 2 vCPU / 4 GB RAM / 40 GB disk, no Xcode, no emulator). iOS cannot be built or simulated on Linux, and the Android emulator is not expected to run there. Therefore the work is split, and nothing is ever reported as device-verified when it was not.
+
+| Stage | Where | Slices | What it does | What it may NOT claim |
+|---|---|---|---|---|
+| **L** (Linux) | Hermes on openclawlaunch | S0–S6 | All app code (screens, ingest, OCR/LLM adapters, model manager, guards, payloads, config plugins), fixtures + generator, Jest tests, typecheck/lint, **host-side LLM evaluation with the real pinned weights** (llama.cpp on CPU), Maestro flows *authored* (syntax-checked, not run), plan/evidence tooling, optional Android debug-APK build if resources allow | Anything that needs iOS, an emulator/simulator, Apple Vision / ML Kit OCR, on-device share/permission/clipboard behavior, or video. Those IDs stay `NOT_RUN` / `PARTIAL` with the note "awaiting Stage D". |
+| **D** (Mac) | The owner + Claude Code, interactively, on the owner's Mac with Xcode + Android Studio SDK installed | D0–D3 | Builds both apps, runs every Maestro flow on the iOS simulator and Android emulator, fixes device-specific bugs (each with a RED reproduction), records video of passing flows, captures real OCR output from devices and re-runs the cleanup evaluation on it, flips IDs to `PASS` only with JUnit evidence, final conformance | Nothing beyond what the simulator/emulator can prove (real-device LLM speed stays `NOT_RUN` without a physical device). |
+
+- Stage L PRs merge with honest statuses (device IDs `NOT_RUN`); main then contains code whose device behavior is unproven but clearly labelled. The project phase moves `BUILDING` -> `DEVICE_VERIFICATION` at the end of S6 and to `COMPLETE` at the end of D3.
+- Cleanup evaluation on Linux uses fixtures' gold OCR text and deterministic OCR-noise variants labelled `synthetic_noise`. It is real-model evidence for the guards and for relative model choice, but it is **never** OCR-accuracy evidence and cannot alone make A20 `PASS` (D3 re-runs it on real OCR text dumped from the devices).
+- Stage L is one-shot for Hermes. Stage D is interactive: Claude Code runs the device work in the owner's session and the owner approves installs and merges. Between them the owner installs Xcode and Android Studio on the Mac.
+
 ## Owner decisions and defaults
 
 | ID | Decision | Default (apply unless the owner changes it) |
@@ -19,11 +32,12 @@ This plan is written to be executed autonomously, slice by slice, with TDD, evid
 | D2 | Project folder / app name | `postclip` (display name "PostClip"; bundle id `dev.example.postclip`, placeholder, never submitted to a store) |
 | D3 | Framework | Expo, latest stable SDK at build time, New Architecture on, **dev client + config plugins** (no Expo Go), TypeScript strict, Expo Router |
 | D4 | LLM runtime and model | Decided in S4 by measurement, not assumption. Candidates: runtime `llama.rn` (GGUF) vs `react-native-executorch`; models Qwen3 0.6B / 1.7B (Apache-2.0), Llama 3.2 1B (Llama community license). Decision criteria in S4. |
-| D5 | Tooling installs | Hermes may `brew install` only: `maestro`, `ffmpeg`, `idb-companion` (Facebook idb), and run project-local `npm ci`. It must **not** install or modify Xcode, Android SDK, system settings, or anything else; missing prerequisites are `BLOCKED`. |
+| D5 | Tooling installs | **Stage L (Linux container, root):** `apt-get install` of `build-essential cmake git curl unzip openjdk-17-jdk`, `npx playwright install --with-deps chromium`, a pinned prebuilt or source-built llama.cpp (release/commit and sha256 recorded), project-local `npm ci`; the Android SDK command-line tools + platform + build-tools **only if** free disk ≥ 30 GB and RAM ≥ 4 GB (otherwise the Android build is `NOT_RUN`). **Stage D (Mac):** `brew install maestro ffmpeg facebook/fb/idb-companion` and `npm ci`. Never install or change Xcode, Android Studio, emulators/AVDs, system settings, or anything else; missing prerequisites are `BLOCKED`. |
 | D6 | Video storage | MP4s are **not committed**. They live under `artifacts/video/`; a manifest (`docs/evidence/video_manifest.json`) with sha256, size, duration and the passing JUnit test it belongs to **is** committed. Uploading to a GitHub release only with explicit owner confirmation. |
-| D7 | Real devices | Not required. Real-device checks (A30) are `NOT_RUN` unless a physical device is attached. |
-| D8 | Merging | Hermes merges its own PRs under the guardrails in "Autonomy and merge policy". |
+| D7 | Real devices | Not required. Real-device checks (A30) are `NOT_RUN` unless a physical device is attached during Stage D. |
+| D8 | Merging | The building agent merges its own PRs under the guardrails in "Autonomy and merge policy" (Stage L: after Linux verification and green CI; Stage D: additionally after `verify.sh --device`). |
 | D9 | Telemetry / analytics / crash SDKs | None, ever. Lint-enforced (A26). |
+| D10 | Execution hosts | **Stage L:** Hermes on openclawlaunch.com (autonomous, one-shot, Linux container). **Stage D:** the owner together with Claude Code (interactive session) on the owner's Mac, after the owner installs Xcode and the Android Studio SDK; not an autonomous prompt. |
 
 ## Use cases
 
@@ -100,10 +114,10 @@ Library choices are **candidates, resolved at build time**, not promises. Resolv
 | A14 | P0 | both | UC09 | A checksum mismatch, a truncated file, or an unsupported device each leave the app in OCR-only mode with an explicit banner and the bad file deleted; OCR path still passes A02. | Maestro flows with corrupted model served locally; Jest |
 | A15 | P0 | both | UC14 | After the model is `ready`, processing makes no network calls: app-level guard unit test on both platforms; Android additionally runs with radios off. iOS radio-off proof is `PARTIAL` unless feasible. | Jest guard test + Android airplane-mode flow |
 | A16 | P0 | both | UC14 | No-storage audit: after each flow only the allow-listed paths exist (model file, transient share/export temp files already deleted); no post text in AsyncStorage, caches, logs or snapshots. | `scripts/audit_storage.sh` per platform + log grep |
-| A17 | P0 | both | UC13 | Injection fixtures are treated as content: output schema-valid, no obeyed instruction, no attacker marker in metadata fields. | Eval-mode run on injection fixtures + Jest |
-| A18 | P0 | both | UC05 | LLM output is generated with constrained decoding (or strictly parsed with at most one retry), schema-validated; invalid output falls back to deterministic cleanup and is flagged. | Jest + eval-mode run |
-| A19 | P0 | both | UC05 | Faithfulness guard: cleaned body is traceable to OCR tokens above threshold and drops no content tokens without listing them as chrome; otherwise raw OCR + deterministic cleanup is used and flagged. | Jest property tests on fixtures + eval-mode run |
-| A20 | P0 | host | UC05 | Cleanup quality meets the bars on the standard set, and the LLM beats the deterministic baseline by a recorded margin; otherwise the LLM ships disabled by default with the numbers. | Eval run on the Mac with the same pinned GGUF/weights; on-device confirmation run |
+| A17 | P0 | host | UC13 | Injection fixtures are treated as content: output schema-valid, no obeyed instruction, no attacker marker in metadata fields. | Host eval on the real pinned weights (llama.cpp CPU) + Jest; on-device confirmation is A32 |
+| A18 | P0 | host | UC05 | LLM output is generated with constrained decoding (or strictly parsed with at most one retry), schema-validated; invalid output falls back to deterministic cleanup and is flagged. | Jest + host eval on the real pinned weights |
+| A19 | P0 | host | UC05 | Faithfulness guard: cleaned body is traceable to OCR tokens above threshold and drops no content tokens without listing them as chrome; otherwise raw OCR + deterministic cleanup is used and flagged. | Jest property tests on fixtures + host eval on the real pinned weights |
+| A20 | P0 | host | UC05 | Cleanup quality meets the bars on the standard set, and the LLM beats the deterministic baseline by a recorded margin; otherwise the LLM ships disabled by default with the numbers. | Host eval with the same pinned GGUF on gold OCR + `synthetic_noise` (Stage L: `PARTIAL`); re-run on real OCR text dumped from devices for `PASS` (D3) |
 | A21 | P0 | both | UC01 | OCR accuracy on the clean set meets the CER bar; S0 baseline recorded; no later regression > 1 pp. | Eval-mode run per platform engine |
 | A22 | P1 | both | UC01 | Latency and memory budgets: OCR ≤ 3 s per fixture; cleanup ≤ 20 s on the simulator/emulator class used; recorded as emulator numbers only. | Eval-mode timings |
 | A23 | P1 | both | UC05 | Accessibility basics: every actionable element has an accessibility label and testID; large text does not clip primary actions in smoke screenshots. | Maestro assertions |
@@ -115,6 +129,7 @@ Library choices are **candidates, resolved at build time**, not promises. Resolv
 | A29 | P0 | both | - | A Release-configuration build launches and passes the smoke flow; eval-mode runner and test hooks are absent from the release bundle. | Release build + bundle inspection |
 | A30 | P1 | host | - | Real-device runs (LLM latency/RAM, real share extension). `NOT_RUN` unless a physical device is attached. | Device log or NOT_RUN |
 | A31 | P0 | host | - | Fixtures and evidence are synthetic only: fixture manifest flags every image synthetic; generator uses fictional names and no real brand assets; no real screenshots anywhere. | Fixture manifest lint |
+| A32 | P0 | both | UC05 | On-device confirmation: the pinned model runs through the app on the iOS simulator and Android emulator and passes the injection and faithfulness fixtures; or the capability probe correctly selects OCR-only and says so. | Eval-mode on-device run + Maestro flow (Stage D) |
 
 ## Testability map
 
@@ -159,122 +174,176 @@ The cleanup LLM can invent text and the screenshot can attack it. Treat the mode
 
 ## Slices
 
-Each slice is one PR and delivers a complete, user-observable behavior on **both** platforms, with RED-first tests, real evidence, Maestro flows and recorded video of the passing flows. TDD definition for mobile:
+Each slice is one PR with RED-first tests, real evidence and honest statuses. S-slices are Stage L (Linux); D-slices are Stage D (Mac). TDD definition:
 
-- **RED**: a failing behavioral test captured before the feature — Jest tests failing on assertions and/or a Maestro flow failing because the expected UI/behavior is missing. A scaffold commit that builds and launches is allowed first; build errors, import errors and typos are **not** valid RED.
-- **GREEN**: feature implemented; unit, eval-mode integration, E2E, negative and all prior regression flows pass.
-- Evidence per slice in `docs/evidence/<slice>/`: `red.log`, `green.log`, `e2e.log`, `negative.log`, `summary.json` (see AGENTS.md schema), `junit/*.xml`, `versions.json`; plus updates to `docs/evidence/video_manifest.json`.
+- **RED**: a failing behavioral test captured before the feature — Jest tests failing on assertions, a host-eval check failing, or (Stage D) a Maestro flow failing on a missing/incorrect behavior. A scaffold commit that builds is allowed first; build errors, import errors and typos are **not** valid RED.
+- **GREEN**: feature implemented; every check that can run in that stage passes, plus all prior regression.
+- Evidence per slice in `docs/evidence/<slice>/`: `red.log`, `green.log`, `e2e.log` (host demo in Stage L, device flows in Stage D), `negative.log`, `summary.json` (see AGENTS.md), `junit/*.xml` (file names contain `ios` or `android` for device results, `linux` for host results), `versions.json`.
+- In Stage L, an acceptance ID that needs a device is recorded `NOT_RUN` (or `PARTIAL` when host-level proof exists) with the note `awaiting Stage D (<D-slice>)`.
 
-### S0 — Pick a screenshot, read it, share the text
+### S0 — Foundations: scaffold, fixtures, OCR and share plumbing
 
-**Acceptance IDs:** A01, A02, A03, A21, A31
+**Acceptance IDs:** A01, A02, A03, A21, A25, A31
 
-Observable result: on both platforms the user taps *Pick screenshot*, chooses a fixture, sees the OCR text, taps *Share*, and the OS share sheet opens with that text.
+Observable result (Stage L): `bash scripts/demo.sh` runs a **host demo** — fixture gold OCR text flows through the review model into the share payload and prints it; the app typechecks, lints and its Jest tests pass. Device behavior (pick, OCR, share sheet) is proven in D0.
 
-- Scope: Expo dev-client scaffold (SDK resolution, New Architecture, TypeScript strict, Expo Router, lint, typecheck, Jest), OCR adapter (Vision/ML Kit) behind `OcrEngine`, picker ingest, review screen (read-only text), share-out, 10 synthetic fixtures + generator + manifest, eval-mode OCR runner (test builds), Maestro flows, `scripts/build_ios.sh` / `build_android.sh` / `run_flows.sh` / `record_flows.sh`, `versions.json`, first video manifest, the D1 CI change (only if the owner confirmed D1), `milestone-status.json` phase `BUILDING`, status ledger.
-- **RED**: Jest — OCR result normalizer and share-payload builder behaviors fail on assertions; Maestro flow `uc01_pick_ocr_review_share` fails at the missing "Share" action after the scaffold launches.
-- **GREEN**: all of the above pass on both platforms; OCR baseline CER recorded per platform.
-- **Evidence**: red/green/e2e/negative logs, junit for Jest + Maestro, OCR baseline JSON, versions.json, videos of both flows + manifest, `preflight.json`.
-- Risks: toolchain build failures (record exact error and stop as BLOCKED rather than hack around), picker UI differences across OS versions.
+- Scope: Expo dev-client scaffold (SDK resolution, New Architecture, TypeScript strict, Expo Router, Jest via jest-expo, lint); `OcrEngine` interface plus the native adapter code (`expo-text-extractor` or a minimal local Expo module over Vision/ML Kit); picker ingest; review screen; share-out payload builder; eval-mode runner code (test builds only); 10 synthetic fixtures + generator + manifest (headless Chromium via Playwright); Maestro flow `uc01_pick_ocr_review_share.yaml` authored (syntax-checked only); the scoped shared-CI change authorized by D1 (conditional espeak install and `setup-node`, verified against the coaching project); `milestone-status.json` phase `BUILDING`; optional Android debug-APK build if D5 resources allow.
+- **RED**: Jest tests for the OCR-result normalizer and the share-payload builder fail on assertions; the fixture-manifest lint fails because the manifest does not exist.
+- **GREEN**: Jest, typecheck, lint, host demo and fixture/manifest lint pass; CI green. A25 and A31 `PASS`; A01 `PARTIAL`/`NOT_RUN` (Android APK built or not, iOS `NOT_RUN`); A02, A03, A21 `NOT_RUN` (awaiting D0).
+- **Evidence**: standard set; `versions.json` (resolved SDK/library versions, Node, OS, resources); host demo output; CI-change test output for both projects.
+- Risks: library incompatibility with the resolved SDK (record exact error, pick the documented alternative, never hack around).
 
-### S1 — Review, edit, export, and clear errors
+### S1 — Cleanup, edit, export, language gate, no-storage logic
 
 **Acceptance IDs:** A04, A05, A06, A07, A16
 
-Observable result: user edits the cleaned text, exports .md/.txt/.json or shares; non-English and bad images give clear messages; nothing is stored.
+Observable result (Stage L): host demo shows rule-based cleanup of fixtures, an edit changing the payload, .md/.txt/.json export content, the English gate accepting/rejecting fixtures, and image validation messages.
 
-- Scope: deterministic baseline cleanup (UI-chrome rules, whitespace/line-break repair), editable review screen, payload builders (text/md/json), export with temp-file lifecycle, English language gate, image validation/downscale, specific error screens, storage allow-list audit (first version) + log redaction, fixtures to ~25.
-- **RED**: Jest — baseline cleanup, builders, language gate on fixtures, image validator fail on assertions; Maestro flows for edit, export, non-English rejection, bad inputs fail at missing UI.
-- **GREEN**: all pass on both platforms; temp files audited as deleted; language bar met or `PARTIAL` with numbers.
-- **Evidence**: standard set plus language-gate confusion matrix, storage audit output, cleanup baseline metrics.
+- Scope: deterministic baseline cleanup (UI-chrome rules, whitespace/line-break repair); editable review model; payload builders (text/md/json); export + temp-file lifecycle logic; English language gate; image validation/downscale rules; specific error states; storage allow-list audit logic + log redaction; fixtures to ~25; Maestro flows authored for UC05/UC07/UC10/UC11.
+- **RED**: Jest — baseline cleanup, builders, language gate over fixtures, image validator, allow-list audit fail on assertions.
+- **GREEN**: pass; language-gate confusion matrix measured on host (bar met or `PARTIAL` with numbers). A04–A07, A16 are `PARTIAL` (host proof) with `NOT_RUN` UI portions awaiting D0/D1.
+- **Evidence**: standard set; language-gate confusion matrix; cleanup baseline metrics on gold text.
 
-### S2 — Get screenshots in from anywhere
+### S2 — Input-channel plumbing
 
 **Acceptance IDs:** A08, A09, A10, A11, A12
 
-Observable result: share-to-app, paste from clipboard, offer-latest-on-open, and graceful permission denial all work.
+Observable result (Stage L): input-routing and permission-state logic is tested; generated native config is verified to declare image sharing.
 
-- Scope: share-intent integration (Android `SEND` filter for images; iOS share extension via config plugin), clipboard ingest, latest-screenshot offer on foreground, permission handling, in-memory-only dismiss state, test-build intent log.
-- **RED**: Jest for ingest routing/dedupe; Maestro flows fail because entry points don't exist. Techniques in the Testability map must each be verified feasible first; record the verification as evidence.
-- **GREEN**: pass where automatable; otherwise `PARTIAL` with exactly what was not automated (A09, A10 are the likely ones).
-- **Evidence**: standard set; a "feasibility verification" log per Testability-map technique (worked / did not work, exact commands); intent logs; videos for each automatable flow; explicit `PARTIAL` notes for the rest.
-- Risks: iOS extension automation, clipboard image seeding, permission differences across OS versions.
+- Scope: share-intent integration (Android `SEND` image filter; iOS share-extension via config plugin), clipboard ingest, latest-screenshot offer logic (in-memory dismiss only), permission handling and explanation states, test-build intent log; `expo prebuild` output asserted to contain the Android intent filter and iOS activation rules (static check); Maestro flows authored.
+- **RED**: Jest for routing/dedupe/permission state; prebuild-output assertions fail until the plugin config is added.
+- **GREEN**: pass. A08–A12 `NOT_RUN`/`PARTIAL` (awaiting D1).
+- **Evidence**: standard set; generated-config excerpts; list of Testability-map techniques that D1 must verify first.
 
 ### S3 — Model manager: download once, then offline
 
 **Acceptance IDs:** A13, A14, A15
 
-Observable result: first run downloads the pinned model with progress and checksum; failures fall back to OCR-only with a clear banner; afterwards processing is offline.
+Observable result (Stage L): a host test downloads the real pinned model from a local HTTP server, verifies its sha256, resumes an interrupted download, and rejects wrong-hash and truncated variants.
 
-- Scope: capability probe (RAM/arch/runtime support), pinned manifest (repo, revision, URL, sha256, size, license), resumable download with sha256 verification before move-into-place, state machine (`absent|downloading|verifying|ready|failed|unsupported`), OCR-only mode banner, network guard, local model server script for tests (serves the real model, plus wrong-hash/truncated variants), `MODEL_BASE_URL` test override (test builds only).
-- **RED**: Jest for the state machine, checksum logic and guard fail on assertions; Maestro flows for download/failure/OCR-only fail at missing UI. (The runtime may be a stub-free placeholder that only verifies/loads file integrity here; LLM inference lands in S4.)
-- **GREEN**: pass on both platforms using the real pinned file (downloaded once during setup into `.cache/models/`, hash recorded from the real download).
-- **Evidence**: standard set; model manifest with the real sha256 and the command that produced it; logs of the success, wrong-hash, truncated and offline runs; network-guard test output; videos of download, failure/OCR-only and offline flows.
-- Risks: model size vs disk, simulator download speed, Android emulator host networking.
+- Scope: capability probe logic (RAM/arch/runtime support), pinned manifest (repo, revision, URL, sha256, size, license), resumable download + sha256-before-move logic behind `FileSystem`/`Http` interfaces (Node adapters for host tests, `expo-file-system` adapter for the app), state machine (`absent|downloading|verifying|ready|failed|unsupported`), OCR-only banner state, network guard, local model server script (real file + wrong-hash/truncated/404 variants), test-build-only `MODEL_BASE_URL` override.
+- **RED**: Jest for state machine, checksum, resume and guard fail on assertions.
+- **GREEN**: pass against the real pinned file (downloaded once into `.cache/models/`, hash recorded from the real download with the command that produced it). A13–A15 `PARTIAL` (host-level) awaiting D1.
+- **Evidence**: standard set; model manifest; success/wrong-hash/truncated/resume logs; guard test output.
+- Risks: model size vs the container's 40 GB disk; Node adapters are not the Expo adapters (stated limitation until D1).
 
-### S4 — Local LLM cleanup, safely
+### S4 — LLM cleanup and its guards (host-evaluated)
 
 **Acceptance IDs:** A17, A18, A19, A20
 
-Observable result: the review screen shows verified, faithful cleaned text plus optional suggested author/tags/summary; hostile or malformed model output never reaches the user.
+Observable result (Stage L): host demo runs the real pinned model on fixtures; guarded output is shown, and hostile or malformed outputs are rejected with the fallback.
 
-- Scope: **runtime and model selection by measurement**. Evaluate candidates on the Mac (same GGUF/weights, greedy/low-temperature, same prompt and schema) against fixtures: body-token F1, chrome leakage, fabricated-token rate, injection behavior, latency, peak RAM, license, size. Pick the smallest model that meets the bars; record the comparison table and rejected options. Then integrate the chosen runtime on-device, constrained decoding, validator, faithfulness guard, fallback, suggestion toggles, injection fixtures (≥ 5), eval-mode on-device confirmation run.
-- **RED**: Jest for validator/faithfulness/fallback with adversarial model outputs (invented text, dropped content, extra fields, injection obeyed) fail on assertions; eval-mode run on the injection fixtures fails the A17 check; Maestro flow for suggestions fails at missing UI.
-- **GREEN**: bars met, or the LLM ships **disabled by default** with measured numbers and the deterministic baseline remains the default (a valid completion). On-device confirmation: real inference ran on simulator/emulator; mark real-device speed `NOT_RUN` (A30).
-- **Evidence**: standard set; `docs/evidence/S4/model_selection.md` (candidate table with all measured criteria, rejected options and why, license notes); host eval JSON and on-device eval JSON with model/runtime versions and hashes; adversarial-output test logs; injection-fixture results; videos of the suggestions flow and an injection fixture.
-- Risks: simulator CPU-only LLM speed, Android emulator RAM limits, license terms of the winning model, runtime/SDK incompatibility (fallback: other runtime).
+- Scope: **model and runtime selection by measurement on the Linux host** (llama.cpp CPU; candidates sized for ~4 GB RAM: Qwen3 0.6B / 1.7B and Llama 3.2 1B at ~Q4 quantization; same GGUF, prompt, JSON schema, greedy/low temperature). Criteria: body-token F1, chrome leakage, fabricated-token rate, injection behavior, latency, peak RAM, license, size. Pick the smallest model meeting the bars; record the table and rejected options. Then the integration code for the chosen app runtime (`llama.rn` or `react-native-executorch`, selected by compatibility with the resolved SDK and whether the chosen model/format runs on it) — compiled and typechecked here, executed in D2. Prompt, JSON-schema/constrained decoding, validator, faithfulness guard, fallback, suggestion toggles, ≥ 5 injection fixtures.
+- **RED**: Jest for validator/faithfulness/fallback with adversarial model outputs (invented text, dropped content, extra fields, obeyed injection) fail on assertions; host-eval injection check fails until guards exist.
+- **GREEN**: bars met on gold OCR + `synthetic_noise` (A20 `PARTIAL`, never `PASS` here); A17–A19 `PASS` (host); or the LLM is **disabled by default** with measured numbers and the deterministic baseline stays the default (a valid completion).
+- **Evidence**: standard set; `docs/evidence/S4/model_selection.md`; host eval JSON with model/runtime hashes; adversarial-output logs; injection-fixture results.
+- Risks: CPU-only host speed, 4 GB RAM ceiling, license terms of the winning model, runtime incompatibility (fallback: the other runtime).
 
-### S5 — Hardening and release build
+### S5 — Hardening and release-build checks (host-level)
 
 **Acceptance IDs:** A22, A23, A27, A28, A29
 
-Observable result: the app survives large/odd inputs, meets (emulator) budgets, has basic accessibility, and a Release build passes the smoke flow.
+Observable result (Stage L): host checks for large-input handling, accessibility labels and release-bundle contents.
 
-- Scope: performance/memory measurements and fixes, large-image handling, accessibility labels/testIDs, Release builds on both platforms with a check that eval-mode/test hooks are absent, optional Telegram-installed attempt (else `NOT_RUN`).
-- **RED**: eval-mode runs for 4000 px / 20 MB inputs fail the budget or crash; accessibility assertions fail; Release-bundle inspection finds test hooks.
+- Scope: size/memory rules and downscale thresholds, accessibility labels/testIDs (React Native Testing Library assertions), release configuration, `npx expo export` JS bundle inspection proving eval-mode and test hooks are absent, timing harness for D2.
+- **RED**: bundle inspection finds test hooks; accessibility assertions fail; downscale rule tests fail.
+- **GREEN**: pass. A22, A23, A28, A29 `PARTIAL`/`NOT_RUN`, A27 `NOT_RUN` (awaiting D2).
+- **Evidence**: standard set; bundle inspection output.
+
+### S6 — Host conformance and Stage D handoff
+
+**Acceptance IDs:** A26
+
+Observable result (Stage L): a complete host-verified build plus a precise handoff for the Mac stage.
+
+- Scope: `scripts/audit_deps.mjs` (dependency/license inventory, no telemetry SDK, model pin matches the production config); full clean-checkout host run; `docs/STAGE_D_HANDOFF.md` listing every `NOT_RUN`/`PARTIAL` ID with the exact commands and flows to run; phase set to `DEVICE_VERIFICATION`; README/status updated.
+- **RED**: the audit fails on a seeded violation (negative control); `verify_evidence.py` fails until all IDs are accounted for in the final Stage L summary.
+- **GREEN**: A26 `PASS`; every other ID accounted for honestly.
+- **Evidence**: standard set; license inventory; audit outputs; `STAGE_D_HANDOFF.md`.
+
+### D0 — Device bring-up: pick, OCR, review, share, edit, export, errors
+
+**Acceptance IDs:** A01, A02, A03, A04, A05, A06, A07, A21
+
+Observable result: on iOS simulator and Android emulator the user picks a fixture, sees real OCR text, edits it, shares/exports it, and gets clear errors for non-English and bad input; every passing flow is recorded.
+
+- Scope: build both apps with the project scripts; run the authored Maestro flows; fix selectors/flows/app bugs found (each fix preceded by a RED reproduction); record OCR baseline per platform engine; dump real OCR text from the devices into `fixtures/real_ocr/` (synthetic screenshots only) for D3.
+- **RED**: authored flows run for the first time and fail on assertions (not on syntax); Jest repros for each app bug.
+- **GREEN**: flows pass on both platforms; A21 baseline recorded; videos + manifest.
+- **Evidence**: standard set per platform (`ios.xml`, `android.xml`), videos in `artifacts/video/` with manifest entries, OCR baseline JSON.
+
+### D1 — Device: inputs, model download, offline
+
+**Acceptance IDs:** A08, A09, A10, A11, A12, A13, A14, A15
+
+Observable result: share-in, paste, offer-latest, permission denial, model download/failure/OCR-only fallback and offline operation work on device.
+
+- Scope: first **verify feasibility** of each Testability-map technique and log the result; then run/fix flows; local model server to the test builds; Android radio-off flow; iOS guard-only proof.
+- **RED**: feasibility log plus failing flows for each use case.
+- **GREEN**: pass where automatable; `PARTIAL` with exact limits for the rest (A09, A10, iOS part of A15 are likely).
+- **Evidence**: standard set per platform; feasibility log; videos.
+
+### D2 — Device: on-device LLM, hardening, release build
+
+**Acceptance IDs:** A16, A22, A23, A27, A28, A29, A32
+
+Observable result: the pinned model runs inside the app on both platforms (or the capability probe correctly falls back to OCR-only), large inputs are survived, accessibility checks pass, and Release builds pass the smoke flow.
+
+- Scope: on-device inference confirmation (eval-mode) on the injection and faithfulness fixtures; storage and log audits across all flows; emulator timing/memory numbers (labelled as such); Release builds + smoke flow; optional Telegram-installed delivery attempt (else `NOT_RUN`).
+- **RED**: eval-mode on-device checks and Release smoke fail until fixed.
 - **GREEN**: pass; budgets reported as emulator numbers.
-- **Evidence**: standard set; timing/memory tables labelled emulator/simulator; Release-build logs and bundle inspection output; accessibility assertion logs; Telegram attempt log or `NOT_RUN` note; videos of Release smoke flow and large-image flow.
+- **Evidence**: standard set per platform; audit outputs; videos.
 
-### S6 — Conformance, full-use-case video, and closeout
+### D3 — Final conformance and full-use-case video
 
-**Acceptance IDs:** A16, A24, A25, A26, A30
+**Acceptance IDs:** A20, A24, A25, A30
 
-Observable result: a verification report proving every acceptance ID has an honest status, and a recorded video of every use case on both platforms.
+Observable result: every use case UC01–UC14 has a passing recorded flow per applicable platform, plus a compilation video; every acceptance ID has an honest, evidence-backed status.
 
-- Scope: run the complete suite from a clean checkout, `scripts/audit_deps.mjs` (licenses, no telemetry, model pin matches production config), storage/log audits across all flows, record every flow per platform, produce the compilation video(s) with `ffmpeg`, finalize `video_manifest.json`, `verify_evidence.py` passes, status.md and README final, limitations list, open-issues list.
-- **RED**: `verify_evidence.py` fails on missing IDs/videos/stale digest until everything is recorded; audit scripts fail on a seeded violation (negative control).
-- **GREEN**: all accounted for; remaining `NOT_RUN`/`PARTIAL` items are listed with reasons.
-- **Evidence**: `docs/evidence/S6/conformance_report.md` (what is proven, what is not, how to reproduce), full-suite logs from a clean checkout, dependency/license inventory, audit outputs, `verify_evidence.py` output, final `video_manifest.json`, and the video list with paths and hashes (files stay in `artifacts/video/`).
+- Scope: clean-checkout full run on the Mac; re-run the cleanup evaluation on the **real OCR text** dumped from the devices (A20); record every flow and build the compilation with `ffmpeg`; finalize `video_manifest.json`; `verify_evidence.py` passes with the final summary accounting for all IDs; phase `COMPLETE`.
+- **RED**: `verify_evidence.py` fails on missing IDs/videos/stale digest until all are recorded; A20 re-run fails the bar or reveals a regression until addressed.
+- **GREEN**: all accounted for; remaining `NOT_RUN`/`PARTIAL` listed with reasons.
+- **Evidence**: `docs/evidence/D3/conformance_report.md` (proven / not proven / how to reproduce), full-suite logs, final manifest and video list with paths and hashes (files stay in `artifacts/video/`).
 
 ## Toolchain and preflight
 
-`scripts/preflight.sh` checks, and reports `BLOCKED` (never proceeds) for anything missing: macOS, Xcode + command-line tools + an available iOS simulator runtime, Android SDK (`adb`, emulator, `avdmanager`) and at least one arm64 AVD, JDK, Node ≥ the Expo requirement (see `.nvmrc`), npm, Python 3, Maestro, `idb_companion`, `ffmpeg`, free disk ≥ 40 GB. D5 lists what Hermes may install itself. Simulator/emulator state is recorded in `versions.json` (OS versions, device names).
+`scripts/preflight.sh` auto-selects a mode and reports `BLOCKED` (never installs) for anything required that is missing:
+
+- `linux` (Stage L): python3, node (version in `.nvmrc` once S0 creates it), npm, git, free disk ≥ 15 GB. Reported as `INFO` (not required): RAM, `/dev/kvm`, JDK, Android SDK, cmake/g++. The Android debug build is attempted only if D5's resource condition holds.
+- `device` (Stage D, macOS): everything above plus Xcode + command-line tools + an iOS simulator runtime, JDK, Android SDK (`adb`, emulator, `avdmanager`) and an arm64 AVD, Maestro, `idb_companion`, `ffmpeg`, free disk ≥ 40 GB.
+- `ci`: python3 only.
+
+Versions of every tool and OS image are recorded in `versions.json`.
 
 ## CI and evidence strategy
 
-- Constraint: the shared workflow runs on `ubuntu-latest`, requires `setup/test/demo/verify` scripts for every touched project, and runs `sudo apt-get install espeak-ng` unconditionally. It cannot build iOS, run simulators or record video, and a hosted macOS runner costs money. The root `AGENTS.md` forbids reporting PASS when required real-model tests did not run on the runner, so the owner's D1 choice was required before the build; it is **(B) split with a scoped root `AGENTS.md` exception**, recorded in `milestone-status.json`. Option (A) remains the upgrade path if a self-hosted runner is configured later.
-- In both options, on CI `monorepo / verify` runs `scripts/setup.sh`, `test.sh` (Jest, typecheck, lint, tool self-tests), `demo.sh` (honest: prints `NOT_RUN` when it cannot run flows) and `verify.sh` (plan lint + evidence verifier). Under (B) the device E2E, OCR/LLM eval-mode runs and video run **on the Mac** and the evidence is committed; under (A) the same suites run on the self-hosted Mac runner.
-- Shared-CI change (S0, authorized only by the recorded D1 choice): make the `espeak-ng` install conditional on a Linux runner; add a `setup-node` step conditional on `projects/postclip/.nvmrc` existing, pinned to that version; under (A) add per-project runner selection. The change must be tested to leave the coaching-privacy-pipeline job unchanged. No other shared-CI edits, no repo or runner setting changes without explicit owner approval.
-- Anti-staleness: each slice `summary.json` records a `source_digest` over source/app/e2e/fixtures/lockfile/config. `verify_evidence.py` enforces the digest for the **current slice only**; earlier slices' evidence is historical. At the end (`COMPLETE`), S6's summary must account for every acceptance ID on the final tree.
+- Constraint: the shared workflow runs on `ubuntu-latest`, requires `setup/test/demo/verify` for every touched project, and runs `sudo apt-get install espeak-ng` unconditionally; it cannot build iOS or run simulators, and macOS runners cost money. The root `AGENTS.md` forbids reporting PASS when required real-model tests did not run on the runner, so the owner decided (D1) on **split with a scoped root exception**: `monorepo / verify` covers plan lint, evidence verifier, lint, typecheck and Jest; device flows run in Stage D on a Mac and count only through committed evidence the verifier accepts.
+- `demo.sh` on CI prints `NOT_RUN`; CI must never imply device tests ran there.
+- Shared-CI change (S0, authorized by D1): make the `espeak-ng` install conditional on a Linux runner and add a `setup-node` step conditional on `projects/postclip/.nvmrc` existing, pinned to that version. It must be tested to leave the coaching-privacy-pipeline job unchanged. No other shared-CI edits, no repo/runner setting changes without owner approval.
+- Anti-staleness: each slice `summary.json` records a `source_digest` over source/app/e2e/fixtures/lockfile/config; `verify_evidence.py` enforces it for the **current slice only** (earlier slices are historical). At `COMPLETE`, the final summary (D3) must account for every acceptance ID on the final tree.
 
 ## Autonomy and merge policy
 
-This section is the project's own policy (it does not depend on any other project's rules).
+This section is the project's own policy.
 
-- Hermes may merge its own PR (`gh pr merge --squash`) only when: `monorepo / verify` has **passed** on the PR head; the Mac-side suite (`bash scripts/verify.sh --device`) passed on the same tree with committed evidence whose `source_digest` matches; the diff contains only in-scope files (no secrets, models, MP4s, large data); no unresolved BLOCKED item. Then verify `MERGED` via `gh pr view`, `git checkout main && git pull --ff-only`, and continue to the next slice.
-- Never push to `main`, force-push, bypass checks, change repo/org settings, or spend money. Do not tag or release.
-- Stop and report `BLOCKED` (do not improvise) when: preflight finds a missing prerequisite outside D5; a build fails for reasons not fixable within the slice after 3 genuine attempts; CI fails after 3 attempts; a Testability-map technique proves infeasible and no honest `PARTIAL` is possible; any step would require weakening/skipping/faking a test, inventing a number, hash, log or video; the plan's premise is contradicted by facts (post the finding as a PR/issue comment first).
-- After each merged PR report: slice, branch, PR URL, test commands with exit codes, evidence paths, per-acceptance-ID status table, video manifest entries, merge SHA from GitHub, limitations, next slice. After S6, give the final conformance summary.
+- **Stage L (Hermes on Linux):** merge your own PR (`gh pr merge --squash`) only when `monorepo / verify` has **passed** on the PR head, `bash scripts/verify.sh` passed locally, the diff contains only in-scope files (no secrets, models, MP4s, large data) and nothing is BLOCKED. Then verify `MERGED` via `gh pr view`, `git checkout main && git pull --ff-only`, continue to the next slice.
+- **Stage D (Claude Code with the owner, on the Mac):** the same, plus `bash scripts/verify.sh --device` must pass on the same tree with committed evidence whose `source_digest` matches; merges happen only after the owner's go-ahead in the session.
+- Never push to `main`, force-push, bypass checks, change repo/org/runner settings, spend money, tag or release, upload videos anywhere, or install anything beyond D5.
+- Stop and report `BLOCKED` (do not improvise) when: preflight finds a missing required prerequisite; a build fails for reasons not fixable within the slice after 3 genuine attempts; CI fails after 3 attempts; a Testability-map technique proves infeasible and no honest `PARTIAL` is possible; any step would require weakening/skipping/faking a test, or inventing a number, hash, log or video; the plan's premise is contradicted by facts (post the finding as a PR comment first); the container runs out of RAM/disk for a required step (report the numbers; do not silently skip required evidence).
+- After each merged PR report: slice, branch, PR URL, test commands with exit codes, evidence paths, per-acceptance-ID status table, video manifest entries (Stage D), merge SHA from GitHub, limitations, next slice. After S6 report the Stage D handoff; after D3 give the final conformance summary.
 
 ## Risks
 
 | Risk | Mitigation |
 |---|---|
-| Simulator/emulator cannot represent real-device LLM speed or memory | Report emulator numbers as such; A30 `NOT_RUN`; OCR-only fallback + capability probe |
-| iOS share-extension and clipboard-image automation may be infeasible | Verify first; honest `PARTIAL`; never fake in-app |
+| Stage L code behaves differently on a device (selectors, native module config, OS versions) | D slices exist for exactly this; every fix gets a RED reproduction; device IDs stay `NOT_RUN` until proven |
+| Hermes's container is too small for Gradle, Chromium or llama.cpp evaluation | Android build optional by resources; fixtures committed; small quantized candidate models; report numbers and BLOCKED rather than skipping evidence |
+| Host LLM evaluation uses gold OCR + synthetic noise, not real OCR | A20 stays `PARTIAL` until D3 re-runs on real OCR dumps |
+| Simulator/emulator cannot represent real-device LLM speed or memory | Emulator numbers labelled as such; A30 `NOT_RUN`; OCR-only fallback + capability probe |
+| iOS share-extension and clipboard-image automation may be infeasible | Verify first (D1); honest `PARTIAL`; never fake in-app |
 | Library incompatibility with the current Expo SDK / New Architecture | Resolve versions at build time; alternatives listed; local Expo module fallback for OCR |
 | LLM hallucination or prompt injection | LLM safety design; deterministic fallback; LLM can ship disabled |
-| Model license/size surprises | Licenses recorded in A26; smallest passing model; Llama license reviewed before use |
+| Model license/size surprises | Licenses recorded (A26); smallest passing model; Llama license reviewed before use |
 | Evidence staleness or overclaiming (seen in earlier projects) | `source_digest`, `verify_evidence.py`, JUnit-backed PASS only, plan lint |
-| Toolchain installs mutating the Mac | D5 allow-list; preflight BLOCKED otherwise |
+| No Mac available for Stage D | The project stays at `DEVICE_VERIFICATION`; nothing device-related is claimed |
 | Shared CI change breaks the other project | Scoped, conditional change; verified against both projects before merge |

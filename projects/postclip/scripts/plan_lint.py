@@ -136,9 +136,9 @@ def lint(text):
     names = []
     for block in slice_blocks:
         title = block.splitlines()[0].strip()
-        m = re.match(r"(S\d+)\b", title)
+        m = re.match(r"([SD]\d+)\b", title)
         if not m:
-            problems.append("slice heading must start with S<number>: %r" % title)
+            problems.append("slice heading must start with S<number> or D<number>: %r" % title)
             continue
         sid = m.group(1)
         names.append(sid)

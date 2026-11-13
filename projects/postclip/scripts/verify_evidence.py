@@ -4,7 +4,7 @@
 Phase PLAN_ONLY: no slice has been delivered; verifies that no evidence claims
 anything and that milestone-status.json is consistent with the plan.
 
-Phase BUILDING / COMPLETE: for every docs/evidence/<slice>/summary.json:
+Phase BUILDING / DEVICE_VERIFICATION / COMPLETE: for every docs/evidence/<slice>/summary.json:
   * every acceptance ID is known to docs/BUILD_PLAN.md and has a valid status
     (PASS | PARTIAL | NOT_RUN | BLOCKED);
   * PASS requires >= 1 test reference "junit:<path>::<testcase name>" that
@@ -79,8 +79,11 @@ def ref_platforms(ref):
 
 
 def slice_num(name):
-    m = re.fullmatch(r"S(\d+)", name or "")
-    return int(m.group(1)) if m else -1
+    """Ordering key: Stage L slices (S0..) come before Stage D slices (D0..)."""
+    m = re.fullmatch(r"([SD])(\d+)", name or "")
+    if not m:
+        return -1
+    return (0 if m.group(1) == "S" else 1000) + int(m.group(2))
 
 
 def junit_testcase_passed(root, ref):
@@ -114,7 +117,7 @@ def verify(root):
     if not status_file.is_file():
         return ["missing milestone-status.json"]
     phase = json.loads(status_file.read_text()).get("phase")
-    if phase not in ("PLAN_ONLY", "BUILDING", "COMPLETE"):
+    if phase not in ("PLAN_ONLY", "BUILDING", "DEVICE_VERIFICATION", "COMPLETE"):
         return ["milestone-status.json: bad phase %r" % phase]
     ids = plan_ids(root)
     if not ids:
