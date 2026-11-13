@@ -1,0 +1,36 @@
+{
+  "slice": "I13-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/13",
+  "scope": "ASR benchmark tooling: scripts/bench_asr.py (WER/CER/runtime/peak RSS per model) + seeded 32-utterance espeak fixture set with references",
+  "date": "2026-11-14",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/integration/test_i13_bench.py -q",
+    "exit_code": 1,
+    "result": "2 failed: no bench script; no fixture reference set",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/integration/test_i13_bench.py -q  -> 2 passed (131.6s)",
+      "bench run (real models): see benchmark.json + bench-run.log",
+      "full suite chunks: fast 60 / integration 23 / e2e+negative 56, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "benchmark_results": {
+    "tiny.en": {"wer": 0.079, "cer": 0.0325, "runtime_s": 48.3},
+    "base.en": {"wer": 0.0709, "cer": 0.0203, "runtime_s": 105.1},
+    "small.en": {"wer": 0.0412, "cer": 0.0144, "runtime_s": 241.7},
+    "caveat": "synthetic espeak TTS only; not representative of real speech; PoC-level model-selection data"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {"evidence": "negative.log"},
+  "changed_files": [
+    "scripts/bench_asr.py (new)",
+    "fixtures/audio/bench_*.wav (32 seeded espeak clips) + bench_references.json",
+    "tests/integration/test_i13_bench.py (new)"
+  ],
+  "gate_impact": "none: pipeline code untouched; the runtime gate remains the I19 confidence signals (runtime WER budget is impossible without reference transcripts — stated honestly)",
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I13-S1-asr-benchmark", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "9c3899cab85d31c46a2d2091e3a4f86f94fc74d1 (PR #38, I11-S1)"
+}

@@ -238,3 +238,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I11-S1/e2e.log). **Negative:** [negative.log](evidence/I11-S1/negative.log). **Machine report:** [summary.json](evidence/I11-S1/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I11-S1-language-gate`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** #13 (deps #18 ✅, #19 ✅) — runtime ASR quality budget.
+
+### I13-S1 — ASR benchmark + fixture set (issue #13 slice 1)
+
+- **Delivered at:** 2026-11-14T06:20+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #38 merged as `9c3899cab85d31c46a2d2091e3a4f86f94fc74d1`)
+- **Scope:** `scripts/bench_asr.py` (per-model WER/CER/runtime/peak RSS via real faster-whisper) + seeded 32-utterance espeak fixture set with references (`fixtures/audio/bench_*.wav` + `bench_references.json`). Measured (synthetic TTS — NOT representative, stated in the report): tiny.en WER 0.079 / 48s, base.en 0.0709 / 105s, small.en 0.0412 / 242s. Runtime WER budget is impossible without reference transcripts — runtime gate stays the I19 confidence signals.
+- **RED proof:** [evidence/I13-S1/red.log](evidence/I13-S1/red.log) — 2 failed. **GREEN:** [green.log](evidence/I13-S1/green.log); benchmark: [benchmark.json](evidence/I13-S1/benchmark.json), [bench-run.log](evidence/I13-S1/bench-run.log); full chunks fast 60 / integration 23 / e2e+negative 56, exit 0.
+- **E2E:** [e2e.log](evidence/I13-S1/e2e.log). **Negative:** [negative.log](evidence/I13-S1/negative.log). **Machine report:** [summary.json](evidence/I13-S1/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I13-S1-asr-benchmark`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** #9 GLiNER speed-up (deps #16 ✅, #18 ✅, #20 ✅).

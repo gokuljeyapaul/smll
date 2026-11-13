@@ -1,0 +1,3 @@
+== negative: honesty ==
+runtime WER budget is impossible without references (stated in report fixture_note); runtime gate = confidence signals from I19 (unchanged, still fails closed)
+tiny.en WER 0.079 on synthetic TTS — NOT representative of real speech; documented caveat
