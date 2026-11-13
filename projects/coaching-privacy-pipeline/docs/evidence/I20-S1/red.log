@@ -1,0 +1,77 @@
+FF.                                                                      [100%]
+=================================== FAILURES ===================================
+____________________ test_long_session_tail_clues_detected _____________________
+
+    def test_long_session_tail_clues_detected():
+        result = _process(_long_session_transcript())
+        codes = [r["code"] for r in result.report.get("context_risks", [])]
+>       assert "COMBINATION_OF_CLUES" in codes, (
+            f"gold clues in the final turns were not detected (codes: {codes}); "
+            "truncation or window drop suspected"
+        )
+E       AssertionError: gold clues in the final turns were not detected (codes: []); truncation or window drop suspected
+E       assert 'COMBINATION_OF_CLUES' in []
+
+tests/e2e/test_i20_e2e.py:60: AssertionError
+----------------------------- Captured stderr call -----------------------------
+The tokenizer you are loading from '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+------------------------------ Captured log call -------------------------------
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: pl, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNifRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNieRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItDriverLicenseRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItFiscalCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItVatCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItIdentityCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItPassportRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - PlPeselRecognizer supported languages: pl, registry supported languages: en
+_____________ test_single_clue_in_last_turn_reported_when_isolated _____________
+
+    def test_single_clue_in_last_turn_reported_when_isolated():
+        """A single clue category alone does not raise COMBINATION (threshold 2)
+        but must appear in context_spans if it survives the window."""
+        t = _long_session_transcript()
+        # remove the employer clue; keep the location clue
+        t["utterances"] = t["utterances"][:-2] + [t["utterances"][-1]]
+        result = _process(t)
+        spans = result.report.get("context_spans", {})
+>       assert any(
+            e.get("label") == "QUASI_IDENTIFIER.PRECISE_LOCATION"
+            for entries in spans.values()
+            for e in entries
+        ), "location clue in the last turn was not detected"
+E       AssertionError: location clue in the last turn was not detected
+E       assert False
+E        +  where False = any(<generator object test_single_clue_in_last_turn_reported_when_isolated.<locals>.<genexpr> at 0x7557b5b84a90>)
+
+tests/e2e/test_i20_e2e.py:74: AssertionError
+=============================== warnings summary ===============================
+tests/e2e/test_i20_e2e.py::test_long_session_tail_clues_detected
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/e2e/test_i20_e2e.py::test_long_session_tail_clues_detected
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+tests/e2e/test_i20_e2e.py::test_long_session_tail_clues_detected
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/gliner/data_processing/processor.py:427: UserWarning: Sentence of length 813 has been truncated to 384
+    batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+
+tests/e2e/test_i20_e2e.py::test_single_clue_in_last_turn_reported_when_isolated
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/gliner/data_processing/processor.py:427: UserWarning: Sentence of length 802 has been truncated to 384
+    batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+
+tests/e2e/test_i20_e2e.py::test_benign_long_session_not_overflagged
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/gliner/data_processing/processor.py:427: UserWarning: Sentence of length 792 has been truncated to 384
+    batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/e2e/test_i20_e2e.py::test_long_session_tail_clues_detected - Ass...
+FAILED tests/e2e/test_i20_e2e.py::test_single_clue_in_last_turn_reported_when_isolated
+2 failed, 1 passed, 5 warnings in 44.71s
+exit=1
