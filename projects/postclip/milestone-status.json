@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "project": "postclip",
+  "phase": "PLAN_ONLY",
+  "current_slice": null,
+  "owner_decisions": {
+    "D1_ci_strategy": "PENDING_OWNER_CONFIRMATION (default: split — see docs/BUILD_PLAN.md)"
+  },
+  "slices": {
+    "S0": {"status": "NOT_STARTED"},
+    "S1": {"status": "NOT_STARTED"},
+    "S2": {"status": "NOT_STARTED"},
+    "S3": {"status": "NOT_STARTED"},
+    "S4": {"status": "NOT_STARTED"},
+    "S5": {"status": "NOT_STARTED"},
+    "S6": {"status": "NOT_STARTED"}
+  },
+  "last_verified_merged_pr": null
+}
