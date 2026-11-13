@@ -31,25 +31,13 @@ def test_wav_to_sanitized_decision_e2e(tmp_path):
     asr = adapter.transcribe(str(wav))
     assert asr["text"].strip()
 
-    # 3. canonical transcript schema (same as text input)
-    transcript = Transcript.parse({
-        "schema_version": "1.0",
-        "session_id": "s5-e2e",
-        "source_type": "synthetic_audio",
-        "purpose": "internal_coaching_analysis",
-        "language": "en",
-        "speakers": [{"id": "S1", "role": "COACH"}, {"id": "S2", "role": "CLIENT"}],
-        "utterances": [
-            {"id": "u1", "speaker_id": "S2", "start_ms": 0,
-             "end_ms": 3000, "text": asr["text"].strip()},
-        ],
-        "metadata": {
-            "synthetic": True,
-            "audio_file": "s5.wav",
-            "asr": {"model": asr["model"], "engine": asr["engine"],
-                    "speaker_attribution": "manual"},
-        },
-    })
+    # 3. canonical transcript schema via the I19-S2 helper (same as text input)
+    from coaching_privacy.asr_transcript import transcript_from_asr
+    transcript = Transcript.parse(transcript_from_asr(
+        asr, session_id="s5-e2e", purpose="internal_coaching_analysis",
+        speakers=[{"id": "S1", "role": "COACH"}, {"id": "S2", "role": "CLIENT"}],
+    ))
+    # the helper keeps ASR provenance; the pipeline records it in the report
 
     # 4. same privacy pipeline as text
     store = PolicyStore(PROJECT / "policies" / "sample_policy.yaml")

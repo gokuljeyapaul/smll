@@ -1,0 +1,85 @@
+FF.FF                                                                    [100%]
+=================================== FAILURES ===================================
+_____________ test_transcript_from_asr_builds_canonical_transcript _____________
+
+    def test_transcript_from_asr_builds_canonical_transcript():
+>       t = _transcript_from_asr(_asr_result(uncertain=False))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_i19_e2e.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+asr = {'text': 'I want to lead better meetings.', 'model': 'tiny.en', 'engine': 'faster-whisper', 'language': 'en', ...}
+purpose = 'internal_coaching_analysis'
+
+    def _transcript_from_asr(asr: dict, purpose: str = "internal_coaching_analysis"):
+>       from coaching_privacy.asr_transcript import transcript_from_asr
+E       ModuleNotFoundError: No module named 'coaching_privacy.asr_transcript'
+
+tests/e2e/test_i19_e2e.py:41: ModuleNotFoundError
+____________________ test_uncertain_audio_routes_to_review _____________________
+
+    def test_uncertain_audio_routes_to_review():
+        result = _process(_hand_transcript(uncertain=True))
+>       assert result.decision["decision"] == "REVIEW_REQUIRED", result.decision
+E       AssertionError: {'decision': 'RELEASE_CANDIDATE', 'review_reasons': ['synthetic_internal_acceptance_passed; not permission to distribute']}
+E       assert 'RELEASE_CANDIDATE' == 'REVIEW_REQUIRED'
+E         
+E         - REVIEW_REQUIRED
+E         + RELEASE_CANDIDATE
+
+tests/e2e/test_i19_e2e.py:94: AssertionError
+----------------------------- Captured stderr call -----------------------------
+The tokenizer you are loading from '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+------------------------------ Captured log call -------------------------------
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: pl, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNifRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNieRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItDriverLicenseRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItFiscalCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItVatCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItIdentityCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItPassportRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - PlPeselRecognizer supported languages: pl, registry supported languages: en
+___________________ test_missing_uncertain_flag_fail_closed ____________________
+
+    def test_missing_uncertain_flag_fail_closed():
+        """synthetic_audio transcript without metadata.asr.uncertain must never
+        be RELEASE_CANDIDATE (fail closed: treated as uncertain)."""
+        result = _process(_hand_transcript(uncertain=None))
+>       assert result.decision["decision"] != "RELEASE_CANDIDATE", result.decision
+E       AssertionError: {'decision': 'RELEASE_CANDIDATE', 'review_reasons': ['synthetic_internal_acceptance_passed; not permission to distribute']}
+E       assert 'RELEASE_CANDIDATE' != 'RELEASE_CANDIDATE'
+
+tests/e2e/test_i19_e2e.py:109: AssertionError
+______________________ test_report_records_asr_provenance ______________________
+
+    def test_report_records_asr_provenance():
+        result = _process(_hand_transcript(uncertain=True))
+        asr = result.report.get("asr") or {}
+>       assert asr.get("model") == "tiny.en"
+E       AssertionError: assert None == 'tiny.en'
+E        +  where None = <built-in method get of dict object at 0x757e807c5d80>('model')
+E        +    where <built-in method get of dict object at 0x757e807c5d80> = {}.get
+
+tests/e2e/test_i19_e2e.py:116: AssertionError
+=============================== warnings summary ===============================
+tests/e2e/test_i19_e2e.py::test_uncertain_audio_routes_to_review
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/e2e/test_i19_e2e.py::test_uncertain_audio_routes_to_review
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/e2e/test_i19_e2e.py::test_transcript_from_asr_builds_canonical_transcript
+FAILED tests/e2e/test_i19_e2e.py::test_uncertain_audio_routes_to_review - Ass...
+FAILED tests/e2e/test_i19_e2e.py::test_missing_uncertain_flag_fail_closed - A...
+FAILED tests/e2e/test_i19_e2e.py::test_report_records_asr_provenance - Assert...
+4 failed, 1 passed, 2 warnings in 34.41s
+exit=1

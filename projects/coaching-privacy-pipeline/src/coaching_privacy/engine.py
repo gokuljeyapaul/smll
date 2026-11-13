@@ -186,6 +186,20 @@ def process_transcript(
         "stage_timings_ms": {},
         "created_at": _now(),
     }
+    # I19-S2: audio transcripts carry ASR uncertainty in metadata; the gate
+    # consumes it (fail closed: missing/non-boolean = uncertain).
+    asr_md = (transcript.metadata or {}).get("asr")
+    if transcript.source_type == "synthetic_audio":
+        asr_uncertain = (
+            isinstance(asr_md, dict)
+            and isinstance(asr_md.get("uncertain"), bool)
+            and asr_md["uncertain"]
+        ) or not (
+            isinstance(asr_md, dict) and isinstance(asr_md.get("uncertain"), bool)
+        )
+    else:
+        asr_uncertain = False
+
     gate = SafetyGate()
     # Honest stage accounting: a stage counts as executed only when the
     # capability exists in this pipeline version. S0 implements
@@ -205,10 +219,21 @@ def process_transcript(
             "error": validation.get("error") or context_error,
             "residual_pii": validation.get("residual_pii", []),
             "context_risks": context_risks,
+            "asr_uncertain": asr_uncertain,
             "all_mandatory_stages_executed": all_mandatory,
         },
         purpose=transcript.purpose,
     )
+    if transcript.source_type == "synthetic_audio" and isinstance(asr_md, dict):
+        report["asr"] = {
+            "model": asr_md.get("model"),
+            "engine": asr_md.get("engine"),
+            "speaker_attribution": asr_md.get("speaker_attribution"),
+            "uncertain": asr_md.get("uncertain"),
+            "signals": asr_md.get("signals", {}),
+            "language": asr_md.get("language"),
+            "language_probability": asr_md.get("language_probability"),
+        }
     report["executed_stages"] = sorted(executed_stages)
     report["mandatory_stages"] = sorted(mandatory_stages)
     report["review_reasons"] = decision["review_reasons"]

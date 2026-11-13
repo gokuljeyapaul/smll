@@ -1,0 +1,33 @@
+{
+  "slice": "I19-S2",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/19",
+  "scope": "Carry ASR uncertainty to the gate: transcript_from_asr helper (canonical transcript with metadata.asr provenance); engine reads metadata.asr.uncertain for synthetic_audio and passes asr_uncertain to SafetyGate (fail closed on missing/non-boolean); report records ASR provenance; S5 e2e uses the helper",
+  "date": "2026-11-13",
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/e2e/test_i19_e2e.py -q",
+    "exit_code": 1,
+    "result": "4 failed / 1 passed: uncertain audio released as RELEASE_CANDIDATE; missing uncertain flag released; no ASR provenance in report; transcript_from_asr missing",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/e2e/test_i19_e2e.py -q  -> 5 passed, exit 0",
+      "full suite chunks: fast 60 / integration 21 / e2e+negative 36, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {
+    "result": "missing/non-boolean uncertain flag on synthetic_audio -> treated as uncertain -> REVIEW_REQUIRED (never RELEASE_CANDIDATE); differential baseline proves ASR path is the cause",
+    "evidence": "negative.log"
+  },
+  "changed_files": [
+    "src/coaching_privacy/asr_transcript.py (new helper)",
+    "src/coaching_privacy/engine.py (asr_uncertain wiring + report.asr provenance)",
+    "tests/e2e/test_i19_e2e.py (RED tests)",
+    "tests/e2e/test_s5_e2e.py (uses transcript_from_asr instead of hand-built dict)"
+  ],
+  "gate_impact": "engine now passes asr_uncertain for synthetic_audio transcripts. 18 seed fixtures are all source_type synthetic_text (asr_uncertain=False path unchanged); no text fixture decision can change. Measured: full suite green including S5 audio e2e.",
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I19-S2-asr-gate-wiring", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "1ee49c08ccf4f8174fa591394a1e84ec6a3259d9 (PR #31, I19-S1)"
+}

@@ -1,0 +1,8 @@
+== GREEN (2026-11-13) ==
+command: .venv/bin/python -m pytest tests/e2e/test_i19_e2e.py -q
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+5 passed, 2 warnings in 28.90s
+exit=0
+
+command: full suite chunks
+fast: 60 passed (1.92s); integration: 21 passed; e2e+negative: 36 passed — all exit 0
