@@ -1,0 +1,47 @@
+{
+  "slice": "I20-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/20",
+  "scope": "Whole-turn windowing for the GLiNER contextual stage (fixes silent truncation fail-open hole); straddling spans counted, not dropped; report exposes window count + dropped-span count",
+  "date": "2026-11-13",
+  "step0": {
+    "premise": "GLiNER medium-v2.1 truncates input beyond ~384 tokens so tail clues are never analysed",
+    "verified": true,
+    "evidence": "red.log (46-turn session: tail clues undetected before fix) + gliner_config.json max_len=384, truncation=True in gliner/model.py encode"
+  },
+  "red": {
+    "command": ".venv/bin/python -m pytest tests/e2e/test_i20_e2e.py -q",
+    "exit_code": 1,
+    "result": "2 failed / 1 passed: tail combination and isolated tail clue undetected (truncation); benign long session fine",
+    "evidence": "red.log"
+  },
+  "green": {
+    "commands": [
+      ".venv/bin/python -m pytest tests/e2e/test_i20_e2e.py -q  -> 3 passed",
+      "full suite chunks: fast 60 / integration 21 / e2e+negative 39, all exit 0"
+    ],
+    "evidence": "green.log"
+  },
+  "gate_impact": {
+    "engine_context_stage_changed": true,
+    "18_fixture_decision_table": "green.log — all 18 UNCHANGED, 0 more-permissive changes (raw: before-18fixtures.log / after-18fixtures.log)"
+  },
+  "e2e": {"command": "bash scripts/verify.sh", "exit_code": 0, "evidence": "e2e.log"},
+  "negative": {"evidence": "negative.log"},
+  "design": {
+    "window_budget_chars": 1200,
+    "rationale": "384-token model limit; ~4 chars/token English; conservative margin incl. labels",
+    "whole_turns": "never split inside a turn; over-long turns split at word boundaries with 30-word overlap",
+    "straddling_spans": "counted in report.context_dropped_spans, never silently dropped",
+    "report_fields": ["context_window_count", "context_dropped_spans"]
+  },
+  "changed_files": [
+    "src/coaching_privacy/engine.py (_build_windows + windowed extraction)",
+    "tests/e2e/test_i20_e2e.py (long-session RED/green tests)"
+  ],
+  "limitations": [
+    "windows are sequential, not batch_predict_entities (deprecated API); one extract call per window — CPU cost scales with window count (~2 extra calls on a 46-turn session)",
+    "token estimate is character-based (conservative); a pathological all-CJK turn could under-estimate tokens per char — future work could tokenize exactly"
+  ],
+  "pr": {"branch": "feature/coaching-privacy-pipeline/I20-S1-gliner-windowing", "url": "PENDING", "state": "READY_FOR_MERGE", "merge_sha": "PENDING"},
+  "previous_pr_merge_sha": "e64bac7bbe3a92cdfbb83397766b2f75fceb77fa (PR #32, I19-S2)"
+}

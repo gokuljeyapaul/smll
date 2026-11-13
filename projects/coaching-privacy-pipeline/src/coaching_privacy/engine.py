@@ -116,6 +116,8 @@ def process_transcript(
     from .context import RuleBasedContextRiskEngine, assert_supported_language
     context_risks: list[dict[str, Any]] = []
     context_error = None
+    context_window_count = 0
+    context_dropped_spans = 0
     try:
         assert_supported_language(transcript.language)
         # I16: fast tests may inject a stub extractor (never model evidence);
@@ -127,31 +129,43 @@ def process_transcript(
         )
         if extractor is _FAILED_EXTRACTOR:
             raise RuntimeError("gliner unavailable")
-        # Batch: one GLiNER inference call per session (all utterances joined),
-        # then map global spans back to per-turn offsets. Cuts CPU cost by
-        # the per-call overhead x utterance count.
-        sep = "\n"
-        offset_map = []  # (global_start, global_end, utterance_id, local_start)
-        parts = []
-        pos = 0
-        for utt in transcript.utterances:
-            parts.append(utt.text)
-            offset_map.append((pos, pos + len(utt.text), utt.id))
-            pos += len(utt.text) + len(sep)
-        joined = sep.join(parts)
-        all_spans = extractor.extract(joined) if joined.strip() else []
+        # I20: windowed contextual detection. GLiNER medium-v2.1 truncates
+        # input at max_len=384 tokens, so a single joined call silently drops
+        # clues beyond the window. Build windows from WHOLE turns (never
+        # splitting a turn), each safely under the model's limit; turns
+        # longer than the limit split at word boundaries with overlap.
         entities_by_turn = {utt.id: [] for utt in transcript.utterances}
         context_spans_by_turn = {utt.id: [] for utt in transcript.utterances}
-        for s in all_spans:
-            for g_start, g_end, utt_id in offset_map:
-                if s.start >= g_start and s.end <= g_end:
-                    local = s.start - g_start
-                    entry = {"label": s.label, "value": s.value, "start": local,
-                             "end": local + (s.end - s.start),
-                             "confidence": s.confidence, "detector": "gliner"}
-                    entities_by_turn[utt_id].append(entry)
-                    context_spans_by_turn[utt_id].append(entry)
-                    break
+        context_dropped_spans = 0
+        windows = _build_windows(transcript.utterances, _GLINER_WINDOW_CHARS)
+        for window in windows:
+            w_text = window["text"]
+            if not w_text.strip():
+                continue
+            w_spans = extractor.extract(w_text)
+            seen: set[tuple[str, int, int, str]] = set()
+            for s in w_spans:
+                # global offset within the window -> turn-local offset
+                for turn in window["turns"]:
+                    g_start, g_end, utt_id = turn["start"], turn["end"], turn["id"]
+                    if s.start >= g_start and s.end <= g_end:
+                        local = s.start - g_start
+                        key = (utt_id, local, local + (s.end - s.start), s.label)
+                        if key in seen:
+                            break
+                        seen.add(key)
+                        entry = {"label": s.label, "value": s.value, "start": local,
+                                 "end": local + (s.end - s.start),
+                                 "confidence": s.confidence, "detector": "gliner"}
+                        entities_by_turn[utt_id].append(entry)
+                        context_spans_by_turn[utt_id].append(entry)
+                        break
+                else:
+                    # Span not contained in a single turn (straddles boundary):
+                    # attribute to the turn where it starts when that turn is
+                    # fully inside this window; otherwise count as dropped.
+                    context_dropped_spans += 1
+        context_window_count = len(windows)
         context_risks = RuleBasedContextRiskEngine().assess(entities_by_turn)
     except Exception as exc:
         context_error = f"context_stage_error: {exc}"
@@ -224,6 +238,8 @@ def process_transcript(
         },
         purpose=transcript.purpose,
     )
+    report["context_window_count"] = context_window_count
+    report["context_dropped_spans"] = context_dropped_spans
     if transcript.source_type == "synthetic_audio" and isinstance(asr_md, dict):
         report["asr"] = {
             "model": asr_md.get("model"),
@@ -333,3 +349,63 @@ def _get_context_extractor():
     except Exception:
         _EXTRACTOR_CACHE["ex"] = _FAILED_EXTRACTOR
     return _EXTRACTOR_CACHE["ex"]
+
+
+# --- I20: whole-turn windowing for the contextual stage ---
+
+# GLiNER medium-v2.1 max_len=384 tokens. A conservative character budget:
+# English averages ~4 chars/token; 384 tokens ~= 1536 chars. Use 1200 chars
+# per window to stay safely under with label prompts and separators.
+_GLINER_WINDOW_CHARS = 1200
+_GLINER_TURN_OVERLAP_WORDS = 30  # overlap for over-long turns split at words
+
+
+def _build_windows(utterances: Any, max_chars: int) -> list[dict[str, Any]]:
+    """Pack WHOLE turns into windows <= max_chars (never split a turn).
+    A single turn longer than max_chars becomes its own window sequence
+    split at word boundaries with overlap. Returns
+    [{'text': str, 'turns': [{'id','start','end'}]}] where turn offsets are
+    relative to the window text."""
+    windows: list[dict[str, Any]] = []
+    cur_parts: list[str] = []
+    cur_turns: list[dict[str, Any]] = []
+    cur_len = 0
+    sep = "\n"
+
+    def flush():
+        nonlocal cur_parts, cur_turns, cur_len
+        if cur_turns:
+            windows.append({"text": sep.join(cur_parts), "turns": cur_turns})
+            cur_parts, cur_turns, cur_len = [], [], 0
+
+    for utt in utterances:
+        text = utt.text
+        if len(text) > max_chars:
+            # Over-long turn: split at word boundaries with overlap.
+            flush()
+            words = text.split(" ")
+            pos = 0
+            while pos < len(words):
+                chunk_words = words[pos:pos + _GLINER_TURN_OVERLAP_WORDS * 10]
+                chunk = " ".join(chunk_words)
+                # shrink to max_chars
+                while len(chunk) > max_chars and chunk_words:
+                    chunk_words.pop()
+                    chunk = " ".join(chunk_words)
+                start_off = len(" ".join(words[:pos])) + (1 if pos > 0 else 0)
+                windows.append({
+                    "text": chunk,
+                    "turns": [{"id": utt.id, "start": 0, "end": len(chunk)}],
+                })
+                if pos + len(chunk_words) >= len(words):
+                    break
+                pos = max(pos + 1, pos + len(chunk_words) - _GLINER_TURN_OVERLAP_WORDS)
+            continue
+        if cur_len + len(text) + (len(sep) if cur_parts else 0) > max_chars:
+            flush()
+        start = cur_len + (len(sep) if cur_parts else 0)
+        cur_parts.append(text)
+        cur_turns.append({"id": utt.id, "start": start, "end": start + len(text)})
+        cur_len = start + len(text)
+    flush()
+    return windows

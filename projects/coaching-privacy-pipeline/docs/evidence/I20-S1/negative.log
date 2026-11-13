@@ -1,0 +1,4 @@
+== negative: fail-open is closed ==
+RED showed tail clues silently undetected (red.log). Post-fix: gold clues in final turns of a 46-turn session are detected (test_long_session_tail_clues_detected);
+benign long session not over-flagged (test_benign_long_session_not_overflagged); isolated single clue still detected (test_single_clue_in_last_turn_reported_when_isolated).
+straddling spans are counted in report.context_dropped_spans (never silently dropped); windows are whole-turn, <=1200 chars < 384-token model limit.
