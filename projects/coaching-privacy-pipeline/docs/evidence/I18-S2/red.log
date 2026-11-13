@@ -1,0 +1,177 @@
+command: .venv/bin/python -m pytest tests/unit/test_i18s2_unit.py -q (2026-11-13, branch feature/coaching-privacy-pipeline/I18-S2-runtime-fail-closed)
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_____ TestGlinerRuntimeVerification.test_tampered_checkpoint_fails_closed ______
+
+self = <test_i18s2_unit.TestGlinerRuntimeVerification object at 0x7bd889518990>
+tampered_checkpoint = PosixPath('/tmp/pytest-of-node/pytest-103/test_tampered_checkpoint_fails0/gliner_medium-v2.1')
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-103/test_tampered_checkpoint_fails0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bd889526f90>
+
+    def test_tampered_checkpoint_fails_closed(self, tampered_checkpoint, tmp_path, monkeypatch):
+        monkeypatch.setenv("COACHING_GLINER_PATH", str(tampered_checkpoint))
+        monkeypatch.setenv(
+            "COACHING_MODEL_MANIFEST",
+            _manifest_for_checkpoint(tampered_checkpoint, tmp_path),
+        )
+        from coaching_privacy.context_extractor import GLiNERContextExtractor
+    
+        extractor = GLiNERContextExtractor()
+>       with pytest.raises(Exception, match="model.safetensors"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'model.safetensors'
+E         Actual message: 'Error while deserializing header: invalid UTF-8 in header: invalid utf-8 sequence of 1 bytes from index 92'
+
+tests/unit/test_i18s2_unit.py:57: AssertionError
+----------------------------- Captured stderr call -----------------------------
+The tokenizer you are loading from '/tmp/pytest-of-node/pytest-103/test_tampered_checkpoint_fails0/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+___ TestGlinerRuntimeVerification.test_missing_checkpoint_file_fails_closed ____
+
+self = <test_i18s2_unit.TestGlinerRuntimeVerification object at 0x7bd889549550>
+tampered_checkpoint = PosixPath('/tmp/pytest-of-node/pytest-103/test_missing_checkpoint_file_f0/gliner_medium-v2.1')
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-103/test_missing_checkpoint_file_f0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bd797690990>
+
+    def test_missing_checkpoint_file_fails_closed(self, tampered_checkpoint, tmp_path, monkeypatch):
+        (tampered_checkpoint / "gliner_config.json").unlink()
+        monkeypatch.setenv("COACHING_GLINER_PATH", str(tampered_checkpoint))
+        monkeypatch.setenv(
+            "COACHING_MODEL_MANIFEST",
+            _manifest_for_checkpoint(tampered_checkpoint, tmp_path),
+        )
+        from coaching_privacy.context_extractor import GLiNERContextExtractor
+    
+        extractor = GLiNERContextExtractor()
+>       with pytest.raises(Exception, match="gliner_config.json"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'gliner_config.json'
+E         Actual message: 'No config file found in /tmp/pytest-of-node/pytest-103/test_missing_checkpoint_file_f0/gliner_medium-v2.1'
+
+tests/unit/test_i18s2_unit.py:70: AssertionError
+_ TestGlinerRuntimeVerification.test_engine_decision_failed_on_tampered_context_model _
+
+self = <test_i18s2_unit.TestGlinerRuntimeVerification object at 0x7bd889549790>
+tampered_checkpoint = PosixPath('/tmp/pytest-of-node/pytest-103/test_engine_decision_failed_on0/gliner_medium-v2.1')
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-103/test_engine_decision_failed_on0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bd7951d52d0>
+
+    def test_engine_decision_failed_on_tampered_context_model(
+        self, tampered_checkpoint, tmp_path, monkeypatch
+    ):
+        """End-to-end: a tampered GLiNER checkpoint must route the session
+        decision to FAILED (context_stage_error), never a silent release."""
+        monkeypatch.setenv("COACHING_GLINER_PATH", str(tampered_checkpoint))
+        monkeypatch.setenv(
+            "COACHING_MODEL_MANIFEST",
+            _manifest_for_checkpoint(tampered_checkpoint, tmp_path),
+        )
+        from coaching_privacy import engine
+    
+        engine._EXTRACTOR_CACHE.pop("ex", None)
+        try:
+            line = (REPO / "fixtures" / "seed_fixtures.jsonl").read_text().splitlines()[0]
+            fixture = json.loads(line)
+            from coaching_privacy.contracts import Transcript
+            from coaching_privacy.policy import PolicyStore
+            policy = PolicyStore(REPO / "policies" / "sample_policy.yaml").get(
+                fixture["transcript"]["purpose"]
+            )
+            result = engine.process_transcript(
+                Transcript.parse(fixture["transcript"]), policy,
+                prohibited_leaks=fixture.get("prohibited_leaks"),
+            )
+            assert result.decision["decision"] == "FAILED", result.decision
+>           assert "model.safetensors" in (result.report.get("context_stage_error") or ""), (
+                result.report.get("context_stage_error")
+            )
+E           AssertionError: context_stage_error: Error while deserializing header: invalid UTF-8 in header: invalid utf-8 sequence of 1 bytes from index 92
+E           assert 'model.safetensors' in (('context_stage_error: Error while deserializing header: invalid UTF-8 in header: invalid utf-8 sequence of 1 bytes from index 92'))
+E            +  where 'context_stage_error: Error while deserializing header: invalid UTF-8 in header: invalid utf-8 sequence of 1 bytes from index 92' = <built-in method get of dict object at 0x7bd76c903580>('context_stage_error')
+E            +    where <built-in method get of dict object at 0x7bd76c903580> = {'schema_version': '1.0', 'session_id': 'fictional-S01', 'pipeline_version': '0.1.0', 'model_versions': {'presidio_analyzer': 'real AnalyzerEngine', 'spacy_model': 'en_core_web_sm', 'spacy_version': '3.8.18'}, ...}.get
+E            +      where {'schema_version': '1.0', 'session_id': 'fictional-S01', 'pipeline_version': '0.1.0', 'model_versions': {'presidio_analyzer': 'real AnalyzerEngine', 'spacy_model': 'en_core_web_sm', 'spacy_version': '3.8.18'}, ...} = SessionResult(session_id='fictional-S01', decision={'decision': 'FAILED', 'review_reasons': ['processing_error']}, san... 'mandatory_stages': ['context_rules', 'independent_validator', 'policy_gate', 'real_pii_detector', 'transformation']}).report
+
+tests/unit/test_i18s2_unit.py:99: AssertionError
+----------------------------- Captured stderr call -----------------------------
+The tokenizer you are loading from '/tmp/pytest-of-node/pytest-103/test_engine_decision_failed_on0/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+------------------------------ Captured log call -------------------------------
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: pl, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNifRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNieRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItDriverLicenseRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItFiscalCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItVatCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItIdentityCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItPassportRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - PlPeselRecognizer supported languages: pl, registry supported languages: en
+WARNING  transformers.tokenization_utils_base:tokenization_utils_base.py:2493 The tokenizer you are loading from '/tmp/pytest-of-node/pytest-103/test_engine_decision_failed_on0/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+___ TestWhisperRuntimeVerification.test_tampered_whisper_file_fails_asrerror ___
+
+self = <test_i18s2_unit.TestWhisperRuntimeVerification object at 0x7bd889549d10>
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-103/test_tampered_whisper_file_fai0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bd793fc82d0>
+
+    def test_tampered_whisper_file_fails_asrerror(self, tmp_path, monkeypatch):
+        """A tampered whisper model dir must raise ASRError, not load."""
+        src = REPO / "models" / "whisper-tiny.en"
+        snaps = sorted((src).glob("models--Systran--faster-whisper-tiny.en/snapshots/*"))
+        if not snaps:
+            pytest.skip("real whisper model not present in this environment")
+        dst_root = tmp_path / "whisper-tiny.en"
+        shutil.copytree(src, dst_root)
+        snap = sorted((dst_root).glob("models--Systran--faster-whisper-tiny.en/snapshots/*"))[0]
+        # Tamper vocabulary.txt (small file, fast to corrupt).
+        data = bytearray((snap / "vocabulary.txt").read_bytes())
+        data[50] ^= 0xFF
+        (snap / "vocabulary.txt").write_bytes(bytes(data))
+        # Manifest repointed at the tampered root.
+        manifest = json.loads((REPO / "scripts" / "model_manifest.json").read_text())
+        manifest["models"]["whisper_tiny_en"]["local_path"] = str(
+            (snap).relative_to(tmp_path)
+        )
+        out = tmp_path / "manifest.json"
+        out.write_text(json.dumps(manifest))
+    
+        monkeypatch.setenv("COACHING_MODEL_MANIFEST", str(out))
+        from coaching_privacy.asr import ASRError, FasterWhisperAdapter
+    
+        adapter = FasterWhisperAdapter(model_dir=str(dst_root))
+>       with pytest.raises(ASRError, match="vocabulary.txt"):
+E       Failed: DID NOT RAISE ASRError
+
+tests/unit/test_i18s2_unit.py:132: Failed
+__ TestWhisperRuntimeVerification.test_real_models_pass_runtime_verification ___
+
+self = <test_i18s2_unit.TestWhisperRuntimeVerification object at 0x7bd88954a290>
+
+    def test_real_models_pass_runtime_verification(self):
+        """Happy path: the real pinned models must pass the runtime check."""
+        from coaching_privacy.asr import FasterWhisperAdapter
+        from coaching_privacy.context_extractor import GLiNERContextExtractor
+    
+        ex = GLiNERContextExtractor()
+>       assert ex._verify_model_files() is None or True  # must not raise
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'GLiNERContextExtractor' object has no attribute '_verify_model_files'
+
+tests/unit/test_i18s2_unit.py:141: AttributeError
+=============================== warnings summary ===============================
+tests/unit/test_i18s2_unit.py::TestGlinerRuntimeVerification::test_tampered_checkpoint_fails_closed
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/unit/test_i18s2_unit.py::TestGlinerRuntimeVerification::test_tampered_checkpoint_fails_closed
+tests/unit/test_i18s2_unit.py::TestGlinerRuntimeVerification::test_engine_decision_failed_on_tampered_context_model
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_i18s2_unit.py::TestGlinerRuntimeVerification::test_tampered_checkpoint_fails_closed
+FAILED tests/unit/test_i18s2_unit.py::TestGlinerRuntimeVerification::test_missing_checkpoint_file_fails_closed
+FAILED tests/unit/test_i18s2_unit.py::TestGlinerRuntimeVerification::test_engine_decision_failed_on_tampered_context_model
+FAILED tests/unit/test_i18s2_unit.py::TestWhisperRuntimeVerification::test_tampered_whisper_file_fails_asrerror
+FAILED tests/unit/test_i18s2_unit.py::TestWhisperRuntimeVerification::test_real_models_pass_runtime_verification
+5 failed, 3 warnings in 70.23s (0:01:10)
+exit=1
