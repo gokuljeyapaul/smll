@@ -38,6 +38,15 @@ tok_dir = snapshot_download(repo_id="microsoft/deberta-v3-base",
                   allow_patterns=["tokenizer_config.json", "spm.model",
                                   "special_tokens_map.json", "added_tokens.json",
                                   "config.json"])
+# A revision-pinned snapshot_download does NOT write refs/main, but
+# transformers' offline resolution of the backbone ('microsoft/deberta-v3-base')
+# requires that ref to find the snapshot. Point refs/main at the exact pinned
+# commit (no drift: it is the same revision downloaded above).
+import pathlib
+ref_dir = pathlib.Path.home() / ".cache/huggingface/hub/models--microsoft--deberta-v3-base/refs"
+ref_dir.mkdir(parents=True, exist_ok=True)
+(ref_dir / "main").write_text("8ccc9b6f36199bec6961081d44eb72fb3f7353f3")
+print("backbone ref pinned to 8ccc9b6f36199bec6961081d44eb72fb3f7353f3")
 # Make the checkpoint dir fully self-contained (vendored backbone tokenizer)
 import shutil, pathlib
 for f in ("spm.model", "tokenizer_config.json", "config.json"):
@@ -64,12 +73,24 @@ if [ ! -f models/gliner_medium-v2.1/model.safetensors ]; then
 fi
 
 # S5: pre-fetch the pinned Whisper tiny.en model during controlled setup
-# (the ASR adapter hard-blocks network at runtime; model must be local first)
+# (the ASR adapter hard-blocks network at runtime; model must be local first).
+# Revision-pinned (issue #18); refs/main written so offline resolution works.
 .venv/bin/python - <<'PYASR'
+from huggingface_hub import snapshot_download
+import pathlib
+WHISPER_REV = "0d3d19a32d3338f10357c0889762bd8d64bbdeba"
+snapshot_download(repo_id="Systran/faster-whisper-tiny.en",
+                  revision=WHISPER_REV,
+                  cache_dir="models/whisper-tiny.en",
+                  allow_patterns=["model.bin", "config.json", "tokenizer.json",
+                                  "vocabulary.txt"])
+base = pathlib.Path("models/whisper-tiny.en/models--Systran--faster-whisper-tiny.en")
+(base / "refs").mkdir(parents=True, exist_ok=True)
+(base / "refs" / "main").write_text(WHISPER_REV)
 from faster_whisper import WhisperModel
 m = WhisperModel("tiny.en", device="cpu", compute_type="int8",
                  download_root="models/whisper-tiny.en")
-print("whisper tiny.en ready (local cache: models/whisper-tiny.en)")
+print("whisper tiny.en ready at pinned revision (local cache: models/whisper-tiny.en)")
 PYASR
 
 # Vendor the patched tokenizer_config into the checkpoint dir and hash it:
@@ -77,14 +98,25 @@ PYASR
 # HF-cache mutation that a re-download could silently revert.
 .venv/bin/python - <<'PYFIX'
 import json, pathlib
-tok_src = pathlib.Path.home() / ".cache/huggingface/hub/models--microsoft--deberta-v3-base"
-snaps = sorted(tok_src.glob("snapshots/*/tokenizer_config.json"))
-assert snaps, "deberta-v3-base tokenizer_config not found after download"
-cfg = json.loads(snaps[0].read_text())
+# Vendored+patched tokenizer_config lives inside the checkpoint dir; the
+# manifest pins its hash. Only patch when the content is not already correct
+# (idempotent on re-runs, and works even if the HF cache was cleared).
+dst = pathlib.Path("models/gliner_medium-v2.1/tokenizer_config.json")
+desired = {"do_lower_case": False, "vocab_type": "spm",
+           "tokenizer_class": "DebertaV2Tokenizer"}
+if dst.is_file():
+    try:
+        cfg = json.loads(dst.read_text())
+    except Exception:
+        cfg = {}
+else:
+    tok_src = pathlib.Path.home() / ".cache/huggingface/hub/models--microsoft--deberta-v3-base"
+    snaps = sorted(tok_src.glob("snapshots/*/tokenizer_config.json"))
+    assert snaps, "deberta-v3-base tokenizer_config not found after download"
+    cfg = json.loads(snaps[0].read_text())
 cfg["tokenizer_class"] = "DebertaV2Tokenizer"
 cfg.setdefault("do_lower_case", False)
 cfg.setdefault("vocab_type", "spm")
-dst = pathlib.Path("models/gliner_medium-v2.1/tokenizer_config.json")
 dst.write_text(json.dumps(cfg))
 print("vendored patched tokenizer_config into", dst)
 PYFIX
