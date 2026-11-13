@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I19-S2",
+    "current": "I20-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -522,6 +522,36 @@
         "summary_path": "docs/evidence/I19-S2/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I19-S2-asr-gate-wiring",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/32",
+          "state": "MERGED",
+          "merge_sha": "e64bac7bbe3a92cdfbb83397766b2f75fceb77fa"
+        }
+      },
+      "I20-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #20 slice 1: whole-turn GLiNER windowing (fixes 384-token truncation fail-open); straddling spans counted; report exposes window/dropped counts",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/e2e/test_i20_e2e.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I20-S1/red.log",
+          "expected_failure": "tail clues of a 46-turn session undetected (truncation)"
+        },
+        "green": {
+          "command": "test_i20_e2e 3 passed; full chunks fast 60/int 21/e2e+neg 39; 18-fixture table UNCHANGED",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I20-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I20-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I20-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I20-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I20-S1-gliner-windowing",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

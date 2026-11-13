@@ -175,3 +175,15 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Gate impact:** none on the 18 text seed fixtures (all `synthetic_text`; `asr_uncertain=False` path identical); audio path proven by differential e2e (uncertain → REVIEW_REQUIRED; certain → RELEASE_CANDIDATE).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I19-S2-asr-gate-wiring`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** #20 GLiNER windowing (deps #18 ✅, #19 ✅ after this merge).
+
+### I20-S1 — Whole-turn GLiNER windowing (issue #20 slice 1)
+
+- **Delivered at:** 2026-11-13T20:55+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #32 merged as `e64bac7bbe3a92cdfbb83397766b2f75fceb77fa`)
+- **Scope:** Step 0 verified: GLiNER medium-v2.1 `max_len=384` with `truncation=True` — clues beyond the window were silently never analysed ([red.log tail-clue failures](evidence/I20-S1/red.log)). The contextual stage now builds windows from **whole turns** (≤1200 chars < model limit; over-long turns split at word boundaries with 30-word overlap), runs the extractor per window, maps spans to turn-local offsets, de-duplicates overlaps; spans straddling turn boundaries are counted in `report["context_dropped_spans"]` (never silently dropped); report exposes `context_window_count`.
+- **RED proof:** 2 failed (tail combination + isolated tail clue undetected). **GREEN:** 3 passed; full chunks fast 60 / integration 21 / e2e+negative 39, exit 0.
+- **Gate impact:** 18-fixture before/after table in [green.log](evidence/I20-S1/green.log) — all UNCHANGED, 0 more-permissive changes.
+- **Machine report:** [summary.json](evidence/I20-S1/summary.json). **E2E:** [e2e.log](evidence/I20-S1/e2e.log). **Negative:** [negative.log](evidence/I20-S1/negative.log).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I20-S1-gliner-windowing`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Limitations:** one extract call per window (batch API deprecated); character-based token estimate is conservative.
+- **Next:** #21 batch CLI wiring (deps #16, #18, #20 merged).
