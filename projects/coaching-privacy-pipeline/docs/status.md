@@ -10,7 +10,7 @@
 - **Synthetic privacy quality:** `ASSESSSED_ON_SEED_FIXTURES_ONLY` (18/18 seed sessions leak-free after redaction; generated-corpus benchmark is S1)
 - **Real-data / ICF / legal conformance:** `NOT_ASSESSED`
 - **Last verified proof:** [docs/evidence/S0/](evidence/S0/) — RED (15 failed, exit 1), GREEN (16 passed, exit 0), E2E demo, negative, offline (18/18 sessions with sockets blocked), cross-cwd verify
-- **Next required action:** None — all slices S0–S7 delivered, merged and CI-verified. Remaining known limitations are documented in each slice's evidence summary.
+- **Next required action:** S0–S7 are delivered, merged and CI-verified (`milestone-status.json` `COMPLETE` refers to S0–S7 only). Further work is **issue-driven**: follow "Post-S7 issue-driven work" in this project's `AGENTS.md` (ordered list; start with GitHub issue #18). Nothing from those issues is delivered yet.
 
 ## Slice delivery overview
 

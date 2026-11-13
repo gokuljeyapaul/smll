@@ -49,3 +49,33 @@ These scripts do **not** exist in the seed handoff; S0 must create functioning v
 - Include exact test identifiers, command exit codes, observed counts, acceptance IDs, model IDs/revisions, false negatives/denominators, risks and evidence links in `docs/status.md`. `milestone-status.json` must agree with real evidence.
 - Before PR merge, record the PR URL/branch and state `READY_FOR_MERGE` if all local gates pass. After actual merge, verify GitHub state; record commit SHA later as specified above. Never claim `MERGED` inside its own unmerged PR.
 - Resume by inspecting project source, Git state, status ledger and evidence; do not rely on chat history. Honor the root monorepo Git rules. Report status after each merged PR and automatically continue to the next slice unless blocked.
+
+## Post-S7 issue-driven work (hardening and follow-ups)
+
+`milestone-status.json` state `COMPLETE` and the S0–S7 ledger describe the original slices only. Further work is tracked as GitHub issues in this repository (`gh issue list`). These rules override the "continue automatically to the next slice" behavior above for this work.
+
+### Which plan to follow
+- Open issues #9–#17 each have an older plan comment and a later comment titled **"Revised Solution Plan (supersedes the earlier plan comment)"**. Follow **only the latest revised comment**. Issues #18–#23 carry their plan in the issue body.
+- If code on `main` contradicts a plan's premise, or a "Step 0: verify" item turns out false, stop, record the finding in the evidence bundle, and adjust the slice honestly (a regression guard instead of a fix is a valid outcome). Do not edit the issues' scope silently; post a comment explaining the change.
+
+### Order (dependencies are hard; do not start an issue before its dependencies are MERGED)
+1. #18 model pinning → #16 fast/slow markers → #22 independent validator
+2. #19 ASR confidence (after #18) → #20 GLiNER windowing → #21 batch CLI wiring
+3. #12 CSV mapping (after #21) → #23 (slice 1 anytime; slice 2 after #21) → #11 slice 1 (after #19) → #13 (after #18, #19)
+4. #9 (after #16, #18, #20) → #10 (after #16, #20, #22) → #14 (after #16)
+5. #17 design doc (after #20) → #11 slice 2 (after #18, #19, #9) → #15 release (last; after #14, #16, #22)
+
+### Pacing and scope
+- **One issue slice = one PR.** Issues with several slices (#9, #10, #11, #13, #23, #17) get one PR per slice. After opening a PR, **stop and report**; do not start the next slice or issue until the PR is MERGED and the owner tells you to continue.
+- Branch: `feature/coaching-privacy-pipeline/I<issue>-S<slice>-<short-name>` (e.g. `I18-S1-verify-models`). Evidence: `docs/evidence/I<issue>-S<slice>/` with the usual `red.log`, `green.log`, `e2e.log`, `negative.log`, `summary.json`. Do not invent new `S#` slice numbers.
+- Tooling, test-infrastructure and honesty-fix slices (#16, #18, #19, #20, #21, #22, #23 slice 1, #14, #15, #17) are owner-requested and authorized under the root `AGENTS.md` exceptions for non-capability work. They still need RED-first behavioral tests (where code changes), evidence, and status updates.
+- Real-model claims must come from real inference. Stubs or injected extractors (#16) are allowed only in the fast lane and never count as model evidence. Hashes, revisions and calibration values must come from real downloads/runs and be recorded with the command that produced them.
+- Do not tag, create releases, push tags, or upload release assets (#15) without explicit owner confirmation in the session.
+
+### Merging
+- Repository auto-merge is **disabled** and branch rulesets/protection are unavailable on this plan, so "request auto-merge" cannot be done and `monorepo / verify` is not an enforced required check. Do not try to enable these settings.
+- **The owner merges.** The agent opens the PR with `READY_FOR_MERGE` status and green `monorepo / verify`, reports the PR URL, and waits. The agent must not merge its own PR. After the owner merges, the agent verifies GitHub reports `MERGED`, records the merge SHA in the next PR's status update (never in its own PR), and continues only when told to.
+- Changes to the safety gate (`pipeline.py`), validator (`validator.py`) or language/ASR gates warrant owner review of the diff before merge, not just green CI.
+
+### CI note
+Any change under `projects/coaching-privacy-pipeline/**`, including docs-only PRs, runs the full setup/test/demo/verify cycle (model downloads, no cache). Expect long CI runs; do not weaken tests to speed them up.
