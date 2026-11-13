@@ -1,0 +1,154 @@
+== RED (2026-11-13) ==
+FF.FF                                                                    [100%]
+=================================== FAILURES ===================================
+_______________ test_reinserted_email_blocked_without_gold_list ________________
+
+    def test_reinserted_email_blocked_without_gold_list():
+        """Faulty-transform seam: an identifier is re-inserted into sanitized
+        text; prohibited_leaks=[] (no gold). Decision must be BLOCKED."""
+        fixture = _seed_fixture(0)  # S01: email/name transcript
+        result = _process(fixture["transcript"], prohibited_leaks=[])
+        # Simulate the faulty transform: re-insert the email into sanitized text
+        result.sanitized["utterances"][1]["text"] = (
+            "My name is Mira Solen, and my personal email is "
+            "mira.solen@example.test. I want to change how I lead meetings."
+        )
+        from coaching_privacy.pipeline import SafetyGate
+        from coaching_privacy.validator import IndependentLeakValidator
+    
+        validator = IndependentLeakValidator()
+        report = validator.validate(
+            prohibited_leaks=[],
+            sanitized_utterances=result.sanitized["utterances"],
+        )
+        decision = SafetyGate().decide(
+            {**report, "all_mandatory_stages_executed": True},
+            purpose="internal_coaching_analysis",
+        )
+>       assert decision["decision"] == "BLOCKED", decision
+E       AssertionError: {'decision': 'RELEASE_CANDIDATE', 'review_reasons': ['synthetic_internal_acceptance_passed; not permission to distribute']}
+E       assert 'RELEASE_CANDIDATE' == 'BLOCKED'
+E         
+E         - BLOCKED
+E         + RELEASE_CANDIDATE
+
+tests/unit/test_i22_unit.py:62: AssertionError
+----------------------------- Captured stderr call -----------------------------
+The tokenizer you are loading from '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+------------------------------ Captured log call -------------------------------
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - CreditCardRecognizer supported languages: pl, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNifRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - EsNieRecognizer supported languages: es, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItDriverLicenseRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItFiscalCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItVatCodeRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItIdentityCardRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - ItPassportRecognizer supported languages: it, registry supported languages: en
+WARNING  presidio-analyzer:recognizers_loader_utils.py:176 Recognizer not added to registry because language is not supported by registry - PlPeselRecognizer supported languages: pl, registry supported languages: en
+_______________ test_reinserted_phone_blocked_without_gold_list ________________
+
+    def test_reinserted_phone_blocked_without_gold_list():
+        fixture = _seed_fixture(1)  # S02: phone/address transcript
+        result = _process(fixture["transcript"], prohibited_leaks=[])
+        result.sanitized["utterances"][0]["text"] = (
+            "Someone may call me on 202-555-0147 at 18 Maple Terrace, Suite 4. "
+            "I want to set boundaries with colleagues."
+        )
+        from coaching_privacy.pipeline import SafetyGate
+        from coaching_privacy.validator import IndependentLeakValidator
+    
+        report = validator_report(result.sanitized["utterances"])
+        decision = SafetyGate().decide(
+            {**report, "all_mandatory_stages_executed": True},
+            purpose="internal_coaching_analysis",
+        )
+>       assert decision["decision"] == "BLOCKED", decision
+E       AssertionError: {'decision': 'RELEASE_CANDIDATE', 'review_reasons': ['synthetic_internal_acceptance_passed; not permission to distribute']}
+E       assert 'RELEASE_CANDIDATE' == 'BLOCKED'
+E         
+E         - BLOCKED
+E         + RELEASE_CANDIDATE
+
+tests/unit/test_i22_unit.py:81: AssertionError
+________________ test_echo_check_catches_leaked_detected_value _________________
+
+    def test_echo_check_catches_leaked_detected_value():
+        """A raw value the detector replaced must not survive in sanitized text."""
+        utterances = [
+            {"id": "u1", "text": "Reach me at someone@example.org any time."},
+        ]
+>       report = IndependentLeakValidator().validate(
+            prohibited_leaks=[],
+            sanitized_utterances=utterances,
+            replaced_values=["someone@example.org"],
+        )
+E       TypeError: IndependentLeakValidator.validate() got an unexpected keyword argument 'replaced_values'
+
+tests/unit/test_i22_unit.py:108: TypeError
+_______________ test_reported_findings_never_contain_raw_values ________________
+
+    def test_reported_findings_never_contain_raw_values():
+        utterances = [
+            {"id": "u2", "text": "My card is 4539 1488 0343 6467, please help."},
+        ]
+        report = IndependentLeakValidator().validate(
+            prohibited_leaks=[], sanitized_utterances=utterances
+        )
+>       assert report["leak_count"] >= 1, report
+E       AssertionError: {'validator_available': True, 'residual_pii': [], 'leak_count': 0, 'utterances_checked': 1}
+E       assert 0 >= 1
+
+tests/unit/test_i22_unit.py:125: AssertionError
+=============================== warnings summary ===============================
+tests/unit/test_i22_unit.py::test_reinserted_email_blocked_without_gold_list
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/unit/test_i22_unit.py::test_reinserted_email_blocked_without_gold_list
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_i22_unit.py::test_reinserted_email_blocked_without_gold_list
+FAILED tests/unit/test_i22_unit.py::test_reinserted_phone_blocked_without_gold_list
+FAILED tests/unit/test_i22_unit.py::test_echo_check_catches_leaked_detected_value
+FAILED tests/unit/test_i22_unit.py::test_reported_findings_never_contain_raw_values
+4 failed, 1 passed, 2 warnings in 25.44s
+exit=1
+
+== GREEN: validator tests ==
+command: .venv/bin/python -m pytest tests/unit/test_i22_unit.py -q
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+5 passed, 2 warnings in 33.85s
+exit=0
+
+== full suite ==
+command: bash scripts/test.sh
+111 passed, 4 warnings in 734.69s (0:12:14)
+exit=0
+
+== 18-fixture gate-impact decision table (before on main efea5e0, after on this branch) ==
+command: engine.process_transcript over all seed fixtures, both trees
+seed-S01: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S02: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+seed-S03: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+seed-S04: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+seed-S05: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S06: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+seed-S07: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S08: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+seed-S09a: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S09b: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S10: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+seed-S11: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S12: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S13: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S14: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+seed-S15: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S16: before=RELEASE_CANDIDATE after=RELEASE_CANDIDATE UNCHANGED
+seed-S17: before=REVIEW_REQUIRED after=REVIEW_REQUIRED UNCHANGED
+total more-permissive changes: 0

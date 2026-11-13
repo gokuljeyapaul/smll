@@ -60,6 +60,9 @@ def process_transcript(
     replacer = StableReplacer()
     sanitized_utterances = []
     annotations = []
+    # I22: raw values replaced in this run (in-process only; never written to
+    # disk/logs/reports) so the independent validator can run an echo check.
+    replaced_values: list[str] = []
     for utt in transcript.utterances:
         spans = detector.detect(utt.text)
         span_dicts = []
@@ -75,6 +78,7 @@ def process_transcript(
                     "replacement": replacer.replacement_for(s.label, s.value),
                 }
             )
+            replaced_values.append(s.value)
             annotations.append(
                 {
                     "utterance_id": utt.id,
@@ -158,6 +162,7 @@ def process_transcript(
         validation = validator.validate(
             prohibited_leaks=prohibited_leaks or [],
             sanitized_utterances=sanitized_utterances,
+            replaced_values=replaced_values,
         )
     except Exception as exc:
         validation = {"validator_available": False, "error": str(exc)}

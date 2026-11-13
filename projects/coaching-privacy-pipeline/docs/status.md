@@ -133,3 +133,18 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I16-fast-slow-markers`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Limitations:** `test_s2_unit.py` moved to the slow lane (its expected outcomes depend on real GLiNER spans); marker discipline skipped during `--collect-only`.
 - **Next:** #22 independent validator (after #18, #16).
+
+### I22-S1 — Independent validator second pass (issue #22 slice 1)
+
+- **Delivered at:** 2026-11-13T16:55+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #29 merged as `efea5e0291b845108e339e2b27befedb21b926a5`)
+- **Scope:** `IndependentLeakValidator` now performs its own second pass independent of the detector/transformer: (1) structured-identifier rescan (email, phone, URL, @handle, IPv4, card numbers via Luhn, long digit/ID tokens) with conservative deterministic patterns; (2) echo check — every value the detector replaced in this run must not re-appear (engine passes `replaced_values` in-process only; never disk/logs/reports). Honest docstring: second mechanism, not a completeness guarantee; blind spots documented (names outside replaced list, contextual combinations, non-English).
+- **RED proof:** [evidence/I22-S1/red.log](evidence/I22-S1/red.log) — 4 failed: re-inserted email/phone with `prohibited_leaks=[]` released as RELEASE_CANDIDATE (BLOCKED unreachable), no echo check, card finding absent.
+- **GREEN proof:** [evidence/I22-S1/green.log](evidence/I22-S1/green.log) — 5 validator tests passed; full suite 111 passed exit 0.
+- **Gate-impact:** 18-fixture before/after decision table in [evidence/I22-S1/green.log](evidence/I22-S1/green.log) — all 18 UNCHANGED, 0 more-permissive changes (raw before/after logs: before-18fixtures.log, after-18fixtures.log).
+- **E2E proof:** [evidence/I22-S1/e2e.log](evidence/I22-S1/e2e.log) — verify.sh exit 0.
+- **Negative proof:** [evidence/I22-S1/negative.log](evidence/I22-S1/negative.log) — BLOCKED reachable without gold list; raw values never in reports.
+- **Machine report:** [evidence/I22-S1/summary.json](evidence/I22-S1/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I22-S1-independent-validator`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Limitations:** conservative patterns → fail-closed bias (zero false positives measured on the 18 fixtures); blind spots documented.
+- **Next:** #19 ASR confidence (deps #18 merged).
