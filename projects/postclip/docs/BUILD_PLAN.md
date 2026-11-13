@@ -24,6 +24,26 @@ The building agent (Hermes on openclawlaunch.com) runs in a small **Linux contai
 - Cleanup evaluation on Linux uses fixtures' gold OCR text and deterministic OCR-noise variants labelled `synthetic_noise`. It is real-model evidence for the guards and for relative model choice, but it is **never** OCR-accuracy evidence and cannot alone make A20 `PASS` (D3 re-runs it on real OCR text dumped from the devices).
 - Stage L is one-shot for Hermes. Stage D is interactive: Claude Code runs the device work in the owner's session and the owner approves installs and merges. Between them the owner installs Xcode and Android Studio on the Mac.
 
+## Stage D thin pass (minimal Mac effort)
+
+Goal: the Mac session installs tools, runs **one command**, and fixes what breaks; everything else is done by Hermes in Stage L. Mac scope is cut by tier, and the cut is explicit, never implied.
+
+| Tier | Acceptance IDs the Mac must turn into `PASS` | D slice |
+|---|---|---|
+| **1 — must pass on device** | A01 build/launch, A02 pick -> real OCR -> review, A03 share sheet, A21 OCR baseline, A13 model download, A14 checksum-failure -> OCR-only, A16 no-storage audit, A32 on-device LLM (or capability-probe fallback), plus recorded video of these flows per platform | D0 |
+| **2 — time-boxed attempt** | A04–A08, A11, A12, A15, A22, A23, A28, A29 (edit, export, errors, Android share-in intent, latest-screenshot offer, permission denial, offline, budgets, accessibility, large images, Release smoke) | D1 |
+| **3 — attempt, `PARTIAL`/`NOT_RUN` expected** | A09 iOS share extension, A10 simulator clipboard image, A27 Telegram delivery, A30 real-device | D2 |
+| **Final** | A20 re-run on real OCR dumps, A24 videos, A25 evidence integrity | D3 |
+
+Rules: Tier 1 may not be skipped (a failure there is a fix-or-BLOCKED). For Tier 2/3 the session is **time-boxed**: run the authored flows once; fix a failure only if the cause is clear and the fix is small (at most 2 attempts per ID); otherwise record `PARTIAL` or `NOT_RUN` with the exact failure and move on. A Tier 2/3 ID left `PARTIAL`/`NOT_RUN` is an accepted outcome, not a failure of the project.
+
+What Hermes must provide in Stage L so the Mac pass is thin (these are acceptance conditions of S6):
+- `scripts/stage_d_all.sh`: one command that builds both apps, boots the iOS simulator and Android emulator, seeds fixtures, runs every authored Maestro flow with JUnit output, records each passing flow to `artifacts/video/`, runs the storage/log audits, dumps real OCR text to `fixtures/real_ocr/`, writes a draft `summary.json` with the correct `source_digest`, and runs `verify_evidence.py`. Options `--tier 1`, `--tier 2`, `--tier 3`, `--all`, `--platform ios|android`.
+- Flows selecting by `testID`/accessibility labels (not display text), one flow file per use case and platform, tagged with acceptance IDs.
+- React Native Testing Library component tests for every screen state, so UI logic bugs are caught before the Mac.
+- The Android debug APK built on Linux when D5's resource condition holds (catches Android build errors early); `expo prebuild --platform ios` run on Linux with the generated config statically checked.
+- `docs/STAGE_D_HANDOFF.md`: install checklist, the exact command per tier, expected outputs, and a triage table of likely failure causes.
+
 ## Owner decisions and defaults
 
 | ID | Decision | Default (apply unless the owner changes it) |
@@ -121,7 +141,7 @@ Library choices are **candidates, resolved at build time**, not promises. Resolv
 | A21 | P0 | both | UC01 | OCR accuracy on the clean set meets the CER bar; S0 baseline recorded; no later regression > 1 pp. | Eval-mode run per platform engine |
 | A22 | P1 | both | UC01 | Latency and memory budgets: OCR ≤ 3 s per fixture; cleanup ≤ 20 s on the simulator/emulator class used; recorded as emulator numbers only. | Eval-mode timings |
 | A23 | P1 | both | UC05 | Accessibility basics: every actionable element has an accessibility label and testID; large text does not clip primary actions in smoke screenshots. | Maestro assertions |
-| A24 | P0 | host | - | Every use case UC01–UC14 has a passing Maestro flow (per platform where applicable) recorded to video; a manifest lists each video with sha256, size, duration and the JUnit testcase it belongs to; a compilation video of all use cases exists. | `scripts/record_flows.sh`, `video_manifest.json` |
+| A24 | P0 | host | - | Every **Tier 1** flow (see "Stage D thin pass") has a passing Maestro flow per platform recorded to video, and any Tier 2/3 flow that happens to pass is recorded too; a manifest lists each video with sha256, size, duration and the JUnit testcase it belongs to; a compilation video exists. Use cases without a passing recorded flow are listed with the reason (`PARTIAL`/`NOT_RUN`), never implied. | `scripts/stage_d_all.sh`, `video_manifest.json` |
 | A25 | P0 | host | - | Evidence integrity: every acceptance ID has a status in some slice `summary.json`; every `PASS` points to a JUnit testcase that exists and passed (per required platform); the current slice's evidence matches the current source digest; in the final summary every ID is accounted for. | `scripts/verify_evidence.py` |
 | A26 | P0 | host | UC14 | Dependency and license inventory exists; model is pinned by repo, revision and sha256 with license recorded; no analytics/telemetry/crash SDK in dependencies; production config matches the manifest. | `scripts/audit_deps.mjs` + Jest |
 | A27 | P1 | both | UC06 | Delivery into a third-party app (Telegram etc.) is attempted where the app is installed; otherwise `NOT_RUN`. The payload and intent are already proven by A03. | Documented attempt or NOT_RUN |
@@ -187,7 +207,7 @@ Each slice is one PR with RED-first tests, real evidence and honest statuses. S-
 
 Observable result (Stage L): `bash scripts/demo.sh` runs a **host demo** — fixture gold OCR text flows through the review model into the share payload and prints it; the app typechecks, lints and its Jest tests pass. Device behavior (pick, OCR, share sheet) is proven in D0.
 
-- Scope: Expo dev-client scaffold (SDK resolution, New Architecture, TypeScript strict, Expo Router, Jest via jest-expo, lint); `OcrEngine` interface plus the native adapter code (`expo-text-extractor` or a minimal local Expo module over Vision/ML Kit); picker ingest; review screen; share-out payload builder; eval-mode runner code (test builds only); 10 synthetic fixtures + generator + manifest (headless Chromium via Playwright); Maestro flow `uc01_pick_ocr_review_share.yaml` authored (syntax-checked only); the scoped shared-CI change authorized by D1 (conditional espeak install and `setup-node`, verified against the coaching project); `milestone-status.json` phase `BUILDING`; optional Android debug-APK build if D5 resources allow.
+- Scope: Expo dev-client scaffold (SDK resolution, New Architecture, TypeScript strict, Expo Router, Jest via jest-expo and React Native Testing Library, lint); `OcrEngine` interface plus the native adapter code (`expo-text-extractor` or a minimal local Expo module over Vision/ML Kit); picker ingest; review screen; share-out payload builder; eval-mode runner code (test builds only); 10 synthetic fixtures + generator + manifest (headless Chromium via Playwright); Maestro flow `uc01_pick_ocr_review_share.yaml` authored (syntax-checked only); the scoped shared-CI change authorized by D1 (conditional espeak install and `setup-node`, verified against the coaching project); `milestone-status.json` phase `BUILDING`; optional Android debug-APK build if D5 resources allow.
 - **RED**: Jest tests for the OCR-result normalizer and the share-payload builder fail on assertions; the fixture-manifest lint fails because the manifest does not exist.
 - **GREEN**: Jest, typecheck, lint, host demo and fixture/manifest lint pass; CI green. A25 and A31 `PASS`; A01 `PARTIAL`/`NOT_RUN` (Android APK built or not, iOS `NOT_RUN`); A02, A03, A21 `NOT_RUN` (awaiting D0).
 - **Evidence**: standard set; `versions.json` (resolved SDK/library versions, Node, OS, resources); host demo output; CI-change test output for both projects.
@@ -256,54 +276,54 @@ Observable result (Stage L): host checks for large-input handling, accessibility
 
 Observable result (Stage L): a complete host-verified build plus a precise handoff for the Mac stage.
 
-- Scope: `scripts/audit_deps.mjs` (dependency/license inventory, no telemetry SDK, model pin matches the production config); full clean-checkout host run; `docs/STAGE_D_HANDOFF.md` listing every `NOT_RUN`/`PARTIAL` ID with the exact commands and flows to run; phase set to `DEVICE_VERIFICATION`; README/status updated.
-- **RED**: the audit fails on a seeded violation (negative control); `verify_evidence.py` fails until all IDs are accounted for in the final Stage L summary.
+- Scope: `scripts/audit_deps.mjs` (dependency/license inventory, no telemetry SDK, model pin matches the production config); full clean-checkout host run; the **Stage D thin-pass deliverables** (`scripts/stage_d_all.sh` with `--tier`/`--platform` options, testID-based flows, RNTL tests for all screen states, Android APK build on Linux when resources allow, `expo prebuild --platform ios` config checks, `docs/STAGE_D_HANDOFF.md` with install checklist, per-tier commands, expected outputs and a failure triage table); phase set to `DEVICE_VERIFICATION`; README/status updated.
+- **RED**: the audit fails on a seeded violation (negative control); a self-test of `stage_d_all.sh --dry-run` fails until the script, flows and handoff exist; `verify_evidence.py` fails until all IDs are accounted for in the final Stage L summary.
 - **GREEN**: A26 `PASS`; every other ID accounted for honestly.
 - **Evidence**: standard set; license inventory; audit outputs; `STAGE_D_HANDOFF.md`.
 
-### D0 — Device bring-up: pick, OCR, review, share, edit, export, errors
+### D0 — Tier 1 device bring-up
 
-**Acceptance IDs:** A01, A02, A03, A04, A05, A06, A07, A21
+**Acceptance IDs:** A01, A02, A03, A21, A13, A14, A16, A32
 
-Observable result: on iOS simulator and Android emulator the user picks a fixture, sees real OCR text, edits it, shares/exports it, and gets clear errors for non-English and bad input; every passing flow is recorded.
+Observable result: on the iOS simulator and the Android emulator the app launches, the user picks a fixture, real OCR text appears on the review screen, sharing opens the OS share sheet; the model downloads and verifies, a bad model falls back to OCR-only; the pinned LLM runs on-device (or the capability probe correctly falls back); the no-storage audit passes; the main flows are recorded.
 
-- Scope: build both apps with the project scripts; run the authored Maestro flows; fix selectors/flows/app bugs found (each fix preceded by a RED reproduction); record OCR baseline per platform engine; dump real OCR text from the devices into `fixtures/real_ocr/` (synthetic screenshots only) for D3.
-- **RED**: authored flows run for the first time and fail on assertions (not on syntax); Jest repros for each app bug.
-- **GREEN**: flows pass on both platforms; A21 baseline recorded; videos + manifest.
-- **Evidence**: standard set per platform (`ios.xml`, `android.xml`), videos in `artifacts/video/` with manifest entries, OCR baseline JSON.
+- Scope: run `scripts/stage_d_all.sh --tier 1`; fix selector/config/app bugs found, each fix preceded by a RED reproduction (Jest/RNTL where possible, otherwise the failing flow); record the OCR baseline per platform engine; dump real OCR text into `fixtures/real_ocr/`.
+- **RED**: the authored flows run for the first time and fail on assertions (not on syntax); repros for each app bug.
+- **GREEN**: Tier 1 flows pass on both platforms; videos + manifest entries.
+- **Evidence**: standard set per platform (`ios*.xml`, `android*.xml`), videos in `artifacts/video/`, OCR baseline JSON, audit output, `docs/evidence/D0/summary.json`.
 
-### D1 — Device: inputs, model download, offline
+### D1 — Tier 2 time-boxed attempts
 
-**Acceptance IDs:** A08, A09, A10, A11, A12, A13, A14, A15
+**Acceptance IDs:** A04, A05, A06, A07, A08, A11, A12, A15, A22, A23, A28, A29
 
-Observable result: share-in, paste, offer-latest, permission denial, model download/failure/OCR-only fallback and offline operation work on device.
+Observable result: edit/export/error flows, Android share-in via `adb` intent, latest-screenshot offer, permission denial, offline operation, emulator budgets, accessibility checks, large-image survival and the Release-build smoke flow are attempted; each ends `PASS`, `PARTIAL` or `NOT_RUN` with reasons.
 
-- Scope: first **verify feasibility** of each Testability-map technique and log the result; then run/fix flows; local model server to the test builds; Android radio-off flow; iOS guard-only proof.
-- **RED**: feasibility log plus failing flows for each use case.
-- **GREEN**: pass where automatable; `PARTIAL` with exact limits for the rest (A09, A10, iOS part of A15 are likely).
-- **Evidence**: standard set per platform; feasibility log; videos.
+- Scope: `scripts/stage_d_all.sh --tier 2`; follow the time-box rules (at most 2 fix attempts per ID); emulator timing/memory numbers are labelled as such.
+- **RED**: flows run and fail on assertions for anything not yet working; each fix has a repro.
+- **GREEN**: passing flows recorded; the rest recorded honestly.
+- **Evidence**: standard set per platform; videos for passing flows; failure notes for the rest.
 
-### D2 — Device: on-device LLM, hardening, release build
+### D2 — Tier 3 attempts
 
-**Acceptance IDs:** A16, A22, A23, A27, A28, A29, A32
+**Acceptance IDs:** A09, A10, A27, A30
 
-Observable result: the pinned model runs inside the app on both platforms (or the capability probe correctly falls back to OCR-only), large inputs are survived, accessibility checks pass, and Release builds pass the smoke flow.
+Observable result: feasibility of the iOS share extension via Photos, a simulator clipboard image, Telegram delivery (only if installed) and a real-device run are each attempted once and recorded with exactly what was and was not automated.
 
-- Scope: on-device inference confirmation (eval-mode) on the injection and faithfulness fixtures; storage and log audits across all flows; emulator timing/memory numbers (labelled as such); Release builds + smoke flow; optional Telegram-installed delivery attempt (else `NOT_RUN`).
-- **RED**: eval-mode on-device checks and Release smoke fail until fixed.
-- **GREEN**: pass; budgets reported as emulator numbers.
-- **Evidence**: standard set per platform; audit outputs; videos.
+- Scope: first verify feasibility of each technique and log it; run only what is feasible; never fake in the app.
+- **RED**: the feasibility log and any runnable flow failing on assertions.
+- **GREEN**: `PASS` where proven, otherwise `PARTIAL`/`NOT_RUN` with notes (the expected outcome for most of these).
+- **Evidence**: feasibility log, flows/videos that ran, `docs/evidence/D2/summary.json`.
 
-### D3 — Final conformance and full-use-case video
+### D3 — Final conformance
 
-**Acceptance IDs:** A20, A24, A25, A30
+**Acceptance IDs:** A20, A24, A25
 
-Observable result: every use case UC01–UC14 has a passing recorded flow per applicable platform, plus a compilation video; every acceptance ID has an honest, evidence-backed status.
+Observable result: the cleanup evaluation re-run on the **real OCR text** from the devices (A20), the full set of recorded flows with a compilation video (A24), and a verifier-clean final summary where every acceptance ID has an honest status (A25).
 
-- Scope: clean-checkout full run on the Mac; re-run the cleanup evaluation on the **real OCR text** dumped from the devices (A20); record every flow and build the compilation with `ffmpeg`; finalize `video_manifest.json`; `verify_evidence.py` passes with the final summary accounting for all IDs; phase `COMPLETE`.
-- **RED**: `verify_evidence.py` fails on missing IDs/videos/stale digest until all are recorded; A20 re-run fails the bar or reveals a regression until addressed.
+- Scope: run the cleanup evaluation on `fixtures/real_ocr/` (on the Mac if llama.cpp is available, otherwise a short Hermes follow-up task on Linux using the committed dumps); build the compilation with `ffmpeg`; finalize `video_manifest.json`; the final summary accounts for every ID; phase `COMPLETE`.
+- **RED**: `verify_evidence.py` fails on missing IDs/videos/stale digest until all are recorded; the A20 re-run fails the bar or exposes a regression until addressed.
 - **GREEN**: all accounted for; remaining `NOT_RUN`/`PARTIAL` listed with reasons.
-- **Evidence**: `docs/evidence/D3/conformance_report.md` (proven / not proven / how to reproduce), full-suite logs, final manifest and video list with paths and hashes (files stay in `artifacts/video/`).
+- **Evidence**: `docs/evidence/D3/conformance_report.md` (proven / not proven / how to reproduce), final manifest and video list with paths and hashes (files stay in `artifacts/video/`).
 
 ## Toolchain and preflight
 

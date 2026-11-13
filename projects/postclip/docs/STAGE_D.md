@@ -8,6 +8,10 @@ Stage D (slices D0–D3) is done **together, in a Claude Code session on the own
 2. Install **Android Studio**; in SDK Manager install the latest SDK platform, build-tools, platform-tools, command-line tools and the emulator; create an **arm64 AVD**; set `ANDROID_HOME` and add `platform-tools` and `emulator` to `PATH`. A JDK 17 comes with Android Studio or via `brew install openjdk@17`.
 3. Check with `bash projects/postclip/scripts/preflight.sh` — it must report no `MISSING`. Claude Code can then `brew install maestro ffmpeg facebook/fb/idb-companion` (the only installs plan D5 allows on the Mac) after you say go.
 
+## The thin pass
+
+Hermes ships `scripts/stage_d_all.sh` (see the plan's "Stage D thin pass"). The session is: install tools -> `bash scripts/stage_d_all.sh --tier 1` -> fix what breaks (D0) -> `--tier 2` time-boxed (D1) -> `--tier 3` attempts (D2) -> final conformance (D3). Tier 2/3 IDs that cannot be proven quickly end `PARTIAL`/`NOT_RUN` with reasons; that is an accepted outcome.
+
 ## How Stage D runs
 
 1. Pull `main` (contains Stage L). Read `docs/STAGE_D_HANDOFF.md`.

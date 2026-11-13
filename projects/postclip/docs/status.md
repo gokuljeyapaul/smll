@@ -19,10 +19,10 @@
 | S4 | Local LLM cleanup with safety guards (model selected by measurement) | NOT_STARTED | — | — |
 | S5 | Hardening, large inputs, accessibility, Release build | NOT_STARTED | — | — |
 | S6 | Host conformance (deps/licenses, audits) + Stage D handoff | NOT_STARTED | — | — |
-| D0 | Device bring-up: pick/OCR/review/share/edit/export/errors (Mac) | NOT_STARTED | — | — |
-| D1 | Device: share-in, paste, offer-latest, permissions, model download, offline | NOT_STARTED | — | — |
-| D2 | Device: on-device LLM, hardening, Release build | NOT_STARTED | — | — |
-| D3 | Final conformance, real-OCR re-evaluation, full-use-case video | NOT_STARTED | — | — |
+| D0 | Tier 1 device bring-up: build, pick/OCR/review/share, model download + fallback, on-device LLM, no-storage audit (Mac) | NOT_STARTED | — | — |
+| D1 | Tier 2 time-boxed: edit/export/errors, Android share-in, offer-latest, permissions, offline, budgets, a11y, Release smoke | NOT_STARTED | — | — |
+| D2 | Tier 3 attempts: iOS share extension, clipboard image, Telegram, real device | NOT_STARTED | — | — |
+| D3 | Final conformance: real-OCR re-evaluation, videos, verifier-clean summary | NOT_STARTED | — | — |
 
 ## Acceptance traceability
 
