@@ -6,7 +6,6 @@
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
-    "builder": "projects/postclip-builder (monorepo), bundled assets via Capacitor, later",
     "hosts": "Hermes on openclawlaunch (Linux) builds everything; optional ~30 min real-device pass by owner + Claude Code (A27/A30)"
   },
   "slices": {

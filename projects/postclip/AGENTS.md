@@ -2,7 +2,7 @@
 
 ## Mission
 
-Build **postclip**: an installable single-page web app (React + TypeScript + Vite, PWA) that reads a screenshot of a social post in the browser (OCR), tidies the text with a small local language model where the browser can run one, lets the user review/edit it, and shares, copies or exports it. No cloud, no accounts, no stored posts, English only. The complete, linted specification is `docs/BUILD_PLAN.md`; follow it. This project lives at `projects/postclip/` inside the single smll monorepo: do not run `git init`, do not touch other projects (the native shell is the separate project `projects/postclip-builder`, which is not yours to change).
+Build **postclip**: an installable single-page web app (React + TypeScript + Vite, PWA) that reads a screenshot of a social post in the browser (OCR), tidies the text with a small local language model where the browser can run one, lets the user review/edit it, and shares, copies or exports it. No cloud, no accounts, no stored posts, English only. The complete, linted specification is `docs/BUILD_PLAN.md`; follow it. This project lives at `projects/postclip/` inside the single smll monorepo: do not run `git init`, do not touch other projects.
 
 ## Read first (in this order)
 
@@ -67,4 +67,4 @@ A missing required prerequisite, or the container running out of RAM/disk for a 
 
 ## Reporting
 
-After every merged PR: slice, branch, PR URL, each test command with exit code, evidence paths, per-acceptance-ID status table, video manifest entries, merge SHA from GitHub, limitations, next slice. After S6: final conformance summary (proven / partial / not run), the list of videos with paths and hashes, and `docs/BUILDER_HANDOFF.md`.
+After every merged PR: slice, branch, PR URL, each test command with exit code, evidence paths, per-acceptance-ID status table, video manifest entries, merge SHA from GitHub, limitations, next slice. After S6: final conformance summary (proven / partial / not run), the list of videos with paths and hashes, and `docs/KNOWN_LIMITS.md`.

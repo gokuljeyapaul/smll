@@ -2,7 +2,7 @@
 
 **postclip** is a single-page, installable web app (PWA): the user gives it a **screenshot of a social post** (picked, dropped, pasted, or shared in), it reads the text **in the browser** (OCR), tidies it with a **small local language model** where the browser can run one, lets the user **review and edit**, and then **shares, copies or exports** the result. Nothing is uploaded and nothing is stored.
 
-A separate project, **`projects/postclip-builder`**, later wraps a pinned build of this web app into iOS and Android apps (Capacitor, bundled assets) to add what a browser cannot do: receive shared screenshots from other apps and optionally use native OCR. postclip must work on its own and expose a small optional **host bridge** for the builder.
+This project is the web app only. Wrapping it in iOS/Android store apps is a possible later, separate project and is out of scope here.
 
 This plan is executed autonomously by Hermes on a Linux container (openclawlaunch). Everything in it can be built and verified on Linux, with real browsers, real OCR, real model weights and recorded video. It is machine-linted (`python3 scripts/plan_lint.py`): every use case, acceptance ID and slice below must stay consistent.
 
@@ -11,16 +11,16 @@ This plan is executed autonomously by Hermes on a Linux container (openclawlaunc
 - Goal: turn a screenshot of a post (LinkedIn-style or any app) into clean, readable, shareable text without sending anything to a cloud service.
 - All development and test data is **synthetic** (rendered fake posts, fictional names, no real brands or logos, no real people).
 - A passing suite proves behavior on the fixtures, in the browsers and container used. It does **not** prove accuracy on arbitrary real screenshots, real-phone performance, the real iOS/Android share sheets, installed-PWA behavior on real devices, or WebGPU speed. Anything not actually run is `NOT_RUN`; anything partly run is `PARTIAL`. Never write `PASS` for an unexecuted check.
-- Non-goals (v1): cloud AI, accounts, sync, a library of past posts, languages other than English, scraping LinkedIn or any site, hosting/deploying the site, App Store / Play Store work (that is `postclip-builder`).
+- Non-goals (v1): cloud AI, accounts, sync, a library of past posts, languages other than English, scraping LinkedIn or any site, hosting/deploying the site, native/App Store/Play Store packaging.
 
 ## Owner decisions and defaults
 
 | ID | Decision | Default (apply unless the owner changes it) |
 |---|---|---|
 | D1 | CI | **No exception needed.** The shared `ubuntu-latest` runner can run Playwright (Chromium + WebKit), the real OCR engine and the real pinned model, so `monorepo / verify` runs the real end-to-end suite. No shared-CI edit is planned. Contingency: if the runner's preinstalled Node is too old for the chosen toolchain, stop and ask the owner for one `setup-node` line; do not edit `.github/` unprompted. |
-| D2 | Name | `postclip` (web) and `postclip-builder` (native shell, later), both under `projects/` in this monorepo |
+| D2 | Name | `postclip` (web app), under `projects/` in this monorepo |
 | D3 | Stack | React + TypeScript (strict) + Vite, installable PWA (service worker, manifest), Vitest + Testing Library, Playwright. Resolve the latest mutually compatible versions at build time, pin them in the lockfile and record them in `versions.json`. |
-| D4 | OCR engine | Chosen **by measurement in S0** on the fixtures (CER, time, download size, license). Candidates: Tesseract.js; PaddleOCR (PP-OCR) models through onnxruntime-web. Behind an `OcrEngine` interface so the builder can inject native Vision / ML Kit. |
+| D4 | OCR engine | Chosen **by measurement in S0** on the fixtures (CER, time, download size, license). Candidates: Tesseract.js; PaddleOCR (PP-OCR) models through onnxruntime-web. Behind an `OcrEngine` interface so the engine can be swapped. |
 | D5 | LLM runtime and model | Chosen **by measurement in S4**, progressive (see D8). Candidates: runtime transformers.js (WASM, WebGPU optional), WebLLM (WebGPU only), wllama (WASM llama.cpp); models Qwen3 0.6B / 1.7B (Apache-2.0), Llama 3.2 1B (Llama community license) in the format each runtime needs. Pick the smallest that meets the bars. |
 | D6 | Installs (Hermes, Linux, root) | `apt-get install` of `ffmpeg` and Playwright's system dependencies; `npx playwright install --with-deps chromium webkit` (Firefox optional); project-local `npm ci`. Nothing else, no global settings changes. Missing anything else is `BLOCKED`. |
 | D7 | Video | Per-flow Playwright videos are **not committed**; they live in `artifacts/video/` with a committed manifest (`docs/evidence/video_manifest.json`: sha256, size, duration, JUnit testcase). One compressed **compilation** video (≤ 15 MB, ≤ 720p, `docs/demo/postclip-demo.webm` or `.mp4`) is committed in S6 so the owner can watch it from the repo. |
@@ -35,7 +35,7 @@ This plan is executed autonomously by Hermes on a Linux container (openclawlaunc
 | ID | Title | Description |
 |---|---|---|
 | UC01 | Pick or drop a screenshot | User chooses or drops an image file; OCR runs; the review screen shows the text. |
-| UC02 | Share into the installed app | On Android Chrome with the PWA installed, sharing an image to PostClip (Web Share Target) opens it and processes it. (iOS share-in is a `postclip-builder` feature.) |
+| UC02 | Share into the installed app | On Android Chrome with the PWA installed, sharing an image to PostClip (Web Share Target) opens it and processes it. (iOS cannot receive shared images in a plain web app.) |
 | UC03 | Paste from clipboard | User pastes a copied screenshot (Ctrl/Cmd+V or a Paste button); it is processed. |
 | UC04 | Install and use offline | The app is installable; after the first load (and model download) it works with no network. |
 | UC05 | Review and edit | User sees cleaned post text (+ verified author/source, optional suggested tags/summary), edits text, toggles fields. |
@@ -65,7 +65,6 @@ src/model/        ModelManager: capability probe, pinned manifest, download, res
                   cache, state machine (absent|downloading|verifying|ready|failed|unsupported)
 src/output/       payload builders (text, md, json), Web Share, copy, download, Telegram link
 src/privacy/      network guard, storage allow-list audit helpers, log redaction
-src/host/         optional host bridge for postclip-builder (see below)
 src/eval/         dev/test-only runner (absent from production build): runs fixtures through
                   the real pipeline in the browser and writes metrics
 src/ui/           React screens: home, review, export, model status, error states
@@ -77,8 +76,6 @@ docs/evidence/    per-slice red/green/e2e/negative logs, summary.json, junit XML
 ```
 
 Pipeline: `ImageInput -> validate/downscale -> OCR -> language gate -> deterministic cleanup -> (LLM cleanup -> validate -> faithfulness guard) -> review -> share/copy/export`. Any failure after OCR degrades to the previous stage's output with an explicit flag; nothing is silently dropped or invented. Dev/test hooks and the eval runner are excluded from the production build (A29).
-
-**Host bridge (for `postclip-builder`).** `src/host/bridge.ts` defines an optional global `window.__POSTCLIP_HOST__` that a native shell may inject before the app loads: `{ version: 1, capabilities: { shareIn?, nativeOcr?, nativeShare? }, onSharedImage(cb), ocr?(image), share?(payload) }`. Without it the app is a normal PWA; with it, shared images are routed into the same pipeline and native OCR/share may replace the browser ones. The contract is documented in `docs/BUILDER_CONTRACT.md` and unit-tested with and without a bridge (A32).
 
 Library choices are **candidates, resolved at build time**, not promises. Candidates: `vite-plugin-pwa` / Workbox, `tesseract.js`, `onnxruntime-web` + PP-OCR models, `@huggingface/transformers`, `@mlc-ai/web-llm`, `@wllama/wllama`, `@axe-core/playwright`. Selection criteria: works in Chromium and WebKit, runs in a Worker, license compatible, maintained, installs from clean, supports a CSP without `unsafe-eval` where possible. Record the choice and rejected alternatives in the slice evidence.
 
@@ -128,7 +125,6 @@ Library choices are **candidates, resolved at build time**, not promises. Candid
 | A29 | P0 | web | - | The production build contains no test hooks or eval runner (bundle inspection), passes the smoke flow served from `dist/`, and ships the strict CSP. | Bundle inspection + Playwright on the built app |
 | A30 | P1 | device | - | Real-phone LLM speed/RAM and WebGPU behavior. `NOT_RUN` unless the optional device pass is done. | Documented manual pass |
 | A31 | P0 | host | - | Fixtures and evidence are synthetic only: the fixture manifest flags every image synthetic; the generator uses fictional names and no real brand assets; no real screenshots anywhere. | Fixture manifest lint |
-| A32 | P0 | host | UC02 | Host bridge contract: the app behaves identically without a bridge; with a bridge, shared images enter the same pipeline and native OCR/share overrides are used; the contract is documented for `postclip-builder`. | Vitest + `docs/BUILDER_CONTRACT.md` |
 
 ## Testability map
 
@@ -137,7 +133,7 @@ Every use case is automated on Linux with real browsers. What cannot be automate
 | UC | Playwright path (Chromium + WebKit unless noted) | Limits |
 |---|---|---|
 | UC01 | `setInputFiles` on the file input / drag-drop of a fixture; assert review text | - |
-| UC02 | Chromium: post a multipart form to the share-target URL through the service worker; assert review | Real Android installed-PWA sharing is `NOT_RUN` (A27); iOS share-in belongs to `postclip-builder` |
+| UC02 | Chromium: post a multipart form to the share-target URL through the service worker; assert review | Real Android installed-PWA sharing is `NOT_RUN` (A27); iOS share-in is not possible in a web app |
 | UC03 | Chromium: grant `clipboard-read`/`clipboard-write`, write a real image blob, trigger Paste; also dispatch a paste event with a file | WebKit clipboard-image automation is limited: attempt and record; never fake it in the app |
 | UC04 | Check manifest + SW registration; load once, then `context.setOffline(true)` and reload | Install prompt UI is browser chrome, not automatable; installability is checked structurally |
 | UC05 | Edit the textarea, toggle fields, assert payload | - |
@@ -203,16 +199,16 @@ Observable result: user edits cleaned text, copies/shares/exports it; non-Englis
 - **GREEN**: pass in Chromium and WebKit; language-gate confusion matrix measured (bar met or `PARTIAL` with numbers).
 - **Evidence**: standard set; confusion matrix; cleanup baseline metrics; audit output; videos.
 
-### S2 — Input channels, installability, host bridge
+### S2 — Input channels, installability
 
-**Acceptance IDs:** A08, A09, A10, A11, A32
+**Acceptance IDs:** A08, A09, A10, A11
 
-Observable result: paste works (with a clear path when permission is denied), the app installs and runs offline, the share target is handled, and the host bridge contract is in place.
+Observable result: paste works (with a clear path when permission is denied), the app installs and runs offline, the share target is handled, and clipboard-permission states are handled.
 
-- Scope: paste ingest, share-target receiver in the service worker, manifest and offline app shell, `src/host/bridge.ts` + `docs/BUILDER_CONTRACT.md`, clipboard-permission states.
-- **RED**: Vitest for routing and bridge behavior; Playwright for paste, denied paste, offline reload and share-target POST fail on missing behavior.
+- Scope: paste ingest, share-target receiver in the service worker, manifest and offline app shell, clipboard-permission states.
+- **RED**: Vitest for input routing; Playwright for paste, denied paste, offline reload and share-target POST fail on missing behavior.
 - **GREEN**: pass (Chromium-only IDs per the table; WebKit paste attempted and recorded).
-- **Evidence**: standard set; manifest/SW assertions; a bridge contract test log; videos.
+- **Evidence**: standard set; manifest/SW assertions; videos.
 
 ### S3 — Model manager: download once, then offline
 
@@ -249,13 +245,13 @@ Observable result: the app survives large/odd inputs, meets (headless-Linux) bud
 - **GREEN**: pass; budgets reported as headless-Linux numbers.
 - **Evidence**: standard set; bundle inspection output; axe reports; videos.
 
-### S6 — Conformance, videos, builder handoff
+### S6 — Conformance and videos
 
 **Acceptance IDs:** A15, A24, A25, A26, A27, A30
 
-Observable result: a verification report proving every acceptance ID has an honest status, recorded videos of every use case, a committed compilation video, and a handoff for `postclip-builder`.
+Observable result: a verification report proving every acceptance ID has an honest status, recorded videos of every use case, a committed compilation video, and a known-limits document.
 
-- Scope: full clean-checkout run, `scripts/audit_deps.mjs` (licenses, no telemetry, CSP, model pin matches production config), final storage/log/request audits, record every flow in Chromium and WebKit, compile one ≤ 15 MB demo video with `ffmpeg`, finalize `video_manifest.json`, `docs/BUILDER_HANDOFF.md` (how to consume a pinned build, the bridge contract, known limits, what the native shell must add), optional-device-pass checklist for A27/A30, phase `COMPLETE`.
+- Scope: full clean-checkout run, `scripts/audit_deps.mjs` (licenses, no telemetry, CSP, model pin matches production config), final storage/log/request audits, record every flow in Chromium and WebKit, compile one ≤ 15 MB demo video with `ffmpeg`, finalize `video_manifest.json`, `docs/KNOWN_LIMITS.md` (what was measured, what is NOT_RUN, what a browser cannot do), optional-device-pass checklist for A27/A30, phase `COMPLETE`.
 - **RED**: `verify_evidence.py` fails on missing IDs/videos/stale digest until everything is recorded; audits fail on a seeded violation (negative control).
 - **GREEN**: all accounted for; remaining `NOT_RUN`/`PARTIAL` items listed with reasons.
 - **Evidence**: `docs/evidence/S6/conformance_report.md` (proven / not proven / how to reproduce), full-suite logs, license inventory, final manifest and video list with paths and hashes, the committed compilation video.
@@ -281,16 +277,16 @@ This section is the project's own policy.
 - Hermes may merge its own PR (`gh pr merge --squash`) only when: `monorepo / verify` has **passed** on the PR head; `bash scripts/verify.sh` and the full local suite passed on the same tree with committed evidence whose `source_digest` matches; the diff contains only in-scope files (no secrets, model weights, large videos, build output); nothing is BLOCKED. Then verify `MERGED` via `gh pr view`, `git checkout main && git pull --ff-only`, and continue to the next slice.
 - Never push to `main`, force-push, bypass checks, change repo/org/runner settings, spend money, tag or release, or install anything beyond D6.
 - Stop and report `BLOCKED` (do not improvise) when: preflight finds a missing required prerequisite; a build or test fails for reasons not fixable within the slice after 3 genuine attempts; CI fails after 3 attempts or for an unattributable reason; the container runs out of RAM/disk for a required step (report the numbers; never silently skip required evidence); any step would require weakening/skipping/faking a test or inventing a number, hash, log or video; the plan's premise is contradicted by facts (post the finding as a PR comment first); the runner's Node is too old (ask the owner, per D1).
-- After each merged PR report: slice, branch, PR URL, test commands with exit codes, evidence paths, per-acceptance-ID status table, video manifest entries, merge SHA from GitHub, limitations, next slice. After S6 give the final conformance summary and the builder handoff.
+- After each merged PR report: slice, branch, PR URL, test commands with exit codes, evidence paths, per-acceptance-ID status table, video manifest entries, merge SHA from GitHub, limitations, next slice. After S6 give the final conformance summary and the known limits.
 
 ## Risks
 
 | Risk | Mitigation |
 |---|---|
-| Browser OCR is less accurate than native Vision / ML Kit | Engine chosen by measurement; `OcrEngine` interface + host bridge let `postclip-builder` inject native OCR |
+| Browser OCR is less accurate than native Vision / ML Kit | Engine chosen by measurement; behind an `OcrEngine` interface; accuracy limits stated in `docs/KNOWN_LIMITS.md` |
 | LLM in the browser is slow or too large on phones; WebGPU unverifiable on Linux | Progressive design (D8): OCR + rules everywhere; LLM only when the probe allows; WASM verified, WebGPU `NOT_RUN`; LLM may ship disabled |
 | WebKit-on-Linux differs from real Safari | Stated limitation; optional real-device pass (A27/A30); never claimed as Safari proof |
-| iOS cannot receive shared images in a plain PWA | Out of scope for web; delivered by `postclip-builder`'s share extension |
+| iOS cannot receive shared images in a plain PWA | Out of scope for a web app; documented as a limitation |
 | Native share sheet, installed-PWA share and Telegram delivery are not automatable | Payload spied/asserted; A27 `NOT_RUN` unless the device pass happens |
 | Hallucinated or hostile model output | LLM safety design; deterministic fallback; guards unit-tested with adversarial outputs |
 | Model size vs container disk / browser cache quota | Smallest passing model; quota handling in the model manager; report numbers if blocked |

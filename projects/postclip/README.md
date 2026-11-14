@@ -7,7 +7,7 @@ Screenshot of a post in, clean shareable text out — in your browser, nothing u
 3. You review and edit.
 4. Share it (Telegram or any app via the share sheet), copy it, or export it as `.md` / `.txt` / `.json`.
 
-No cloud, no accounts, nothing stored. English only (v1). An installable web app (PWA). A separate project, [`postclip-builder`](../postclip-builder/), later wraps a pinned build in iOS and Android apps for the app stores.
+No cloud, no accounts, nothing stored. English only (v1). An installable web app (PWA).
 
 ## Project state
 
