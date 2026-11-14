@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # Prerequisite check. Reports BLOCKED (exit 1) for anything REQUIRED that is missing; never installs.
-#   bash scripts/preflight.sh            # auto: Linux -> linux mode, macOS -> device mode
-#   bash scripts/preflight.sh ci         # python3 only (CI / plan-only phase)
-#   bash scripts/preflight.sh linux      # Stage L: Hermes on a Linux container
-#   bash scripts/preflight.sh device     # Stage D: Mac with Xcode + Android SDK
-# Writes artifacts/preflight.json. Safe from any cwd; bash 3.2 compatible (macOS).
+#   bash scripts/preflight.sh           # auto: plan-only phase -> ci, otherwise build
+#   bash scripts/preflight.sh ci        # python3 only
+#   bash scripts/preflight.sh build     # python3, node, npm, git, disk >= 15 GB (+ info: RAM, ffmpeg, Playwright)
+# Writes artifacts/preflight.json. Safe from any cwd; bash 3.2 compatible.
 set -uo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
 MODE="${1:-auto}"
 if [ "$MODE" = "auto" ]; then
-  case "$(uname -s)" in Linux) MODE=linux ;; Darwin) MODE=device ;; *) MODE=ci ;; esac
+  PHASE="$(python3 -c "import json;print(json.load(open('milestone-status.json'))['phase'])" 2>/dev/null || echo PLAN_ONLY)"
+  if [ "$PHASE" = "PLAN_ONLY" ]; then MODE=ci; else MODE=build; fi
 fi
 mkdir -p artifacts
 REPORT="artifacts/preflight.tsv"
@@ -33,33 +33,14 @@ info() { # NOT required: name | test command | note
 echo "preflight ($MODE)"
 check "python3" "command -v python3" "install Python 3"
 
-if [ "$MODE" = "linux" ]; then
+if [ "$MODE" = "build" ]; then
   check "node" "command -v node" "install Node (version in .nvmrc once S0 creates it)"
   check "npm" "command -v npm" "install npm"
   check "git" "command -v git" "install git"
   check "disk >= 15 GB free" '[ "$(df -Pk . | awk "NR==2{print \$4}")" -ge 15728640 ]' "free up disk space"
-  info "RAM (MB)" "[ -r /proc/meminfo ] && awk '/MemTotal/{exit !(\$2/1024 >= 3500)}' /proc/meminfo" "needs ~4 GB for Gradle / llama.cpp evaluation; record the real number in versions.json"
-  info "/dev/kvm" "[ -r /dev/kvm ]" "Android emulator needs KVM; absence means device flows are Stage D"
-  info "JDK" "command -v java" "optional: only for the Android debug build"
-  info "Android SDK" "command -v sdkmanager || [ -n \"\${ANDROID_HOME:-}\" ]" "optional: only if disk >= 30 GB and RAM >= 4 GB (plan D5)"
-  info "cmake + g++" "command -v cmake && command -v g++" "needed only to build llama.cpp from source"
-fi
-
-if [ "$MODE" = "device" ]; then
-  check "macOS" '[ "$(uname -s)" = Darwin ]' "iOS builds and video recording need a Mac"
-  check "node" "command -v node" "install Node (version in .nvmrc)"
-  check "npm" "command -v npm" "install npm"
-  check "git" "command -v git" "install git"
-  check "xcodebuild" "xcodebuild -version" "install Xcode and run: sudo xcode-select -s /Applications/Xcode.app"
-  check "ios simulator runtime" "xcrun simctl list devices available | grep -q iPhone" "install an iOS simulator runtime in Xcode > Settings > Platforms"
-  check "java (JDK)" "command -v java && java -version" "install a JDK (17)"
-  check "adb" "command -v adb || [ -x \"\${ANDROID_HOME:-/nonexistent}/platform-tools/adb\" ]" "install Android SDK platform-tools; set ANDROID_HOME"
-  check "android emulator" "command -v emulator || [ -x \"\${ANDROID_HOME:-/nonexistent}/emulator/emulator\" ]" "install the Android emulator package"
-  check "an Android AVD" "[ -n \"\$( (command -v emulator >/dev/null && emulator -list-avds) || \${ANDROID_HOME:-/nonexistent}/emulator/emulator -list-avds 2>/dev/null)\" ]" "create an arm64 AVD with Android Studio / avdmanager"
-  check "maestro" "command -v maestro" "brew install maestro   (allowed by plan D5)"
-  check "idb_companion" "command -v idb_companion" "brew install facebook/fb/idb-companion   (allowed by plan D5)"
-  check "ffmpeg" "command -v ffmpeg" "brew install ffmpeg   (allowed by plan D5)"
-  check "disk >= 40 GB free" '[ "$(df -Pk . | awk "NR==2{print \$4}")" -ge 41943040 ]' "free up disk space"
+  info "RAM >= 3.5 GB" "[ -r /proc/meminfo ] && awk '/MemTotal/{exit !(\$2/1024 >= 3500)}' /proc/meminfo" "record the real RAM in versions.json; the LLM step may need more"
+  info "ffmpeg" "command -v ffmpeg" "needed in S6 for the compilation video (plan D6 allows apt-get install ffmpeg)"
+  info "Playwright browsers" "ls \${PLAYWRIGHT_BROWSERS_PATH:-\$HOME/.cache/ms-playwright} 2>/dev/null | grep -q ." "installed by scripts/setup.sh (plan D6)"
 fi
 
 python3 - "$REPORT" "$MODE" <<'PY'

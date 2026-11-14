@@ -4,13 +4,13 @@
 Phase PLAN_ONLY: no slice has been delivered; verifies that no evidence claims
 anything and that milestone-status.json is consistent with the plan.
 
-Phase BUILDING / DEVICE_VERIFICATION / COMPLETE: for every docs/evidence/<slice>/summary.json:
+Phase BUILDING / COMPLETE: for every docs/evidence/<slice>/summary.json:
   * every acceptance ID is known to docs/BUILD_PLAN.md and has a valid status
     (PASS | PARTIAL | NOT_RUN | BLOCKED);
   * PASS requires >= 1 test reference "junit:<path>::<testcase name>" that
     resolves to a testcase in a committed JUnit XML with no failure / error /
     skipped child, and, for plans' `both`/`ios`/`android` IDs, a reference whose
-    path contains the platform name for each required platform;
+    path contains the browser/platform token for each required platform;
   * a video reference "video:<id>" must exist in docs/evidence/video_manifest.json
     with sha256, size_bytes and a junit testcase that passed;
   * the CURRENT slice's summary.json `source_digest` must equal the digest
@@ -68,11 +68,11 @@ def source_digest(root):
 
 def ref_platforms(ref):
     """Platforms a test reference belongs to, judged from the JUnit FILE PATH only
-    (never the testcase name: 'radios_off' must not count as 'ios')."""
+    (never the testcase name: 'webkit_fallback' in a chromium file must not count as webkit)."""
     m = re.fullmatch(r"junit:(.+?)::(.+)", ref)
     path = m.group(1).lower() if m else ""
     found = set()
-    for plat in ("ios", "android"):
+    for plat in ("chromium", "firefox", "webkit", "device"):
         if re.search(r"(^|[/_\-.])" + plat + r"([/_\-.]|$)", path):
             found.add(plat)
     return found
@@ -117,7 +117,7 @@ def verify(root):
     if not status_file.is_file():
         return ["missing milestone-status.json"]
     phase = json.loads(status_file.read_text()).get("phase")
-    if phase not in ("PLAN_ONLY", "BUILDING", "DEVICE_VERIFICATION", "COMPLETE"):
+    if phase not in ("PLAN_ONLY", "BUILDING", "COMPLETE"):
         return ["milestone-status.json: bad phase %r" % phase]
     ids = plan_ids(root)
     if not ids:
@@ -181,8 +181,8 @@ def verify(root):
                     if not ok:
                         problems.append("%s: %s: %s" % (rel, aid, why))
                 plat = ids[aid]
-                needed = {"both": ["ios", "android"], "ios": ["ios"],
-                          "android": ["android"]}.get(plat, [])
+                needed = {"web": ["chromium", "webkit"], "chromium": ["chromium"],
+                          "webkit": ["webkit"], "device": ["device"]}.get(plat, [])
                 for p in needed:
                     if not any(p in ref_platforms(t) for t in tests):
                         problems.append("%s: %s needs a %s test reference (platform %s)"

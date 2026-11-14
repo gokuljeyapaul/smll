@@ -1,13 +1,13 @@
 # postclip
 
-Screenshot of a post in, clean shareable text out — entirely on your phone.
+Screenshot of a post in, clean shareable text out — in your browser, nothing uploaded.
 
-1. Pick (or share, paste, or accept the latest) screenshot of a LinkedIn-style post.
-2. On-device OCR reads it; a small local LLM tidies it up (removes buttons/UI, fixes line breaks).
+1. Give it a screenshot of a LinkedIn-style post: pick, drop, paste, or (installed on Android) share it in.
+2. OCR reads it in the browser; a small local model tidies it up where your browser can run one (removes buttons/UI, fixes line breaks).
 3. You review and edit.
-4. Share it to Telegram or any app, or export it as `.md` / `.txt` / `.json`.
+4. Share it (Telegram or any app via the share sheet), copy it, or export it as `.md` / `.txt` / `.json`.
 
-No cloud, no accounts, nothing stored. English only (v1). iOS and Android via Expo (dev client).
+No cloud, no accounts, nothing stored. English only (v1). An installable web app (PWA). A separate project, [`postclip-builder`](../postclip-builder/), later wraps a pinned build in iOS and Android apps for the app stores.
 
 ## Project state
 
@@ -15,33 +15,26 @@ No cloud, no accounts, nothing stored. English only (v1). iOS and Android via Ex
 
 | What | Where |
 |---|---|
-| Full plan (use cases, acceptance IDs, slices S0–S6 + D0–D3, test strategy) | [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) |
+| Full plan (use cases, acceptance IDs, slices S0–S6, test strategy) | [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) |
 | Operating rules for the building agent | [AGENTS.md](AGENTS.md) |
 | Ledger of delivered slices | [docs/status.md](docs/status.md) |
-| One-shot prompt for Hermes (Stage L, Linux) | [docs/HERMES_PROMPT.md](docs/HERMES_PROMPT.md) |
-| How the device stage (Mac, with Claude Code) works | [docs/STAGE_D.md](docs/STAGE_D.md) |
-
-## How it gets built
-
-1. **Stage L — Hermes on openclawlaunch (Linux), autonomous:** all code, fixtures, tests, host-side LLM evaluation. Device-dependent checks stay `NOT_RUN`.
-2. **Stage D — owner + Claude Code on a Mac:** builds both apps, runs every flow on iOS simulator and Android emulator, records video, re-evaluates on real OCR output, final conformance.
+| One-shot prompt for Hermes (Linux, openclawlaunch) | [docs/HERMES_PROMPT.md](docs/HERMES_PROMPT.md) |
 
 ## Commands
 
 ```bash
-bash scripts/preflight.sh        # prerequisite check (auto: Linux = Stage L, macOS = Stage D); BLOCKED if a required tool is missing
-bash scripts/setup.sh            # preflight + npm ci (once the app exists)
-bash scripts/test.sh             # tool self-tests; Jest, typecheck, lint once the app exists
-bash scripts/demo.sh             # PLAN_ONLY: NOT_RUN; Stage L: host demo; Stage D on a Mac: the real device flows
-bash scripts/verify.sh           # plan lint + evidence integrity (CI-safe)
-bash scripts/verify.sh --device  # Stage D on the Mac only: also the full device suite
+bash scripts/preflight.sh   # prerequisite check; BLOCKED if a required tool is missing
+bash scripts/setup.sh       # preflight + npm ci + Playwright browsers + pinned model (once the app exists)
+bash scripts/test.sh        # tool self-tests; typecheck, lint, Vitest, Playwright e2e once the app exists
+bash scripts/demo.sh        # PLAN_ONLY: NOT_RUN; later: end-to-end demo flows in real browsers
+bash scripts/verify.sh      # plan lint + evidence integrity
 make test demo verify
 ```
 
 ## Why the evidence is trustworthy (by design)
 
-- `scripts/plan_lint.py` keeps the plan internally consistent (every use case has an acceptance ID, a test path, and a slice).
-- `scripts/verify_evidence.py` rejects any `PASS` that is not backed by a committed, passing JUnit testcase for each required platform, any evidence produced from different code than the current tree, and any acceptance ID left unaccounted for at the end.
-- Videos are recordings of *passing* Maestro flows, listed in a hashed manifest.
+- `scripts/plan_lint.py` keeps the plan internally consistent (every use case has an acceptance ID, a test path and a slice).
+- `scripts/verify_evidence.py` rejects any `PASS` that is not backed by a committed, passing JUnit testcase for each required browser engine, any evidence produced from different code than the current tree, and any acceptance ID left unaccounted for at the end.
+- Videos are recordings of *passing* Playwright flows, listed in a hashed manifest; one compilation video is committed.
 
-Synthetic data only. A passing suite does not prove accuracy on arbitrary real screenshots, real-device LLM speed, or delivery into third-party apps — those are reported as `PARTIAL` / `NOT_RUN` where they are not tested.
+Synthetic data only. A passing suite does not prove accuracy on arbitrary real screenshots, real-phone performance, WebGPU speed, or the real iOS/Android share sheets — those are reported as `PARTIAL` / `NOT_RUN` where they are not tested.

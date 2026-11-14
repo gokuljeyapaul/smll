@@ -30,7 +30,7 @@ REQUIRED_SECTIONS = [
     "Autonomy and merge policy",
     "Risks",
 ]
-PLATFORMS = {"both", "ios", "android", "host"}
+PLATFORMS = {"web", "chromium", "webkit", "host", "device"}
 PRIORITIES = {"P0", "P1"}
 
 

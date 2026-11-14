@@ -4,8 +4,10 @@
   "phase": "PLAN_ONLY",
   "current_slice": null,
   "owner_decisions": {
-    "D1_ci_strategy": "split_with_root_exception",
-    "D10_hosts": "stage_L=hermes_on_openclawlaunch_linux; stage_D=owner_plus_claude_code_on_owner_mac (interactive)"
+    "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
+    "D8_llm_scope": "progressive",
+    "builder": "projects/postclip-builder (monorepo), bundled assets via Capacitor, later",
+    "hosts": "Hermes on openclawlaunch (Linux) builds everything; optional ~30 min real-device pass by owner + Claude Code (A27/A30)"
   },
   "slices": {
     "S0": {
@@ -28,25 +30,7 @@
     },
     "S6": {
       "status": "NOT_STARTED"
-    },
-    "D0": {
-      "status": "NOT_STARTED"
-    },
-    "D1": {
-      "status": "NOT_STARTED"
-    },
-    "D2": {
-      "status": "NOT_STARTED"
-    },
-    "D3": {
-      "status": "NOT_STARTED"
     }
   },
-  "last_verified_merged_pr": null,
-  "phases": [
-    "PLAN_ONLY",
-    "BUILDING",
-    "DEVICE_VERIFICATION",
-    "COMPLETE"
-  ]
+  "last_verified_merged_pr": null
 }

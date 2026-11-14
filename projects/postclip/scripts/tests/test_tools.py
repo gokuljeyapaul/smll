@@ -14,9 +14,9 @@ sys.path.insert(0, str(SCRIPTS))
 import plan_lint  # noqa: E402
 import verify_evidence  # noqa: E402
 
-JUNIT_OK = ('<testsuite><testcase name="ios_flow"/><testcase name="android_flow"/>'
-            '</testsuite>')
-JUNIT_FAIL = '<testsuite><testcase name="ios_flow"><failure/></testcase></testsuite>'
+JUNIT_OK = '<testsuite><testcase name="flow_a"/><testcase name="flow_b"/></testsuite>'
+JUNIT_FAIL = '<testsuite><testcase name="flow_a"><failure/></testcase></testsuite>'
+J = "docs/evidence/S0/junit/"
 
 
 class PlanLintTests(unittest.TestCase):
@@ -27,17 +27,21 @@ class PlanLintTests(unittest.TestCase):
         self.assertEqual(plan_lint.lint(self.text), [])
 
     def test_uncovered_use_case_detected(self):
-        broken = self.text.replace("| A17 | P0 | host | UC13 |", "| A17 | P0 | host | - |")
+        broken = self.text.replace("| A16 | P0 | host | UC13 |", "| A16 | P0 | host | - |")
         self.assertTrue(any("UC13" in p for p in plan_lint.lint(broken)))
 
     def test_undelivered_acceptance_detected(self):
-        broken = self.text.replace("A21, A25, A31", "A21, A25")
-        self.assertTrue(any("A31" in p and "not delivered" in p
-                            for p in plan_lint.lint(broken)))
+        broken = self.text.replace("A20, A25, A31", "A20, A25")
+        self.assertTrue(any("A31" in p and "not delivered" in p for p in plan_lint.lint(broken)))
 
     def test_missing_red_part_detected(self):
-        broken = self.text.replace("- **RED**: Jest tests for the OCR-result normalizer", "- **XRED**: Jest tests for the OCR-result normalizer")
+        broken = self.text.replace("- **RED**: Vitest for the OCR-result normalizer",
+                                   "- **XRED**: Vitest for the OCR-result normalizer")
         self.assertTrue(any("S0" in p and "RED" in p for p in plan_lint.lint(broken)))
+
+    def test_bad_platform_detected(self):
+        broken = self.text.replace("| A01 | P0 | web |", "| A01 | P0 | ios |")
+        self.assertTrue(any("A01" in p and "platform" in p for p in plan_lint.lint(broken)))
 
 
 class VerifyEvidenceTests(unittest.TestCase):
@@ -55,14 +59,21 @@ class VerifyEvidenceTests(unittest.TestCase):
     def set_phase(self, phase):
         (self.tmp / "milestone-status.json").write_text(json.dumps({"phase": phase}))
 
-    def write_summary(self, acceptance, digest=None):
-        data = {"slice": "S0",
-                "source_digest": digest or verify_evidence.source_digest(self.tmp),
-                "acceptance": acceptance}
-        (self.tmp / "docs" / "evidence" / "S0" / "summary.json").write_text(json.dumps(data))
+    def write_summary(self, acceptance, digest=None, slice_name="S0"):
+        d = self.tmp / "docs" / "evidence" / slice_name
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "summary.json").write_text(json.dumps({
+            "slice": slice_name,
+            "source_digest": digest or verify_evidence.source_digest(self.tmp),
+            "acceptance": acceptance}))
 
     def write_junit(self, name, body):
         (self.tmp / "docs" / "evidence" / "S0" / "junit" / name).write_text(body)
+
+    def both(self):
+        self.write_junit("chromium.xml", JUNIT_OK)
+        self.write_junit("webkit.xml", JUNIT_OK)
+        return [("junit:" + J + "chromium.xml::flow_a"), ("junit:" + J + "webkit.xml::flow_a")]
 
     def test_plan_only_with_evidence_fails(self):
         self.set_phase("PLAN_ONLY")
@@ -73,12 +84,8 @@ class VerifyEvidenceTests(unittest.TestCase):
         self.set_phase("PLAN_ONLY")
         self.assertEqual(verify_evidence.verify(self.tmp), [])
 
-    def test_pass_with_junit_both_platforms_ok(self):
-        self.write_junit("ios.xml", JUNIT_OK)
-        self.write_junit("android.xml", JUNIT_OK)
-        self.write_summary({"A02": {"status": "PASS", "tests": [
-            "junit:docs/evidence/S0/junit/ios.xml::ios_flow",
-            "junit:docs/evidence/S0/junit/android.xml::android_flow"]}})
+    def test_web_pass_needs_both_engines_ok(self):
+        self.write_summary({"A02": {"status": "PASS", "tests": self.both()}})
         self.assertEqual(verify_evidence.verify(self.tmp), [])
 
     def test_pass_without_tests_rejected(self):
@@ -86,18 +93,35 @@ class VerifyEvidenceTests(unittest.TestCase):
         self.assertTrue(any("without any test" in p for p in verify_evidence.verify(self.tmp)))
 
     def test_pass_with_failing_testcase_rejected(self):
-        self.write_junit("ios.xml", JUNIT_FAIL)
-        self.write_junit("android.xml", JUNIT_OK)
+        self.write_junit("chromium.xml", JUNIT_FAIL)
+        self.write_junit("webkit.xml", JUNIT_OK)
         self.write_summary({"A02": {"status": "PASS", "tests": [
-            "junit:docs/evidence/S0/junit/ios.xml::ios_flow",
-            "junit:docs/evidence/S0/junit/android.xml::android_flow"]}})
+            "junit:" + J + "chromium.xml::flow_a", "junit:" + J + "webkit.xml::flow_a"]}})
         self.assertTrue(any("<failure>" in p for p in verify_evidence.verify(self.tmp)))
 
-    def test_pass_missing_platform_rejected(self):
-        self.write_junit("ios.xml", JUNIT_OK)
+    def test_pass_missing_engine_rejected(self):
+        self.write_junit("chromium.xml", JUNIT_OK)
+        self.write_summary({"A02": {"status": "PASS", "tests": ["junit:" + J + "chromium.xml::flow_a"]}})
+        self.assertTrue(any("webkit test reference" in p for p in verify_evidence.verify(self.tmp)))
+
+    def test_chromium_only_id_needs_only_chromium(self):
+        self.write_junit("chromium.xml", JUNIT_OK)
+        self.write_summary({"A08": {"status": "PASS", "tests": ["junit:" + J + "chromium.xml::flow_a"]}})
+        self.assertEqual(verify_evidence.verify(self.tmp), [])
+
+    def test_host_id_needs_no_engine(self):
+        self.write_junit("host.xml", JUNIT_OK)
+        self.write_summary({"A17": {"status": "PASS", "tests": ["junit:" + J + "host.xml::flow_a"]}})
+        self.assertEqual(verify_evidence.verify(self.tmp), [])
+
+    def test_platform_judged_from_junit_path_not_testcase_name(self):
+        # a webkit-looking testcase name inside a chromium file must not satisfy webkit
+        self.write_junit("chromium.xml", '<testsuite><testcase name="webkit_fallback"/></testsuite>')
         self.write_summary({"A02": {"status": "PASS", "tests": [
-            "junit:docs/evidence/S0/junit/ios.xml::ios_flow"]}})
-        self.assertTrue(any("android test reference" in p for p in verify_evidence.verify(self.tmp)))
+            "junit:" + J + "chromium.xml::webkit_fallback"]}})
+        self.assertTrue(any("webkit test reference" in p for p in verify_evidence.verify(self.tmp)))
+        self.assertEqual(verify_evidence.ref_platforms("junit:" + J + "chromium.xml::webkit_fallback"), {"chromium"})
+        self.assertEqual(verify_evidence.ref_platforms("junit:" + J + "mywebkitish.xml::x"), set())
 
     def test_not_run_requires_notes(self):
         self.write_summary({"A30": {"status": "NOT_RUN"}})
@@ -110,9 +134,21 @@ class VerifyEvidenceTests(unittest.TestCase):
         (self.tmp / "src" / "a.ts").write_text("export const a = 2;\n")
         self.assertTrue(any("stale" in p for p in verify_evidence.verify(self.tmp)))
 
+    def test_old_slice_digest_is_historical_current_slice_is_enforced(self):
+        nr = {"A30": {"status": "NOT_RUN", "notes": "x"}}
+        self.write_summary(nr, digest="old-digest", slice_name="S0")
+        self.write_summary(nr, slice_name="S1")
+        self.assertEqual([p for p in verify_evidence.verify(self.tmp) if "stale" in p], [])
+        self.write_summary(nr, digest="also-old", slice_name="S1")
+        self.assertTrue(any("S1/summary.json" in p and "stale" in p for p in verify_evidence.verify(self.tmp)))
+
+    def test_ready_for_merge_slice_requires_summary(self):
+        (self.tmp / "milestone-status.json").write_text(json.dumps(
+            {"phase": "BUILDING", "current_slice": "S1", "slices": {"S1": {"status": "READY_FOR_MERGE"}}}))
+        self.assertTrue(any("has no docs/evidence/S1/summary.json" in p for p in verify_evidence.verify(self.tmp)))
+
     def test_unknown_id_and_bad_status_rejected(self):
-        self.write_summary({"A99": {"status": "PASS", "tests": ["x"]},
-                            "A01": {"status": "MAYBE"}})
+        self.write_summary({"A99": {"status": "PASS", "tests": ["x"]}, "A01": {"status": "MAYBE"}})
         probs = verify_evidence.verify(self.tmp)
         self.assertTrue(any("unknown acceptance ID A99" in p for p in probs))
         self.assertTrue(any("invalid status" in p for p in probs))
@@ -125,66 +161,12 @@ class VerifyEvidenceTests(unittest.TestCase):
         self.write_summary(full)
         self.assertEqual(verify_evidence.verify(self.tmp), [])
 
-    def _write_slice_summary(self, name, acceptance, digest):
-        d = self.tmp / "docs" / "evidence" / name
-        d.mkdir(parents=True, exist_ok=True)
-        (d / "summary.json").write_text(json.dumps(
-            {"slice": name, "source_digest": digest, "acceptance": acceptance}))
-
-    def test_old_slice_digest_is_historical_current_slice_is_enforced(self):
-        # S0 evidence was produced from older code; S1 is current and fresh -> OK.
-        self._write_slice_summary("S0", {"A30": {"status": "NOT_RUN", "notes": "x"}}, "old-digest")
-        self._write_slice_summary("S1", {"A30": {"status": "NOT_RUN", "notes": "x"}},
-                                  verify_evidence.source_digest(self.tmp))
-        (self.tmp / "docs" / "evidence" / "S0" / "summary.json").exists()
-        self.set_phase("BUILDING")
-        probs = verify_evidence.verify(self.tmp)
-        self.assertEqual([p for p in probs if "stale" in p], [])
-
-    def test_stale_digest_on_current_slice_fails_even_with_old_slices(self):
-        self._write_slice_summary("S0", {"A30": {"status": "NOT_RUN", "notes": "x"}}, "old-digest")
-        self._write_slice_summary("S1", {"A30": {"status": "NOT_RUN", "notes": "x"}}, "also-old")
-        self.assertTrue(any("S1/summary.json" in p and "stale" in p
-                            for p in verify_evidence.verify(self.tmp)))
-
-    def test_ready_for_merge_slice_requires_summary(self):
-        (self.tmp / "milestone-status.json").write_text(json.dumps(
-            {"phase": "BUILDING", "current_slice": "S1",
-             "slices": {"S1": {"status": "READY_FOR_MERGE"}}}))
-        self.assertTrue(any("has no docs/evidence/S1/summary.json" in p
-                            for p in verify_evidence.verify(self.tmp)))
-
-    def test_device_slices_sort_after_linux_slices(self):
-        self.assertTrue(verify_evidence.slice_num("D0") > verify_evidence.slice_num("S6"))
-        self._write_slice_summary("S6", {"A26": {"status": "NOT_RUN", "notes": "x"}}, "old")
-        self._write_slice_summary("D0", {"A26": {"status": "NOT_RUN", "notes": "x"}},
-                                  verify_evidence.source_digest(self.tmp))
-        self.set_phase("DEVICE_VERIFICATION")
-        self.assertEqual([p for p in verify_evidence.verify(self.tmp) if "stale" in p], [])
-
-    def test_platform_judged_from_junit_path_not_testcase_name(self):
-        # 'radios_off' contains the letters 'ios' but must not satisfy the iOS requirement.
-        self.write_junit("android.xml", '<testsuite><testcase name="radios_off"/></testsuite>')
-        self.write_junit("ios.xml", JUNIT_OK)
-        self.write_summary({"A02": {"status": "PASS", "tests": [
-            "junit:docs/evidence/S0/junit/android.xml::radios_off"]}})
-        probs = verify_evidence.verify(self.tmp)
-        self.assertTrue(any("ios test reference" in p for p in probs))
-        self.assertEqual(verify_evidence.ref_platforms(
-            "junit:docs/evidence/S0/junit/android.xml::radios_off"), {"android"})
-        self.assertEqual(verify_evidence.ref_platforms(
-            "junit:docs/evidence/S0/junit/radios.xml::x"), set())
-
     def test_video_must_be_in_manifest_with_passing_test(self):
-        self.write_junit("ios.xml", JUNIT_OK)
-        self.write_junit("android.xml", JUNIT_OK)
-        tests = ["junit:docs/evidence/S0/junit/ios.xml::ios_flow",
-                 "junit:docs/evidence/S0/junit/android.xml::android_flow"]
-        self.write_summary({"A02": {"status": "PASS", "tests": tests, "videos": ["video:uc01_ios"]}})
+        tests = self.both()
+        self.write_summary({"A02": {"status": "PASS", "tests": tests, "videos": ["video:uc01_chromium"]}})
         self.assertTrue(any("missing video" in p for p in verify_evidence.verify(self.tmp)))
         (self.tmp / "docs" / "evidence" / "video_manifest.json").write_text(json.dumps({"videos": [
-            {"id": "uc01_ios", "sha256": "ab", "size_bytes": 1,
-             "junit": "junit:docs/evidence/S0/junit/ios.xml::ios_flow"}]}))
+            {"id": "uc01_chromium", "sha256": "ab", "size_bytes": 1, "junit": tests[0]}]}))
         self.assertEqual(verify_evidence.verify(self.tmp), [])
 
 
