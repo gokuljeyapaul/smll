@@ -87,6 +87,13 @@ make test-fast      # or: .venv/bin/python -m pytest -m fast -q  (seconds)
 bash scripts/test.sh  # full suite (fast or slow) — what CI runs
 ```
 
+## Design: streaming / live sessions (issue #17)
+
+The turn-by-turn streaming design (consumer & release semantics, fail-closed
+contract, state machine, API sketch, risks, negative scenarios) is specified
+in [docs/design/streaming.md](docs/design/streaming.md) — design only; the
+reference implementation is a separate milestone.
+
 ## Demo (issue #14)
 
 One command replays the full recorded run (synthetic data only: text pipeline
