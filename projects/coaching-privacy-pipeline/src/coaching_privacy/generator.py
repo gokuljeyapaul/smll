@@ -271,3 +271,90 @@ def assert_disjoint_personas(records_a: list[dict], records_b: list[dict]) -> No
     overlap = a & b
     if overlap:
         raise ValueError(f"persona overlap between datasets: {sorted(overlap)}")
+
+
+# --- German mode (I11-S2) ---
+# German template set: same gold-label taxonomy, fictional values, gold
+# spans computed from rendered text (same validation as English).
+DE_FIRST = ["Lena", "Jonas", "Mira", "Theo", "Anke", "Finn", "Svenja", "Karl"]
+DE_LAST = ["Bergmann", "Lindner", "Voss", "Hartwig", "Krause", "Sommer"]
+DE_CITIES = ["Lindenhain", "Nordfeld", "Buchenau", "Silberbach", "Hainburg"]
+DE_ROLES = ["Leiterin der Küstenkartografie",
+            "Inspektor für Nebelangelegenheiten",
+            "Leiter des Archivs für Sturmberichte",
+            "Koordinatorin für Hafenpoesie"]
+DE_EMPLOYERS = ["Aurichholz Labor", "Nebelwerk Institut", "Quarzstein Union",
+                "Glashafen Treuhand"]
+
+def generate_german_fixtures(seed: int, sessions: int) -> list[dict]:
+    """Deterministic German fixture suite (same schema; language='de')."""
+    rng = random.Random(seed * 99991 + 13)
+    records = []
+    for i in range(sessions):
+        first = DE_FIRST[i % len(DE_FIRST)]
+        last = DE_LAST[(i * 3) % len(DE_LAST)]
+        city = DE_CITIES[i % len(DE_CITIES)]
+        role = DE_ROLES[i % len(DE_ROLES)]
+        employer = DE_EMPLOYERS[i % len(DE_EMPLOYERS)]
+        email = f"{first.lower()}.{last.lower()}@example.test"
+        phone = f"+49-30-555-{i:04d}"
+        records.append({
+            "expected_baseline_decision": "REVIEW_REQUIRED",
+            "fixture_id": f"de-{seed}-{i:04d}",
+            "fixture_version": "1.0",
+            "generator_version": GENERATOR_VERSION,
+            "gold_context_risk_codes": ["COMBINATION_OF_CLUES"],
+            "gold_spans": [],
+            "note": "German synthetic fixture (evaluation-only; PoC honesty: synthetic data only)",
+            "prohibited_leaks": [f"{first} {last}", email],
+            "scenario_family": "direct_contact" if i % 2 == 0 else "rare_role",
+            "subject_id": f"P-{seed}-DE{i:05d}",
+            "transcript": {
+                "language": "de",
+                "metadata": {"dataset_seed": f"de-{seed}", "synthetic": True},
+                "purpose": "internal_coaching_analysis",
+                "schema_version": "1.0",
+                "session_id": f"de-fiktiv-{i:03d}",
+                "source_type": "synthetic_text",
+                "speakers": [{"id": "S1", "role": "COACH"},
+                             {"id": "S2", "role": "CLIENT"}],
+                "utterances": [
+                    {"end_ms": None, "id": "u1", "speaker_id": "S1",
+                     "start_ms": None,
+                     "text": "Worauf möchten Sie sich heute konzentrieren?"},
+                    {"end_ms": None, "id": "u2", "speaker_id": "S2",
+                     "start_ms": None,
+                     "text": (
+                         f"Ich heiße {first} {last} und arbeite als {role} "
+                         f"bei {employer} in {city}."
+                     )},
+                ],
+            },
+        })
+        u2 = records[-1]["transcript"]["utterances"][1]["text"]
+        spans = [
+            (f"{first} {last}", "DIRECT_PII.PERSON"),
+            (role, "QUASI_IDENTIFIER.RARE_ROLE"),
+            (employer, "QUASI_IDENTIFIER.EXACT_EMPLOYER"),
+            (city, "QUASI_IDENTIFIER.PRECISE_LOCATION"),
+        ]
+        for value, label in spans:
+            start = u2.find(value)
+            assert start >= 0, value
+            records[-1]["gold_spans"].append({
+                "utterance_id": "u2", "start": start,
+                "end": start + len(value), "gold_value": value, "label": label,
+            })
+        if i % 2 == 1:
+            email_val = (f"Meine E-Mail ist {email} für Terminfragen.")
+            records[-1]["transcript"]["utterances"].append(
+                {"end_ms": None, "id": "u3", "speaker_id": "S2",
+                 "start_ms": None, "text": email_val})
+            start = email_val.find(email)
+            records[-1]["gold_spans"].append({
+                "utterance_id": "u3", "start": start, "end": start + len(email),
+                "gold_value": email, "label": "DIRECT_PII.EMAIL",
+            })
+    for r in records:
+        validate_fixture_record(r)
+    return records

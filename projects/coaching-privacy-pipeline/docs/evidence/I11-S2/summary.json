@@ -1,0 +1,36 @@
+{
+  "slice": "I11-S2",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/11",
+  "scope": "German fixtures + multilingual evaluation with an honest gate decision",
+  "date": "2026-11-14",
+  "evaluation": {
+    "fixtures": 12,
+    "presidio_de": {
+      "PERSON": 0.667,
+      "EMAIL": 0.0
+    },
+    "gliner_multi_v2_1": {
+      "RARE_ROLE": 1.0,
+      "EXACT_EMPLOYER": 1.0,
+      "PRECISE_LOCATION": 1.0
+    },
+    "gate": "gate_retained_evaluation_only \u2014 German stays OUT of SUPPORTED_LANGUAGES (PERSON 0.67 and EMAIL 0.0 below the 1.0 English bar); the I11-S1 fail-closed gate remains the protection; the evaluation is the honest deliverable per the plan"
+  },
+  "caveat": "synthetic fictional fixtures only; PoC-level numbers",
+  "evidence": [
+    "red.log",
+    "green.log",
+    "german_eval.json",
+    "eval-run.log",
+    "e2e.log",
+    "negative.log"
+  ],
+  "gate_impact": "none: German sessions still hit the I11-S1 language gate (REVIEW_REQUIRED/unsupported_language); no runtime path changed",
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I11-S2-german-fixtures",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "32c5f422626fb0d3a9f847da8ffece0aea373801 (PR #46, I9-S2)"
+}

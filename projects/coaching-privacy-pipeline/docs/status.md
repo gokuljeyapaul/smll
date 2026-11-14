@@ -316,3 +316,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I9-S2/e2e.log). **Negative:** [negative.log](evidence/I9-S2/negative.log). **Machine report:** [summary.json](evidence/I9-S2/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I9-S2-device-amortisation`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Remaining:** #11-S2 (German; needs joint model choice with #9 — benchmark recorded) and #15 (release — owner stop).
+
+### I11-S2 — German fixtures + multilingual evaluation (issue #11 slice 2)
+
+- **Delivered at:** 2026-11-14T23:50+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #46 merged as `32c5f422626fb0d3a9f847da8ffece0aea373801`)
+- **Scope:** 12 seeded German fixtures (gold spans validated by construction; [fixtures/german_fixtures.jsonl](../fixtures/german_fixtures.jsonl)); `scripts/eval_german.py` evaluates Presidio with `de_core_news_sm` + `urchade/gliner_multi-v2.1` against gold. **Honest gate decision:** quasi categories reach the 1.0 bar (RARE_ROLE/EXACT_EMPLOYER/PRECISE_LOCATION) but DIRECT PERSON recall 0.67 and EMAIL 0.0 do not → German **stays out of `SUPPORTED_LANGUAGES`**; the I11-S1 fail-closed language gate remains the protection; the evaluation is the deliverable (a valid completion per the plan).
+- **RED proof:** [evidence/I11-S2/red.log](evidence/I11-S2/red.log) — 2 failed. **GREEN:** [green.log](evidence/I11-S2/green.log); evaluation: [german_eval.json](evidence/I11-S2/german_eval.json), [eval-run.log](evidence/I11-S2/eval-run.log); full suite green (fast 66 / slow 75).
+- **E2E:** [e2e.log](evidence/I11-S2/e2e.log). **Negative:** [negative.log](evidence/I11-S2/negative.log). **Machine report:** [summary.json](evidence/I11-S2/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I11-S2-german-fixtures`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Remaining in the list:** #15 (release/tag) — **requires owner confirmation; STOP before any tag/release per AGENTS.md.**
