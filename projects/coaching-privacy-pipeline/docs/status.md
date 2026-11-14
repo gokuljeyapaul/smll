@@ -248,3 +248,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I13-S1/e2e.log). **Negative:** [negative.log](evidence/I13-S1/negative.log). **Machine report:** [summary.json](evidence/I13-S1/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I13-S1-asr-benchmark`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** #9 GLiNER speed-up (deps #16 ✅, #18 ✅, #20 ✅).
+
+### I9-S1 — GLiNER profile + benchmark (issue #9 slice 1)
+
+- **Delivered at:** 2026-11-14T10:10+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #39 merged as `b2bcfbce8d848c00b55a0a2680658db02f4a5b7f`)
+- **Scope:** `scripts/bench_gliner.py` — (a) wall-time profile: model load (~19s) dominates short batches; per-session inference ~1s; (b) benchmark on the 18 gold fixtures + seeded 220-session timing set: `gliner_medium-v2.1` 1.00s/session vs `gliner_small-v2.1` 0.54s/session (1.85x faster). Per-category recall recorded for both ([gliner_benchmark.json](evidence/I9-S1/gliner_benchmark.json)). **Promotion gate result (honest):** neither model reaches 100% mandatory-category recall on the gold fixtures (SMALL_TEAM 0.75, UNIQUE_ACHIEVEMENT 0.33 in both; small also drops PERSON 0.50→0.33), so the default stays `medium-v2.1` — only the benchmark merges, per the issue plan.
+- **RED proof:** [evidence/I9-S1/red.log](evidence/I9-S1/red.log) — 2 failed. **GREEN:** [green.log](evidence/I9-S1/green.log) — 2 passed; full chunks fast 60 / integration 25 / e2e+negative 56, exit 0.
+- **E2E:** [e2e.log](evidence/I9-S1/e2e.log). **Negative:** [negative.log](evidence/I9-S1/negative.log). **Machine report:** [summary.json](evidence/I9-S1/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I9-S1-gliner-benchmark`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** #10 (deps #16, #20, #22 all merged) — pipeline validation.

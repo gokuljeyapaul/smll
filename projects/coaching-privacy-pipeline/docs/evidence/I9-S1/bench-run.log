@@ -1,0 +1,57 @@
+/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+  warnings.warn(
+The tokenizer you are loading from '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 419.07it/s]
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files: 100%|██████████| 3/3 [00:00<00:00, 724.53it/s]
+The tokenizer you are loading from '/home/node/.cache/huggingface/hub/models--urchade--gliner_small-v2.1/snapshots/4e091416cf7c3481db542c2a3d26156916f3a47f' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+{
+  "profile": {
+    "load_s": 18.577,
+    "inference_s": 123.655,
+    "sessions_timed": 120,
+    "note": "model load dominates short-batch wall time; per-session inference is ~1-2s; long-lived processes amortise the load"
+  },
+  "results": [
+    {
+      "model": "urchade/gliner_medium-v2.1",
+      "avg_latency_s": 0.999,
+      "per_category_recall": {
+        "PERSON": 0.5,
+        "EMAIL": 0.0,
+        "PHONE": 0.0,
+        "ADDRESS": 1.0,
+        "RARE_ROLE": 1.0,
+        "EXACT_EMPLOYER": 1.0,
+        "SMALL_TEAM": 0.75,
+        "EXACT_EVENT_DATE": 1.0,
+        "PRECISE_LOCATION": 1.0,
+        "UNIQUE_ACHIEVEMENT": 0.3333
+      },
+      "gold_fixtures": 18,
+      "sessions_timed": 120
+    },
+    {
+      "model": "urchade/gliner_small-v2.1",
+      "avg_latency_s": 0.539,
+      "per_category_recall": {
+        "PERSON": 0.3333,
+        "EMAIL": 0.0,
+        "PHONE": 1.0,
+        "ADDRESS": 1.0,
+        "RARE_ROLE": 1.0,
+        "EXACT_EMPLOYER": 1.0,
+        "SMALL_TEAM": 0.75,
+        "EXACT_EVENT_DATE": 1.0,
+        "PRECISE_LOCATION": 1.0,
+        "UNIQUE_ACHIEVEMENT": 0.3333
+      },
+      "gold_fixtures": 18,
+      "sessions_timed": 120
+    }
+  ]
+}
+report written: docs/evidence/I9-S1/gliner_benchmark.json

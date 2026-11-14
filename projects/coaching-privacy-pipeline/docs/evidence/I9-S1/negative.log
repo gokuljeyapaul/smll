@@ -1,0 +1,3 @@
+== negative: honest promotion gate ==
+gliner_small-v2.1 is 1.85x faster (0.54s vs 1.00s per session) but does NOT keep 100% mandatory-category recall (SMALL_TEAM 0.75, UNIQUE_ACHIEVEMENT 0.33 — equal to baseline, but not 100%; PERSON 0.33 vs 0.50)
+=> per the issue #9 promotion gate the default stays gliner_medium-v2.1; only the benchmark tooling merges. DIRECT_PII categories (PERSON/EMAIL/PHONE) are Presidio's responsibility and are shown for context only.

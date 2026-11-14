@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I13-S1",
+    "current": "I9-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -732,6 +732,36 @@
         "summary_path": "docs/evidence/I13-S1/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I13-S1-asr-benchmark",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/39",
+          "state": "MERGED",
+          "merge_sha": "b2bcfbce8d848c00b55a0a2680658db02f4a5b7f"
+        }
+      },
+      "I9-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #9 slice 1: profile (load dominates) + medium-vs-small benchmark; default stays medium-v2.1 (promotion gate not met honestly)",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/integration/test_i9_bench.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I9-S1/red.log",
+          "expected_failure": "no bench script, no seeded timing set"
+        },
+        "green": {
+          "command": "test_i9_bench 2 passed; bench run real models; full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I9-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I9-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I9-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I9-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I9-S1-gliner-benchmark",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"
