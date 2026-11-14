@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________________ test_review_analysis_report __________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-224/test_review_analysis_report0')
+
+    def test_review_analysis_report(tmp_path):
+        script = REPO / "scripts" / "review_analysis.py"
+        out = tmp_path / "analysis.json"
+        r = subprocess.run(
+            [sys.executable, str(script), "--output", str(out)],
+            capture_output=True, text=True, cwd=REPO, timeout=2400,
+        )
+>       assert r.returncode == 0, (r.stdout, r.stderr)
+E       AssertionError: ('', "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python: can't open file '/h...kspace/dev/smll/projects/coaching-privacy-pipeline/scripts/review_analysis.py': [Errno 2] No such file or directory
+E         ")
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...kspace/dev/smll/projects/coaching-privacy-pipeline/scripts/review_analysis.py': [Errno 2] No such file or directory\n").returncode
+
+tests/integration/test_i10_analysis.py:23: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_i10_analysis.py::test_review_analysis_report - ...
+1 failed in 0.24s
+exit=1
