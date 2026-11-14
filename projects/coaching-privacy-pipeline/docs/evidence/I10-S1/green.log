@@ -1,0 +1,58 @@
+== RED (2026-11-14) ==
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________________ test_review_analysis_report __________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-224/test_review_analysis_report0')
+
+    def test_review_analysis_report(tmp_path):
+        script = REPO / "scripts" / "review_analysis.py"
+        out = tmp_path / "analysis.json"
+        r = subprocess.run(
+            [sys.executable, str(script), "--output", str(out)],
+            capture_output=True, text=True, cwd=REPO, timeout=2400,
+        )
+>       assert r.returncode == 0, (r.stdout, r.stderr)
+E       AssertionError: ('', "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python: can't open file '/h...kspace/dev/smll/projects/coaching-privacy-pipeline/scripts/review_analysis.py': [Errno 2] No such file or directory
+E         ")
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...kspace/dev/smll/projects/coaching-privacy-pipeline/scripts/review_analysis.py': [Errno 2] No such file or directory\n").returncode
+
+tests/integration/test_i10_analysis.py:23: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_i10_analysis.py::test_review_analysis_report - ...
+1 failed in 0.24s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/integration/test_i10_analysis.py -q
+.                                                                        [100%]
+1 passed in 84.73s (0:01:24)
+exit=0
+
+== observed baseline (real pipeline) ==
+command: .venv/bin/python scripts/review_analysis.py --output docs/evidence/I10-S1/review_analysis.json
+The tokenizer you are loading from '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+  "correct": 10,
+  "false-REVIEW": 2,
+  "false-RELEASE": 6,
+  "known-gap": 0
+seed-S01: expected=RELEASE_CANDIDATE actual=RELEASE_CANDIDATE class=correct ctx=[]
+seed-S02: expected=RELEASE_CANDIDATE actual=REVIEW_REQUIRED class=false-REVIEW ctx=['COMBINATION_OF_CLUES']
+seed-S03: expected=REVIEW_REQUIRED actual=REVIEW_REQUIRED class=correct ctx=['COMBINATION_OF_CLUES']
+seed-S04: expected=REVIEW_REQUIRED actual=REVIEW_REQUIRED class=correct ctx=['COMBINATION_OF_CLUES']
+seed-S05: expected=REVIEW_REQUIRED actual=RELEASE_CANDIDATE class=false-RELEASE ctx=[]
+seed-S06: expected=REVIEW_REQUIRED actual=REVIEW_REQUIRED class=correct ctx=['COMBINATION_OF_CLUES']
+seed-S07: expected=RELEASE_CANDIDATE actual=RELEASE_CANDIDATE class=correct ctx=[]
+seed-S08: expected=REVIEW_REQUIRED actual=REVIEW_REQUIRED class=correct ctx=['COMBINATION_OF_CLUES']
+seed-S09a: expected=REVIEW_REQUIRED actual=RELEASE_CANDIDATE class=false-RELEASE ctx=[]
+seed-S09b: expected=REVIEW_REQUIRED actual=RELEASE_CANDIDATE class=false-RELEASE ctx=[]
+seed-S10: expected=RELEASE_CANDIDATE actual=REVIEW_REQUIRED class=false-REVIEW ctx=['COMBINATION_OF_CLUES']
+seed-S11: expected=REVIEW_REQUIRED actual=RELEASE_CANDIDATE class=false-RELEASE ctx=[]
+seed-S12: expected=REVIEW_REQUIRED actual=RELEASE_CANDIDATE class=false-RELEASE ctx=[]
+seed-S13: expected=REVIEW_REQUIRED actual=RELEASE_CANDIDATE class=false-RELEASE ctx=[]
+seed-S14: expected=REVIEW_REQUIRED actual=REVIEW_REQUIRED class=correct ctx=['COMBINATION_OF_CLUES']
+seed-S15: expected=RELEASE_CANDIDATE actual=RELEASE_CANDIDATE class=correct ctx=[]
+seed-S16: expected=RELEASE_CANDIDATE actual=RELEASE_CANDIDATE class=correct ctx=[]
+seed-S17: expected=REVIEW_REQUIRED actual=REVIEW_REQUIRED class=correct ctx=['COMBINATION_OF_CLUES']
+exit=0 (full: review_analysis.json)

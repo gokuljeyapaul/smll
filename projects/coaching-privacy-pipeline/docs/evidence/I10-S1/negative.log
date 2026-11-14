@@ -1,0 +1,4 @@
+== negative: findings ==
+6 false-RELEASE (S05, S09a, S09b, S11, S12, S13): expected REVIEW, actual RELEASE_CANDIDATE — expected risks the current detectors do NOT produce (cross-session S09a/b need batch linkage; S05/S11/S12/S13 have no gold context code, i.e. no detector exists) — larger problem than excess REVIEW, exactly as the plan suspected
+2 false-REVIEW (S02, S10): benign fixtures flagged with COMBINATION_OF_CLUES (any job title + any location triggers) — candidate for slice 2 specificity work
+10 correct (S01, S03, S04, S06, S07, S08, S14, S15, S16, S17)
