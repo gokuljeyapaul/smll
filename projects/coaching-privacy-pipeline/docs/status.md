@@ -326,3 +326,12 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I11-S2/e2e.log). **Negative:** [negative.log](evidence/I11-S2/negative.log). **Machine report:** [summary.json](evidence/I11-S2/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I11-S2-german-fixtures`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Remaining in the list:** #15 (release/tag) — **requires owner confirmation; STOP before any tag/release per AGENTS.md.**
+
+### I15 — Release v0.1.0-poc (issue #15)
+
+- **Delivered at:** 2026-11-14T20:15+08:00 (owner confirmation in-session 19:46+08:00)
+- **Docs PR:** #48, merged as `68f2e98ceb3eeb4de01f0f60cb4236e13bcab74a`, CI `monorepo / verify` green on main at that SHA.
+- **Tag:** `v0.1.0-poc` — **annotated**, pushed, points at `68f2e98ceb3eeb4de01f0f60cb4236e13bcab74a` (= origin/main at tagging time, CI-green).
+- **Release:** https://github.com/gokuljeyapaul/smll/releases/tag/v0.1.0-poc — notes from `docs/release-notes-v0.1.0-poc.md` (caveats in paragraph one); assets: `coaching-privacy-pipeline-demo.mp4`, `demo.cast`.
+- **RED proof:** [evidence/I15/red.log](evidence/I15/red.log) — `verify_release.sh` exit 1 (no tag). **GREEN proof:** [evidence/I15/green.log](evidence/I15/green.log) — exit 0.
+- **Machine report:** [evidence/I15/summary.json](evidence/I15/summary.json), [evidence/I15/release.json](evidence/I15/release.json).
