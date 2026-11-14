@@ -1,0 +1,103 @@
+== RED (2026-11-14) ==
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_______________ test_video_demo_script_exists_executable_strict ________________
+
+    def test_video_demo_script_exists_executable_strict():
+        assert SCRIPT.is_file(), "scripts/video_demo.sh missing"
+>       assert SCRIPT.stat().st_mode & 0o111, "script not executable"
+E       AssertionError: script not executable
+E       assert (33188 & 73)
+E        +  where 33188 = os.stat_result(st_mode=33188, st_ino=10530928, st_dev=1792, st_nlink=1, st_uid=1000, st_gid=1000, st_size=3991, st_atime=1794586716, st_mtime=1794586709, st_ctime=1794586709).st_mode
+E        +    where os.stat_result(st_mode=33188, st_ino=10530928, st_dev=1792, st_nlink=1, st_uid=1000, st_gid=1000, st_size=3991, st_atime=1794586716, st_mtime=1794586709, st_ctime=1794586709) = stat()
+E        +      where stat = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/video_demo.sh').stat
+
+tests/unit/test_i14_unit.py:20: AssertionError
+________________ test_cast_exists_valid_jsonl_header_and_frames ________________
+
+    def test_cast_exists_valid_jsonl_header_and_frames():
+>       assert CAST.is_file(), "docs/demo/demo.cast missing"
+E       AssertionError: docs/demo/demo.cast missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/docs/demo/demo.cast').is_file
+
+tests/unit/test_i14_unit.py:27: AssertionError
+_____________________ test_cast_title_hash_matches_script ______________________
+
+    def test_cast_title_hash_matches_script():
+>       lines = [l for l in CAST.read_text().splitlines() if l.strip()]
+                            ^^^^^^^^^^^^^^^^
+
+tests/unit/test_i14_unit.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.11/pathlib.py:1059: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/docs/demo/demo.cast')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/docs/demo/demo.cast'
+
+/usr/lib/python3.11/pathlib.py:1045: FileNotFoundError
+__________________________ test_cast_text_path_clean ___________________________
+
+    def test_cast_text_path_clean():
+>       blob = CAST.read_text()
+               ^^^^^^^^^^^^^^^^
+
+tests/unit/test_i14_unit.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.11/pathlib.py:1059: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/docs/demo/demo.cast')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/docs/demo/demo.cast'
+
+/usr/lib/python3.11/pathlib.py:1045: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/unit/test_i14_unit.py::test_video_demo_script_exists_executable_strict
+FAILED tests/unit/test_i14_unit.py::test_cast_exists_valid_jsonl_header_and_frames
+FAILED tests/unit/test_i14_unit.py::test_cast_title_hash_matches_script - Fil...
+FAILED tests/unit/test_i14_unit.py::test_cast_text_path_clean - FileNotFoundE...
+4 failed in 0.23s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/unit/test_i14_unit.py -q
+....                                                                     [100%]
+4 passed in 0.06s
+exit=0
+== demo run (2026-11-14) ==
+command: bash scripts/video_demo.sh
+exit=0 (see demo.log; verified: 18 sessions processed, faulty-transform -> BLOCKED, OFFLINE_ASR_PROOF_OK, audit OK)
+
+== cast recording ==
+command: asciinema rec --command 'bash scripts/video_demo.sh' --idle-time-limit 2 --title 'sha256:<script hash>' docs/demo/demo.cast
+result: 49 output frames; markers present (BLOCKED, OFFLINE_ASR_PROOF_OK, END OF RECORDING); path-clean (/home|/Users|/root|openclaw absent); title hash matches script sha256

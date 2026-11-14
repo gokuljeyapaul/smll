@@ -87,6 +87,20 @@ make test-fast      # or: .venv/bin/python -m pytest -m fast -q  (seconds)
 bash scripts/test.sh  # full suite (fast or slow) — what CI runs
 ```
 
+## Demo (issue #14)
+
+One command replays the full recorded run (synthetic data only: text pipeline
+to decisions, a deliberate faulty transform blocked offline, offline ASR
+proof, one-command audit):
+
+```bash
+bash scripts/video_demo.sh                        # live, ~2 minutes
+asciinema play docs/demo/demo.cast                 # recorded replay
+```
+
+The cast (`docs/demo/demo.cast`) embeds the script's sha256 in its title to
+make script/cast drift detectable. Evidence bundles: `docs/evidence/`.
+
 Optional demonstrations:
 ```bash
 .venv/bin/python scripts/offline_asr_proof.py  # short synthetic speech through real faster-whisper

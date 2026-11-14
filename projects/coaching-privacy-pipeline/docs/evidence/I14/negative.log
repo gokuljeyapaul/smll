@@ -1,0 +1,2 @@
+== negative: cast hygiene ==
+no machine-specific paths/username in cast or script (asserted by tests); cast title embeds the script sha256 to detect drift; slow test runs the full demo green

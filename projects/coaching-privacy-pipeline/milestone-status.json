@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I10-S1",
+    "current": "I14",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -792,6 +792,36 @@
         "summary_path": "docs/evidence/I10-S1/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I10-S1-review-analysis",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/41",
+          "state": "MERGED",
+          "merge_sha": "56c799a322cce198c7b34930f54fef830d26e29b"
+        }
+      },
+      "I14": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #14: video_demo.sh (path-clean, strict) + docs/demo/demo.cast (sha256-drift-guarded) + README Demo section + fast/slow tests",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i14_unit.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I14/red.log",
+          "expected_failure": "script untracked/cast absent; 4 fast checks failed"
+        },
+        "green": {
+          "command": "test_i14_unit fast 4 + slow 1 passed; full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I14/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I14/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I14/negative.log"
+        },
+        "summary_path": "docs/evidence/I14/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I14-demo-script-cast",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"
