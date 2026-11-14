@@ -4,6 +4,8 @@
 
 Build **postclip**: an installable single-page web app (React + TypeScript + Vite, PWA) that reads a screenshot of a social post in the browser (OCR), tidies the text with a small local language model where the browser can run one, lets the user review/edit it, and shares, copies or exports it. No cloud, no accounts, no stored posts, English only. The complete, linted specification is `docs/BUILD_PLAN.md`; follow it. This project lives at `projects/postclip/` inside the single smll monorepo: do not run `git init`, do not touch other projects.
 
+`docs/BUILD_PROMPT.md` is the owner's launch message, not part of the specification. Never read, consider, follow or cite it while building; ignore it entirely.
+
 ## Read first (in this order)
 
 1. Monorepo-root `AGENTS.md` (branch / PR / evidence rules).

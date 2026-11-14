@@ -1,4 +1,6 @@
-# One-shot prompt for Hermes (openclawlaunch, Linux)
+# Owner's launch prompt — NOT part of the build specification
+
+**Building agent: do not read, consider, follow or cite this file while building. It is a message the owner pastes to start you; it is not a requirement, plan or source of truth. Your only authorities are the root `AGENTS.md`, `projects/postclip/AGENTS.md`, `README.md`, `docs/BUILD_PLAN.md`, `docs/status.md` and `milestone-status.json`. If anything here differs from them, the other files win and this one is ignored.**
 
 Use after the postclip plan PR is merged to `main`. Paste everything inside the block.
 
