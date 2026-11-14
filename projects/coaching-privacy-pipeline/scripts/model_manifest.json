@@ -39,6 +39,20 @@
       "hash_verification": false,
       "usage": "Presidio NER backend",
       "notes": "Installed from the version-pinned pip wheel en_core_web_sm==3.8.0 (setup.sh). Package contents live in .venv (not the models/ root); version pinning is enforced by setup.sh, so files is empty here and hash verification does not apply to it."
+    },
+    "whisper_base_en": {
+      "repo_id": "Systran/faster-whisper-base.en",
+      "revision": "3d3d5dee26484f91867d81cb899cfcf72b96be6c",
+      "source_url": "https://huggingface.co/Systran/faster-whisper-base.en/tree/3d3d5dee26484f91867d81cb899cfcf72b96be6c",
+      "license": "MIT (model card)",
+      "local_path": "whisper-base.en/models--Systran--faster-whisper-base.en/snapshots/3d3d5dee26484f91867d81cb899cfcf72b96be6c",
+      "files": {
+        "config.json": "sha256:f3bc3821e9fc76a27bae538e11ae5b677dcdd352b4600429ce7951d398569aeb",
+        "model.bin": "sha256:2a166925539a16005f14ff328359f9b9adb9dc4fb631bb3b227526862e93e2ef",
+        "tokenizer.json": "sha256:929c5252409436dce1b38a75d1abbcb5e132d170d8e324e4e04ed915fa2d22df",
+        "vocabulary.txt": "sha256:ff77588746d3a2595d32ab5b69ffd7b95ce2441ac57533cb66fc3eb575a115cf"
+      },
+      "notes": "Selectable via COACHING_WHISPER_MODEL=base.en (I13-S2); default remains tiny.en. Hashes computed 2026-11-14 with python hashlib.sha256 over the real downloaded files (command recorded in docs/evidence/I13-S2/model-hashes.txt)."
     }
   }
 }

@@ -1,0 +1,2 @@
+== negative ==
+unpinned/tampered model dir -> ASRError naming the file (manifest resolution mandatory); default stays tiny.en (bench shows base.en is only marginally better on synthetic TTS: WER 0.0709 vs 0.079)

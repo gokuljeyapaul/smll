@@ -80,12 +80,27 @@ class BaseASRAdapter:
         raise NotImplementedError
 
 
+DEFAULT_WHISPER_MODEL = "tiny.en"
+
+
 class FasterWhisperAdapter(BaseASRAdapter):
     def __init__(self, model_dir: str | None = None):
-        self.model_dir = str(
-            pathlib.Path(model_dir) if model_dir else pathlib.Path(DEFAULT_MODEL_DIR)
+        # I13-S2: model selectable via COACHING_WHISPER_MODEL (default
+        # tiny.en), resolved through the manifest and hash-verified.
+        self.model_name = os.environ.get(
+            "COACHING_WHISPER_MODEL", DEFAULT_WHISPER_MODEL
         )
+        if model_dir:
+            self.model_dir = str(pathlib.Path(model_dir))
+        else:
+            self.model_dir = str(
+                pathlib.Path(f"models/whisper-{self.model_name}")
+            )
         self._model = None
+
+    @property
+    def _manifest_key(self) -> str:
+        return "whisper_" + self.model_name.replace("-", "_").replace(".", "_")
 
     def _validate_path(self, wav_path: str) -> pathlib.Path:
         p = pathlib.Path(wav_path)
@@ -98,16 +113,17 @@ class FasterWhisperAdapter(BaseASRAdapter):
         return p
 
     def _verify_model_files(self) -> None:
-        """Issue #18 slice 2: fail closed if the whisper snapshot files do
-        not match the pinned manifest before loading (once per process)."""
+        """Issue #18 slice 2 + I13-S2: fail closed if the selected model's
+        snapshot files do not match the pinned manifest before loading."""
         root = pathlib.Path(self.model_dir)
-        snaps = sorted(root.glob("models--Systran--faster-whisper-tiny.en/snapshots/*"))
+        repo_dir = f"models--Systran--faster-whisper-{self.model_name}"
+        snaps = sorted(root.glob(f"{repo_dir}/snapshots/*"))
         if not snaps:
             raise RuntimeError(
-                f"whisper tiny.en snapshot not found under {root} "
+                f"whisper {self.model_name} snapshot not found under {root} "
                 "(run scripts/setup.sh first)"
             )
-        _verify_model_entry("whisper_tiny_en", snaps[0])
+        _verify_model_entry(self._manifest_key, snaps[0])
 
     def _ensure_model(self) -> None:
         if self._model is not None:
@@ -125,7 +141,7 @@ class FasterWhisperAdapter(BaseASRAdapter):
             from faster_whisper import WhisperModel
 
             self._model = WhisperModel(
-                "tiny.en", device="cpu", compute_type="int8",
+                self.model_name, device="cpu", compute_type="int8",
                 download_root=self.model_dir,
             )
         except Exception as exc:
@@ -156,7 +172,7 @@ class FasterWhisperAdapter(BaseASRAdapter):
         uncertain = _is_uncertain(signals, _load_thresholds())
         return {
             "text": text,
-            "model": "tiny.en",
+            "model": self.model_name,
             "engine": "faster-whisper",
             "language": getattr(info, "language", "en"),
             "runtime_s": runtime_s,
@@ -168,7 +184,7 @@ class FasterWhisperAdapter(BaseASRAdapter):
 
     def model_info(self) -> dict[str, Any]:
         return {
-            "model": "tiny.en",
+            "model": self.model_name,
             "engine": "faster-whisper",
             "local_only": True,
             "model_dir": self.model_dir,

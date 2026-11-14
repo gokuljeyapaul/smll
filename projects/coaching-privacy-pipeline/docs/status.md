@@ -296,3 +296,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I10-S2/e2e.log). **Negative:** [negative.log](evidence/I10-S2/negative.log). **Machine report:** [summary.json](evidence/I10-S2/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I10-S2-specificity-filter`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Remaining:** #11-S2/#13-S2/#9-S2 (multilingual/model slices, dependent work) and #15 (release — owner stop).
+
+### I13-S2 — Selectable Whisper model (issue #13 slice 2)
+
+- **Delivered at:** 2026-11-14T19:50+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #44 merged as `e2d43122c1ca17db7091519b1387cb6f494afe77`)
+- **Scope:** `COACHING_WHISPER_MODEL` selects the ASR model (default `tiny.en`); the adapter resolves the per-model manifest entry (`whisper_base_en`, …) and hash-verifies before load (unpinned/tampered → `ASRError`); `base.en` added to the manifest with real computed sha256 (revision `3d3d5dee26484f91867d81cb899cfcf72b96be6c`; provenance: [model-hashes.txt](evidence/I13-S2/model-hashes.txt)) and prefetched in `setup.sh` at the pinned revision; result/model_info report the selected model; degraded audio with a selected model still routes e2e to REVIEW (I19 pattern re-run).
+- **RED proof:** [evidence/I13-S2/red.log](evidence/I13-S2/red.log) — 3 failed. **GREEN:** [green.log](evidence/I13-S2/green.log) — 3 passed; fresh-setup run green; full chunks fast 66 / integration 26 / e2e+negative 59, exit 0.
+- **E2E:** [e2e.log](evidence/I13-S2/e2e.log). **Negative:** [negative.log](evidence/I13-S2/negative.log). **Machine report:** [summary.json](evidence/I13-S2/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I13-S2-selectable-model`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Remaining:** #9-S2 (GPU/load amortisation), #11-S2 (German; needs #9 model choice), #15 (release — owner stop).
