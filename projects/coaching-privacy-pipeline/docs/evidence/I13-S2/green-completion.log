@@ -1,0 +1,9 @@
+Sat Nov 14 06:15:52 UTC 2026
+chunk: tests/unit -m fast -> 50 passed (earlier) then combined fast chunk 66 across all dirs
+chunk: tests/unit -m slow -> 27 passed in 217.86s
+chunk: tests/integration -m slow -> 32 passed in 680.11s (first run tail truncated 30+2; rerun captured all 32)
+chunk: tests/e2e tests/negative -m slow -> 43 passed in 1016.90s
+chunk: tests/unit tests/integration tests/e2e tests/negative -m "not slow" -> 66 passed
+....                                                                     [100%]
+4 passed in 48.45s
+RED (pre-implementation): red-completion.log — 4 failed (per-model thresholds absent, adapter ignores model name for thresholds, no wer_budget, no budget test). GREEN: green-completion.log — 4 passed in 48.45s; full regression chunks green (fast 66 / unit-slow 27 / integration-slow 32 / e2e+negative-slow 43 = 168 total, exit 0).

@@ -64,8 +64,12 @@ def test_degraded_audio_selected_model_review_e2e(monkeypatch, tmp_path):
     with wave.open(str(src), "rb") as w:
         params = w.getparams()
         frames = bytearray(w.readframes(w.getnframes()))
+    # I13-S2 recalibration: keep every 7th sample (same recipe as
+    # test_i19_asr — the earlier keep-every-10th recipe was borderline on
+    # some CPUs: 0 segments -> ASRError fail-closed instead of
+    # uncertain=True -> REVIEW; every-7th robustly flags uncertain).
     for i in range(len(frames)):
-        frames[i] = ((i * 37 + 11) & 0xFF) if i % 10 else frames[i]
+        frames[i] = ((i * 37 + 11) & 0xFF) if i % 7 else frames[i]
     with wave.open(str(degraded), "wb") as w:
         w.setparams(params)
         w.writeframes(bytes(frames))
