@@ -57,3 +57,31 @@ asr_confidence:
   no_speech_prob_ceiling: 0.5      # above this a segment may be silence
   compression_ratio_ceiling: 2.4  # above this repeats/garbage likely
   language_probability_floor: 0.5 # below this language detection is unstable
+  # I13-S2: per-model threshold overrides. A selected model resolves its
+  # own thresholds from here (missing key falls back to the shared values
+  # above — fail-safe). Calibration data:
+  #   tiny.en  clean: min_avg_logprob -0.438, no_speech 0.207, comp 0.89
+  #            degraded (I19 recipe B): min_avg_logprob -0.69, no_speech 0.89 -> uncertain
+  #   base.en  clean: min_avg_logprob -0.326, no_speech 0.013, comp 0.89
+  #            degraded (I19 recipe B): 0 segments -> ASRError fail-closed
+  # Benchmark (docs/evidence/I13-S1/benchmark.json, synthetic TTS caveat):
+  #   tiny.en WER 0.079 / base.en WER 0.0709 / small.en WER 0.0412
+  # base.en is measurably more confident on clean audio; its logprob floor is
+  # tightened to -0.85 accordingly (still looser than any clean signal).
+  wer_budget: 0.10
+  wer_budget_note: >-
+    Model-selection acceptance criterion on the seeded 32-utterance espeak
+    fixture set (synthetic TTS — NOT representative of real speech; PoC
+    evidence only). Runtime WER budgeting is impossible without reference
+    transcripts; the runtime gate stays the confidence signals above.
+  per_model:
+    tiny.en:
+      min_avg_logprob_floor: -0.9
+      no_speech_prob_ceiling: 0.5
+      compression_ratio_ceiling: 2.4
+      language_probability_floor: 0.5
+    base.en:
+      min_avg_logprob_floor: -0.85
+      no_speech_prob_ceiling: 0.5
+      compression_ratio_ceiling: 2.4
+      language_probability_floor: 0.5

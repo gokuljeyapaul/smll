@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I13-S2",
+    "current": "I9-S2",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -909,6 +909,36 @@
         "summary_path": "docs/evidence/I13-S2/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I13-S2-selectable-model",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/45",
+          "state": "MERGED",
+          "merge_sha": "261ba493879371a4d83e31737c1b60e99b7d1677"
+        }
+      },
+      "I9-S2": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #9 slice 2: device=auto (CPU fallback unchanged) + extract_batch amortisation across windows (engine uses it); span sets identical to serial on CPU",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/integration/test_i9s2_batch.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I9-S2/red.log",
+          "expected_failure": "no device in model_info; no extract_batch"
+        },
+        "green": {
+          "command": "test_i9s2_batch 2 passed; full chunks green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I9-S2/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I9-S2/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I9-S2/negative.log"
+        },
+        "summary_path": "docs/evidence/I9-S2/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I9-S2-device-amortisation",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

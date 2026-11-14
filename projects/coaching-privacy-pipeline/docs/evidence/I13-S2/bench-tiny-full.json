@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "fixture_note": "Synthetic espeak-ng TTS speech only; NOT representative of real speech. PoC-level model-selection data; runtime WER budgeting is impossible without reference transcripts (see issue #13).",
+  "fixtures": {
+    "utterances": 32,
+    "source": "fixtures/audio/bench_*.wav"
+  },
+  "results": [
+    {
+      "model": "tiny.en",
+      "wer": 0.079,
+      "cer": 0.0325,
+      "runtime_s": 32.597,
+      "avg_runtime_s": 1.019,
+      "peak_rss_kb": 256804,
+      "utterances": 32
+    }
+  ],
+  "commands": "python scripts/bench_asr.py --models tiny.en"
+}

@@ -177,11 +177,20 @@ def process_transcript(
         context_spans_by_turn = {utt.id: [] for utt in transcript.utterances}
         context_dropped_spans = 0
         windows = _build_windows(transcript.utterances, _GLINER_WINDOW_CHARS)
+        # I9-S2: amortise load/inference overhead across windows with one
+        # batched inference call; span sets identical to serial extraction
+        # (asserted in tests/integration/test_i9s2_batch.py).
+        win_texts = [w["text"] for w in windows if w["text"].strip()]
+        if hasattr(extractor, "extract_batch"):
+            batched = extractor.extract_batch(win_texts)
+        else:
+            batched = [extractor.extract(t) for t in win_texts]
+        batch_iter = iter(batched)
         for window in windows:
             w_text = window["text"]
             if not w_text.strip():
                 continue
-            w_spans = extractor.extract(w_text)
+            w_spans = next(batch_iter)
             seen: set[tuple[str, int, int, str]] = set()
             for s in w_spans:
                 # global offset within the window -> turn-local offset

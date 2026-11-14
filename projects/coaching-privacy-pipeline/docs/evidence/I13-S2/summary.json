@@ -15,9 +15,18 @@
   "gate_impact": "none: default path unchanged (regression green); selection adds a parallel verified model",
   "pr": {
     "branch": "feature/coaching-privacy-pipeline/I13-S2-selectable-model",
-    "url": "PENDING",
+    "url": "https://github.com/gokuljeyapaul/smll/pull/46",
     "state": "READY_FOR_MERGE",
     "merge_sha": "PENDING"
   },
-  "previous_pr_merge_sha": "e2d43122c1ca17db7091519b1387cb6f494afe77 (PR #44, I10-S2)"
+  "previous_pr_merge_sha": "e2d43122c1ca17db7091519b1387cb6f494afe77 (PR #44, I10-S2)",
+  "completion": {
+    "date": "2026-11-14",
+    "scope": "Remaining I13-S2 plan items: policy per-model asr_confidence thresholds (per_model: tiny.en / base.en), adapter resolves thresholds per selected model (missing keys fall back to shared values \u2014 fail-safe), policy states wer_budget 0.10 (model-selection acceptance criterion on the seeded fixture set), slow CI test test_default_model_meets_wer_budget (real bench run, default model tiny.en WER 0.079 <= 0.10)",
+    "red": "red-completion.log \u2014 4 failed (pre-implementation, on main @261ba49)",
+    "green": "green-completion.log \u2014 4 passed (48.45s); full regression chunks: fast 66 / unit-slow 27 / integration-slow 32 / e2e+negative-slow 43 = 168 tests, exit 0",
+    "bench_tiny_full": "bench-tiny-full.json (32 utterances, real inference, WER 0.079)",
+    "calibration": "tiny.en clean min_avg_logprob -0.438 / degraded -0.69 no_speech 0.89; base.en clean -0.326 / 0.013; base.en degraded (recipe B): 0 segments -> ASRError fail-closed (stronger than tiny.en's uncertain=True)",
+    "gate_impact": "none: decisions unchanged; thresholds stay the calibrated values or tighter (base.en logprob floor -0.85); uncertain path still fails closed; all 18 fixture decisions unchanged (no gate file touched: only policies/sample_policy.yaml asr_confidence section + asr.py threshold resolution)"
+  }
 }

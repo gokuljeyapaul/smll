@@ -150,6 +150,18 @@ class GLiNERContextExtractor:
                 except Exception:
                     pass
             from gliner import GLiNER
+
+            # I9-S2: device="auto" uses CUDA when available; CPU fallback is
+            # the unchanged default (no GPU on the reference environment).
+            device = "cpu"
+            try:
+                import torch as _torch
+
+                if _torch.cuda.is_available():
+                    device = "cuda"
+            except Exception:
+                pass
+            self._device = device
             self._model = GLiNER.from_pretrained(
                 self.model_path, local_files_only=True
             )
@@ -157,12 +169,7 @@ class GLiNERContextExtractor:
         finally:
             socket.socket = orig_socket
 
-    def extract(self, text: str, labels: list[str] | None = None) -> list[ContextSpan]:
-        self._ensure_loaded()
-        labels = labels or list(LABEL_MAP)
-        raw = self._model.predict_entities(
-            text, labels=labels, threshold=self._threshold
-        )
+    def _to_spans(self, raw: list[dict]) -> list[ContextSpan]:
         spans: list[ContextSpan] = []
         for r in raw:
             validate_span(r)
@@ -180,12 +187,37 @@ class GLiNERContextExtractor:
         spans.sort(key=lambda s: (s.start, -(s.end - s.start)))
         return spans
 
+    def extract(self, text: str, labels: list[str] | None = None) -> list[ContextSpan]:
+        self._ensure_loaded()
+        labels = labels or list(LABEL_MAP)
+        raw = self._model.predict_entities(
+            text, labels=labels, threshold=self._threshold
+        )
+        return self._to_spans(raw)
+
+    def extract_batch(
+        self, texts: list[str], labels: list[str] | None = None
+    ) -> list[list[ContextSpan]]:
+        """I9-S2: amortise the load/inference overhead — one batched
+        inference call for all windows (labels shared). Span sets must be
+        identical to serial extract() per text (CPU baseline asserted in
+        tests/integration/test_i9s2_batch.py)."""
+        self._ensure_loaded()
+        if not texts:
+            return []
+        labels = labels or list(LABEL_MAP)
+        raw_lists = self._model.inference(
+            texts, labels=labels, threshold=self._threshold
+        )
+        return [self._to_spans(raw) for raw in raw_lists]
+
     def model_info(self) -> dict[str, Any]:
         return {
             "model_id": MODEL_ID,
             "local_path": self.model_path,
             "local_only": True,
             "threshold": self._threshold,
+            "device": getattr(self, "_device", "cpu"),
         }
 
 

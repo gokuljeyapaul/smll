@@ -306,3 +306,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I13-S2/e2e.log). **Negative:** [negative.log](evidence/I13-S2/negative.log). **Machine report:** [summary.json](evidence/I13-S2/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I13-S2-selectable-model`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Remaining:** #9-S2 (GPU/load amortisation), #11-S2 (German; needs #9 model choice), #15 (release — owner stop).
+
+### I9-S2 — Device auto-selection + batch amortisation (issue #9 slice 2)
+
+- **Delivered at:** 2026-11-14T21:40+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #45 merged as `261ba493879371a4d83e31737c1b60e99b7d1677`)
+- **Scope:** `GLiNERContextExtractor` resolves `device` via torch (`cuda` when available; **CPU fallback unchanged** — no GPU on the reference environment, `device=cpu` asserted) and exposes `extract_batch` (one batched `GLiNER.inference` call across the #20 windows); the engine's windowed path uses it, amortising the per-window overhead the I9-S1 profile identified. Span sets are **identical to serial extraction** on the CPU baseline (asserted).
+- **RED proof:** [evidence/I9-S2/red.log](evidence/I9-S2/red.log) — 2 failed. **GREEN:** [green.log](evidence/I9-S2/green.log) — 2 passed; full chunks fast 66 / integration 32 / e2e+negative 59, exit 0.
+- **E2E:** [e2e.log](evidence/I9-S2/e2e.log). **Negative:** [negative.log](evidence/I9-S2/negative.log). **Machine report:** [summary.json](evidence/I9-S2/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I9-S2-device-amortisation`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Remaining:** #11-S2 (German; needs joint model choice with #9 — benchmark recorded) and #15 (release — owner stop).

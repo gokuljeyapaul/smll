@@ -1,0 +1,9 @@
+Sat Nov 14 06:20:59 UTC 2026
+CI fix attempt 1 (PR #46): recipe-B degraded clip recalibrated from keep-every-10th to keep-every-7th sample.
+reason: on slower CI CPUs tiny.en produced 0 segments on the borderline clip -> ASRError fail-closed instead of uncertain=True (PR #45's CI run passed the same tests; hardware-dependent borderline fixture, not a code regression)
+evidence (reference CPU, real tiny.en): every-7th uncertain=True max_no_speech_prob 0.945 (ceiling 0.5, robust margin; 3/3 repeat runs identical); every-10th uncertain=True 0.883 (borderline); base.en every-7th uncertain=True min_avg_logprob -0.927 (floor -0.85)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3 passed, 2 warnings in 48.86s
+
+re-run of affected suites: 3 passed in 48.86s

@@ -169,7 +169,10 @@ class FasterWhisperAdapter(BaseASRAdapter):
         # the info-level language probability. Thresholds come from the
         # policy YAML (asr_confidence); conservative defaults if absent.
         signals = _aggregate_signals(segs, info)
-        uncertain = _is_uncertain(signals, _load_thresholds())
+        # I13-S2: thresholds resolve per selected model (policy per_model).
+        uncertain = _is_uncertain(
+            signals, _load_thresholds(self.model_name)
+        )
         return {
             "text": text,
             "model": self.model_name,
@@ -214,9 +217,14 @@ _THRESHOLD_DEFAULTS = {
 }
 
 
-def _load_thresholds() -> dict[str, float]:
+def _load_thresholds(model_name: str | None = None) -> dict[str, float]:
     """Load asr_confidence thresholds from the policy YAML (fail-safe
-    defaults if missing — the defaults mirror the YAML)."""
+    defaults if missing — the defaults mirror the YAML).
+
+    I13-S2: per-model overrides. The policy's asr_confidence.per_model may
+    override the shared thresholds for the selected whisper model; missing
+    keys fall back to the shared values (fail-safe, never looser than the
+    shared calibrated defaults unless the policy explicitly says so)."""
     try:
         import pathlib as _pl
 
@@ -225,9 +233,16 @@ def _load_thresholds() -> dict[str, float]:
 
         raw = yaml.safe_load(policy.read_text()) or {}
         section = raw.get("asr_confidence") or {}
-        return {
+        th = {
             k: float(section.get(k, v)) for k, v in _THRESHOLD_DEFAULTS.items()
         }
+        if model_name:
+            per_model = section.get("per_model") or {}
+            override = per_model.get(model_name) or {}
+            for k in _THRESHOLD_DEFAULTS:
+                if k in override:
+                    th[k] = float(override[k])
+        return th
     except Exception:
         return dict(_THRESHOLD_DEFAULTS)
 
