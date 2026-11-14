@@ -1,0 +1,241 @@
+{
+  "schema_version": "1.0",
+  "note": "Observed baseline on the real pipeline (Presidio + GLiNER). known-gap = expected REVIEW_REQUIRED with no gold context code (no detector exists for that expectation; new detectors out of scope here). Synthetic fixtures only.",
+  "summary": {
+    "correct": 10,
+    "false-REVIEW": 2,
+    "false-RELEASE": 6,
+    "known-gap": 0
+  },
+  "sessions": [
+    {
+      "fixture_id": "seed-S01",
+      "expected": "RELEASE_CANDIDATE",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "correct",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S02",
+      "expected": "RELEASE_CANDIDATE",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "false-REVIEW",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S03",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "correct",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": [
+        "ROLE_TEAM_COMBINATION"
+      ]
+    },
+    {
+      "fixture_id": "seed-S04",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "correct",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": [
+        "LOCATION_DATE_EVENT"
+      ]
+    },
+    {
+      "fixture_id": "seed-S05",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "false-RELEASE",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S06",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "correct",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S07",
+      "expected": "RELEASE_CANDIDATE",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "correct",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S08",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "correct",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": [
+        "MULTI_TURN_LINK"
+      ]
+    },
+    {
+      "fixture_id": "seed-S09a",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "false-RELEASE",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": [
+        "MULTI_SESSION_LINK"
+      ]
+    },
+    {
+      "fixture_id": "seed-S09b",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "false-RELEASE",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": [
+        "MULTI_SESSION_LINK"
+      ]
+    },
+    {
+      "fixture_id": "seed-S10",
+      "expected": "RELEASE_CANDIDATE",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "false-REVIEW",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S11",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "false-RELEASE",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S12",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "false-RELEASE",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S13",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "false-RELEASE",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S14",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "correct",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": [
+        "RELATIONAL_IDENTIFIABILITY"
+      ]
+    },
+    {
+      "fixture_id": "seed-S15",
+      "expected": "RELEASE_CANDIDATE",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "correct",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S16",
+      "expected": "RELEASE_CANDIDATE",
+      "actual": "RELEASE_CANDIDATE",
+      "classification": "correct",
+      "reasons": [
+        "synthetic_internal_acceptance_passed; not permission to distribute"
+      ],
+      "context_labels": [],
+      "gold_context_risk_codes": []
+    },
+    {
+      "fixture_id": "seed-S17",
+      "expected": "REVIEW_REQUIRED",
+      "actual": "REVIEW_REQUIRED",
+      "classification": "correct",
+      "reasons": [
+        "uncertain_context_risk"
+      ],
+      "context_labels": [
+        "COMBINATION_OF_CLUES"
+      ],
+      "gold_context_risk_codes": [
+        "COMBINATION_OF_CLUES"
+      ]
+    }
+  ],
+  "commands": "python scripts/review_analysis.py"
+}

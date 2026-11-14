@@ -1,0 +1,32 @@
+{
+  "slice": "I10-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/10",
+  "scope": "Review-rate baseline: scripts/review_analysis.py runs all 18 fixtures through the real pipeline and classifies correct/false-REVIEW/false-RELEASE/known-gap",
+  "date": "2026-11-14",
+  "baseline": {
+    "correct": 10,
+    "false-REVIEW": 2,
+    "false-RELEASE": 6,
+    "known-gap": 0
+  },
+  "findings": [
+    "false-RELEASE dominates (S05, S09a, S09b, S11, S12, S13): expected REVIEW decisions the current detectors cannot produce (S09a/b need batch linkage; S05/S11/S12/S13 have no gold context code)",
+    "false-REVIEW (S02, S10): benign fixtures flagged via COMBINATION_OF_CLUES (any job title + any location) \u2014 slice 2 candidate"
+  ],
+  "evidence": {
+    "red": "red.log",
+    "green": "green.log",
+    "baseline": "review_analysis.json",
+    "run": "run.log",
+    "e2e": "e2e.log",
+    "negative": "negative.log"
+  },
+  "gate_impact": "none: analysis tooling only; slice 2 threshold work will carry its own gate tables",
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I10-S1-review-analysis",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "a7003fdc63c910b9b778034bc88e369e74ccc425 (PR #40, I9-S1)"
+}

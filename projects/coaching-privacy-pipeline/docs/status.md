@@ -258,3 +258,13 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I9-S1/e2e.log). **Negative:** [negative.log](evidence/I9-S1/negative.log). **Machine report:** [summary.json](evidence/I9-S1/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I9-S1-gliner-benchmark`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** #10 (deps #16, #20, #22 all merged) — pipeline validation.
+
+### I10-S1 — Review-rate baseline + confusion matrix (issue #10 slice 1)
+
+- **Delivered at:** 2026-11-14T12:10+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #40 merged as `a7003fdc63c910b9b778034bc88e369e74ccc425`)
+- **Scope:** `scripts/review_analysis.py` runs all 18 seed fixtures through the real pipeline and classifies each session. **Observed baseline:** 10 correct; 2 false-REVIEW (S02, S10 — COMBINATION_OF_CLUES on benign fixtures); **6 false-RELEASE (S05, S09a, S09b, S11, S12, S13)** — expected REVIEW decisions the current detectors cannot produce (S09a/b require batch linkage; S05/S11/S12/S13 have no gold context code). Confirms the revised plan's suspicion: false-RELEASE (missed risk) is the bigger problem, not excess REVIEW.
+- **RED proof:** [evidence/I10-S1/red.log](evidence/I10-S1/red.log) — 1 failed. **GREEN:** [green.log](evidence/I10-S1/green.log) — 1 passed; baseline: [review_analysis.json](evidence/I10-S1/review_analysis.json), [run.log](evidence/I10-S1/run.log).
+- **E2E:** [e2e.log](evidence/I10-S1/e2e.log). **Negative/findings:** [negative.log](evidence/I10-S1/negative.log). **Machine report:** [summary.json](evidence/I10-S1/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I10-S1-review-analysis`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** slice 2 (justified minimal adjustments inside risk generators, zero new false-RELEASE) and #14 (attack simulation hardening; deps #16 ✅).

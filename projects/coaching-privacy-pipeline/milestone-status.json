@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I9-S1",
+    "current": "I10-S1",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -762,6 +762,36 @@
         "summary_path": "docs/evidence/I9-S1/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I9-S1-gliner-benchmark",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/40",
+          "state": "MERGED",
+          "merge_sha": "a7003fdc63c910b9b778034bc88e369e74ccc425"
+        }
+      },
+      "I10-S1": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #10 slice 1: review_analysis.py baseline + confusion matrix over 18 fixtures (real pipeline): 10 correct, 2 false-REVIEW (S02,S10), 6 false-RELEASE (S05,S09a,S09b,S11,S12,S13)",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/integration/test_i10_analysis.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I10-S1/red.log",
+          "expected_failure": "no analysis script/taxonomy"
+        },
+        "green": {
+          "command": "test_i10_analysis 1 passed; baseline recorded",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I10-S1/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I10-S1/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I10-S1/negative.log"
+        },
+        "summary_path": "docs/evidence/I10-S1/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I10-S1-review-analysis",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"
