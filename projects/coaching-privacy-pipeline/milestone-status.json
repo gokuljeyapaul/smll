@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I9-S2",
+    "current": "I11-S2",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -939,6 +939,36 @@
         "summary_path": "docs/evidence/I9-S2/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I9-S2-device-amortisation",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/46",
+          "state": "MERGED",
+          "merge_sha": "32c5f422626fb0d3a9f847da8ffece0aea373801"
+        }
+      },
+      "I11-S2": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #11 slice 2: German fixture suite (12 seeded sessions with gold spans) + multilingual evaluation (Presidio de_core_news_sm + gliner_multi-v2.1); honest gate decision: German NOT added (PERSON 0.67, EMAIL 0.0 below the 1.0 bar); language gate retained",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i11s2_unit.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I11-S2/red.log",
+          "expected_failure": "no German fixtures; no evaluation report"
+        },
+        "green": {
+          "command": "test_i11s2_unit 2 passed; eval run real models; full suite green",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I11-S2/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I11-S2/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I11-S2/negative.log"
+        },
+        "summary_path": "docs/evidence/I11-S2/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I11-S2-german-fixtures",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

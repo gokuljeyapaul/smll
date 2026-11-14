@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "language": "de",
+  "fixtures": 12,
+  "models": {
+    "presidio": "Presidio AnalyzerEngine + spaCy de_core_news_sm",
+    "context": "urchade/gliner_multi-v2.1 (setup-time download; not pinned in the runtime manifest)"
+  },
+  "per_category": {
+    "PERSON": {
+      "recall": 0.6667,
+      "found": 8,
+      "total": 12
+    },
+    "RARE_ROLE": {
+      "recall": 1.0,
+      "found": 12,
+      "total": 12
+    },
+    "EXACT_EMPLOYER": {
+      "recall": 1.0,
+      "found": 12,
+      "total": 12
+    },
+    "PRECISE_LOCATION": {
+      "recall": 1.0,
+      "found": 12,
+      "total": 12
+    },
+    "EMAIL": {
+      "recall": 0.0,
+      "found": 0,
+      "total": 6
+    }
+  },
+  "english_bar": "mandatory-category recall == 1.0 (English gold-fixture bar for the direct+quasi mandatory categories)",
+  "gate_decision": "gate_retained_evaluation_only",
+  "caveat": "Synthetic fictional fixtures only (generator templates); these P/R numbers are PoC-level, not representative of real German coaching data. German stays OUT of SUPPORTED_LANGUAGES unless the gate above passes.",
+  "commands": "python scripts/eval_german.py"
+}

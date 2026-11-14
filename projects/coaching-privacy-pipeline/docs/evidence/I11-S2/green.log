@@ -1,0 +1,50 @@
+== RED (2026-11-14) ==
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______________________ test_german_fixture_suite_exists _______________________
+
+    def test_german_fixture_suite_exists():
+        path = REPO / "fixtures" / "german_fixtures.jsonl"
+>       assert path.is_file(), "German fixture suite missing"
+E       AssertionError: German fixture suite missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/fixtures/german_fixtures.jsonl').is_file
+
+tests/unit/test_i11s2_unit.py:16: AssertionError
+_________________ test_eval_report_has_german_per_category_pr __________________
+
+    def test_eval_report_has_german_per_category_pr():
+        """The committed evaluation report has German per-category P/R and an
+        honest gate decision (German shipped in SUPPORTED_LANGUAGES only if the
+        mandatory-category recall equals the English bar; otherwise the gate
+        stays and the evaluation is the deliverable)."""
+        report_path = REPO / "docs" / "evidence" / "I11-S2" / "german_eval.json"
+>       assert report_path.is_file(), "German evaluation report missing"
+E       AssertionError: German evaluation report missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/docs/evidence/I11-S2/german_eval.json').is_file
+
+tests/unit/test_i11s2_unit.py:34: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_i11s2_unit.py::test_german_fixture_suite_exists - Asse...
+FAILED tests/unit/test_i11s2_unit.py::test_eval_report_has_german_per_category_pr
+2 failed in 0.07s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/unit/test_i11s2_unit.py -q
+..                                                                       [100%]
+2 passed in 0.02s
+exit=0
+
+== German evaluation (real models: Presidio+de_core_news_sm, gliner_multi-v2.1) ==
+command: HF_HUB_OFFLINE=0 .venv/bin/python scripts/eval_german.py --output docs/evidence/I11-S2/german_eval.json
+  PERSON: recall=0.6667 (8/12)
+  RARE_ROLE: recall=1.0 (12/12)
+  EXACT_EMPLOYER: recall=1.0 (12/12)
+  PRECISE_LOCATION: recall=1.0 (12/12)
+  EMAIL: recall=0.0 (0/6)
+  gate: gate_retained_evaluation_only
+exit=0 (full: german_eval.json, eval-run.log)
