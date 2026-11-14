@@ -277,3 +277,11 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **RED proof:** [evidence/I14/red.log](evidence/I14/red.log) — 4 failed. **GREEN:** [green.log](evidence/I14/green.log); demo run log: [demo.log](evidence/I14/demo.log). **E2E:** [e2e.log](evidence/I14/e2e.log). **Negative:** [negative.log](evidence/I14/negative.log). **Machine report:** [summary.json](evidence/I14/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I14-demo-script-cast`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** #17 design doc (deps #20 ✅).
+
+### I17-S1 — Streaming design doc (issue #17 slice 1)
+
+- **Delivered at:** 2026-11-14T15:55+08:00
+- **Status:** `READY_FOR_MERGE`
+- **Scope:** [design/streaming.md](design/streaming.md) — design only, written from the actual code (engine.py, pipeline.py, context.py, linkage.py, asr.py, batch.py all cited). Chosen PoC release semantics: hold-all-until-session-end (per-turn conditional release documented as future work with named risks). State machine PENDING → SCANNED → HELD → RELEASED | REJECTED. Fail-closed contract + 6 negative scenarios the future implementation must pass. No model evidence needed (doc slice).
+- **RED proof:** [evidence/I17-S1/red.log](evidence/I17-S1/red.log) — 2 failed (doc lint). **GREEN:** [evidence/I17-S1/green.log](evidence/I17-S1/green.log).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I17-S1-streaming-design`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.

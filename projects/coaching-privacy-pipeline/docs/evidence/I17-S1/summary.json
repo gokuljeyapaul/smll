@@ -1,0 +1,20 @@
+{
+  "slice": "I17-S1",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/17",
+  "scope": "Design doc only: docs/design/streaming.md with the 6 mandatory sections, cited code paths, chosen release semantics (hold-all-until-session-end), 6 negative scenarios",
+  "date": "2026-11-14",
+  "release_semantics": "hold-all-until-session-end (per-turn conditional release = future work with named risks)",
+  "evidence": [
+    "red.log",
+    "green.log",
+    "e2e.log"
+  ],
+  "gate_impact": "none: documentation slice",
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I17-S1-streaming-design",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "f98c45b829372eb972d02ed3f88cd8519e410720 (PR #42, I14)"
+}

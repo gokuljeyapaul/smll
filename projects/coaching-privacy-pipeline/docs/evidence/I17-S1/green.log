@@ -1,0 +1,33 @@
+== RED (2026-11-14) ==
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_design_doc_exists_with_all_sections ___________________
+
+    def test_design_doc_exists_with_all_sections():
+>       assert DOC.is_file(), "docs/design/streaming.md missing"
+E       AssertionError: docs/design/streaming.md missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/docs/design/streaming.md').is_file
+
+tests/unit/test_i17s1_unit.py:29: AssertionError
+________________ test_design_doc_linked_from_readme_and_status _________________
+
+    def test_design_doc_linked_from_readme_and_status():
+        readme = README.read_text()
+>       assert "design/streaming.md" in readme, "README does not link the design doc"
+E       AssertionError: README does not link the design doc
+E       assert 'design/streaming.md' in '# Coaching Transcript Privacy Pipeline\n\n**Project state:** v8.0 functionality-first, strict-TDD, **one merged PR pe...credentialing/coaching-ethics/icf-code-of-ethics/)\n- [NIST SP 800-188](https://csrc.nist.gov/pubs/sp/800/188/final)\n'
+
+tests/unit/test_i17s1_unit.py:39: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_i17s1_unit.py::test_design_doc_exists_with_all_sections
+FAILED tests/unit/test_i17s1_unit.py::test_design_doc_linked_from_readme_and_status
+2 failed in 0.11s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/unit/test_i17s1_unit.py -q
+..                                                                       [100%]
+2 passed in 0.07s
+exit=0
