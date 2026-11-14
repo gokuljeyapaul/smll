@@ -108,6 +108,14 @@ asciinema play docs/demo/demo.cast                 # recorded replay
 The cast (`docs/demo/demo.cast`) embeds the script's sha256 in its title to
 make script/cast drift detectable. Evidence bundles: `docs/evidence/`.
 
+## Release
+
+The delivered PoC state is pinned by the
+[`v0.1.0-poc`](https://github.com/gokuljeyapaul/smll/releases/tag/v0.1.0-poc)
+tag and GitHub release (notes in `docs/release-notes-v0.1.0-poc.md`, demo
+video attached as a release asset). Synthetic data only; no compliance claims —
+see the release notes for caveats and known limitations.
+
 Optional demonstrations:
 ```bash
 .venv/bin/python scripts/offline_asr_proof.py  # short synthetic speech through real faster-whisper
