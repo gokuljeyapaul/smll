@@ -1,0 +1,2 @@
+== negative ==
+no CUDA on the reference environment: device=auto resolves to cpu (asserted); GPU never bypasses the validator (same pipeline stages; only the extractor's device differs); batch spans identical to serial on CPU

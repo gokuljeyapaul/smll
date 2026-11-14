@@ -1,0 +1,10 @@
+Sat Nov 14 04:36:36 UTC 2026
+command: .venv/bin/python -m pytest tests/integration/test_i13s2b_budget.py -q (pre-implementation run on main @261ba49)
+
+tests/integration/test_i13s2b_budget.py:91: KeyError
+=========================== short test summary info ============================
+FAILED tests/integration/test_i13s2b_budget.py::test_policy_has_per_model_asr_confidence_thresholds
+FAILED tests/integration/test_i13s2b_budget.py::test_adapter_uses_per_model_thresholds
+FAILED tests/integration/test_i13s2b_budget.py::test_policy_states_wer_budget_for_default_model
+FAILED tests/integration/test_i13s2b_budget.py::test_default_model_meets_wer_budget
+4 failed in 0.20s

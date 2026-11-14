@@ -1,0 +1,22 @@
+{
+  "slice": "I9-S2",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/9",
+  "scope": "device=auto (cuda when available, cpu fallback unchanged) + extract_batch (one batched inference across windows); engine windowed path uses the batch",
+  "date": "2026-11-14",
+  "identical_output": "batch vs serial span sets asserted identical on the CPU baseline (tests/integration/test_i9s2_batch.py)",
+  "measured_on_cpu_only": true,
+  "evidence": [
+    "red.log",
+    "green.log",
+    "e2e.log",
+    "negative.log"
+  ],
+  "gate_impact": "none: same stages/thresholds; only the extractor call shape and device resolution changed; full regression green",
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I9-S2-device-amortisation",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "261ba493879371a4d83e31737c1b60e99b7d1677 (PR #45, I13-S2)"
+}
