@@ -1,0 +1,13 @@
+{
+  "issue": 15,
+  "slice": "release",
+  "red": "verify_release.sh exit 1 — tag 'v0.1.0-poc' not found on origin (docs/evidence/I15/red.log)",
+  "green": "verify_release.sh exit 0 (docs/evidence/I15/green.log)",
+  "docs_pr": {"number": 48, "merge_sha": "68f2e98ceb3eeb4de01f0f60cb4236e13bcab74a"},
+  "tag": "v0.1.0-poc (annotated)",
+  "tagged_commit": "68f2e98ceb3eeb4de01f0f60cb4236e13bcab74a",
+  "tagged_commit_ci": "monorepo / verify success on main @ 68f2e98",
+  "release_url": "https://github.com/gokuljeyapaul/smll/releases/tag/v0.1.0-poc",
+  "assets": ["coaching-privacy-pipeline-demo.mp4", "demo.cast"],
+  "owner_confirmation": "granted in-session 2026-11-14 19:46 GMT+8 (\"I mean, there is only one open issue - issues/15 which needs fixing\")"
+}
