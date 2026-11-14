@@ -1,0 +1,38 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____________ test_bench_gliner_produces_profile_and_model_report ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-215/test_bench_gliner_produces_pro0')
+
+    def test_bench_gliner_produces_profile_and_model_report(tmp_path):
+        bench = REPO / "scripts" / "bench_gliner.py"
+        out = tmp_path / "gliner_bench.json"
+        r = subprocess.run(
+            [sys.executable, str(bench), "--output", str(out),
+             "--models", "urchade/gliner_medium-v2.1", "urchade/gliner_small-v2.1"],
+            capture_output=True, text=True, cwd=REPO, timeout=3000,
+        )
+>       assert r.returncode == 0, (r.stdout, r.stderr)
+E       AssertionError: ('', "/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python: can't open file '/h...workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/bench_gliner.py': [Errno 2] No such file or directory
+E         ")
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/bin/python', ...workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/bench_gliner.py': [Errno 2] No such file or directory\n").returncode
+
+tests/integration/test_i9_bench.py:24: AssertionError
+_____________________ test_seeded_benchmark_fixture_exists _____________________
+
+    def test_seeded_benchmark_fixture_exists():
+        """A >= 200-session seeded fixture set for meaningful timing."""
+        path = REPO / "fixtures" / "bench_gliner_sessions.jsonl"
+>       assert path.is_file(), "seeded benchmark fixture missing"
+E       AssertionError: seeded benchmark fixture missing
+E       assert False
+E        +  where False = is_file()
+E        +    where is_file = PosixPath('/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/fixtures/bench_gliner_sessions.jsonl').is_file
+
+tests/integration/test_i9_bench.py:43: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_i9_bench.py::test_bench_gliner_produces_profile_and_model_report
+FAILED tests/integration/test_i9_bench.py::test_seeded_benchmark_fixture_exists
+2 failed in 0.19s
+exit=1
