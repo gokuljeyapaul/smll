@@ -93,6 +93,23 @@ m = WhisperModel("tiny.en", device="cpu", compute_type="int8",
 print("whisper tiny.en ready at pinned revision (local cache: models/whisper-tiny.en)")
 PYASR
 
+# I13-S2: pre-fetch the selectable base.en model (pinned + verified) so
+# COACHING_WHISPER_MODEL=base.en works offline. Default remains tiny.en.
+.venv/bin/python - <<'PYASRBASE'
+from huggingface_hub import snapshot_download
+import pathlib
+BASE_REV = "3d3d5dee26484f91867d81cb899cfcf72b96be6c"
+snapshot_download(repo_id="Systran/faster-whisper-base.en",
+                  revision=BASE_REV,
+                  cache_dir="models/whisper-base.en",
+                  allow_patterns=["model.bin", "config.json", "tokenizer.json",
+                                  "vocabulary.txt"])
+base = pathlib.Path("models/whisper-base.en/models--Systran--faster-whisper-base.en")
+(base / "refs").mkdir(parents=True, exist_ok=True)
+(base / "refs" / "main").write_text(BASE_REV)
+print("whisper base.en prefetched at pinned revision")
+PYASRBASE
+
 # Vendor the patched tokenizer_config into the checkpoint dir and hash it:
 # the manifest pins the *vendored, patched* file (issue #18) — no in-place
 # HF-cache mutation that a re-download could silently revert.

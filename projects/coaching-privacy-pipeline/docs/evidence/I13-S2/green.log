@@ -1,0 +1,127 @@
+== RED (2026-11-14) ==
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+__________________ test_env_selects_base_model_and_reports_it __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x724e36ac27d0>
+
+    def test_env_selects_base_model_and_reports_it(monkeypatch):
+        monkeypatch.setenv("COACHING_WHISPER_MODEL", "base.en")
+        from coaching_privacy.asr import FasterWhisperAdapter
+    
+        adapter = FasterWhisperAdapter()
+>       assert adapter.model_name == "base.en", adapter.model_name
+               ^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'FasterWhisperAdapter' object has no attribute 'model_name'
+
+tests/e2e/test_i13s2_e2e.py:26: AttributeError
+________________ test_selected_model_resolved_through_manifest _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x724e36ac0350>
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-244/test_selected_model_resolved_t0')
+
+    def test_selected_model_resolved_through_manifest(monkeypatch, tmp_path):
+        """The env-selected model must be verified against the manifest; an
+        unpinned model dir fails closed (ASRError)."""
+        monkeypatch.setenv("COACHING_WHISPER_MODEL", "base.en")
+        manifest = json.loads((REPO / "scripts" / "model_manifest.json").read_text())
+        manifest["models"]["whisper_base_en"] = {
+            "repo_id": "Systran/faster-whisper-base.en",
+            "revision": "not-a-real-hash",
+            "local_path": "whisper-base.en/models--Systran--faster-whisper-base.en/snapshots/whatever",
+            "files": {"model.bin": "sha256:" + "0" * 64},
+        }
+        mpath = tmp_path / "manifest.json"
+        mpath.write_text(json.dumps(manifest))
+        monkeypatch.setenv("COACHING_MODEL_MANIFEST", str(mpath))
+        from coaching_privacy.asr import ASRError, FasterWhisperAdapter
+    
+        adapter = FasterWhisperAdapter()
+>       with pytest.raises(ASRError):
+E       Failed: DID NOT RAISE ASRError
+
+tests/e2e/test_i13s2_e2e.py:52: Failed
+________________ test_degraded_audio_selected_model_review_e2e _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x724e32f7ae50>
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-244/test_degraded_audio_selected_m0')
+
+    def test_degraded_audio_selected_model_review_e2e(monkeypatch, tmp_path):
+        """Degraded audio via the selected model still -> REVIEW end-to-end
+        (re-run of the I19 pattern with a selected model)."""
+        import wave
+    
+        monkeypatch.setenv("COACHING_WHISPER_MODEL", "tiny.en")
+        src = REPO / "fixtures" / "audio" / "smoke_test.wav"
+        degraded = tmp_path / "degraded.wav"
+        with wave.open(str(src), "rb") as w:
+            params = w.getparams()
+            frames = bytearray(w.readframes(w.getnframes()))
+        for i in range(len(frames)):
+            frames[i] = ((i * 37 + 11) & 0xFF) if i % 10 else frames[i]
+        with wave.open(str(degraded), "wb") as w:
+            w.setparams(params)
+            w.writeframes(bytes(frames))
+        from coaching_privacy.asr import FasterWhisperAdapter
+        from coaching_privacy.asr_transcript import transcript_from_asr
+        from coaching_privacy.engine import process_transcript
+        from coaching_privacy.policy import PolicyStore
+    
+        asr = FasterWhisperAdapter().transcribe(str(degraded))
+        assert asr["uncertain"] is True, asr
+        t = transcript_from_asr(
+            asr, session_id="i13-s2", purpose="internal_coaching_analysis",
+            speakers=[{"id": "S1", "role": "COACH"}, {"id": "S2", "role": "CLIENT"}],
+        )
+        policy = PolicyStore(REPO / "policies" / "sample_policy.yaml").get(
+            "internal_coaching_analysis"
+        )
+>       result = process_transcript(t, policy)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_i13s2_e2e.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+transcript = {'schema_version': '1.0', 'session_id': 'i13-s2', 'source_type': 'synthetic_audio', 'purpose': 'internal_coaching_analysis', ...}
+policy = {'version': '0.1-poc', 'synthetic_only': True, 'external_distribution_permitted': False, 'requires_human_release_approval': False, ...}
+prohibited_leaks = None, context_extractor = None
+
+    def process_transcript(
+        transcript: Transcript,
+        policy: dict[str, Any],
+        prohibited_leaks: list[str] | None = None,
+        context_extractor: Any = None,
+    ) -> SessionResult:
+        from .transform import StableReplacer, redact_utterance
+        from .validator import IndependentLeakValidator
+    
+        # I11-S1: per-session language gate. Unsupported languages must
+        # short-circuit BEFORE any English detector runs: sanitized output
+        # withheld (empty), honest language_gate report block, REVIEW_REQUIRED.
+>       if transcript.language not in {"en"}:
+           ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'dict' object has no attribute 'language'
+
+src/coaching_privacy/engine.py:45: AttributeError
+=========================== short test summary info ============================
+FAILED tests/e2e/test_i13s2_e2e.py::test_env_selects_base_model_and_reports_it
+FAILED tests/e2e/test_i13s2_e2e.py::test_selected_model_resolved_through_manifest
+FAILED tests/e2e/test_i13s2_e2e.py::test_degraded_audio_selected_model_review_e2e
+3 failed in 6.28s
+exit=1
+
+== GREEN ==
+command: .venv/bin/python -m pytest tests/e2e/test_i13s2_e2e.py -q
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3 passed, 2 warnings in 30.51s
+exit=0
+
+== fresh setup with base.en pre-fetch ==
+command: rm -rf models/whisper-base.en && bash scripts/setup.sh
+whisper base.en prefetched at pinned revision
+model verification OK: 12 files match manifest /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/scripts/model_manifest.json
+setup OK: presidio analyzer ready; spacy 3.8.18 en_core_web_sm loaded
+exit=0
+
+== full suite chunks ==
+fast: 66 passed; integration: 26 passed; e2e+negative: 59 passed — all exit 0

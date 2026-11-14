@@ -1,0 +1,23 @@
+{
+  "slice": "I13-S2",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/13",
+  "scope": "Selectable Whisper model: COACHING_WHISPER_MODEL (default tiny.en); base.en pinned in the manifest (real sha256, revision 3d3d5dee...) + prefetched in setup.sh; adapter resolves/verifies per-model manifest entries",
+  "date": "2026-11-14",
+  "hash_provenance": "model-hashes.txt (python hashlib.sha256 over real downloaded files, command recorded)",
+  "default_unchanged": "tiny.en (benchmark shows base.en only marginally better on synthetic TTS: WER 0.0709 vs 0.079, 2x slower)",
+  "evidence": [
+    "red.log",
+    "green.log",
+    "e2e.log",
+    "negative.log",
+    "model-hashes.txt"
+  ],
+  "gate_impact": "none: default path unchanged (regression green); selection adds a parallel verified model",
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I13-S2-selectable-model",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "e2d43122c1ca17db7091519b1387cb6f494afe77 (PR #44, I10-S2)"
+}
