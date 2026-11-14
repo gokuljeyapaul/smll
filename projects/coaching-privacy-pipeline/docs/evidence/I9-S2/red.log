@@ -1,0 +1,55 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________________ test_extractor_reports_device_and_cpu_fallback ________________
+
+    def test_extractor_reports_device_and_cpu_fallback():
+        from coaching_privacy.context_extractor import GLiNERContextExtractor
+    
+        ex = GLiNERContextExtractor()
+        info = ex.model_info()
+>       assert "device" in info, info
+E       AssertionError: {'model_id': 'urchade/gliner_medium-v2.1', 'local_path': '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1', 'local_only': True, 'threshold': 0.4}
+E       assert 'device' in {'model_id': 'urchade/gliner_medium-v2.1', 'local_path': '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1', 'local_only': True, 'threshold': 0.4}
+
+tests/integration/test_i9s2_batch.py:23: AssertionError
+____________________ test_extract_batch_identical_to_serial ____________________
+
+    def test_extract_batch_identical_to_serial():
+        """Amortised batch extraction across windows must produce span sets
+        identical to the serial per-window extraction (CPU baseline)."""
+        from coaching_privacy.context_extractor import GLiNERContextExtractor
+    
+        ex = GLiNERContextExtractor()
+        texts = [
+            "I am the only Director of Lunar Logistics at Auricwood Labs, a team of seven.",
+            "We won the Lantern Award in April near Sylvar City.",
+            "I want to lead better meetings.",
+        ]
+        serial = []
+        for t in texts:
+            serial.append(sorted(
+                (s.start, s.end, s.label, s.value, s.confidence) for s in ex.extract(t)
+            ))
+>       batched = ex.extract_batch(texts)
+                  ^^^^^^^^^^^^^^^^
+E       AttributeError: 'GLiNERContextExtractor' object has no attribute 'extract_batch'
+
+tests/integration/test_i9s2_batch.py:44: AttributeError
+----------------------------- Captured stderr call -----------------------------
+The tokenizer you are loading from '/home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/models/gliner_medium-v2.1' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+=============================== warnings summary ===============================
+tests/integration/test_i9s2_batch.py::test_extract_batch_identical_to_serial
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/integration/test_i9s2_batch.py::test_extract_batch_identical_to_serial
+  /home/node/.openclaw/workspace/dev/smll/projects/coaching-privacy-pipeline/.venv/lib/python3.11/site-packages/transformers/convert_slow_tokenizer.py:566: UserWarning: The sentencepiece tokenizer that you are converting to a fast tokenizer uses the byte fallback option which is not implemented in the fast tokenizers. In practice this means that the fast version of the tokenizer can produce unknown tokens whereas the sentencepiece version would have converted these unknown tokens into a sequence of byte tokens matching the original piece of text.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_i9s2_batch.py::test_extractor_reports_device_and_cpu_fallback
+FAILED tests/integration/test_i9s2_batch.py::test_extract_batch_identical_to_serial
+2 failed, 2 warnings in 33.09s
+exit=1
