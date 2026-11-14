@@ -285,3 +285,14 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **Scope:** [design/streaming.md](design/streaming.md) — design only, written from the actual code (engine.py, pipeline.py, context.py, linkage.py, asr.py, batch.py all cited). Chosen PoC release semantics: hold-all-until-session-end (per-turn conditional release documented as future work with named risks). State machine PENDING → SCANNED → HELD → RELEASED | REJECTED. Fail-closed contract + 6 negative scenarios the future implementation must pass. No model evidence needed (doc slice).
 - **RED proof:** [evidence/I17-S1/red.log](evidence/I17-S1/red.log) — 2 failed (doc lint). **GREEN:** [evidence/I17-S1/green.log](evidence/I17-S1/green.log).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I17-S1-streaming-design`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+
+### I10-S2 — Justified specificity filter (issue #10 slice 2)
+
+- **Delivered at:** 2026-11-14T18:05+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #43 merged as `1c76a5ac5e56f74caf31968d9bb12bd20ac88515`)
+- **Scope:** one minimal change inside the risk *generator* (`context.py`), citing the I10-S1 baseline: (1) a bare calendar month is not an `EXACT_EVENT_DATE` (seed-S10 "May"); (2) a single-word role with confidence < 0.5 is not a `RARE_ROLE` (seed-S02 "colleagues" 0.44). `SafetyGate.decide` untouched; external sharing stays REVIEW; residual PII stays BLOCKED.
+- **Decision table (all 18 fixtures, before/after):** only seed-S02 and seed-S10 flipped REVIEW → RELEASE_CANDIDATE (the two named false-REVIEW sessions); **zero unexplained more-permissive changes** ([green.log](evidence/I10-S2/green.log)).
+- **RED proof:** [evidence/I10-S2/red.log](evidence/I10-S2/red.log) — 1 failed. **GREEN:** [green.log](evidence/I10-S2/green.log) — 2 passed; full chunks fast 66 / integration 26 / e2e+negative 56, exit 0.
+- **E2E:** [e2e.log](evidence/I10-S2/e2e.log). **Negative:** [negative.log](evidence/I10-S2/negative.log). **Machine report:** [summary.json](evidence/I10-S2/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I10-S2-specificity-filter`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Remaining:** #11-S2/#13-S2/#9-S2 (multilingual/model slices, dependent work) and #15 (release — owner stop).

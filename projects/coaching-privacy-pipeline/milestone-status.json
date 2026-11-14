@@ -345,7 +345,7 @@
   "next_slice": null,
   "issue_driven": {
     "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I17-S1",
+    "current": "I10-S2",
     "items": {
       "I18-S1": {
         "status": "READY_FOR_MERGE",
@@ -849,6 +849,36 @@
         "summary_path": "docs/evidence/I17-S1/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I17-S1-streaming-design",
+          "url": "https://github.com/gokuljeyapaul/smll/pull/43",
+          "state": "MERGED",
+          "merge_sha": "1c76a5ac5e56f74caf31968d9bb12bd20ac88515"
+        }
+      },
+      "I10-S2": {
+        "status": "READY_FOR_MERGE",
+        "scope": "issue #10 slice 2: specificity filter in context.py (bare months not EXACT_EVENT_DATE; low-confidence single-word roles not RARE_ROLE); S02+S10 false-REVIEW fixed; zero new false-RELEASE",
+        "red": {
+          "command": ".venv/bin/python -m pytest tests/unit/test_i10s2_unit.py -q",
+          "exit_code": 1,
+          "evidence_path": "docs/evidence/I10-S2/red.log",
+          "expected_failure": "S02/S10 false-REVIEW (benign fixtures flagged via non-specific spans)"
+        },
+        "green": {
+          "command": "test_i10s2_unit 2 passed; full chunks green; decision table: only S02+S10 changed (named+justified)",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I10-S2/green.log"
+        },
+        "e2e": {
+          "command": "bash scripts/verify.sh",
+          "exit_code": 0,
+          "evidence_path": "docs/evidence/I10-S2/e2e.log"
+        },
+        "privacy_negative": {
+          "evidence_path": "docs/evidence/I10-S2/negative.log"
+        },
+        "summary_path": "docs/evidence/I10-S2/summary.json",
+        "pr": {
+          "branch": "feature/coaching-privacy-pipeline/I10-S2-specificity-filter",
           "url": "PENDING",
           "state": "READY_FOR_MERGE",
           "merge_sha": "PENDING"

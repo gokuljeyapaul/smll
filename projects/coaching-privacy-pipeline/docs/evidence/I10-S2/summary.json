@@ -1,0 +1,25 @@
+{
+  "slice": "I10-S2",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/10",
+  "scope": "Justified minimal adjustment inside the risk generator (context.py specificity filter); SafetyGate untouched; external_sharing and residual-PII rules untouched",
+  "date": "2026-11-14",
+  "changes": {
+    "EXACT_EVENT_DATE": "bare single calendar months excluded (seed-S10: \"May\"); specific dates unchanged",
+    "RARE_ROLE": "single-word roles with confidence < 0.5 excluded (seed-S02: \"colleagues\" 0.44); \"manager\" 0.75 and multi-word roles unchanged"
+  },
+  "decision_table": "18-fixture before/after: only seed-S02 and seed-S10 flipped REVIEW_REQUIRED -> RELEASE_CANDIDATE (the two named false-REVIEW sessions from the I10-S1 baseline); 0 unexplained more-permissive changes",
+  "evidence": [
+    "red.log",
+    "green.log",
+    "after-18fixtures.log",
+    "e2e.log",
+    "negative.log"
+  ],
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I10-S2-specificity-filter",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "1c76a5ac5e56f74caf31968d9bb12bd20ac88515 (PR #43, I17-S1)"
+}
