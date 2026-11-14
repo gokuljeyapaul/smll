@@ -1,0 +1,31 @@
+{
+  "slice": "I14",
+  "issue": "https://github.com/gokuljeyapaul/smll/issues/14",
+  "scope": "Demo script + asciinema cast + README section; path-clean; sha256 drift guard",
+  "date": "2026-11-14",
+  "script_sha256": "8d6c9443f909b193d2e30bd8c426bd9e4a8d0f17e232aa95e765a6c875599d0b (embedded in cast title)",
+  "cast": {
+    "frames": 49,
+    "markers": [
+      "BLOCKED",
+      "OFFLINE_ASR_PROOF_OK",
+      "END OF RECORDING"
+    ],
+    "path_clean": true
+  },
+  "evidence": [
+    "red.log",
+    "green.log",
+    "demo.log",
+    "e2e.log",
+    "negative.log"
+  ],
+  "gate_impact": "none: docs/demo slice",
+  "pr": {
+    "branch": "feature/coaching-privacy-pipeline/I14-demo-script-cast",
+    "url": "PENDING",
+    "state": "READY_FOR_MERGE",
+    "merge_sha": "PENDING"
+  },
+  "previous_pr_merge_sha": "56c799a322cce198c7b34930f54fef830d26e29b (PR #41, I10-S1)"
+}

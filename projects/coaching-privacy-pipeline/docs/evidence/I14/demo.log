@@ -1,0 +1,99 @@
+== coaching-privacy-pipeline — recorded run (all data synthetic) ==
+== repo state: main, all slices S0-S7 merged, 89-test regression green ==
+
+$ git log --oneline -5
+56c799a cpp: I10-S1 — review-rate baseline: 6 false-RELEASE vs 2 false-REVIEW observed (issue #10 slice 1) (#41)
+a7003fd cpp: I9-S1 — GLiNER profile + candidate benchmark; default stays medium (issue #9 slice 1) (#40)
+b2bcfbc cpp: I13-S1 — ASR benchmark tooling + seeded fixture set (issue #13 slice 1) (#39)
+9c3899c cpp: I11-S1 — per-session fail-closed language gate (issue #11 slice 1) (#38)
+024a449 cpp: I23-S2 — cross-session linkage in batch runs (issue #23 slice 2) (#37)
+
+============================================
+ DEMO 1: text session -> Presidio redaction ->
+          validation -> fail-closed decision
+============================================
+$ .venv/bin/privacy-pipeline process --input fixtures/seed_fixtures.jsonl --policy internal_coaching_analysis --output artifacts/demo/results
+fictional-S01: decision=RELEASE_CANDIDATE leaks=0
+fictional-S02: decision=REVIEW_REQUIRED leaks=0
+fictional-S03: decision=REVIEW_REQUIRED leaks=0
+fictional-S04: decision=REVIEW_REQUIRED leaks=0
+fictional-S05: decision=RELEASE_CANDIDATE leaks=0
+fictional-S06: decision=REVIEW_REQUIRED leaks=0
+fictional-S07: decision=RELEASE_CANDIDATE leaks=0
+fictional-S08: decision=REVIEW_REQUIRED leaks=0
+fictional-S09a: decision=RELEASE_CANDIDATE leaks=0
+fictional-S09b: decision=RELEASE_CANDIDATE leaks=0
+fictional-S10: decision=REVIEW_REQUIRED leaks=0
+fictional-S11: decision=RELEASE_CANDIDATE leaks=0
+fictional-S12: decision=RELEASE_CANDIDATE leaks=0
+fictional-S13: decision=RELEASE_CANDIDATE leaks=0
+fictional-S14: decision=REVIEW_REQUIRED leaks=0
+fictional-S15: decision=RELEASE_CANDIDATE leaks=0
+fictional-S16: decision=RELEASE_CANDIDATE leaks=0
+fictional-S17: decision=REVIEW_REQUIRED leaks=0
+
+-- sanitized output (fictional session fictional-S01):
+session fictional-S01  decision=RELEASE_CANDIDATE
+  [S1] What would you like to focus on <DATE_OF_BIRTH_ad55dd57>?
+  [S2] My name is <PERSON_47dcbe81>, and my personal email is <EMAIL_385949ef>. I want to change how I lead meetings.
+
+-- leak validation report (independent validator):
+session fictional-S01: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S02: residual_pii=0 context_risks=1 cross_session_risks=2
+session fictional-S03: residual_pii=0 context_risks=1 cross_session_risks=2
+session fictional-S04: residual_pii=0 context_risks=1 cross_session_risks=2
+session fictional-S05: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S06: residual_pii=0 context_risks=1 cross_session_risks=2
+session fictional-S07: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S08: residual_pii=0 context_risks=1 cross_session_risks=2
+session fictional-S09a: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S09b: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S10: residual_pii=0 context_risks=1 cross_session_risks=2
+session fictional-S11: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S12: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S13: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S14: residual_pii=0 context_risks=1 cross_session_risks=2
+session fictional-S15: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S16: residual_pii=0 context_risks=0 cross_session_risks=2
+session fictional-S17: residual_pii=0 context_risks=1 cross_session_risks=2
+
+============================================
+ DEMO 2: deliberate faulty transform that
+          re-inserts an identifier -> BLOCKED
+============================================
+faulty transform (identifier re-inserted) -> decision: BLOCKED
+reason: ['confirmed_residual_pii']
+
+============================================
+ DEMO 3: offline ASR proof (sockets blocked,
+          faster-whisper tiny.en, local model)
+============================================
+$ .venv/bin/python scripts/offline_asr_proof.py
+transcribed: My name is Mira Solen, and I want to lead better meetings.
+OFFLINE_ASR_PROOF_OK
+
+============================================
+ DEMO 4: one-command audit -> machine report
+============================================
+$ bash scripts/audit.sh
+synthetic-42-0010: decision=RELEASE_CANDIDATE leaks=0
+synthetic-42-0011: decision=RELEASE_CANDIDATE leaks=0
+synthetic-42-0012: decision=RELEASE_CANDIDATE leaks=0
+synthetic-42-0013: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0014: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0015: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0016: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0017: decision=RELEASE_CANDIDATE leaks=0
+synthetic-42-0018: decision=REVIEW_REQUIRED leaks=0
+synthetic-42-0019: decision=RELEASE_CANDIDATE leaks=0
+== audit: evaluating against gold truth ==
+evaluated 20 sessions; prohibited leaks: 0; categories: DIRECT_PII, QUASI_IDENTIFIER, RELATIONAL
+== audit: assembling provenance-complete machine report ==
+audit report: artifacts/audit/audit_report.json
+== audit: DONE ==
+
+-- audit report (PII-free, provenance-complete):
+overall: None
+checks: {'schema_version': '1.0', 'provenance': None, 'metrics': None, 'honesty_note': 'All scores are measured on synthetic fictional data only. They are not a claim of anonymity, ICF or legal compliance for real coaching data.'}
+
+== END OF RECORDING — no real data used anywhere ==

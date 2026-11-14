@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Recorded video demo: real pipeline run, synthetic data only.
 set -euo pipefail
+# Path-clean recording: suppress library warnings that leak absolute paths.
+export PYTHONWARNINGS=ignore
+export TRANSFORMERS_VERBOSITY=error
+export TOKENIZERS_PARALLELISM=false
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
 
@@ -37,6 +41,8 @@ echo "-- leak validation report (independent validator):"
 .venv/bin/python - <<'PY'
 import json, pathlib
 for sid in sorted(pathlib.Path("artifacts/demo/results").iterdir()):
+    if not sid.is_dir():
+        continue  # e.g. batch_linkage_report.json at results root
     v = json.loads((sid / "validation_report.json").read_text())
     print(f"session {sid.name}: residual_pii={len(v['residual_pii'])} "
           f"context_risks={len(v['context_risks'])} "

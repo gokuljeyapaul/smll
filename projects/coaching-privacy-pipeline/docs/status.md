@@ -268,3 +268,12 @@ _Replace the section heading template with actual entries upon delivery. Do not 
 - **E2E:** [e2e.log](evidence/I10-S1/e2e.log). **Negative/findings:** [negative.log](evidence/I10-S1/negative.log). **Machine report:** [summary.json](evidence/I10-S1/summary.json).
 - **Git reference:** branch `feature/coaching-privacy-pipeline/I10-S1-review-analysis`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
 - **Next:** slice 2 (justified minimal adjustments inside risk generators, zero new false-RELEASE) and #14 (attack simulation hardening; deps #16 ✅).
+
+### I14 — Demo script, cast, README section (issue #14)
+
+- **Delivered at:** 2026-11-14T14:20+08:00
+- **Status:** `READY_FOR_MERGE` (previous slice PR #41 merged as `56c799a322cce198c7b34930f54fef830d26e29b`)
+- **Scope:** `scripts/video_demo.sh` committed (strict-mode, relative paths, `PYTHONWARNINGS`/`TRANSFORMERS_VERBOSITY` suppression for a path-clean recording, skips non-session files at the results root); `docs/demo/demo.cast` recorded from the committed script with its sha256 embedded in the title (drift guard); README "Demo" section (script + `asciinema play` + evidence bundles); tests: 4 fast hygiene checks + 1 slow full-demo run (green, ~100s).
+- **RED proof:** [evidence/I14/red.log](evidence/I14/red.log) — 4 failed. **GREEN:** [green.log](evidence/I14/green.log); demo run log: [demo.log](evidence/I14/demo.log). **E2E:** [e2e.log](evidence/I14/e2e.log). **Negative:** [negative.log](evidence/I14/negative.log). **Machine report:** [summary.json](evidence/I14/summary.json).
+- **Git reference:** branch `feature/coaching-privacy-pipeline/I14-demo-script-cast`, PR `PENDING`, state `READY_FOR_MERGE`, merge SHA `PENDING`.
+- **Next:** #17 design doc (deps #20 ✅).
