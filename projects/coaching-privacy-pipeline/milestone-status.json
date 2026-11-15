@@ -344,11 +344,11 @@
   "blockers": [],
   "next_slice": null,
   "issue_driven": {
-    "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR.",
-    "current": "I11-S2",
+    "note": "Post-S7 issue-driven work; see project AGENTS.md. One issue slice = one PR. All items I9-I23 merged (verified from GitHub); issue #17 slice 2 (implementation) intentionally deferred.",
+    "current": null,
     "items": {
       "I18-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #18 slice 1: authoritative model manifest (repo_id+revision+per-file sha256) + scripts/verify_models.py verifier, wired into setup.sh/verify.sh; version pins (faster-whisper==1.2.1, ctranslate2==4.9.0, en_core_web_sm==3.8.0 wheel); README small.en/tiny.en fix",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i18_unit.py -q",
@@ -378,7 +378,7 @@
         }
       },
       "I18-S2": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #18 slice 2: runtime fail-closed manifest hash verification in GLiNERContextExtractor._ensure_loaded and FasterWhisperAdapter._ensure_model (once per process); tampered/missing -> FAILED/ASRError",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i18s2_unit.py -q",
@@ -408,7 +408,7 @@
         }
       },
       "I16": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #16: fast/slow pytest markers + discipline guard + fast-lane model-load guard; engine context_extractor injection; test.sh explicit full suite; verify.sh deduplicated; make test-fast; README",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i16_markers.py -p pytester -q",
@@ -438,7 +438,7 @@
         }
       },
       "I22-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #22 slice 1: validator second pass (structured-identifier rescan + echo check), BLOCKED reachable without gold lists; 18-fixture decisions unchanged",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i22_unit.py -q",
@@ -468,7 +468,7 @@
         }
       },
       "I19-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #19 slice 1: real ASR confidence signals (per-segment aggregation + language probability), policy-YAML thresholds, computed uncertain; real-model calibration clean vs degraded",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i19_unit.py -q",
@@ -498,7 +498,7 @@
         }
       },
       "I19-S2": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #19 slice 2: transcript_from_asr helper + engine consumes metadata.asr.uncertain (fail closed) + report ASR provenance",
         "red": {
           "command": ".venv/bin/python -m pytest tests/e2e/test_i19_e2e.py -q",
@@ -528,7 +528,7 @@
         }
       },
       "I20-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #20 slice 1: whole-turn GLiNER windowing (fixes 384-token truncation fail-open); straddling spans counted; report exposes window/dropped counts",
         "red": {
           "command": ".venv/bin/python -m pytest tests/e2e/test_i20_e2e.py -q",
@@ -558,7 +558,7 @@
         }
       },
       "I21": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #21: batch CLI wiring + all-or-nothing processing + wrapped-record leaks + doc fixes",
         "red": {
           "command": ".venv/bin/python -m pytest tests/e2e/test_i21_e2e.py -q",
@@ -588,7 +588,7 @@
         }
       },
       "I12": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #12: CSV column mapping (long-renamed + wide formats) + --csv-column-map + duplicate-row fail-closed + demo fixture",
         "red": {
           "command": ".venv/bin/python -m pytest tests/e2e/test_i12_e2e.py -q",
@@ -618,7 +618,7 @@
         }
       },
       "I23-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #23 slice 1: NOT_ASSESSED markers for cross_session_risks + semantic_fidelity (no unexecuted check claimed passed)",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i23s1_unit.py -q",
@@ -648,7 +648,7 @@
         }
       },
       "I23-S2": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #23 slice 2: batch cross-session linkage via --link-group-key; batch_linkage_report.json; honest markers",
         "red": {
           "command": ".venv/bin/python -m pytest tests/e2e/test_i23s2_e2e.py -q",
@@ -678,7 +678,7 @@
         }
       },
       "I11-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #11 slice 1: per-session fail-closed language gate (REVIEW_REQUIRED/unsupported_language, sanitized withheld, zero detector calls) + asr_language_mismatch",
         "red": {
           "command": ".venv/bin/python -m pytest tests/e2e/test_i11s1_e2e.py -q",
@@ -708,7 +708,7 @@
         }
       },
       "I13-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #13 slice 1: bench_asr.py + 32-utterance seeded espeak fixture set; tiny/base/small WER/CER/runtime measured",
         "red": {
           "command": ".venv/bin/python -m pytest tests/integration/test_i13_bench.py -q",
@@ -738,7 +738,7 @@
         }
       },
       "I9-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #9 slice 1: profile (load dominates) + medium-vs-small benchmark; default stays medium-v2.1 (promotion gate not met honestly)",
         "red": {
           "command": ".venv/bin/python -m pytest tests/integration/test_i9_bench.py -q",
@@ -768,7 +768,7 @@
         }
       },
       "I10-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #10 slice 1: review_analysis.py baseline + confusion matrix over 18 fixtures (real pipeline): 10 correct, 2 false-REVIEW (S02,S10), 6 false-RELEASE (S05,S09a,S09b,S11,S12,S13)",
         "red": {
           "command": ".venv/bin/python -m pytest tests/integration/test_i10_analysis.py -q",
@@ -798,7 +798,7 @@
         }
       },
       "I14": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #14: video_demo.sh (path-clean, strict) + docs/demo/demo.cast (sha256-drift-guarded) + README Demo section + fast/slow tests",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i14_unit.py -q",
@@ -828,7 +828,7 @@
         }
       },
       "I17-S1": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #17 slice 1: streaming design doc (consumer/release semantics, fail-closed contract, state machine, API sketch, risks, negative scenarios) \u2014 design only",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i17s1_unit.py -q",
@@ -855,7 +855,7 @@
         }
       },
       "I10-S2": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #10 slice 2: specificity filter in context.py (bare months not EXACT_EVENT_DATE; low-confidence single-word roles not RARE_ROLE); S02+S10 false-REVIEW fixed; zero new false-RELEASE",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i10s2_unit.py -q",
@@ -885,7 +885,7 @@
         }
       },
       "I13-S2": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #13 slice 2: COACHING_WHISPER_MODEL selection (tiny.en default, base.en pinned in manifest + prefetched in setup.sh); hash-verified; per-model manifest keys",
         "red": {
           "command": ".venv/bin/python -m pytest tests/e2e/test_i13s2_e2e.py -q",
@@ -915,7 +915,7 @@
         }
       },
       "I9-S2": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #9 slice 2: device=auto (CPU fallback unchanged) + extract_batch amortisation across windows (engine uses it); span sets identical to serial on CPU",
         "red": {
           "command": ".venv/bin/python -m pytest tests/integration/test_i9s2_batch.py -q",
@@ -945,7 +945,7 @@
         }
       },
       "I11-S2": {
-        "status": "READY_FOR_MERGE",
+        "status": "MERGED",
         "scope": "issue #11 slice 2: German fixture suite (12 seeded sessions with gold spans) + multilingual evaluation (Presidio de_core_news_sm + gliner_multi-v2.1); honest gate decision: German NOT added (PERSON 0.67, EMAIL 0.0 below the 1.0 bar); language gate retained",
         "red": {
           "command": ".venv/bin/python -m pytest tests/unit/test_i11s2_unit.py -q",
@@ -969,9 +969,9 @@
         "summary_path": "docs/evidence/I11-S2/summary.json",
         "pr": {
           "branch": "feature/coaching-privacy-pipeline/I11-S2-german-fixtures",
-          "url": "PENDING",
-          "state": "READY_FOR_MERGE",
-          "merge_sha": "PENDING"
+          "url": "https://github.com/gokuljeyapaul/smll/pull/47",
+          "state": "MERGED",
+          "merge_sha": "750b54204b2b502d2d8ba6ccc88d1e760d53650a"
         }
       }
     }

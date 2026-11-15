@@ -69,6 +69,12 @@ def test_degraded_clip_fails_closed(tmp_path):
 
     try:
         out = _transcribe(_degraded_clip(tmp_path))
-    except ASRError:
-        pytest.skip("runner/model found no speech in the degraded clip (fail-closed path)")
+    except ASRError as exc:
+        # Fail-closed path: no transcript is produced, so nothing can be
+        # released. This is an assertion, not a skip: the test must never be
+        # silently skipped. The uncertain->gate wiring itself is proven
+        # model-free in tests/e2e/test_i19_e2e.py (hand-built uncertain
+        # transcripts -> REVIEW_REQUIRED).
+        assert "no speech" in str(exc).lower() or "transcription failed" in str(exc).lower(), exc
+        return
     assert out["uncertain"] is True, out

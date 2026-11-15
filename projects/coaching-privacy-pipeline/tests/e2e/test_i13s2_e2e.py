@@ -80,8 +80,12 @@ def test_degraded_audio_selected_model_review_e2e(monkeypatch, tmp_path):
 
     try:
         asr = FasterWhisperAdapter().transcribe(str(degraded))
-    except ASRError:
-        pytest.skip("runner/model found no speech in the degraded clip (fail-closed path)")
+    except ASRError as exc:
+        # Fail-closed path (runner found no speech): no transcript exists, so
+        # nothing is released. Asserted, never skipped; the uncertain->REVIEW
+        # gate wiring is proven model-free in tests/e2e/test_i19_e2e.py.
+        assert "no speech" in str(exc).lower() or "transcription failed" in str(exc).lower(), exc
+        return
     assert asr["uncertain"] is True, asr
     t = transcript_from_asr(
         asr, session_id="i13-s2", purpose="internal_coaching_analysis",

@@ -1,6 +1,6 @@
 # Coaching Transcript Privacy Pipeline
 
-**Project state:** v8.0 functionality-first, strict-TDD, **one merged PR per slice**, offline non-generative engineering specification and fictional seed data. The application, scripts and pipeline are **to be implemented** by the coding agent as feature-slice checkpoints. This is not an already-working anonymization tool.
+**Project state:** v8.0 functionality-first, strict-TDD, **one merged PR per slice**, offline non-generative privacy-pipeline proof of concept on fictional/synthetic data. S0–S7 and the follow-up issues (#9–#23) are implemented and merged; see `docs/status.md` and release `v0.1.0-poc`. It is **not** an approved anonymization or compliance tool: real-data, ICF and legal conformance are `NOT_ASSESSED`.
 
 ## Goal
 Build and validate a reusable Python processing engine for coaching **transcripts and audio**, starting with a browser-accessible/CPU-first synthetic-data PoC and progressing to a security-reviewed production batch service without rewriting privacy logic.
@@ -11,7 +11,7 @@ The software will detect direct identifiers, contextual and combined re-identifi
 
 ## Repository layout — single Git monorepo
 ```text
-openclaw-projects/                  # ONE .git directory at this root
+smll/                               # ONE .git directory at this root
 ├── AGENTS.md                       # Global rules for all projects (owned separately)
 └── projects/
     └── coaching-privacy-pipeline/
@@ -22,9 +22,9 @@ openclaw-projects/                  # ONE .git directory at this root
         ├── docs/evidence/S#/       # Real red/green/e2e/negative logs, screenshots (if real)
         ├── fixtures/               # Fictional seed inputs and attacker candidates
         ├── policies/               # Versioned synthetic policy examples
-        ├── src/coaching_privacy/   # Implemented by agent
-        ├── tests/                  # Implemented by agent
-        ├── scripts/                # Implemented by agent
+        ├── src/coaching_privacy/   # Implemented
+        ├── tests/                  # Implemented
+        ├── scripts/                # Implemented
         ├── milestone-status.json   # Slice checkpoint state (file name preserved)
         └── artifacts/              # Disposable local work products; required proof lives in docs/evidence/
 ```

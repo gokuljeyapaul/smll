@@ -1,16 +1,16 @@
 # Coaching Privacy Pipeline — delivery status and evidence ledger
 
-> **Status at handoff:** SPECIFICATION ONLY. No implementation, automated unit tests, E2E tests, offline inference, screenshots or privacy conformance evidence has been executed. Entries below are initial placeholders—not passing results. OpenClaw MUST update this file **after every functional slice** and before opening its PR; verify GitHub merge before starting the next dependent slice.
+> **Status:** S0–S7 and the post-S7 issue-driven work (issues #9–#23) are delivered, merged and CI-verified; release `v0.1.0-poc` is published. Everything is **synthetic data only**; real-data, ICF and legal conformance are `NOT_ASSESSED`. Per-slice evidence is under `docs/evidence/`; merge SHAs are in `milestone-status.json`.
 
 ## Current status
 
-- **Active slice:** S0 delivered on branch `feature/coaching-privacy-pipeline/S0-text-redaction`, PR `READY_FOR_MERGE` (URL recorded below once opened)
+- **Active slice:** none (all slices and issue-driven items merged)
 - **Automation mode:** RED → GREEN → REFACTOR → VERIFY → DEMO → PR → VERIFIED MERGE → CONTINUE
 - **Overall engineering result:** `PASS` (all slices S0–S7 delivered, locally green and CI-verified)
 - **Synthetic privacy quality:** `ASSESSSED_ON_SEED_FIXTURES_ONLY` (18/18 seed sessions leak-free after redaction; generated-corpus benchmark is S1)
 - **Real-data / ICF / legal conformance:** `NOT_ASSESSED`
-- **Last verified proof:** [docs/evidence/S0/](evidence/S0/) — RED (15 failed, exit 1), GREEN (16 passed, exit 0), E2E demo, negative, offline (18/18 sessions with sockets blocked), cross-cwd verify
-- **Next required action:** S0–S7 are delivered, merged and CI-verified (`milestone-status.json` `COMPLETE` refers to S0–S7 only). Further work is **issue-driven**: follow "Post-S7 issue-driven work" in this project's `AGENTS.md` (ordered list; start with GitHub issue #18). Nothing from those issues is delivered yet.
+- **Last verified proof:** `monorepo / verify` green on `main` @ `799e494` (GitHub Actions run 43594039201: 170 tests passed, fast lane 66 passed, demo and `scripts/verify.sh` OK); release `v0.1.0-poc` published (evidence [I15](evidence/I15/))
+- **Next required action:** none outstanding. Issues #9–#23 are all merged and closed (see `milestone-status.json` `issue_driven`). Deferred by design: issue #17 slice 2 (streaming implementation; design only in [docs/design/streaming.md](design/streaming.md)); German is **not** supported (gate retained, I11-S2); real-data/ICF/legal conformance `NOT_ASSESSED`.
 
 ## Slice delivery overview
 
@@ -27,7 +27,7 @@
 
 ## Acceptance-test conformance matrix
 
-**Initial state:** All A01–A25 are `NOT_RUN`. Replace each result with `PASS`, `FAIL`, `NOT_RUN`, or `MOCK_ONLY` based only on a named executed test, including an evidence link to a real result under `docs/evidence/S#/`. Keep pending future-slice criteria as `NOT_RUN` or `NOT_IMPLEMENTED` instead of claiming they passed. Distinguish engineering test conformance from synthetic privacy-quality scores and real-data compliance.
+**State:** A01–A25 are recorded below (all P0 `PASS`). Rule: replace each result with `PASS`, `FAIL`, `NOT_RUN`, or `MOCK_ONLY` based only on a named executed test, including an evidence link to a real result under `docs/evidence/S#/`. Keep pending future-slice criteria as `NOT_RUN` or `NOT_IMPLEMENTED` instead of claiming they passed. Distinguish engineering test conformance from synthetic privacy-quality scores and real-data compliance.
 
 | ID | Priority | Current result | Evidence |
 |---|---|---|---|
@@ -55,7 +55,7 @@
 | A22 | P0 | PASS | [evidence/S0/regression.log](evidence/S0/regression.log) (scripts run from /tmp cwd; nonzero exit on errors) |
 | A23 | P0 | PASS | [evidence/S6/negative.log](evidence/S6/negative.log) (log scanner audits for raw PII with line indexes; reports PII-free verified) |
 | A24 | P0 | PASS | [evidence/S6/e2e.log](evidence/S6/e2e.log) (one-command audit.sh -> provenance-complete machine report) |
-| A25 | P0 | NOT_RUN | None |
+| A25 | P0 | PASS | `scripts/verify.sh` + full suite green in CI on `main` @ `799e494` (run 43594039201); every P0 above has a named test and a recorded status; unresolved P1 resources are explicitly `NOT_RUN`/`NOT_ASSESSED` |
 
 ## GitHub PR delivery ledger (one PR per complete functional slice)
 
