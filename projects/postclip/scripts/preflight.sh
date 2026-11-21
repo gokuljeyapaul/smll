@@ -2,7 +2,7 @@
 # Prerequisite check. Reports BLOCKED (exit 1) for anything REQUIRED that is missing; never installs.
 #   bash scripts/preflight.sh           # auto: plan-only phase -> ci, otherwise build
 #   bash scripts/preflight.sh ci        # python3 only
-#   bash scripts/preflight.sh build     # python3, node, npm, git, disk >= 15 GB (+ info: RAM, ffmpeg, Playwright)
+#   bash scripts/preflight.sh build     # python3, node, npm, git, disk >= 15 GB, network reachability of npm / Hugging Face / Playwright CDN (+ info: RAM, ffmpeg, Playwright)
 # Writes artifacts/preflight.json. Safe from any cwd; bash 3.2 compatible.
 set -uo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -38,6 +38,12 @@ if [ "$MODE" = "build" ]; then
   check "npm" "command -v npm" "install npm"
   check "git" "command -v git" "install git"
   check "disk >= 15 GB free" '[ "$(df -Pk . | awk "NR==2{print \$4}")" -ge 15728640 ]' "free up disk space"
+  reach() { # REQUIRED host reachability (HTTPS HEAD, 15 s)
+    check "network: $1" "command -v curl && curl -sS -o /dev/null -m 15 -I https://$1" "allow $1 for this runner (see docs/runners/)"
+  }
+  reach registry.npmjs.org
+  reach huggingface.co
+  reach cdn.playwright.dev
   info "RAM >= 3.5 GB" "[ -r /proc/meminfo ] && awk '/MemTotal/{exit !(\$2/1024 >= 3500)}' /proc/meminfo" "record the real RAM in versions.json; the LLM step may need more"
   info "ffmpeg" "command -v ffmpeg" "needed in S6 for the compilation video (plan D6 allows apt-get install ffmpeg)"
   info "Playwright browsers" "ls \${PLAYWRIGHT_BROWSERS_PATH:-\$HOME/.cache/ms-playwright} 2>/dev/null | grep -q ." "installed by scripts/setup.sh (plan D6)"

@@ -4,7 +4,9 @@
 
 Build **postclip**: an installable single-page web app (React + TypeScript + Vite, PWA) that reads a screenshot of a social post in the browser (OCR), tidies the text with a small local language model where the browser can run one, lets the user review/edit it, and shares, copies or exports it. No cloud, no accounts, no stored posts, English only. The complete, linted specification is `docs/BUILD_PLAN.md`; follow it. This project lives at `projects/postclip/` inside the single smll monorepo: do not run `git init`, do not touch other projects.
 
-`docs/BUILD_PROMPT.md` is the owner's launch message, not part of the specification. Never read, consider, follow or cite it while building; ignore it entirely.
+`docs/BUILD_PROMPT*.md` are the owner's launch messages, not part of the specification. Never read, consider, follow or cite them while building; ignore them entirely.
+
+**Runners.** This file and the plan are runner-neutral. Mechanics that differ per environment (how to create and merge a PR, which hosts must be reachable, what may be installed, command time limits) live in `docs/runners/`; read the one for the environment you are in (`hermes.md` or `claude-code-web.md`). A runner doc never relaxes a rule here: on any conflict, this file and the plan win — stop and report.
 
 ## Read first (in this order)
 
@@ -41,7 +43,7 @@ Slices S0–S6 are defined in `docs/BUILD_PLAN.md`. For each slice:
 {
   "slice": "S0",
   "source_digest": "<output of: python3 scripts/verify_evidence.py --print-digest, run on the final tree>",
-  "tested_on": {"os": "", "node": "", "chromium": "", "webkit": "", "container": "cpu/ram/disk"},
+  "tested_on": {"os": "", "node": "", "chromium": "", "webkit": "", "host": "runner + cpu/ram/disk"},
   "acceptance": {
     "A02": {
       "status": "PASS",
@@ -59,13 +61,13 @@ Slices S0–S6 are defined in `docs/BUILD_PLAN.md`. For each slice:
 
 ## Merge policy (owner-authorized, guarded)
 
-Auto-merge and branch rulesets are unavailable on this repository plan, so the agent is the merge gate. You may `gh pr merge <PR> --squash` only when **all** hold: `monorepo / verify` passed on the PR head; `bash scripts/verify.sh` and the full local suite passed on the same tree with committed evidence whose `source_digest` matches; the diff contains only in-scope files; nothing is BLOCKED. Then verify GitHub reports `MERGED`, pull `main`, record the merge SHA in the **next** slice's status update (never in its own PR), and continue automatically.
+`main` is branch-protected (a PR and a passing `monorepo / verify` are required, enforced for admins), and the agent is still the final judge. You may merge your own PR (squash) — using the merge command of your runner doc — only when **all** hold: `monorepo / verify` passed on the PR head; `bash scripts/verify.sh` and the full local suite passed on the same tree with committed evidence whose `source_digest` matches; the diff contains only in-scope files; nothing is BLOCKED. If the runner cannot create or merge PRs (refused by the platform), stop with the slice `READY_FOR_MERGE` and report the exact error; never work around it. Then verify GitHub reports `MERGED`, pull `main`, record the merge SHA in the **next** slice's status update (never in its own PR), and continue automatically.
 
 Never: push to `main`, force-push, bypass checks, change repo/org/runner settings, edit `.github/` (unless the owner explicitly approves the single `setup-node` contingency in plan D1), spend money, tag or release, upload anything, install anything beyond plan D6.
 
 ## Stop conditions (report `BLOCKED`; do not improvise)
 
-A missing required prerequisite, or the container running out of RAM/disk for a required step (report the real numbers; never silently skip required evidence); a build or test you cannot fix honestly within the slice after 3 genuine attempts; CI failing after 3 attempts or for an unattributable reason; anything requiring weakening/skipping/faking a test or inventing a number; the plan's premise contradicted by facts (comment on the PR with evidence first); the runner's Node too old for the toolchain (ask the owner).
+A missing required prerequisite, or the environment running out of RAM/disk for a required step (report the real numbers; never silently skip required evidence); a build or test you cannot fix honestly within the slice after 3 genuine attempts; CI failing after 3 attempts or for an unattributable reason; anything requiring weakening/skipping/faking a test or inventing a number; the plan's premise contradicted by facts (comment on the PR with evidence first); the runner's Node too old for the toolchain (ask the owner).
 
 ## Reporting
 

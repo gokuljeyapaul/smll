@@ -4,13 +4,13 @@
 
 This project is the web app only. Wrapping it in iOS/Android store apps is a possible later, separate project and is out of scope here.
 
-This plan is executed autonomously by Hermes on a Linux container (openclawlaunch). Everything in it can be built and verified on Linux, with real browsers, real OCR, real model weights and recorded video. It is machine-linted (`python3 scripts/plan_lint.py`): every use case, acceptance ID and slice below must stay consistent.
+This plan is executed autonomously by a building agent on a Linux machine. Supported runners: Hermes on openclawlaunch, and Claude Code on the web (`docs/runners/`); the plan itself is runner-neutral. Everything in it can be built and verified on Linux, with real browsers, real OCR, real model weights and recorded video. It is machine-linted (`python3 scripts/plan_lint.py`): every use case, acceptance ID and slice below must stay consistent.
 
 ## Purpose and honesty statement
 
 - Goal: turn a screenshot of a post (LinkedIn-style or any app) into clean, readable, shareable text without sending anything to a cloud service.
 - All development and test data is **synthetic** (rendered fake posts, fictional names, no real brands or logos, no real people).
-- A passing suite proves behavior on the fixtures, in the browsers and container used. It does **not** prove accuracy on arbitrary real screenshots, real-phone performance, the real iOS/Android share sheets, installed-PWA behavior on real devices, or WebGPU speed. Anything not actually run is `NOT_RUN`; anything partly run is `PARTIAL`. Never write `PASS` for an unexecuted check.
+- A passing suite proves behavior on the fixtures, in the browsers and machine used. It does **not** prove accuracy on arbitrary real screenshots, real-phone performance, the real iOS/Android share sheets, installed-PWA behavior on real devices, or WebGPU speed. Anything not actually run is `NOT_RUN`; anything partly run is `PARTIAL`. Never write `PASS` for an unexecuted check.
 - Non-goals (v1): cloud AI, accounts, sync, a library of past posts, languages other than English, scraping LinkedIn or any site, hosting/deploying the site, native/App Store/Play Store packaging.
 
 ## Owner decisions and defaults
@@ -22,12 +22,13 @@ This plan is executed autonomously by Hermes on a Linux container (openclawlaunc
 | D3 | Stack | React + TypeScript (strict) + Vite, installable PWA (service worker, manifest), Vitest + Testing Library, Playwright. Resolve the latest mutually compatible versions at build time, pin them in the lockfile and record them in `versions.json`. |
 | D4 | OCR engine | Chosen **by measurement in S0** on the fixtures (CER, time, download size, license). Candidates: Tesseract.js; PaddleOCR (PP-OCR) models through onnxruntime-web. Behind an `OcrEngine` interface so the engine can be swapped. |
 | D5 | LLM runtime and model | Chosen **by measurement in S4**, progressive (see D8). Candidates: runtime transformers.js (WASM, WebGPU optional), WebLLM (WebGPU only), wllama (WASM llama.cpp); models Qwen3 0.6B / 1.7B (Apache-2.0), Llama 3.2 1B (Llama community license) in the format each runtime needs. Pick the smallest that meets the bars. |
-| D6 | Installs (Hermes, Linux, root) | `apt-get install` of `ffmpeg` and Playwright's system dependencies; `npx playwright install --with-deps chromium webkit` (Firefox optional); project-local `npm ci`. Nothing else, no global settings changes. Missing anything else is `BLOCKED`. |
+| D6 | Installs (Linux, root) | `apt-get install` of `ffmpeg` and Playwright's system dependencies; `npx playwright install --with-deps chromium webkit` (Firefox optional); project-local `npm ci`. Nothing else, no global settings changes. Missing anything else is `BLOCKED`. |
 | D7 | Video | Per-flow Playwright videos are **not committed**; they live in `artifacts/video/` with a committed manifest (`docs/evidence/video_manifest.json`: sha256, size, duration, JUnit testcase). One compressed **compilation** video (≤ 15 MB, ≤ 720p, `docs/demo/postclip-demo.webm` or `.mp4`) is committed in S6 so the owner can watch it from the repo. |
 | D8 | LLM scope | **Progressive.** OCR + deterministic cleanup works in every supported browser; the LLM cleanup turns on only where a capability probe says the browser can run it, behind the same guards. The WASM path is verified on Linux; the WebGPU path is `NOT_RUN` there. |
 | D9 | Telemetry / analytics / third-party origins | None. Enforced by a Content-Security-Policy and a dependency audit (A26). |
 | D10 | Hosting | Out of scope: the build produces a static `dist/` and a local preview. The owner picks hosting later. The model is fetched from a pinned URL (default: Hugging Face repo + revision) that the CSP allows; tests serve the real file from a local server. |
-| D11 | Merging | Hermes merges its own PRs under the guardrails in "Autonomy and merge policy". |
+| D11 | Merging | The building agent merges its own PRs under the guardrails in "Autonomy and merge policy" (if its runner cannot merge, it stops at `READY_FOR_MERGE` and the owner merges). |
+| D13 | Runners | Mechanics that differ per environment (PR/merge commands, network allowlist, installs, time limits) live in `docs/runners/`. Adding or switching a runner changes no plan, test or evidence rule. |
 | D12 | Optional real-device pass | After S6, the owner (and Claude Code) may spend ~30 minutes on a real iPhone and Android phone for A27/A30. Not required for `COMPLETE`. |
 
 ## Use cases
@@ -185,7 +186,7 @@ Observable result: in Chromium and WebKit the user picks a fixture, sees real OC
 - Scope: Vite + React + TypeScript strict scaffold, Vitest + Testing Library, Playwright harness (Chromium + WebKit, JUnit, video, trace), lint, typecheck; `OcrEngine` interface and the **OCR engine selection by measurement** (Tesseract.js vs PaddleOCR via onnxruntime-web: CER, time, size, license) with the chosen engine in a Worker; file picker + drag-drop ingest; review screen; Web Share + Copy output; 10 synthetic fixtures + generator + manifest; CI wired through the project scripts; `milestone-status.json` phase `BUILDING`.
 - **RED**: Vitest for the OCR-result normalizer and share-payload builder fail on assertions; the Playwright flow `uc01_pick_ocr_review_share` fails at the missing Share/Copy action once the scaffold loads; the fixture-manifest lint fails.
 - **GREEN**: all pass in both engines; CI green; OCR baseline CER recorded per browser; videos recorded.
-- **Evidence**: standard set; OCR engine comparison table; `versions.json` (Node, browser builds, library versions, container resources); videos + manifest entries.
+- **Evidence**: standard set; OCR engine comparison table; `versions.json` (Node, browser builds, library versions, machine resources); videos + manifest entries.
 - Risks: WASM/ONNX assets and CSP; WebKit-on-Linux differs from Safari on iOS (stated limitation, A27).
 
 ### S1 — Cleanup, edit, export, language gate, errors, no-storage v1
@@ -220,7 +221,7 @@ Observable result: the app downloads the pinned model with progress, verifies an
 - **RED**: Vitest for state machine/checksum/resume/probe fail on assertions; Playwright flows for download, failure and offline fail on missing behavior.
 - **GREEN**: pass against the real pinned file (downloaded once during setup into `.cache/models/`, hash recorded with the command that produced it).
 - **Evidence**: standard set; model manifest; success/wrong-hash/truncated/resume logs; offline request-log output; videos.
-- Risks: model size vs the container disk and browser cache quotas.
+- Risks: model size vs the machine's disk and browser cache quotas.
 
 ### S4 — Local LLM cleanup and its guards
 
@@ -232,7 +233,7 @@ Observable result: with a capable browser the review screen shows verified, fait
 - **RED**: Vitest for validator/faithfulness/fallback with adversarial model outputs (invented text, dropped content, extra fields, obeyed injection) fail on assertions; the browser eval on injection fixtures fails until guards exist; Playwright suggestions flow fails on missing UI.
 - **GREEN**: bars met, or the LLM ships **disabled by default** with measured numbers and the deterministic baseline stays the default (a valid completion). WebGPU is `NOT_RUN`.
 - **Evidence**: standard set; `docs/evidence/S4/model_selection.md` (candidate table, rejected options, license notes); eval JSON with model/runtime hashes; adversarial-output logs; videos.
-- Risks: CPU/WASM speed in the container, 4 GB RAM ceiling, license terms of the winning model, runtime/CSP incompatibility (fallback: another runtime).
+- Risks: CPU/WASM speed on the build machine, RAM ceiling, license terms of the winning model, runtime/CSP incompatibility (fallback: another runtime).
 
 ### S5 — Hardening and production build
 
@@ -274,9 +275,9 @@ Observable result: a verification report proving every acceptance ID has an hone
 
 This section is the project's own policy.
 
-- Hermes may merge its own PR (`gh pr merge --squash`) only when: `monorepo / verify` has **passed** on the PR head; `bash scripts/verify.sh` and the full local suite passed on the same tree with committed evidence whose `source_digest` matches; the diff contains only in-scope files (no secrets, model weights, large videos, build output); nothing is BLOCKED. Then verify `MERGED` via `gh pr view`, `git checkout main && git pull --ff-only`, and continue to the next slice.
+- The building agent may merge its own PR (squash, via its runner's merge command) only when: `monorepo / verify` has **passed** on the PR head; `bash scripts/verify.sh` and the full local suite passed on the same tree with committed evidence whose `source_digest` matches; the diff contains only in-scope files (no secrets, model weights, large videos, build output); nothing is BLOCKED. Then verify `MERGED` (runner doc gives the command), `git checkout main && git pull --ff-only`, and continue to the next slice.
 - Never push to `main`, force-push, bypass checks, change repo/org/runner settings, spend money, tag or release, or install anything beyond D6.
-- Stop and report `BLOCKED` (do not improvise) when: preflight finds a missing required prerequisite; a build or test fails for reasons not fixable within the slice after 3 genuine attempts; CI fails after 3 attempts or for an unattributable reason; the container runs out of RAM/disk for a required step (report the numbers; never silently skip required evidence); any step would require weakening/skipping/faking a test or inventing a number, hash, log or video; the plan's premise is contradicted by facts (post the finding as a PR comment first); the runner's Node is too old (ask the owner, per D1).
+- Stop and report `BLOCKED` (do not improvise) when: preflight finds a missing required prerequisite; a build or test fails for reasons not fixable within the slice after 3 genuine attempts; CI fails after 3 attempts or for an unattributable reason; the environment runs out of RAM/disk for a required step (report the numbers; never silently skip required evidence); any step would require weakening/skipping/faking a test or inventing a number, hash, log or video; the plan's premise is contradicted by facts (post the finding as a PR comment first); the runner's Node is too old (ask the owner, per D1).
 - After each merged PR report: slice, branch, PR URL, test commands with exit codes, evidence paths, per-acceptance-ID status table, video manifest entries, merge SHA from GitHub, limitations, next slice. After S6 give the final conformance summary and the known limits.
 
 ## Risks
@@ -289,8 +290,8 @@ This section is the project's own policy.
 | iOS cannot receive shared images in a plain PWA | Out of scope for a web app; documented as a limitation |
 | Native share sheet, installed-PWA share and Telegram delivery are not automatable | Payload spied/asserted; A27 `NOT_RUN` unless the device pass happens |
 | Hallucinated or hostile model output | LLM safety design; deterministic fallback; guards unit-tested with adversarial outputs |
-| Model size vs container disk / browser cache quota | Smallest passing model; quota handling in the model manager; report numbers if blocked |
+| Model size vs machine disk / browser cache quota | Smallest passing model; quota handling in the model manager; report numbers if blocked |
 | Model license surprises | Licenses recorded (A26); Llama community license reviewed before use |
 | Evidence staleness or overclaiming (seen in earlier projects) | `source_digest`, `verify_evidence.py`, JUnit-backed PASS only, plan lint |
-| Container too small for Chromium + WebKit + model | Preflight records resources; BLOCKED with numbers rather than skipping evidence |
+| Machine too small for Chromium + WebKit + model | Preflight records resources; BLOCKED with numbers rather than skipping evidence |
 | Runner's preinstalled Node too old | Ask the owner for one `setup-node` line; do not edit `.github/` unprompted |

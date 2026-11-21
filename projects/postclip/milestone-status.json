@@ -6,7 +6,7 @@
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
-    "hosts": "Hermes on openclawlaunch (Linux) builds everything; optional ~30 min real-device pass by owner + Claude Code (A27/A30)"
+    "hosts": "building agent on Linux, runner-neutral: Hermes (openclawlaunch) or Claude Code on the web (docs/runners/); optional ~30 min real-device pass by the owner (A27/A30)"
   },
   "slices": {
     "S0": {

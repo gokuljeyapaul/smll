@@ -6,7 +6,7 @@
 - **Active slice:** none
 - **Overall engineering result:** `NOT_STARTED`
 - **Owner decisions:** CI needs no exception (real Playwright + OCR + model run on `ubuntu-latest`); LLM is progressive. No open decisions.
-- **Next required action:** after the plan PR is merged, the owner starts the building agent (Linux) to build S0–S6.
+- **Next required action:** after the plan PR is merged, the owner starts the building agent (Hermes or Claude Code on the web; see `docs/runners/`) to build S0–S6.
 
 ## Slice overview
 

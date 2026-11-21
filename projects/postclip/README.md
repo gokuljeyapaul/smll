@@ -18,6 +18,7 @@ No cloud, no accounts, nothing stored. English only (v1). An installable web app
 | Full plan (use cases, acceptance IDs, slices S0–S6, test strategy) | [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) |
 | Operating rules for the building agent | [AGENTS.md](AGENTS.md) |
 | Ledger of delivered slices | [docs/status.md](docs/status.md) |
+| Per-runner mechanics (Hermes, Claude Code on the web) | [docs/runners/](docs/runners/) |
 
 ## Commands
 
