@@ -97,6 +97,37 @@ class ConformanceLintTests(unittest.TestCase):
         self.assertTrue(any("O03" in p and "S9" in p for p in plan_lint.lint("\n".join(lines))))
 
 
+class PreflightOsTests(unittest.TestCase):
+    """build mode must refuse a non-Linux/macOS environment instead of improvising a port."""
+
+    def _run(self, uname_output):
+        import os
+        import stat
+        import subprocess
+        d = pathlib.Path(tempfile.mkdtemp())
+        try:
+            fake = d / "uname"
+            fake.write_text("#!/bin/sh\necho %s\n" % uname_output)
+            fake.chmod(fake.stat().st_mode | stat.S_IEXEC)
+            env = dict(os.environ, PATH=str(d) + os.pathsep + os.environ["PATH"])
+            return subprocess.run(["bash", str(ROOT / "scripts" / "preflight.sh"), "build"],
+                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                  universal_newlines=True, env=env)
+        finally:
+            shutil.rmtree(str(d), ignore_errors=True)
+
+    def test_windows_shell_is_missing_with_a_clear_message(self):
+        r = self._run("MINGW64_NT-10.0")
+        self.assertNotEqual(r.returncode, 0)
+        self.assertRegex(r.stdout, r"\[MISSING\] OS")
+        self.assertIn("MINGW64_NT-10.0", r.stdout)
+
+    def test_linux_and_macos_pass_the_os_check(self):
+        for name in ("Linux", "Darwin"):
+            r = self._run(name)
+            self.assertRegex(r.stdout, r"\[OK\] OS", name)
+
+
 class VerifyEvidenceTests(unittest.TestCase):
     def setUp(self):
         self.tmp = pathlib.Path(tempfile.mkdtemp())

@@ -34,6 +34,8 @@ echo "preflight ($MODE)"
 check "python3" "command -v python3" "install Python 3"
 
 if [ "$MODE" = "build" ]; then
+  OS_NAME="$(uname -s 2>/dev/null || echo unknown)"
+  check "OS is Linux or macOS (detected: $OS_NAME)" 'case "$OS_NAME" in Linux|Darwin) true ;; *) false ;; esac' "this plan needs a Linux or macOS shell; on Windows use WSL2, otherwise report BLOCKED with the detected OS and ask the owner (do not improvise a port)"
   check "node" "command -v node" "install Node (version in .nvmrc once S0 creates it)"
   check "npm" "command -v npm" "install npm"
   check "git" "command -v git" "install git"

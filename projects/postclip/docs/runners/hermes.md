@@ -1,6 +1,7 @@
 # Runner: Hermes (openclawlaunch, Linux container)
 
-- **Machine:** a Linux container; size depends on the openclawlaunch plan (observed range ~1–2 vCPU, 2–4 GB RAM). `scripts/preflight.sh build` records the real numbers; if Chromium + WebKit + the model do not fit, report `BLOCKED` with those numbers (plan risk table).
+- **Machine:** expected to be a Linux container (not confirmed for every openclawlaunch plan). `scripts/preflight.sh build` checks the OS: this plan needs a Linux or macOS shell (bash, `apt-get` for the D6 installs). If the OS is Windows, use WSL2 if available; otherwise stop and report `BLOCKED` with the detected OS (`uname -a` / the OS name) and ask the owner. Do not improvise a Windows port.
+- **Size:** depends on the openclawlaunch plan (observed range ~1–2 vCPU, 2–4 GB RAM). `scripts/preflight.sh build` records the real numbers; if Chromium + WebKit + the model do not fit, report `BLOCKED` with those numbers (plan risk table).
 - **Installs:** root, `apt-get` allowed for exactly what plan D6 lists (ffmpeg, Playwright system dependencies), plus Playwright Chromium/WebKit and project-local `npm ci`.
 - **Network:** full outbound access is assumed. `scripts/preflight.sh build` still verifies that npm, Hugging Face and the Playwright CDN are reachable.
 - **GitHub:** the standard `gh` CLI works, including `gh pr` and `gh issue` (GraphQL is available).
