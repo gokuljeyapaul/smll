@@ -25,6 +25,7 @@ Facts below come from the Claude Code on the web docs (code.claude.com/docs/en/c
 - If creating or merging a PR is refused (403/422, not allowed by the proxy or protection), do **not** work around it: stop, report the slice as `READY_FOR_MERGE` with the PR URL and the exact error, and wait for the owner. **UNCONFIRMED** whether merging is permitted from a cloud session.
 - **Command time limits:** a shell command defaults to 2 minutes and can request up to 10; longer ones move to the background. Run full suites in the background writing to a log file (`nohup ... > artifacts/run.log 2>&1 &`) and poll the log. An idle VM pauses and may be reclaimed (background processes are lost, the conversation is kept): make every step resumable.
 - **One slice per session.** Context compaction happens automatically; after it or after a new session, resume from `docs/status.md`, `milestone-status.json` and `docs/evidence/`, not from memory. Sessions are independent: the owner starts the next slice's session (there is no built-in queue).
+- **Skills:** not needed here; the rules are in `AGENTS.md` (loaded through `CLAUDE.md`). The same practices are in the owner's `atina-skills` repo if you want them.
 - **Instruction loading:** the repo has `CLAUDE.md` files that import `AGENTS.md`; read `AGENTS.md` explicitly anyway.
 
 ## Smoke test before S0 (owner or the agent; costs minutes)

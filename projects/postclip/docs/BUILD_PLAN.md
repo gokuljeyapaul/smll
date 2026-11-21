@@ -148,6 +148,40 @@ Every use case is automated on Linux with real browsers. What cannot be automate
 | UC13 | Injection fixtures through the picker flow | Judged by the validator + marker checks, not by eye |
 | UC14 | `context.setOffline(true)`, request-log assertions, storage/console/URL audits | Radio-level offline on real phones is `NOT_RUN` (A27) |
 
+## Conformance
+
+Who confirms what. Unit, integration and behaviour tests are the building agent's craft and are not listed here; they are tracked by the acceptance IDs above (A01–A31) and proven by committed JUnit results. This section lists only what a **person** looks at (Owner-visual), what a **planner/reviewer** checks (Planner-review), and states that **everything else is Agent-self**.
+
+### Owner-visual
+
+The agent produces each artifact from a *passing* run, keeps it small, and writes `owner-review.md` next to it (one tick-box per item). Status is `PENDING_OWNER_REVIEW` until the owner ticks it in the slice issue. These never block the next slice; the project is `COMPLETE` only when none is pending or rejected.
+
+| ID | Slice | Refs | Artifact (committed path) | The owner confirms |
+|---|---|---|---|---|
+| O01 | S0 | UC01, UC06 | `docs/evidence/S0/owner/` screen recording and screenshots: pick, OCR, review, copy | The screenshot's text appears on the review screen, legible and faithful; Copy works; nothing looks broken |
+| O02 | S1 | UC05, UC07, UC10, UC11 | `docs/evidence/S1/owner/` gallery: review/edit screen, export menu, non-English message, bad-input messages | Cleaned text reads naturally; edits stick; messages are clear and kind |
+| O03 | S3 | UC08, UC09 | `docs/evidence/S3/owner/` screenshots: model download progress, checksum failure, fallback banner | A non-technical person would understand what is happening and what they still get |
+| O04 | S4 | UC05, UC13 | `docs/evidence/S4/owner/` before/after gallery on six fixtures (raw OCR, rules only, model cleanup) incl. the hostile one, with flagged items visible | Model cleanup is faithful, drops only UI chrome, and the hostile text was not obeyed |
+| O05 | S5 | UC01, UC04 | `docs/evidence/S5/owner/` mobile-viewport (390x844) screenshots, offline reload, keyboard focus | Usable one-handed on a phone-sized screen; works offline; focus is visible |
+| O06 | S6 | UC01, UC14 | `docs/demo/` single compilation video (at most 15 MB, 720p) of all use-case flows in Chromium and WebKit | The whole product tour looks like something you would actually use |
+
+### Planner-review
+
+A reviewer (for example Claude) checks these on every slice PR. The agent prepares a packet: PR link, evidence index, exact reproduce commands, `git diff` of test files only, and the claims it is least sure of listed first.
+
+| ID | Refs | Check |
+|---|---|---|
+| P01 | A25 | No test was weakened, skipped, loosened or mocked-away to get green (diff of test files) |
+| P02 | A25 | Every `PASS` in `summary.json` points to an executed, passing JUnit testcase for each required browser engine |
+| P03 | A31 | The diff is in scope: no secrets, model weights, build output, per-flow videos or real screenshots |
+| P04 | A25, A26 | Spot-check several logs, manifests and hashes for fabrication; re-run one key command |
+| P05 | A14, A15, A26 | Privacy audits (zero requests when cached, storage allow-list, CSP, no telemetry) are real and not trivially empty |
+| P06 | A16, A17, A18 | LLM safety fixtures (injection, faithfulness, invalid output) exercise the real model and guards |
+
+### Agent-self
+
+Everything else: all unit, integration and behaviour tests, regression, negative paths, audits, the OCR and LLM selection measurements and the acceptance table. The agent runs it, commits the evidence, and posts a done-comment in the slice issue with the commands, exit codes, per-ID statuses, evidence paths and limitations.
+
 ## LLM safety design
 
 The cleanup LLM can invent text and the screenshot can attack it. Treat the model as untrusted.

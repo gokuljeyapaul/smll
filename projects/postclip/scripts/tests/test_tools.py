@@ -44,6 +44,59 @@ class PlanLintTests(unittest.TestCase):
         self.assertTrue(any("A01" in p and "platform" in p for p in plan_lint.lint(broken)))
 
 
+class ConformanceLintTests(unittest.TestCase):
+    """The plan's Conformance section: owner-visual, planner-review, agent-self."""
+
+    def setUp(self):
+        self.text = (ROOT / "docs" / "BUILD_PLAN.md").read_text(encoding="utf-8")
+
+    def test_real_plan_has_owner_and_planner_items(self):
+        sec = plan_lint.split_sections(self.text)
+        body = next(b for h, b in sec.items() if h.strip().lower() == "conformance")
+        self.assertGreaterEqual(len(plan_lint.table_rows(body, "O")), 3)
+        self.assertGreaterEqual(len(plan_lint.table_rows(body, "P")), 4)
+
+    def test_missing_conformance_section_detected(self):
+        broken = self.text.replace("## Conformance", "## Something else", 1)
+        self.assertTrue(any("Conformance" in p for p in plan_lint.lint(broken)))
+
+    def test_missing_agent_self_subsection_detected(self):
+        broken = self.text.replace("### Agent-self", "### Misc", 1)
+        self.assertTrue(any("Agent-self" in p for p in plan_lint.lint(broken)))
+
+    def test_owner_item_with_unknown_reference_detected(self):
+        broken = self.text.replace("| O01 |", "| O01 | UC99 |", 1) if False else self.text
+        lines = broken.splitlines()
+        for i, line in enumerate(lines):
+            if line.startswith("| O01 |"):
+                lines[i] = line.replace("UC01", "UC99").replace("UC05", "UC99").replace("UC06", "UC99")
+        broken = "\n".join(lines)
+        self.assertTrue(any("O01" in p and "UC99" in p for p in plan_lint.lint(broken)))
+
+    def test_owner_item_without_any_reference_detected(self):
+        lines = self.text.splitlines()
+        for i, line in enumerate(lines):
+            if line.startswith("| O02 |"):
+                lines[i] = "| O02 | S1 | docs/evidence/S1/owner/x.md | looks fine |"
+        self.assertTrue(any("O02" in p and "reference" in p for p in plan_lint.lint("\n".join(lines))))
+
+    def test_duplicate_conformance_ids_detected(self):
+        lines = self.text.splitlines()
+        for i, line in enumerate(lines):
+            if line.startswith("| O02 |"):
+                lines[i] = line.replace("| O02 |", "| O01 |", 1)
+        self.assertTrue(any("duplicate" in p and "O01" in p for p in plan_lint.lint("\n".join(lines))))
+
+    def test_owner_item_slice_must_exist(self):
+        lines = self.text.splitlines()
+        for i, line in enumerate(lines):
+            if line.startswith("| O03 |"):
+                cells = [c.strip() for c in line.strip().strip("|").split("|")]
+                cells[1] = "S9"
+                lines[i] = "| " + " | ".join(cells) + " |"
+        self.assertTrue(any("O03" in p and "S9" in p for p in plan_lint.lint("\n".join(lines))))
+
+
 class VerifyEvidenceTests(unittest.TestCase):
     def setUp(self):
         self.tmp = pathlib.Path(tempfile.mkdtemp())

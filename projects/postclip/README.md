@@ -28,6 +28,7 @@ bash scripts/setup.sh       # preflight + npm ci + Playwright browsers + pinned 
 bash scripts/test.sh        # tool self-tests; typecheck, lint, Vitest, Playwright e2e once the app exists
 bash scripts/demo.sh        # PLAN_ONLY: NOT_RUN; later: end-to-end demo flows in real browsers
 bash scripts/verify.sh      # plan lint + evidence integrity
+python3 scripts/gen_issues.py  # preview the slice issues generated from the plan (dry run; --create --repo owner/name creates them)
 make test demo verify
 ```
 

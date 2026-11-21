@@ -22,6 +22,7 @@ REQUIRED_SECTIONS = [
     "Fixtures and metrics",
     "Acceptance criteria",
     "Testability map",
+    "Conformance",
     "LLM safety design",
     "Privacy and no-storage design",
     "Slices",
@@ -162,6 +163,41 @@ def lint(text):
         if i not in delivered:
             problems.append("%s is not delivered by any slice" % i)
 
+    problems += conformance_problems(sections, section, uc_ids, a_ids, names)
+    return problems
+
+
+def conformance_problems(sections, section, uc_ids, a_ids, slice_names):
+    """Owner-visual / Planner-review / Agent-self structure and references."""
+    problems = []
+    body = ""
+    for h, b in sections.items():
+        if h.strip().lower() == "conformance":
+            body = b
+    if not body:
+        return problems  # the missing section is reported by REQUIRED_SECTIONS
+    for sub in ("Owner-visual", "Planner-review", "Agent-self"):
+        if not re.search(r"(?m)^###\s+%s\b" % re.escape(sub), body):
+            problems.append("Conformance: missing '### %s' subsection" % sub)
+    known = set(uc_ids) | set(a_ids)
+    for prefix, label in (("O", "owner-visual"), ("P", "planner-review")):
+        rows = table_rows(body, prefix)
+        ids = [r[0] for r in rows]
+        if not rows:
+            problems.append("Conformance: no %s items (%s01...)" % (label, prefix))
+        for dup in sorted({i for i in ids if ids.count(i) > 1}):
+            problems.append("duplicate conformance ID %s" % dup)
+        for r in rows:
+            refs = re.findall(r"\b(?:UC|A)\d{2}\b", " ".join(r[1:]))
+            if not refs:
+                problems.append("%s: conformance item needs at least one UC/A reference" % r[0])
+            for ref in refs:
+                if ref not in known:
+                    problems.append("%s references unknown %s" % (r[0], ref))
+            if prefix == "O":
+                sl = r[1] if len(r) > 1 else ""
+                if sl not in slice_names:
+                    problems.append("%s names unknown slice %s" % (r[0], sl))
     return problems
 
 
