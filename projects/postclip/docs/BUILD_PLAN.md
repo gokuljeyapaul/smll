@@ -154,11 +154,11 @@ Who confirms what. Unit, integration and behaviour tests are the building agent'
 
 ### Owner-visual
 
-The agent produces each artifact from a *passing* run, keeps it small, and writes `owner-review.md` next to it (one tick-box per item). Status is `PENDING_OWNER_REVIEW` until the owner ticks it in the slice issue. These never block the next slice; the project is `COMPLETE` only when none is pending or rejected.
+The agent produces each artifact from a *passing* run in a form the owner can open from a phone (committed screenshots/gallery `.md` with relative image links, or the one committed compilation video). It posts a tick-list as a comment in the slice issue (one line per item, with links); the owner replies `O01 ok` or `O02 no: <why>`; the agent never ticks an item itself. Until then the item is `PENDING_OWNER_REVIEW` (a state in the issue, not an acceptance status). These never block the next slice; the project is `COMPLETE` only when none is pending or rejected.
 
 | ID | Slice | Refs | Artifact (committed path) | The owner confirms |
 |---|---|---|---|---|
-| O01 | S0 | UC01, UC06 | `docs/evidence/S0/owner/` screen recording and screenshots: pick, OCR, review, copy | The screenshot's text appears on the review screen, legible and faithful; Copy works; nothing looks broken |
+| O01 | S0 | UC01, UC06 | `docs/evidence/S0/owner/` screenshot sequence (`.md` gallery): pick, OCR, review, copy | The screenshot's text appears on the review screen, legible and faithful; Copy works; nothing looks broken |
 | O02 | S1 | UC05, UC07, UC10, UC11 | `docs/evidence/S1/owner/` gallery: review/edit screen, export menu, non-English message, bad-input messages | Cleaned text reads naturally; edits stick; messages are clear and kind |
 | O03 | S3 | UC08, UC09 | `docs/evidence/S3/owner/` screenshots: model download progress, checksum failure, fallback banner | A non-technical person would understand what is happening and what they still get |
 | O04 | S4 | UC05, UC13 | `docs/evidence/S4/owner/` before/after gallery on six fixtures (raw OCR, rules only, model cleanup) incl. the hostile one, with flagged items visible | Model cleanup is faithful, drops only UI chrome, and the hostile text was not obeyed |
@@ -167,14 +167,14 @@ The agent produces each artifact from a *passing* run, keeps it small, and write
 
 ### Planner-review
 
-A reviewer (for example Claude) checks these on every slice PR. The agent prepares a packet: PR link, evidence index, exact reproduce commands, `git diff` of test files only, and the claims it is least sure of listed first.
+A reviewer (for example Claude) checks these on every slice PR. The agent posts a packet as a PR comment per slice (it does not block the merge): PR link, full evidence index (the reviewer picks what to open), exact reproduce commands, `git diff` of test files only, and the claims it is least sure of listed first.
 
 | ID | Refs | Check |
 |---|---|---|
 | P01 | A25 | No test was weakened, skipped, loosened or mocked-away to get green (diff of test files) |
 | P02 | A25 | Every `PASS` in `summary.json` points to an executed, passing JUnit testcase for each required browser engine |
 | P03 | A31 | The diff is in scope: no secrets, model weights, build output, per-flow videos or real screenshots |
-| P04 | A25, A26 | Spot-check several logs, manifests and hashes for fabrication; re-run one key command |
+| P04 | A25, A26 | Spot-check logs, manifests and hashes for fabrication (the reviewer picks from the evidence index); re-run one key command |
 | P05 | A14, A15, A26 | Privacy audits (zero requests when cached, storage allow-list, CSP, no telemetry) are real and not trivially empty |
 | P06 | A16, A17, A18 | LLM safety fixtures (injection, faithfulness, invalid output) exercise the real model and guards |
 
