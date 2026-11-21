@@ -18,6 +18,12 @@ One GitHub repository (`.git/` only at this root) for multiple independent proje
 
 See `AGENTS.md` for monorepo-wide PR policy. For a new project, add a directory under `projects/` with its own instructions, test scripts and evidence ledger; do not create another Git repository.
 
+## Agent access
+
+This repository is worked on by an agent through the **Atina Autobot** GitHub App (bot account `atina-autobot[bot]`), installed on the `gokuljeyapaul` account with access to all of its repositories. The agent authenticates with short-lived installation access tokens — no personal access tokens are stored — so its pushes, PRs and merges are attributed to `atina-autobot[bot]`. Commits use the bot identity `atina-autobot[bot] <359380225+atina-autobot[bot]@users.noreply.github.com>`.
+
+This documents bootstrap step 4 (agent GitHub access) for the owner-authorized connection verified through this PR. Functional changes continue to follow the slice process in [`AGENTS.md`](AGENTS.md).
+
 ## Evidence and merge semantics
 
 Each project maintains `docs/status.md` and actual sanitized test logs in `docs/evidence/<slice>/`. The PR contains evidence **before** merge. GitHub provides actual CI and merge-state evidence. A merge SHA is only available after merge and is recorded in the next PR or final status closeout PR; never prepopulate it.
