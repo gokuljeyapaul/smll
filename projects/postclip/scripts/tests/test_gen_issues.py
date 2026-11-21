@@ -75,6 +75,38 @@ class GenIssuesTests(unittest.TestCase):
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("--repo", r.stdout)
 
+    def test_create_makes_labels_then_slices_then_epic_and_links_blockers(self):
+        with tempfile.TemporaryDirectory() as d:
+            fake = pathlib.Path(d) / "gh"
+            log = pathlib.Path(d) / "calls.log"
+            counter = pathlib.Path(d) / "n"
+            counter.write_text("100")
+            fake.write_text(
+                "#!/bin/sh\n"
+                "echo \"$@\" | tr '\\n' ' ' >> %s; echo >> %s\n"
+                "case \"$*\" in\n"
+                "  *repos/o/r/labels*) exit 0 ;;\n"
+                "  *--jq*) n=$(cat %s); n=$((n+1)); echo $n > %s; echo $n ;;\n"
+                "esac\n" % (log, log, counter, counter))
+            fake.chmod(fake.stat().st_mode | stat.S_IEXEC)
+            env = dict(os.environ, PATH=d + os.pathsep + os.environ["PATH"])
+            r = subprocess.run([sys.executable, str(SCRIPTS / "gen_issues.py"), "--create", "--repo", "o/r"],
+                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, env=env)
+            self.assertEqual(r.returncode, 0, r.stdout)
+            calls = log.read_text().splitlines()
+            kinds = ["label" if c.split()[1].endswith("/labels") else "issue" for c in calls]
+            first_issue = kinds.index("issue")
+            self.assertTrue(all(k == "label" for k in kinds[:first_issue]), kinds)
+            self.assertEqual(kinds.count("issue"), 8)
+            # S1's body links S0's real number (101), and the epic is created last and links all slices.
+            s1 = next(c for c in calls if "title=postclip S1" in c)
+            self.assertIn("Blocked by: #101 (postclip S0)", s1)
+            self.assertIn("title=postclip: build the web app", calls[-1])
+            for n in range(101, 108):
+                self.assertIn("#%d postclip S" % n, calls[-1])
+            self.assertIn("labels[]=ready", next(c for c in calls if "title=postclip S0" in c))
+            self.assertNotIn("labels[]=ready", s1)
+
 
 if __name__ == "__main__":
     unittest.main()
