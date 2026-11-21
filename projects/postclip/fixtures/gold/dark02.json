@@ -1,0 +1,31 @@
+{
+  "id": "dark02",
+  "kind": "dark",
+  "theme": "dark",
+  "author": "Marco D’Souza",
+  "handle": "@marco-ds",
+  "language": "en",
+  "body": [
+    "Debugging story from this week: a cache that expired too fast,",
+    "a clock that lied by 90 seconds, and one very patient SRE.",
+    "Root cause? Two services disagreed about what “now” means. #postmortem"
+  ],
+  "chrome": [
+    "@marco-ds",
+    "9h",
+    "Like",
+    "Comment",
+    "Share",
+    "98 reactions · 5 comments"
+  ],
+  "ocr_expected": [
+    "Marco D’Souza",
+    "@marco-ds · 9h",
+    "Debugging story from this week: a cache that expired too fast,",
+    "a clock that lied by 90 seconds, and one very patient SRE.",
+    "Root cause? Two services disagreed about what “now” means. #postmortem",
+    "98 reactions · 5 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

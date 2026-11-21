@@ -11,7 +11,7 @@ No cloud, no accounts, nothing stored. English only (v1). An installable web app
 
 ## Project state
 
-**PLAN_ONLY.** This folder currently contains the specification and the verification tooling; the app is **not built yet**. Nothing here claims a working app.
+**BUILDING.** S0 (foundations: pick a screenshot, real in-browser OCR, review, share or copy) is delivered in Chromium and WebKit; slices S1–S6 follow per the plan. The ledger in [docs/status.md](docs/status.md) tracks per-slice and per-acceptance-ID status with committed evidence.
 
 | What | Where |
 |---|---|
@@ -24,11 +24,12 @@ No cloud, no accounts, nothing stored. English only (v1). An installable web app
 
 ```bash
 bash scripts/preflight.sh   # prerequisite check; BLOCKED if a required tool is missing
-bash scripts/setup.sh       # preflight + npm ci + Playwright browsers + pinned model (once the app exists)
-bash scripts/test.sh        # tool self-tests; typecheck, lint, Vitest, Playwright e2e once the app exists
-bash scripts/demo.sh        # PLAN_ONLY: NOT_RUN; later: end-to-end demo flows in real browsers
+bash scripts/setup.sh       # preflight + npm ci + Playwright browsers (+ pinned model once S3 lands)
+bash scripts/test.sh        # tool self-tests + typecheck + lint + Vitest + Playwright e2e (Chromium + WebKit)
+bash scripts/demo.sh        # end-to-end demo flows on the built app in real browsers
 bash scripts/verify.sh      # plan lint + evidence integrity
-python3 ../../tools/gen_issues.py --project postclip   # preview the slice issues generated from the plan (dry run; add --create --repo owner/name to create them)
+npm run generate:fixtures   # regenerate the synthetic fixture screenshots + gold + manifest (deterministic; artifacts are committed)
+npm run bench:ocr           # OCR engine measurement bench (selection evidence, plan D4)
 make test demo verify
 ```
 

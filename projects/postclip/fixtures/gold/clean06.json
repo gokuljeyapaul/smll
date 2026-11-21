@@ -1,0 +1,29 @@
+{
+  "id": "clean06",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Iris Tan",
+  "handle": "@iris.codes",
+  "language": "en",
+  "body": [
+    "New writeup: how we fit a document pipeline into 40 MB of WebAssembly.",
+    "The trick was not a clever algorithm — it was deleting four features nobody opened."
+  ],
+  "chrome": [
+    "@iris.codes",
+    "3h",
+    "Like",
+    "Comment",
+    "Share",
+    "77 reactions · 4 comments"
+  ],
+  "ocr_expected": [
+    "Iris Tan",
+    "@iris.codes · 3h",
+    "New writeup: how we fit a document pipeline into 40 MB of WebAssembly.",
+    "The trick was not a clever algorithm — it was deleting four features nobody opened.",
+    "77 reactions · 4 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

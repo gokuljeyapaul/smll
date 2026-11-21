@@ -1,0 +1,84 @@
+{
+  "videos": [
+    {
+      "id": "a01_smoke_chromium",
+      "path": "artifacts/video/a01_smoke_chromium.webm",
+      "sha256": "2f0718cd88b5133cffa16b1ee45086967f0cfccd4f447b2422b20b5890e691b1",
+      "size_bytes": 27856,
+      "duration_s": 1.4,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S0/junit/chromium-e2e.xml::a01_built_app_loads_home_screen_no_console_errors",
+      "junit_verified": true
+    },
+    {
+      "id": "a01_smoke_webkit",
+      "path": "artifacts/video/a01_smoke_webkit.webm",
+      "sha256": "e52b5ea9136be781a881a0ccb5184aa1ee6cd95e243f0f80016d6ae0f34182a7",
+      "size_bytes": 1459,
+      "duration_s": 1,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S0/junit/webkit-e2e.xml::a01_built_app_loads_home_screen_no_console_errors",
+      "junit_verified": true
+    },
+    {
+      "id": "eval_ocr_cer_chromium",
+      "path": "artifacts/video/eval_ocr_cer_chromium.webm",
+      "sha256": "7711ae39ecdeb37b6a51d400f524267f2130cd91493cd62fee47ed191bc121d7",
+      "size_bytes": 292558,
+      "duration_s": 13,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S0/junit/chromium-e2e.xml::eval_ocr_cer_clean_set",
+      "junit_verified": true
+    },
+    {
+      "id": "eval_ocr_cer_webkit",
+      "path": "artifacts/video/eval_ocr_cer_webkit.webm",
+      "sha256": "ce0e585c3d464b19f12050320766cf0e935552a6843a3c09263b9d36fca70cba",
+      "size_bytes": 319874,
+      "duration_s": 11.6,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S0/junit/webkit-e2e.xml::eval_ocr_cer_clean_set",
+      "junit_verified": true
+    },
+    {
+      "id": "negative_s0_chromium",
+      "path": "artifacts/video/negative_s0_chromium.webm",
+      "sha256": "c6b7c89be724448e30aed68668a36a6934420ff7dcff53c813591616cdcbeb0f",
+      "size_bytes": 56467,
+      "duration_s": 3.2,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S0/junit/chromium-e2e.xml::s0_negative_corrupt_input_fails_closed",
+      "junit_verified": true
+    },
+    {
+      "id": "negative_s0_webkit",
+      "path": "artifacts/video/negative_s0_webkit.webm",
+      "sha256": "afdd38acfef0b0a7f9e5c6dca14b136b8d05663d2692ecada17d7100142fcbd8",
+      "size_bytes": 53236,
+      "duration_s": 2.4,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S0/junit/webkit-e2e.xml::s0_negative_corrupt_input_fails_closed",
+      "junit_verified": true
+    },
+    {
+      "id": "uc01_pick_ocr_review_share_chromium",
+      "path": "artifacts/video/uc01_pick_ocr_review_share_chromium.webm",
+      "sha256": "a0f77284de29f123990376e0c1c6ed84f1bf616a70726b63a75068bbb2e31cf5",
+      "size_bytes": 58982,
+      "duration_s": 3.4,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S0/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+      "junit_verified": true
+    },
+    {
+      "id": "uc01_pick_ocr_review_share_webkit",
+      "path": "artifacts/video/uc01_pick_ocr_review_share_webkit.webm",
+      "sha256": "529355738c66aed463de3dc3d194ceaf10c276ecb954c3f870f3046f273275be",
+      "size_bytes": 68511,
+      "duration_s": 2.8,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S0/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+      "junit_verified": true
+    }
+  ]
+}
