@@ -1,0 +1,33 @@
+{
+  "id": "clean05",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Priya Raman",
+  "handle": "@priya-r",
+  "language": "en",
+  "body": [
+    "Reviewing telemetry dashboards this week taught me one thing:",
+    "a chart nobody looks at is just a very expensive screenshot.",
+    "Deleting beats maintaining. What did you delete recently? 🙂 #observability"
+  ],
+  "chrome": [
+    "8h",
+    "Like",
+    "Comment",
+    "Share",
+    "👍 220 · 💬 31 · ❤️ 17"
+  ],
+  "ocr_expected": [
+    "Priya Raman",
+    "@priya-r",
+    "8h",
+    "Reviewing telemetry dashboards this week taught me one thing:",
+    "a chart nobody looks at is just a very expensive screenshot.",
+    "Deleting beats maintaining. What did you delete recently? 🙂 #observability",
+    "👍 220 · 💬 31 · ❤️ 17",
+    "Like",
+    "Comment",
+    "Share"
+  ],
+  "synthetic": true
+}

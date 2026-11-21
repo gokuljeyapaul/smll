@@ -1,0 +1,616 @@
+# S0 RED evidence — real commands, real output, captured 2026-11-21T10:37:38Z
+
+## $ npx vitest run
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ fixtures/manifest.test.ts (6 tests | 6 failed) 18ms
+   ❯ fixture manifest lint (A31) (6)
+     × has a manifest.json 12ms
+     × lists at least the 10 S0 fixtures 1ms
+     × every image file exists, matches its sha256, is small, and is flagged synthetic 1ms
+     × total committed fixture bytes stay under 6 MB 1ms
+     × every entry has a gold JSON with the required fields 1ms
+     × no stray images without a manifest entry 1ms
+ ❯ src/ocr/normalize.test.ts (6 tests | 5 failed) 29ms
+   ❯ normalizeOcrLines — OCR result normalizer (S0) (6)
+     × trims leading and trailing whitespace from each line 15ms
+     × drops empty and whitespace-only lines 2ms
+     × collapses runs of spaces and tabs inside a line to a single space 1ms
+     × joins surviving lines with single newlines and trims the result 4ms
+     × returns empty output for all-empty input 3ms
+ ❯ src/output/payload.test.ts (5 tests | 5 failed) 26ms
+   ❯ buildSharePayload — Web Share payload builder (S0) (3)
+     × carries the exact review text, character for character 10ms
+     × uses the fixed app title 1ms
+     × never trims or mutates the review text 1ms
+   ❯ copyReviewText — clipboard copy (S0) (2)
+     × writes the exact review text to the clipboard 5ms
+     × rejects when the clipboard refuses, so the UI can surface the failure 5ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  fixtures/manifest.test.ts > fixture manifest lint (A31) > has a manifest.json
+AssertionError: fixtures/manifest.json must exist: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ fixtures/manifest.test.ts:35:71
+     33| describe('fixture manifest lint (A31)', () => {
+     34|   it('has a manifest.json', () => {
+     35|     expect(existsSync(MANIFEST), 'fixtures/manifest.json must exist').…
+       |                                                                       ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  fixtures/manifest.test.ts > fixture manifest lint (A31) > lists at least the 10 S0 fixtures
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/fixtures/manifest.json'
+ ❯ fixtures/manifest.test.ts:39:33
+     37|
+     38|   it('lists at least the 10 S0 fixtures', () => {
+     39|     const manifest = JSON.parse(readFileSync(MANIFEST, 'utf-8')) as { …
+       |                                 ^
+     40|     expect(manifest.images.length).toBeGreaterThanOrEqual(10);
+     41|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  fixtures/manifest.test.ts > fixture manifest lint (A31) > every image file exists, matches its sha256, is small, and is flagged synthetic
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/fixtures/manifest.json'
+ ❯ fixtures/manifest.test.ts:44:33
+     42|
+     43|   it('every image file exists, matches its sha256, is small, and is fl…
+     44|     const manifest = JSON.parse(readFileSync(MANIFEST, 'utf-8')) as { …
+       |                                 ^
+     45|     for (const entry of manifest.images) {
+     46|       const imagePath = join(FIXTURES_DIR, entry.file);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  fixtures/manifest.test.ts > fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/fixtures/manifest.json'
+ ❯ fixtures/manifest.test.ts:57:33
+     55|
+     56|   it('total committed fixture bytes stay under 6 MB', () => {
+     57|     const manifest = JSON.parse(readFileSync(MANIFEST, 'utf-8')) as { …
+       |                                 ^
+     58|     const total = manifest.images.reduce(
+     59|       (sum, entry) => sum + statSync(join(FIXTURES_DIR, entry.file)).s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  fixtures/manifest.test.ts > fixture manifest lint (A31) > every entry has a gold JSON with the required fields
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/fixtures/manifest.json'
+ ❯ fixtures/manifest.test.ts:66:33
+     64|
+     65|   it('every entry has a gold JSON with the required fields', () => {
+     66|     const manifest = JSON.parse(readFileSync(MANIFEST, 'utf-8')) as { …
+       |                                 ^
+     67|     for (const entry of manifest.images) {
+     68|       const goldPath = join(FIXTURES_DIR, entry.gold);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  fixtures/manifest.test.ts > fixture manifest lint (A31) > no stray images without a manifest entry
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/fixtures/manifest.json'
+ ❯ fixtures/manifest.test.ts:81:33
+     79|
+     80|   it('no stray images without a manifest entry', () => {
+     81|     const manifest = JSON.parse(readFileSync(MANIFEST, 'utf-8')) as { …
+       |                                 ^
+     82|     const listed = new Set(manifest.images.map((entry) => entry.file));
+     83|     const onDisk = readdirSync(IMAGES_DIR).filter((f) => f.endsWith('.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  src/ocr/normalize.test.ts > normalizeOcrLines — OCR result normalizer (S0) > trims leading and trailing whitespace from each line
+AssertionError: expected [ '  hello  ', '\tworld\t' ] to deeply equal [ 'hello', 'world' ]
+
+- Expected
++ Received
+
+  [
+-   "hello",
+-   "world",
++   "  hello  ",
++   "	world	",
+  ]
+
+ ❯ src/ocr/normalize.test.ts:7:19
+      5|   it('trims leading and trailing whitespace from each line', () => {
+      6|     const { lines } = normalizeOcrLines(['  hello  ', '\tworld\t']);
+      7|     expect(lines).toEqual(['hello', 'world']);
+       |                   ^
+      8|   });
+      9|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  src/ocr/normalize.test.ts > normalizeOcrLines — OCR result normalizer (S0) > drops empty and whitespace-only lines
+AssertionError: expected [ 'one', '', '   ', 'two' ] to deeply equal [ 'one', 'two' ]
+
+- Expected
++ Received
+
+  [
+    "one",
++   "",
++   "   ",
+    "two",
+  ]
+
+ ❯ src/ocr/normalize.test.ts:12:19
+     10|   it('drops empty and whitespace-only lines', () => {
+     11|     const { lines } = normalizeOcrLines(['one', '', '   ', 'two']);
+     12|     expect(lines).toEqual(['one', 'two']);
+       |                   ^
+     13|   });
+     14|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  src/ocr/normalize.test.ts > normalizeOcrLines — OCR result normalizer (S0) > collapses runs of spaces and tabs inside a line to a single space
+AssertionError: expected [ 'a   b\t\tc' ] to deeply equal [ 'a b c' ]
+
+- Expected
++ Received
+
+  [
+-   "a b c",
++   "a   b		c",
+  ]
+
+ ❯ src/ocr/normalize.test.ts:17:19
+     15|   it('collapses runs of spaces and tabs inside a line to a single spac…
+     16|     const { lines } = normalizeOcrLines(['a   b\t\tc']);
+     17|     expect(lines).toEqual(['a b c']);
+       |                   ^
+     18|   });
+     19|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  src/ocr/normalize.test.ts > normalizeOcrLines — OCR result normalizer (S0) > joins surviving lines with single newlines and trims the result
+AssertionError: expected ' one \n\ntwo  ' to be 'one\ntwo' // Object.is equality
+
+- Expected
++ Received
+
+- one
++  one 
++
+- two
++ two  
+
+ ❯ src/ocr/normalize.test.ts:22:18
+     20|   it('joins surviving lines with single newlines and trims the result'…
+     21|     const { text } = normalizeOcrLines([' one ', '', 'two  ']);
+     22|     expect(text).toBe('one\ntwo');
+       |                  ^
+     23|   });
+     24|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  src/ocr/normalize.test.ts > normalizeOcrLines — OCR result normalizer (S0) > returns empty output for all-empty input
+AssertionError: expected { lines: [ '', '  ' ], text: '\n  ' } to deeply equal { lines: [], text: '' }
+
+- Expected
++ Received
+
+  {
+-   "lines": [],
+-   "text": "",
++   "lines": [
++     "",
++     "  ",
++   ],
++   "text": "
++   ",
+  }
+
+ ❯ src/ocr/normalize.test.ts:26:43
+     24|
+     25|   it('returns empty output for all-empty input', () => {
+     26|     expect(normalizeOcrLines(['', '  '])).toEqual({ lines: [], text: '…
+       |                                           ^
+     27|   });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  src/output/payload.test.ts > buildSharePayload — Web Share payload builder (S0) > carries the exact review text, character for character
+AssertionError: expected '' to be 'Line one\nLine two — with “quotes”, e…' // Object.is equality
+
+- Expected
++ Received
+
+- Line one
+- Line two — with “quotes”, emoji 🙂 and   spaces
+
+ ❯ src/output/payload.test.ts:7:48
+      5|   it('carries the exact review text, character for character', () => {
+      6|     const reviewText = 'Line one\nLine two — with “quotes”, emoji 🙂 a…
+      7|     expect(buildSharePayload(reviewText).text).toBe(reviewText);
+       |                                                ^
+      8|   });
+      9|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+ FAIL  src/output/payload.test.ts > buildSharePayload — Web Share payload builder (S0) > uses the fixed app title
+AssertionError: expected '' to be 'PostClip' // Object.is equality
+
+- Expected
++ Received
+
+- PostClip
+
+ ❯ src/output/payload.test.ts:11:42
+      9|
+     10|   it('uses the fixed app title', () => {
+     11|     expect(buildSharePayload('x').title).toBe('PostClip');
+       |                                          ^
+     12|   });
+     13|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/16]⎯
+
+ FAIL  src/output/payload.test.ts > buildSharePayload — Web Share payload builder (S0) > never trims or mutates the review text
+AssertionError: expected '' to be '  padded  ' // Object.is equality
+
+- Expected
++ Received
+
+-   padded  
+
+ ❯ src/output/payload.test.ts:16:44
+     14|   it('never trims or mutates the review text', () => {
+     15|     const padded = '  padded  ';
+     16|     expect(buildSharePayload(padded).text).toBe(padded);
+       |                                            ^
+     17|   });
+     18| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/16]⎯
+
+ FAIL  src/output/payload.test.ts > copyReviewText — clipboard copy (S0) > writes the exact review text to the clipboard
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'exact text\nwith lines' ]
+
+Number of calls: 0
+
+ ❯ src/output/payload.test.ts:25:23
+     23|     vi.stubGlobal('navigator', { clipboard: { writeText } });
+     24|     await copyReviewText('exact text\nwith lines');
+     25|     expect(writeText).toHaveBeenCalledWith('exact text\nwith lines');
+       |                       ^
+     26|     vi.unstubAllGlobals();
+     27|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/16]⎯
+
+ FAIL  src/output/payload.test.ts > copyReviewText — clipboard copy (S0) > rejects when the clipboard refuses, so the UI can surface the failure
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ src/output/payload.test.ts:32:38
+     30|     const writeText = vi.fn().mockRejectedValue(new Error('denied'));
+     31|     vi.stubGlobal('navigator', { clipboard: { writeText } });
+     32|     await expect(copyReviewText('t')).rejects.toThrow('denied');
+       |                                      ^
+     33|     vi.unstubAllGlobals();
+     34|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/16]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  16 failed | 1 passed (17)
+   Start at  10:37:39
+   Duration  1.43s (environment 70%, setup 18%, transform 7%, tests 3%, import 1%, worker 1%)
+
+vitest exit=1
+
+## $ npx playwright test  (fixtures generated; scaffold loads; OCR/review/share behavior missing)
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (684ms)
+  ✘  2 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share (2.1m)
+  ✘  3 [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (841ms)
+  ✘  4 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share (687ms)
+
+
+  1) [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ─────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Review' })
+    Expected: visible
+    Timeout: 120000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Review' }) with timeout 120000ms
+      - waiting for getByRole('heading', { name: 'Review' })
+
+
+      31 |
+      32 |   // Real OCR runs in the browser; the review screen appears with the text.
+    > 33 |   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+         |                                                               ^
+      34 |   const reviewText = await page.locator('#review-text').inputValue();
+      35 |   expect(reviewText.length).toBeGreaterThan(40);
+      36 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc01_pick_ocr_review_share.spec.ts:33:63
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors ──────
+
+    Error: browserContext.newPage: Unknown permission: clipboard-write
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ───────────
+
+    Error: browserContext.newPage: Unknown permission: clipboard-write
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ──────────
+    [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors ───────
+    [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ────────────
+  1 passed (2.3m)
+playwright exit=1
+
+## $ npx playwright test  (after WebKit permission config fix; expected: a01 passes both engines, uc01 RED both engines)
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (559ms)
+  ✘  2 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share (2.1m)
+  ✘  3 [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (371ms)
+  ✘  4 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share (392ms)
+
+
+  1) [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ─────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Review' })
+    Expected: visible
+    Timeout: 120000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Review' }) with timeout 120000ms
+      - waiting for getByRole('heading', { name: 'Review' })
+
+
+      31 |
+      32 |   // Real OCR runs in the browser; the review screen appears with the text.
+    > 33 |   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+         |                                                               ^
+      34 |   const reviewText = await page.locator('#review-text').inputValue();
+      35 |   expect(reviewText.length).toBeGreaterThan(40);
+      36 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc01_pick_ocr_review_share.spec.ts:33:63
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors ──────
+
+    Error: browserContext.newPage: Unknown permission: clipboard-sanitized-write
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ───────────
+
+    Error: browserContext.newPage: Unknown permission: clipboard-sanitized-write
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ──────────
+    [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors ───────
+    [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:26:1 › uc01_pick_ocr_review_share ────────────
+  1 passed (2.2m)
+playwright exit=1
+
+## $ npx playwright test  (clipboard verification design finalized: chromium real read, webkit paste round-trip)
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (586ms)
+  ✘  2 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share (2.1m)
+  ✘  3 [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (457ms)
+  ✘  4 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share (473ms)
+
+
+  1) [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share ─────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Review' })
+    Expected: visible
+    Timeout: 120000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Review' }) with timeout 120000ms
+      - waiting for getByRole('heading', { name: 'Review' })
+
+
+      57 |
+      58 |   // Real OCR runs in the browser; the review screen appears with the text.
+    > 59 |   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+         |                                                               ^
+      60 |   const reviewText = await page.locator('#review-text').inputValue();
+      61 |   expect(reviewText.length).toBeGreaterThan(40);
+      62 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc01_pick_ocr_review_share.spec.ts:59:63
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors ──────
+
+    Error: browserContext.newPage: Unknown permission: clipboard-sanitized-write
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share ───────────
+
+    Error: browserContext.newPage: Unknown permission: clipboard-sanitized-write
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share ──────────
+    [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors ───────
+    [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share ────────────
+  1 passed (2.2m)
+playwright exit=1
+
+## $ npx playwright test  (webkit clipboard permissions removed per Playwright WebKit source)
+playwright exit=1
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share ──────────
+    [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:52:1 › uc01_pick_ocr_review_share ────────────
+  2 passed (4.3m)

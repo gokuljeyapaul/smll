@@ -1,0 +1,31 @@
+{
+  "id": "dark01",
+  "kind": "dark",
+  "theme": "dark",
+  "author": "Lena Fischer",
+  "handle": "@lenaf",
+  "language": "en",
+  "body": [
+    "Dark mode is not a theme, it is a promise about battery life.",
+    "Our web app now repaints 34% less per scroll on OLED panels."
+  ],
+  "chrome": [
+    "6h",
+    "Like",
+    "Comment",
+    "Share",
+    "👍 64"
+  ],
+  "ocr_expected": [
+    "Lena Fischer",
+    "@lenaf",
+    "6h",
+    "Dark mode is not a theme, it is a promise about battery life.",
+    "Our web app now repaints 34% less per scroll on OLED panels.",
+    "👍 64",
+    "Like",
+    "Comment",
+    "Share"
+  ],
+  "synthetic": true
+}

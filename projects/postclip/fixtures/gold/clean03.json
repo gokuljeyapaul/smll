@@ -1,0 +1,37 @@
+{
+  "id": "clean03",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Amara Osei",
+  "handle": "@amaraosei",
+  "language": "en",
+  "body": [
+    "Hiring update from Brightpath Labs:",
+    "• Senior platform engineer (Rust, distributed storage)",
+    "• Product designer (privacy-first interfaces)",
+    "• Applied researcher (small language models)",
+    "We read every application ourselves. No keyword filters. #hiring"
+  ],
+  "chrome": [
+    "1d",
+    "Like",
+    "Comment",
+    "Share",
+    "👍 51"
+  ],
+  "ocr_expected": [
+    "Amara Osei",
+    "@amaraosei",
+    "1d",
+    "Hiring update from Brightpath Labs:",
+    "• Senior platform engineer (Rust, distributed storage)",
+    "• Product designer (privacy-first interfaces)",
+    "• Applied researcher (small language models)",
+    "We read every application ourselves. No keyword filters. #hiring",
+    "👍 51",
+    "Like",
+    "Comment",
+    "Share"
+  ],
+  "synthetic": true
+}

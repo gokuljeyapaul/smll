@@ -1,0 +1,33 @@
+{
+  "id": "chrome02",
+  "kind": "chrome",
+  "theme": "light",
+  "author": "Noah Kessler",
+  "handle": "@noahk",
+  "language": "en",
+  "body": [
+    "Reminder: our community call on Thursday covers the new audit API.",
+    "Bring your weirdest access-control bug. We will debug it live."
+  ],
+  "chrome": [
+    "7h",
+    "Like",
+    "Comment",
+    "Share",
+    "👍 342 · 💬 44",
+    "Follow"
+  ],
+  "ocr_expected": [
+    "Noah Kessler",
+    "@noahk",
+    "7h",
+    "Reminder: our community call on Thursday covers the new audit API.",
+    "Bring your weirdest access-control bug. We will debug it live.",
+    "👍 342 · 💬 44",
+    "Like",
+    "Comment",
+    "Share",
+    "Follow"
+  ],
+  "synthetic": true
+}

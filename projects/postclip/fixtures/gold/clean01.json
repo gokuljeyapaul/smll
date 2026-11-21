@@ -1,0 +1,33 @@
+{
+  "id": "clean01",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Maya Lindqvist",
+  "handle": "@maya-builds",
+  "language": "en",
+  "body": [
+    "Shipped our first offline-first release today 🚀",
+    "No cloud, no accounts, just a local cache that never lies.",
+    "What is the last app you used that worked in a tunnel? #buildinpublic #offline"
+  ],
+  "chrome": [
+    "2h",
+    "Like",
+    "Comment",
+    "Share",
+    "👍 42"
+  ],
+  "ocr_expected": [
+    "Maya Lindqvist",
+    "@maya-builds",
+    "2h",
+    "Shipped our first offline-first release today 🚀",
+    "No cloud, no accounts, just a local cache that never lies.",
+    "What is the last app you used that worked in a tunnel? #buildinpublic #offline",
+    "👍 42",
+    "Like",
+    "Comment",
+    "Share"
+  ],
+  "synthetic": true
+}
