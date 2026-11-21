@@ -16,3 +16,4 @@ android/app/build/
 *.safetensors
 *.pyc
 __pycache__/
+test-results/
