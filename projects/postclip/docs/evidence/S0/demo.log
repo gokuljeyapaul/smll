@@ -1,0 +1,17 @@
+[demo] preview child pid=14875 cwd=/opt/data/workspace/smll/projects/postclip
+[preview-out] ➜  Local:   http://127.0.0.1:4197/
+demo: serving built app at http://127.0.0.1:4197/
+  [chromium] PASS — home screen renders
+  [chromium] PASS — real OCR produces review text (262 chars)
+  [chromium] PASS — review text matches the fixture (first gold line found) ('Maya Lindqvist')
+  [chromium] PASS — Web Share payload equals review text
+  [chromium] PASS — Copy shows feedback
+  [chromium] PASS — clipboard paste round-trip delivers the review text (262 chars)
+  [webkit] PASS — home screen renders
+  [webkit] PASS — real OCR produces review text (262 chars)
+  [webkit] PASS — review text matches the fixture (first gold line found) ('Maya Lindqvist')
+  [webkit] PASS — Web Share payload equals review text
+  [webkit] PASS — Copy shows feedback
+  [webkit] PASS — clipboard paste round-trip delivers the review text (262 chars)
+demo: chromium=PASS webkit=PASS
+[preview] exited code=143 sig=null

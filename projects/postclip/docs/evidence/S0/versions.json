@@ -1,0 +1,50 @@
+{
+  "slice": "S0",
+  "recorded_at": "2026-11-21T11:15:00Z",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1 (.nvmrc)",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1 build chromium-1255)",
+    "webkit": "Version/27.2 (Playwright 1.65.1 build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM, 39 GB free disk at slice start (headless-Linux numbers only; real-device behavior is NOT_RUN)"
+  },
+  "toolchain": {
+    "npm": "12.0.2",
+    "typescript": "5.9.3",
+    "vite": "8.3.8",
+    "vitest": "5.1.1",
+    "playwright": "1.65.1",
+    "react": "19.3.1",
+    "react_dom": "19.3.1",
+    "eslint": "9.39.5",
+    "typescript-eslint": "8.73.0",
+    "jsdom": "31.0.1",
+    "python3": "3.14.9",
+    "git": "2.47.3",
+    "ffmpeg": "n9.0.1-11-ge47273f4d9-20260831"
+  },
+  "ocr_engine": {
+    "chosen": "tesseract.js 7.0.0 (Apache-2.0) + tesseract.js-core 7.0.0 (Apache-2.0), OEM LSTM_ONLY, default page segmentation",
+    "language_data": {
+      "file": "eng.traineddata.gz",
+      "source": "https://tessdata.projectnaptha.com/4.0.0_fast/eng.traineddata.gz",
+      "sha256": "18c1ac52b75e35d44735fb6c2a60acfaf23033524653200738e98f0243edb75b",
+      "size_bytes": 1984273,
+      "license": "Apache-2.0 (tessdata)"
+    },
+    "selection_by_measurement": "docs/evidence/S0/ocr_engine_comparison.md (bench: eval/run_ocr_bench.mjs, raw: eval/ocr_bench_results.json)"
+  },
+  "bench_only_models_not_shipped": {
+    "note": "PP-OCRv4 ONNX models were used only inside the dev/test-only measurement bench (rejected candidate); they are downloaded to .cache/models/ppocr (gitignored), never bundled.",
+    "det": "ch_PP-OCRv4_det.onnx (cycloneboy/ch_PP-OCRv4_det_infer on HF)",
+    "rec": "en_PP-OCRv4_rec.onnx (cycloneboy/en_PP-OCRv4_rec_infer on HF)",
+    "sha256s": "see .cache/models/ppocr/sha256.txt recorded during the bench run"
+  },
+  "version_resolution_notes": [
+    "All versions resolved at build time from the npm registry and pinned in package-lock.json.",
+    "TypeScript 7.0.2 is the registry latest, but typescript-eslint 8.73.0 declares peer support for typescript <6.1.0, so 5.9.3 is the latest mutually compatible TypeScript and was pinned.",
+    "eslint 10.15.0 is the registry latest and typescript-eslint's peer range does admit it; eslint 9.39.5 was pinned first and the suite is green on it — switching majors mid-slice would be churn without a driver, so 9.x ships S0.",
+    "onnxruntime-web 1.31.1 is a devDependency used only by the OCR selection bench; it is not part of the shipped app while Tesseract.js is the chosen engine.",
+    "npm 12 blocked the postinstall scripts of tesseract.js and protobufjs (both are cosmetic banners); both were denied via npm install-scripts deny, recorded in package.json for reproducible npm ci."
+  ]
+}

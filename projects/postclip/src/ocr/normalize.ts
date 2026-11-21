@@ -8,6 +8,10 @@
  *  - the joined text uses `\n` between the surviving lines, no leading/trailing whitespace.
  */
 export function normalizeOcrLines(rawLines: string[]): { lines: string[]; text: string } {
-  // Not yet implemented: returns the raw input. Tests define the behavior (RED first).
-  return { lines: rawLines, text: rawLines.join('\n') };
+  const lines: string[] = [];
+  for (const raw of rawLines) {
+    const line = raw.replace(/[ \t]+/g, ' ').trim();
+    if (line.length > 0) lines.push(line);
+  }
+  return { lines, text: lines.join('\n') };
 }

@@ -8,26 +8,24 @@
   "body": [
     "Reviewing telemetry dashboards this week taught me one thing:",
     "a chart nobody looks at is just a very expensive screenshot.",
-    "Deleting beats maintaining. What did you delete recently? 🙂 #observability"
+    "Deleting beats maintaining. What did you delete recently? #observability"
   ],
   "chrome": [
+    "@priya-r",
     "8h",
     "Like",
     "Comment",
     "Share",
-    "👍 220 · 💬 31 · ❤️ 17"
+    "220 reactions · 31 comments"
   ],
   "ocr_expected": [
     "Priya Raman",
-    "@priya-r",
-    "8h",
+    "@priya-r · 8h",
     "Reviewing telemetry dashboards this week taught me one thing:",
     "a chart nobody looks at is just a very expensive screenshot.",
-    "Deleting beats maintaining. What did you delete recently? 🙂 #observability",
-    "👍 220 · 💬 31 · ❤️ 17",
-    "Like",
-    "Comment",
-    "Share"
+    "Deleting beats maintaining. What did you delete recently? #observability",
+    "220 reactions · 31 comments",
+    "Like Comment Share"
   ],
   "synthetic": true
 }

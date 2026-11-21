@@ -5,8 +5,8 @@
     {
       "id": "clean01",
       "file": "images/clean01.png",
-      "sha256": "060c8ce7c18805e949f873fff9c5aa4d8d1a42a1955fd83de22cdce2478d0ae4",
-      "size_bytes": 64597,
+      "sha256": "a3f419b3d8df531ccab0bfaa6c5f008990d4842f54191e26e3561a330ee0f445",
+      "size_bytes": 66263,
       "synthetic": true,
       "gold": "gold/clean01.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -14,8 +14,8 @@
     {
       "id": "clean02",
       "file": "images/clean02.png",
-      "sha256": "4c3aacf7b065b183f5b15636212c083c0904ab14eb9271c837b0e6bd7f9f09da",
-      "size_bytes": 108703,
+      "sha256": "b96cb2be5b6bdb00021f71dbb467161b139aa99262f1c6ea1761a95bfaac2b56",
+      "size_bytes": 109990,
       "synthetic": true,
       "gold": "gold/clean02.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -23,8 +23,8 @@
     {
       "id": "clean03",
       "file": "images/clean03.png",
-      "sha256": "81cc58cf8ec42754f79422ed7beb282fe96e26133a3c5842eddb78f6be3095b4",
-      "size_bytes": 81802,
+      "sha256": "79c1b5e7488c969706144f23dd61093186bd248d74f3344a3121b06b37e6cb9c",
+      "size_bytes": 85377,
       "synthetic": true,
       "gold": "gold/clean03.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -32,8 +32,8 @@
     {
       "id": "clean04",
       "file": "images/clean04.png",
-      "sha256": "52581a6578c58f96c74299ebbe7d040b837885c99f3c8366693fd10134c991b1",
-      "size_bytes": 41111,
+      "sha256": "fc4d313142ba44577a8be052d3dd423d4477aeac4b4575d0d16c99133f772369",
+      "size_bytes": 42432,
       "synthetic": true,
       "gold": "gold/clean04.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -41,8 +41,8 @@
     {
       "id": "clean05",
       "file": "images/clean05.png",
-      "sha256": "decd6ac8f5e1c178be5d56a9f88533b47fbc4d1ba553fff77050276c8998eed0",
-      "size_bytes": 72370,
+      "sha256": "7ac75b77078f45d5eb59b5eeecb1d9bcbe7b3901db16aa051650da4893235edc",
+      "size_bytes": 70376,
       "synthetic": true,
       "gold": "gold/clean05.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -50,8 +50,8 @@
     {
       "id": "clean06",
       "file": "images/clean06.png",
-      "sha256": "2c2d57b34ad298db50781085247a54777f0ea0c081d0dc3ccd29d0ae7a84424b",
-      "size_bytes": 55094,
+      "sha256": "c3abd5fef5cf030cf60656f523fa4662bdd53d074967d6ba05491fd5abdff6f8",
+      "size_bytes": 58669,
       "synthetic": true,
       "gold": "gold/clean06.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -59,8 +59,8 @@
     {
       "id": "dark01",
       "file": "images/dark01.png",
-      "sha256": "a7776ec1c78b2f83e39cb57ff8500dc1ab6f1d0ea34a51f6ce8206419b24a8c8",
-      "size_bytes": 48399,
+      "sha256": "799b19f3fe072eb0aee6a58f9fdb22e252d725717983f6b03dd3aa2863cf93bf",
+      "size_bytes": 52101,
       "synthetic": true,
       "gold": "gold/dark01.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -68,8 +68,8 @@
     {
       "id": "dark02",
       "file": "images/dark02.png",
-      "sha256": "67f8cac64016c37a9ca87ee8006a75223ff3c12cac7d5de0333ee6102ac0a280",
-      "size_bytes": 75294,
+      "sha256": "334afcc2bc25430039538397969da24f4ee917648be384a593e4027bd2be700f",
+      "size_bytes": 76863,
       "synthetic": true,
       "gold": "gold/dark02.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -77,8 +77,8 @@
     {
       "id": "chrome01",
       "file": "images/chrome01.png",
-      "sha256": "36269bc7750b3059df15a0533a1d857ffa54a901a027938401d57d6251b6dc3e",
-      "size_bytes": 80361,
+      "sha256": "96875b32a46eb8ed10ef54d08e1dd181367a0641a027079ac69476c7ff0e856e",
+      "size_bytes": 79041,
       "synthetic": true,
       "gold": "gold/chrome01.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
@@ -86,8 +86,8 @@
     {
       "id": "chrome02",
       "file": "images/chrome02.png",
-      "sha256": "4bdbbdf964b3d6c68b538a482030ed39af45a4e478cc87ba9e30fa55e702a867",
-      "size_bytes": 56049,
+      "sha256": "194282235437ccaadd551af08f9407b2c29c0af5b69a6d539e22ef41f349f706",
+      "size_bytes": 57398,
       "synthetic": true,
       "gold": "gold/chrome02.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."

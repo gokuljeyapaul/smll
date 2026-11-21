@@ -56,10 +56,10 @@ function renderCard(f) {
   .body { font-size:16px; line-height:1.55; white-space:pre-line; }
   .reactions { color:${colors.muted}; font-size:13.5px; margin-top:14px; padding-top:10px;
     border-top:1px solid ${colors.border}; }
-  .actions { display:flex; justify-content:space-between; margin-top:10px; padding-top:10px;
-    border-top:1px solid ${colors.border}; }
+  .actions { display:flex; justify-content:center; gap:28px; margin-top:10px; padding-top:10px;
+    border-top:1px solid ${colors.border}; align-items:center; }
   .action { color:${colors.muted}; font-size:14px; font-weight:600; }
-  .follow { margin-left:auto; background:${colors.chip}; border-radius:9999px; padding:4px 14px;
+  .follow { background:${colors.chip}; border-radius:9999px; padding:4px 14px;
     font-weight:700; font-size:14px; }
 </style></head>
 <body><div class="wrap"><div class="card" id="post-card">

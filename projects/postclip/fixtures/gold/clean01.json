@@ -6,28 +6,26 @@
   "handle": "@maya-builds",
   "language": "en",
   "body": [
-    "Shipped our first offline-first release today 🚀",
+    "Shipped our first offline-first release today.",
     "No cloud, no accounts, just a local cache that never lies.",
     "What is the last app you used that worked in a tunnel? #buildinpublic #offline"
   ],
   "chrome": [
+    "@maya-builds",
     "2h",
     "Like",
     "Comment",
     "Share",
-    "👍 42"
+    "42 reactions · 9 comments"
   ],
   "ocr_expected": [
     "Maya Lindqvist",
-    "@maya-builds",
-    "2h",
-    "Shipped our first offline-first release today 🚀",
+    "@maya-builds · 2h",
+    "Shipped our first offline-first release today.",
     "No cloud, no accounts, just a local cache that never lies.",
     "What is the last app you used that worked in a tunnel? #buildinpublic #offline",
-    "👍 42",
-    "Like",
-    "Comment",
-    "Share"
+    "42 reactions · 9 comments",
+    "Like Comment Share"
   ],
   "synthetic": true
 }

@@ -7,12 +7,9 @@
  *  - Copy writes the exact review text to the clipboard.
  */
 export function buildSharePayload(reviewText: string): ShareData {
-  // Not yet implemented. Tests define the behavior (RED first).
-  void reviewText;
-  return { title: '', text: '' };
+  return { title: 'PostClip', text: reviewText };
 }
 
 export async function copyReviewText(reviewText: string): Promise<void> {
-  // Not yet implemented. Tests define the behavior (RED first).
-  void reviewText;
+  await navigator.clipboard.writeText(reviewText);
 }

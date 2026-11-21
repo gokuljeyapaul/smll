@@ -57,8 +57,13 @@ test('uc01_pick_ocr_review_share', async ({ page }, testInfo: TestInfo) => {
 
   // Real OCR runs in the browser; the review screen appears with the text.
   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect
+    .poll(async () => (await page.locator('#review-text').inputValue()).length, {
+      timeout: 120_000,
+      message: 'real in-browser OCR to produce the extracted text',
+    })
+    .toBeGreaterThan(40);
   const reviewText = await page.locator('#review-text').inputValue();
-  expect(reviewText.length).toBeGreaterThan(40);
 
   // A03: Web Share is called with a text payload equal to the review text.
   await page.locator('#share-btn').click();

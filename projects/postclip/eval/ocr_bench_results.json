@@ -1,0 +1,733 @@
+{
+  "ranAt": "2026-11-21T11:01:28.408Z",
+  "engines": [
+    {
+      "engine": "tesseract-fast",
+      "name": "tesseract.js 7 (fast traineddata, default)",
+      "assetsServedBytes": 6076365,
+      "assetsServed": [
+        {
+          "url": "/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js",
+          "bytes": 3905767
+        },
+        {
+          "url": "/ocr-assets/eng.traineddata.gz",
+          "bytes": 1984273
+        },
+        {
+          "url": "/ocr-assets/worker.min.js",
+          "bytes": 111307
+        },
+        {
+          "url": "/node_modules/tesseract.js/dist/tesseract.min.js",
+          "bytes": 62961
+        },
+        {
+          "url": "/bench/",
+          "bytes": 12057
+        }
+      ],
+      "resultsRaw": [
+        {
+          "id": "clean01",
+          "ms": 465,
+          "text": "Maya Lindqvist\n\n@maya-builds - 2h\nShipped our first offline-first release today.\nNo cloud, no accounts, just a local cache that never lies.\nWhat is the last app you used that worked in a tunnel?\n#buildinpublic #offline\n42 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean02",
+          "ms": 579,
+          "text": "Devon Park\n\n@devon.park - 5h\nThree lessons from refactoring a legacy ingest pipeline:\n1. Write the schema down before touching a single handler.\n2. Delete twice as much code as you add.\n3. A flaky test is a production incident you get to have twice.\nThe pipeline now processes a day of traffic in eleven minutes.\nAsk me anything about the migration — happy to share the\nrunbook. #engineering #refactor\n137 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean03",
+          "ms": 432,
+          "text": "Amara Osei\n\n@amaraosei - 1d\nHiring update from Brightpath Labs:\n¢ Senior platform engineer (Rust, distributed storage)\ne Product designer (privacy-first interfaces)\n¢ Applied researcher (small language models)\nWe read every application ourselves. No keyword filters. #hiring\n51 reactions - 3 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean04",
+          "ms": 236,
+          "text": "Felix Brandt\n@felixb - 4h\nThe best commit message is the one a tired colleague reads in six\nmonths and still understands.\n8 reactions\nLike Comment Share\n"
+        },
+        {
+          "id": "clean05",
+          "ms": 385,
+          "text": "Priya Raman\n\n@priya-r: 8h\nReviewing telemetry dashboards this week taught me one thing:\na chart nobody looks at is just a very expensive screenshot.\nDeleting beats maintaining. What did you delete recently?\n#observability\n220 reactions - 31 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean06",
+          "ms": 341,
+          "text": "Iris Tan\n\n@iris.codes - 3h\nNew writeup: how we fit a document pipeline into 40 MB of\nWebAssembly.\nThe trick was not a clever algorithm — it was deleting four features\nnobody opened.\n77 reactions - 4 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "dark01",
+          "ms": 507,
+          "text": "Lena Fischer\n@lenaf : 6h\nDark mode is not a theme, it is a promise about battery life.\nOur web app now repaints 34% less per scroll on OLED panels.\n64 reactions - 2 comments\nLike Comment Share\n"
+        },
+        {
+          "id": "dark02",
+          "ms": 671,
+          "text": "Marco D’Souza\n\n@marco-ds - 9h\nDebugging story from this week: a cache that expired too fast,\na clock that lied by 90 seconds, and one very patient SRE.\nRoot cause? Two services disagreed about what “now” means.\n#postmortem\n98 reactions - 5 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "chrome01",
+          "ms": 411,
+          "text": "Promoted\n\nSofia Marchetti\n\n@sofia-m - 1h\nHarborlight Systems is hiring a founding engineer for our storage\nteam.\nYou will own the replication layer end to end, from design to on-call.\nFully remote, four-day weeks, real on-call compensation. Apply\nbelow.\n1,208 reactions - 89 comments\n\nLike Comment Share Follow\n"
+        },
+        {
+          "id": "chrome02",
+          "ms": 287,
+          "text": "Noah Kessler\n@noahk : 7h\nReminder: our community call on Thursday covers the new audit\nAPI.\nBring your weirdest access-control bug. We will debug it live.\n342 reactions : 44 comments\nLike Comment Share Follow\n"
+        }
+      ],
+      "cleanSetMeanCER": 0.023079711177139386,
+      "allFixturesMeanCER": 0.022194905919287328,
+      "meanMs": 431.4,
+      "perFixture": [
+        {
+          "id": "clean01",
+          "kind": "clean",
+          "ms": 465,
+          "cer": 0.022900763358778626
+        },
+        {
+          "id": "clean02",
+          "kind": "clean",
+          "ms": 579,
+          "cer": 0.013452914798206279
+        },
+        {
+          "id": "clean03",
+          "kind": "clean",
+          "ms": 432,
+          "cer": 0.025157232704402517
+        },
+        {
+          "id": "clean04",
+          "kind": "clean",
+          "ms": 236,
+          "cer": 0.019736842105263157
+        },
+        {
+          "id": "clean05",
+          "kind": "clean",
+          "ms": 385,
+          "cer": 0.026119402985074626
+        },
+        {
+          "id": "clean06",
+          "kind": "clean",
+          "ms": 341,
+          "cer": 0.03111111111111111
+        },
+        {
+          "id": "dark01",
+          "kind": "dark",
+          "ms": 507,
+          "cer": 0.015625
+        },
+        {
+          "id": "dark02",
+          "kind": "dark",
+          "ms": 671,
+          "cer": 0.022556390977443608
+        },
+        {
+          "id": "chrome01",
+          "kind": "chrome",
+          "ms": 411,
+          "cer": 0.026058631921824105
+        },
+        {
+          "id": "chrome02",
+          "kind": "chrome",
+          "ms": 287,
+          "cer": 0.019230769230769232
+        }
+      ]
+    },
+    {
+      "engine": "tesseract-best",
+      "name": "tesseract.js 7 (best traineddata, default)",
+      "assetsServedBytes": 15015152,
+      "assetsServed": [
+        {
+          "url": "/tessdata-best/eng.traineddata.gz",
+          "bytes": 10923060
+        },
+        {
+          "url": "/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js",
+          "bytes": 3905767
+        },
+        {
+          "url": "/ocr-assets/worker.min.js",
+          "bytes": 111307
+        },
+        {
+          "url": "/node_modules/tesseract.js/dist/tesseract.min.js",
+          "bytes": 62961
+        },
+        {
+          "url": "/bench/",
+          "bytes": 12057
+        }
+      ],
+      "resultsRaw": [
+        {
+          "id": "clean01",
+          "ms": 618,
+          "text": "Maya Lindqvist\n\n@maya-builds - 2h\nShipped our first offline-first release today.\nNo cloud, no accounts, just a local cache that never lies.\nWhat is the last app you used that worked in a tunnel?\n#buildinpublic #offline\n42 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean02",
+          "ms": 962,
+          "text": "Devon Park\n\n@devon.park - 5h\nThree lessons from refactoring a legacy ingest pipeline:\n1. Write the schema down before touching a single handler.\n2. Delete twice as much code as you add.\n3. A flaky test is a production incident you get to have twice.\nThe pipeline now processes a day of traffic in eleven minutes.\nAsk me anything about the migration — happy to share the\nrunbook. #engineering #refactor\n137 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean03",
+          "ms": 618,
+          "text": "Amara Osei\n\n@amaraosei - 1d\nHiring update from Brightpath Labs:\n» Senior platform engineer (Rust, distributed storage)\n* Product designer (privacy-first interfaces)\n» Applied researcher (small language models)\nWe read every application ourselves. No keyword filters. #hiring\n51 reactions + 3 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean04",
+          "ms": 359,
+          "text": "Felix Brandt\n@felixb - 4h\nThe best commit message is the one a tired colleague reads in six\nmonths and still understands.\n8 reactions\nLike Comment Share\n"
+        },
+        {
+          "id": "clean05",
+          "ms": 531,
+          "text": "Priya Raman\n\n@priya-r - 8h\nReviewing telemetry dashboards this week taught me one thing:\na chart nobody looks at is just a very expensive screenshot.\nDeleting beats maintaining. What did you delete recently?\n#observability\n220 reactions + 31 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean06",
+          "ms": 469,
+          "text": "Iris Tan\n\n@iris.codes - 3h\nNew writeup: how we fit a document pipeline into 40 MB of\nWebAssembly.\nThe trick was not a clever algorithm — it was deleting four features\nnobody opened.\n77 reactions - 4 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "dark01",
+          "ms": 666,
+          "text": "Lena Fischer\n@lenaf - 6h\nDark mode is not a theme, it is a promise about battery life.\nOur web app now repaints 34% less per scroll on OLED panels.\n64 reactions - 2 comments\nLike Comment Share\n"
+        },
+        {
+          "id": "dark02",
+          "ms": 1046,
+          "text": "Marco D’Souza\n\n@marco-ds - 9h\nDebugging story from this week: a cache that expired too fast,\na clock that lied by 90 seconds, and one very patient SRE.\nRoot cause? Two services disagreed about what “now” means.\n#postmortem\n98 reactions - 5 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "chrome01",
+          "ms": 594,
+          "text": "Promoted\n\nSofia Marchetti\n\n@sofia-m + 1h\nHarborlight Systems is hiring a founding engineer for our storage\nteam.\nYou will own the replication layer end to end, from design to on-call.\nFully remote, four-day weeks, real on-call compensation. Apply\nbelow.\n1,208 reactions - 89 comments\n\nLike Comment Share Follow\n"
+        },
+        {
+          "id": "chrome02",
+          "ms": 455,
+          "text": "Noah Kessler\n@noahk + 7h\nReminder: our community call on Thursday covers the new audit\nAPI.\nBring your weirdest access-control bug. We will debug it live.\n342 reactions + 44 comments\nLike Comment Share Follow\n"
+        }
+      ],
+      "cleanSetMeanCER": 0.0224578206298757,
+      "allFixturesMeanCER": 0.02182177159092912,
+      "meanMs": 631.8,
+      "perFixture": [
+        {
+          "id": "clean01",
+          "kind": "clean",
+          "ms": 618,
+          "cer": 0.022900763358778626
+        },
+        {
+          "id": "clean02",
+          "kind": "clean",
+          "ms": 962,
+          "cer": 0.013452914798206279
+        },
+        {
+          "id": "clean03",
+          "kind": "clean",
+          "ms": 618,
+          "cer": 0.025157232704402517
+        },
+        {
+          "id": "clean04",
+          "kind": "clean",
+          "ms": 359,
+          "cer": 0.019736842105263157
+        },
+        {
+          "id": "clean05",
+          "kind": "clean",
+          "ms": 531,
+          "cer": 0.022388059701492536
+        },
+        {
+          "id": "clean06",
+          "kind": "clean",
+          "ms": 469,
+          "cer": 0.03111111111111111
+        },
+        {
+          "id": "dark01",
+          "kind": "dark",
+          "ms": 666,
+          "cer": 0.015625
+        },
+        {
+          "id": "dark02",
+          "kind": "dark",
+          "ms": 1046,
+          "cer": 0.022556390977443608
+        },
+        {
+          "id": "chrome01",
+          "kind": "chrome",
+          "ms": 594,
+          "cer": 0.026058631921824105
+        },
+        {
+          "id": "chrome02",
+          "kind": "chrome",
+          "ms": 455,
+          "cer": 0.019230769230769232
+        }
+      ]
+    },
+    {
+      "engine": "ppocr",
+      "name": "PP-OCRv4 (det+rec onnx, onnxruntime-web)",
+      "assetsServedBytes": 42334607,
+      "assetsServed": [
+        {
+          "url": "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm",
+          "bytes": 29520971
+        },
+        {
+          "url": "/ppocr/en_PP-OCRv4_rec.onnx",
+          "bytes": 7652836
+        },
+        {
+          "url": "/ppocr/ch_PP-OCRv4_det.onnx",
+          "bytes": 4729474
+        },
+        {
+          "url": "/node_modules/onnxruntime-web/dist/ort.min.mjs",
+          "bytes": 371734
+        },
+        {
+          "url": "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs",
+          "bytes": 47250
+        },
+        {
+          "url": "/bench/",
+          "bytes": 12057
+        },
+        {
+          "url": "/ppocr/en_dict.txt",
+          "bytes": 285
+        }
+      ],
+      "resultsRaw": [
+        {
+          "id": "clean01",
+          "ms": 2012,
+          "text": "z22\nMayaLindavist\n@maya-builds:2h\nt\n#buildinpublic#offline\n42reactions:9comment\nComment"
+        },
+        {
+          "id": "clean02",
+          "ms": 2221,
+          "text": "DevonPark\n@devon.park:5h\neeeashoaod\nunbook.#engneering#retacto\n137reactions:9comment\nComment\nMee"
+        },
+        {
+          "id": "clean03",
+          "ms": 1727,
+          "text": "2222\nAmaraOsei\n@amaraosei:10\nrteomBrtabs\ne\nr\nIreactions:3comment\nComment\nS"
+        },
+        {
+          "id": "clean04",
+          "ms": 1364,
+          "text": "FelixBrandt\n@felixb:4h\nmonthsandstillunderstands\n8reactions\n2\nComment\nS"
+        },
+        {
+          "id": "clean05",
+          "ms": 1605,
+          "text": "PrivaRaman\n@priya-r:8h\n#observability\n220reactions-31comment\nComment"
+        },
+        {
+          "id": "clean06",
+          "ms": 1551,
+          "text": "@iris.codes:3h\nWebAssembly\nnobodyopened\n77reactions:4comment\nAaoers\nComment"
+        },
+        {
+          "id": "dark01",
+          "ms": 1349,
+          "text": "LenaFischer\n@lenaf:6h\n64reactions:2comment\nComment"
+        },
+        {
+          "id": "dark02",
+          "ms": 1573,
+          "text": "MarcoD'Souza\n@marco-ds9h\n#postmortem\n98reactions5comment\n6AEE\ncomment\nC"
+        },
+        {
+          "id": "chrome01",
+          "ms": 1943,
+          "text": "222222\nSofiaMarchett\n@sofia-m:1h\nA\nieeseng\n1.208reactions:89comment\nComment\nA\nD"
+        },
+        {
+          "id": "chrome02",
+          "ms": 1815,
+          "text": "NoahKessler\n@noahk:7h\nS\n342reactions:44comment:\nComment\nCG"
+        }
+      ],
+      "cleanSetMeanCER": 0.7250632791580233,
+      "allFixturesMeanCER": 0.7413635605114322,
+      "meanMs": 1716,
+      "perFixture": [
+        {
+          "id": "clean01",
+          "kind": "clean",
+          "ms": 2012,
+          "cer": 0.7099236641221374
+        },
+        {
+          "id": "clean02",
+          "kind": "clean",
+          "ms": 2221,
+          "cer": 0.7982062780269058
+        },
+        {
+          "id": "clean03",
+          "kind": "clean",
+          "ms": 1727,
+          "cer": 0.8144654088050315
+        },
+        {
+          "id": "clean04",
+          "kind": "clean",
+          "ms": 1364,
+          "cer": 0.5592105263157895
+        },
+        {
+          "id": "clean05",
+          "kind": "clean",
+          "ms": 1605,
+          "cer": 0.7574626865671642
+        },
+        {
+          "id": "clean06",
+          "kind": "clean",
+          "ms": 1551,
+          "cer": 0.7111111111111111
+        },
+        {
+          "id": "dark01",
+          "kind": "dark",
+          "ms": 1349,
+          "cer": 0.75
+        },
+        {
+          "id": "dark02",
+          "kind": "dark",
+          "ms": 1573,
+          "cer": 0.7669172932330827
+        },
+        {
+          "id": "chrome01",
+          "kind": "chrome",
+          "ms": 1943,
+          "cer": 0.7915309446254072
+        },
+        {
+          "id": "chrome02",
+          "kind": "chrome",
+          "ms": 1815,
+          "cer": 0.7548076923076923
+        }
+      ]
+    },
+    {
+      "engine": "tesseract-fast-psm4",
+      "name": "tesseract.js 7 (fast traineddata, tessedit_pageseg_mode:4)",
+      "assetsServedBytes": 6076365,
+      "assetsServed": [
+        {
+          "url": "/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js",
+          "bytes": 3905767
+        },
+        {
+          "url": "/ocr-assets/eng.traineddata.gz",
+          "bytes": 1984273
+        },
+        {
+          "url": "/ocr-assets/worker.min.js",
+          "bytes": 111307
+        },
+        {
+          "url": "/node_modules/tesseract.js/dist/tesseract.min.js",
+          "bytes": 62961
+        },
+        {
+          "url": "/bench/",
+          "bytes": 12057
+        }
+      ],
+      "resultsRaw": [
+        {
+          "id": "clean01",
+          "ms": 619,
+          "text": "Maya Lindqvist\n@maya-builds - 2h\n\nShipped our first offline-first release today.\n\nNo cloud, no accounts, just a local cache that never lies.\nWhat is the last app you used that worked in a tunnel?\n#buildinpublic #offline\n\n42 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean02",
+          "ms": 633,
+          "text": "Devon Park\n@devon.park - 5h\n\nThree lessons from refactoring a legacy ingest pipeline:\n\n1. Write the schema down before touching a single handler.\n2. Delete twice as much code as you add.\n\n3. A flaky test is a production incident you get to have twice.\nThe pipeline now processes a day of traffic in eleven minutes.\nAsk me anything about the migration — happy to share the\nrunbook. #engineering #refactor\n\n137 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean03",
+          "ms": 440,
+          "text": "Amara Osei\n@amaraosei - 1d\n\nHiring update from Brightpath Labs:\n\n¢ Senior platform engineer (Rust, distributed storage)\n\n¢ Product designer (privacy-first interfaces)\n\n¢ Applied researcher (small language models)\n\nWe read every application ourselves. No keyword filters. #hiring\n\n51 reactions - 3 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean04",
+          "ms": 250,
+          "text": "Felix Brandt\n@felixb - 4h\n\nThe best commit message is the one a tired colleague reads in six\nmonths and still understands.\n\n8 reactions\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean05",
+          "ms": 420,
+          "text": "Priya Raman\n@priya-r: 8h\n\nReviewing telemetry dashboards this week taught me one thing:\na chart nobody looks at is just a very expensive screenshot.\nDeleting beats maintaining. What did you delete recently?\n#observability\n\n220 reactions - 31 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean06",
+          "ms": 356,
+          "text": "Iris Tan\n@iris.codes - 3h\n\nNew writeup: how we fit a document pipeline into 40 MB of\nWebAssembly.\n\nThe trick was not a clever algorithm — it was deleting four features\nnobody opened.\n\n77 reactions - 4 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "dark01",
+          "ms": 497,
+          "text": "Lena Fischer\n@lenaf : 6h\n\nDark mode is not a theme, it is a promise about battery life.\nOur web app now repaints 34% less per scroll on OLED panels.\n\n64 reactions - 2 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "dark02",
+          "ms": 727,
+          "text": "Marco D’Souza\n@marco-ds - 9h\n\nDebugging story from this week: a cache that expired too fast,\na clock that lied by 90 seconds, and one very patient SRE.\nRoot cause? Two services disagreed about what “now” means.\n#postmortem\n\n98 reactions - 5 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "chrome01",
+          "ms": 475,
+          "text": "Promoted\n\nSofia Marchetti\n@sofia-m - 1h\n\nHarborlight Systems is hiring a founding engineer for our storage\nteam.\n\nYou will own the replication layer end to end, from design to on-call.\nFully remote, four-day weeks, real on-call compensation. Apply\nbelow.\n\n1,208 reactions - 89 comments\n\nLike Comment Share Follow\n"
+        },
+        {
+          "id": "chrome02",
+          "ms": 313,
+          "text": "Noah Kessler\n@noahk : 7h\n\nReminder: our community call on Thursday covers the new audit\nAPI.\nBring your weirdest access-control bug. We will debug it live.\n\n342 reactions : 44 comments\n\nLike Comment Share Follow\n"
+        }
+      ],
+      "cleanSetMeanCER": 0.03348644282769745,
+      "allFixturesMeanCER": 0.03247115824959952,
+      "meanMs": 473,
+      "perFixture": [
+        {
+          "id": "clean01",
+          "kind": "clean",
+          "ms": 619,
+          "cer": 0.030534351145038167
+        },
+        {
+          "id": "clean02",
+          "kind": "clean",
+          "ms": 633,
+          "cer": 0.020179372197309416
+        },
+        {
+          "id": "clean03",
+          "kind": "clean",
+          "ms": 440,
+          "cer": 0.040880503144654086
+        },
+        {
+          "id": "clean04",
+          "kind": "clean",
+          "ms": 250,
+          "cer": 0.039473684210526314
+        },
+        {
+          "id": "clean05",
+          "kind": "clean",
+          "ms": 420,
+          "cer": 0.029850746268656716
+        },
+        {
+          "id": "clean06",
+          "kind": "clean",
+          "ms": 356,
+          "cer": 0.04
+        },
+        {
+          "id": "dark01",
+          "kind": "dark",
+          "ms": 497,
+          "cer": 0.03125
+        },
+        {
+          "id": "dark02",
+          "kind": "dark",
+          "ms": 727,
+          "cer": 0.02631578947368421
+        },
+        {
+          "id": "chrome01",
+          "kind": "chrome",
+          "ms": 475,
+          "cer": 0.03257328990228013
+        },
+        {
+          "id": "chrome02",
+          "kind": "chrome",
+          "ms": 313,
+          "cer": 0.03365384615384615
+        }
+      ]
+    },
+    {
+      "engine": "tesseract-fast-psm6",
+      "name": "tesseract.js 7 (fast traineddata, tessedit_pageseg_mode:6)",
+      "assetsServedBytes": 6076365,
+      "assetsServed": [
+        {
+          "url": "/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js",
+          "bytes": 3905767
+        },
+        {
+          "url": "/ocr-assets/eng.traineddata.gz",
+          "bytes": 1984273
+        },
+        {
+          "url": "/ocr-assets/worker.min.js",
+          "bytes": 111307
+        },
+        {
+          "url": "/node_modules/tesseract.js/dist/tesseract.min.js",
+          "bytes": 62961
+        },
+        {
+          "url": "/bench/",
+          "bytes": 12057
+        }
+      ],
+      "resultsRaw": [
+        {
+          "id": "clean01",
+          "ms": 491,
+          "text": "Maya Lindqvist\n\n@maya-builds - 2h\nShipped our first offline-first release today.\nNo cloud, no accounts, just a local cache that never lies.\nWhat is the last app you used that worked in a tunnel?\n#buildinpublic #offline\n42 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean02",
+          "ms": 601,
+          "text": "Devon Park\n\n@devon.park - 5h\nThree lessons from refactoring a legacy ingest pipeline:\n1. Write the schema down before touching a single handler.\n2. Delete twice as much code as you add.\n3. A flaky test is a production incident you get to have twice.\nThe pipeline now processes a day of traffic in eleven minutes.\nAsk me anything about the migration — happy to share the\nrunbook. #engineering #refactor\n137 reactions - 9 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean03",
+          "ms": 433,
+          "text": "Amara Osei\n\n@amaraosei - 1d\nHiring update from Brightpath Labs:\n¢ Senior platform engineer (Rust, distributed storage)\ne Product designer (privacy-first interfaces)\n¢ Applied researcher (small language models)\nWe read every application ourselves. No keyword filters. #hiring\n51 reactions - 3 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean04",
+          "ms": 215,
+          "text": "Felix Brandt\n@felixb - 4h\nThe best commit message is the one a tired colleague reads in six\nmonths and still understands.\n8 reactions\nLike Comment Share\n"
+        },
+        {
+          "id": "clean05",
+          "ms": 382,
+          "text": "Priya Raman\n\n@priya-r: 8h\nReviewing telemetry dashboards this week taught me one thing:\na chart nobody looks at is just a very expensive screenshot.\nDeleting beats maintaining. What did you delete recently?\n#observability\n220 reactions - 31 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "clean06",
+          "ms": 307,
+          "text": "Iris Tan\n\n@iris.codes - 3h\nNew writeup: how we fit a document pipeline into 40 MB of\nWebAssembly.\nThe trick was not a clever algorithm — it was deleting four features\nnobody opened.\n77 reactions - 4 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "dark01",
+          "ms": 469,
+          "text": "Lena Fischer\n@lenaf : 6h\nDark mode is not a theme, it is a promise about battery life.\nOur web app now repaints 34% less per scroll on OLED panels.\n64 reactions - 2 comments\nLike Comment Share\n"
+        },
+        {
+          "id": "dark02",
+          "ms": 683,
+          "text": "Marco D’Souza\n\n@marco-ds - 9h\nDebugging story from this week: a cache that expired too fast,\na clock that lied by 90 seconds, and one very patient SRE.\nRoot cause? Two services disagreed about what “now” means.\n#postmortem\n98 reactions - 5 comments\n\nLike Comment Share\n"
+        },
+        {
+          "id": "chrome01",
+          "ms": 434,
+          "text": "Promoted\n\nSofia Marchetti\n\n@sofia-m - 1h\nHarborlight Systems is hiring a founding engineer for our storage\nteam.\nYou will own the replication layer end to end, from design to on-call.\nFully remote, four-day weeks, real on-call compensation. Apply\nbelow.\n1,208 reactions - 89 comments\n\nLike Comment Share Follow\n"
+        },
+        {
+          "id": "chrome02",
+          "ms": 300,
+          "text": "Noah Kessler\n@noahk : 7h\nReminder: our community call on Thursday covers the new audit\nAPI.\nBring your weirdest access-control bug. We will debug it live.\n342 reactions : 44 comments\nLike Comment Share Follow\n"
+        }
+      ],
+      "cleanSetMeanCER": 0.023079711177139386,
+      "allFixturesMeanCER": 0.022194905919287328,
+      "meanMs": 431.5,
+      "perFixture": [
+        {
+          "id": "clean01",
+          "kind": "clean",
+          "ms": 491,
+          "cer": 0.022900763358778626
+        },
+        {
+          "id": "clean02",
+          "kind": "clean",
+          "ms": 601,
+          "cer": 0.013452914798206279
+        },
+        {
+          "id": "clean03",
+          "kind": "clean",
+          "ms": 433,
+          "cer": 0.025157232704402517
+        },
+        {
+          "id": "clean04",
+          "kind": "clean",
+          "ms": 215,
+          "cer": 0.019736842105263157
+        },
+        {
+          "id": "clean05",
+          "kind": "clean",
+          "ms": 382,
+          "cer": 0.026119402985074626
+        },
+        {
+          "id": "clean06",
+          "kind": "clean",
+          "ms": 307,
+          "cer": 0.03111111111111111
+        },
+        {
+          "id": "dark01",
+          "kind": "dark",
+          "ms": 469,
+          "cer": 0.015625
+        },
+        {
+          "id": "dark02",
+          "kind": "dark",
+          "ms": 683,
+          "cer": 0.022556390977443608
+        },
+        {
+          "id": "chrome01",
+          "kind": "chrome",
+          "ms": 434,
+          "cer": 0.026058631921824105
+        },
+        {
+          "id": "chrome02",
+          "kind": "chrome",
+          "ms": 300,
+          "cer": 0.019230769230769232
+        }
+      ]
+    }
+  ]
+}

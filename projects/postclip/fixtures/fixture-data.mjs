@@ -4,23 +4,28 @@
  * authors, fictional companies, no real people, brands, logos or marks.
  *
  * `body` is the post text (what cleanup must keep), `chrome` is UI furniture
- * (what cleanup must remove), and `ocr_expected` is every visible line in
- * reading order (what OCR should read).
+ * (what cleanup must remove), and `ocr_expected` is the visible text in
+ * reading order, ONE ENTRY PER VISUAL LINE (how the card actually renders:
+ * the handle+time meta line is one line; the action row is one band).
+ *
+ * Emoji/blur/rotation variants arrive with the later-slice fixture expansion
+ * (plan: variants ≥ 40 by S4); the S0 set is plain-text posts so the clean-set
+ * OCR bar measures text reading, not emoji glyph handling.
  */
 
-const CHROME_ACTION_ROW = ['Like', 'Comment', 'Share'];
+const ACTION_ROW = 'Like Comment Share';
 
 export const REACTION_LABELS = {
-  clean01: '👍 42',
-  clean02: '👍 137 · 💬 9',
-  clean03: '👍 51',
-  clean04: '👍 8',
-  clean05: '👍 220 · 💬 31 · ❤️ 17',
-  clean06: '👍 77',
-  dark01: '👍 64',
-  dark02: '👍 98 · 💬 5',
-  chrome01: '👍 1.2K · 💬 89 · 🎉 240',
-  chrome02: '👍 342 · 💬 44',
+  clean01: '42 reactions · 9 comments',
+  clean02: '137 reactions · 9 comments',
+  clean03: '51 reactions · 3 comments',
+  clean04: '8 reactions',
+  clean05: '220 reactions · 31 comments',
+  clean06: '77 reactions · 4 comments',
+  dark01: '64 reactions · 2 comments',
+  dark02: '98 reactions · 5 comments',
+  chrome01: '1,208 reactions · 89 comments',
+  chrome02: '342 reactions · 44 comments',
 };
 
 export const FIXTURES = [
@@ -32,7 +37,7 @@ export const FIXTURES = [
     handle: '@maya-builds',
     time: '2h',
     body: [
-      'Shipped our first offline-first release today 🚀',
+      'Shipped our first offline-first release today.',
       'No cloud, no accounts, just a local cache that never lies.',
       'What is the last app you used that worked in a tunnel? #buildinpublic #offline',
     ],
@@ -91,7 +96,7 @@ export const FIXTURES = [
     body: [
       'Reviewing telemetry dashboards this week taught me one thing:',
       'a chart nobody looks at is just a very expensive screenshot.',
-      'Deleting beats maintaining. What did you delete recently? 🙂 #observability',
+      'Deleting beats maintaining. What did you delete recently? #observability',
     ],
     promoted: false,
   },
@@ -168,20 +173,22 @@ export function reactionLabel(id) {
   return REACTION_LABELS[id];
 }
 
+/** UI furniture strings (what cleanup must remove), in reading order. */
 export function chromeStrings(fixture) {
-  const chrome = [fixture.time, ...CHROME_ACTION_ROW, reactionLabel(fixture.id)];
+  const chrome = [fixture.handle, fixture.time, ACTION_ROW.split(' '), reactionLabel(fixture.id)];
   if (fixture.promoted) chrome.unshift('Promoted');
   if (fixture.kind === 'chrome') chrome.push('Follow');
-  return chrome;
+  return chrome.flat();
 }
 
+/** The visible text, one entry per visual line, in reading order. */
 export function ocrExpected(fixture) {
   const lines = [];
   if (fixture.promoted) lines.push('Promoted');
-  lines.push(fixture.author, fixture.handle, fixture.time);
+  lines.push(fixture.author);
+  lines.push(`${fixture.handle} · ${fixture.time}`);
   lines.push(...fixture.body);
   lines.push(reactionLabel(fixture.id));
-  lines.push(...CHROME_ACTION_ROW);
-  if (fixture.kind === 'chrome') lines.push('Follow');
+  lines.push(fixture.kind === 'chrome' ? `${ACTION_ROW} Follow` : ACTION_ROW);
   return lines;
 }

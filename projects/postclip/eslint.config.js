@@ -10,6 +10,13 @@ const NODE_SCRIPT_GLOBALS = {
   URL: 'readonly',
   setTimeout: 'readonly',
   clearTimeout: 'readonly',
+  // Referenced inside page.evaluate() callbacks, which execute in the browser:
+  window: 'readonly',
+  document: 'readonly',
+  navigator: 'readonly',
+  performance: 'readonly',
+  location: 'readonly',
+  Image: 'readonly',
 };
 
 export default tseslint.config(

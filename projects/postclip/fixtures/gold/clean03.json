@@ -13,25 +13,23 @@
     "We read every application ourselves. No keyword filters. #hiring"
   ],
   "chrome": [
+    "@amaraosei",
     "1d",
     "Like",
     "Comment",
     "Share",
-    "👍 51"
+    "51 reactions · 3 comments"
   ],
   "ocr_expected": [
     "Amara Osei",
-    "@amaraosei",
-    "1d",
+    "@amaraosei · 1d",
     "Hiring update from Brightpath Labs:",
     "• Senior platform engineer (Rust, distributed storage)",
     "• Product designer (privacy-first interfaces)",
     "• Applied researcher (small language models)",
     "We read every application ourselves. No keyword filters. #hiring",
-    "👍 51",
-    "Like",
-    "Comment",
-    "Share"
+    "51 reactions · 3 comments",
+    "Like Comment Share"
   ],
   "synthetic": true
 }
