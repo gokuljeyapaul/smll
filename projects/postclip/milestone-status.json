@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "project": "postclip",
+  "phase": "PLAN_ONLY",
+  "current_slice": null,
+  "owner_decisions": {
+    "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
+    "D8_llm_scope": "progressive",
+    "hosts": "building agent on Linux, runner-neutral: Hermes (openclawlaunch) or Claude Code on the web (docs/runners/); optional ~30 min real-device pass by the owner (A27/A30)"
+  },
+  "slices": {
+    "S0": {
+      "status": "NOT_STARTED"
+    },
+    "S1": {
+      "status": "NOT_STARTED"
+    },
+    "S2": {
+      "status": "NOT_STARTED"
+    },
+    "S3": {
+      "status": "NOT_STARTED"
+    },
+    "S4": {
+      "status": "NOT_STARTED"
+    },
+    "S5": {
+      "status": "NOT_STARTED"
+    },
+    "S6": {
+      "status": "NOT_STARTED"
+    }
+  },
+  "last_verified_merged_pr": null
+}
