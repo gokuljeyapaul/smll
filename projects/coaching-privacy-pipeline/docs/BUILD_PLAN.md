@@ -1,6 +1,6 @@
 # BUILD_PLAN.md — Coaching Transcript Privacy Pipeline
 
-**Version:** 8.0 — offline, non-generative, strict TDD, functional slices, per-slice merged PR delivery | **Audience:** OpenClaw implementation agent and human reviewer | **Status:** implementation specification, **not working code** | **Initial data:** synthetic only.
+**Version:** 8.0 — offline, non-generative, strict TDD, functional slices, per-slice merged PR delivery | **Audience:** the autonomous implementation agent (Atina) and human reviewer | **Status:** implementation specification, **not working code** | **Initial data:** synthetic only.
 
 > **Read first:** `../AGENTS.md`. This is the single source of technical requirements, feature-slice checkpoints, data contracts, acceptance criteria and production-migration gates. Implement the current unfinished feature slice first, then automatically continue only after its tested PR is confirmed merged; repeat for subsequent slices. Documentation precedence in case of contradiction: this file's **feature-slice TDD, checkpoint and safety rules**, then its **acceptance matrix**, then **binding schema**, then architecture suggestions; choose conservative fail-closed behavior and record discrepancies.
 
@@ -40,7 +40,7 @@ All runtime code is **local-only**; configure `HF_HUB_OFFLINE=1`, local paths an
 
 ## Binding delivery method: strict TDD + full-functionality slices
 
-**A feature slice is the PR-sized work unit, not a technology layer.** Each slice must deliver an observable, usable outcome traversing the required input → detector → transform → validator → safety decision → output/evidence flow. A slice may change several Python modules but must serve **one cohesive user capability**. Do not open a standalone PR for a schema, model adapter, fixture generator, classifier or validator that cannot be used through the CLI/pipeline by the end of that PR. The only permitted first-slice setup work is scaffolding required to support its working E2E result. Unit tests remain small and deterministic; real model integration tests and E2E acceptance can be slower. Run the required real-model smoke tests on a suitable approved CPU host; if OpenClaw Launch cannot provision enough RAM, mark the slice blocked pending an approved environment, not green.
+**A feature slice is the PR-sized work unit, not a technology layer.** Each slice must deliver an observable, usable outcome traversing the required input → detector → transform → validator → safety decision → output/evidence flow. A slice may change several Python modules but must serve **one cohesive user capability**. Do not open a standalone PR for a schema, model adapter, fixture generator, classifier or validator that cannot be used through the CLI/pipeline by the end of that PR. The only permitted first-slice setup work is scaffolding required to support its working E2E result. Unit tests remain small and deterministic; real model integration tests and E2E acceptance can be slower. Run the required real-model smoke tests on a suitable approved CPU host; if the hosting environment cannot provision enough RAM, mark the slice blocked pending an approved environment, not green.
 
 ### TDD protocol — enforce for every slice / PR
 
@@ -573,7 +573,7 @@ Scripts must use `set -Eeuo pipefail`, calculate project root from their own pat
 ### Required final artifacts
 - Runtime `artifacts/demo/` may contain `report.txt` or `report.html`, `metrics.json`, `sanitized_sample.json`, `run_manifest.json`, `verification.json` (synthetic-only). Preserve a compact sanitized copy of the executed demo verification/run summary under `docs/evidence/S6/` and link it from `docs/status.md`; uncommitted runtime output alone is insufficient proof.
 - `docs/evidence/acceptance_traceability.json`: P0 acceptance ID → named pytest functions, actual status (`PASS|FAIL|NOT_RUN|MOCK_ONLY`), and recorded evidence paths.
-- `milestone-status.json`: machine checkpoint and automatic next-slice state (not owner approval). `docs/status.md` is the mandatory human ledger and `docs/evidence/S#/` is the committed test/run proof. Stagewise results must survive a new OpenClaw session.
+- `milestone-status.json`: machine checkpoint and automatic next-slice state (not owner approval). `docs/status.md` is the mandatory human ledger and `docs/evidence/S#/` is the committed test/run proof. Stagewise results must survive a new agent session.
 - `README.md` accurately updated with actual tests, counts, install/run command, resource requirements, optional GPU paths, limitations and shutdown/cost tips.
 - For S7, production migration and security gate summary is incorporated in this `docs/BUILD_PLAN.md` or a structured JSON report; do not create more Markdown files unless user requests.
 

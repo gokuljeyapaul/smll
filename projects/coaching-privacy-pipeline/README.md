@@ -29,7 +29,7 @@ smll/                               # ONE .git directory at this root
         └── artifacts/              # Disposable local work products; required proof lives in docs/evidence/
 ```
 
-**No nested `.git/` under projects.** OpenClaw should load the monorepo root `AGENTS.md` and explicitly read this project's `AGENTS.md` and `docs/BUILD_PLAN.md`. The Git branch / PR workflow is defined by the monorepo root `AGENTS.md`; the owner must configure GitHub credentials and repository settings.
+**No nested `.git/` under projects.** The agent should load the monorepo root `AGENTS.md` and explicitly read this project's `AGENTS.md` and `docs/BUILD_PLAN.md`. The Git branch / PR workflow is defined by the monorepo root `AGENTS.md`; the owner must configure GitHub credentials and repository settings.
 
 ## Strict TDD and feature-oriented delivery
 
@@ -46,13 +46,13 @@ The existing v5 technology slices have been replaced with **S0–S7 complete-fun
 | S6 | One-command full audit, demos, acceptance matrix and offline execution proof |
 | S7 | Fictional batch processing through production-shaped storage/worker adapters |
 
-## Instructions to OpenClaw
-1. Ensure OpenClaw can execute shell commands and edit files in **this repository**, ideally inside an isolated development sandbox.
+## Instructions to the agent (Atina)
+1. Ensure the agent can execute shell commands and edit files in **this repository**, ideally inside an isolated development sandbox.
 2. Tell it: **"Read this project's AGENTS.md, README.md, docs/BUILD_PLAN.md and docs/status.md. Implement S0 first with failing TDD tests, make all required tests pass, save proof to docs/evidence/S0/, update docs/status.md, create a feature PR, satisfy CI/review, verify its actual merge, and then automatically continue with S1–S7. Do not pause for routine approvals already satisfied by repository policy."**
 3. If the session changes, the agent must read `docs/status.md`, `milestone-status.json`, Git status and evidence before resuming the first unfinished slice. No manual `Proceed` messages are needed for passing slices.
-4. GitHub PR delivery is now a required part of the workflow. The monorepo owner must configure a remote, scoped OpenClaw GitHub credentials, branch rulesets and an appropriate CI runner. Do not claim delivery without a verified merged PR. If a permission or review blocks merging, report `BLOCKED` and do not advance dependent slices.
+4. GitHub PR delivery is now a required part of the workflow. The monorepo owner must configure a remote, scoped agent GitHub credentials (the Atina Autobot GitHub App), branch rulesets and an appropriate CI runner. Do not claim delivery without a verified merged PR. If a permission or review blocks merging, report `BLOCKED` and do not advance dependent slices.
 
-OpenClaw's main agent workspace has its own `AGENTS.md`, so a nested repository file is **not guaranteed to be auto-loaded**. Explicitly instruct it to read this repository file or configure the project as its agent workspace.
+The agent's main workspace has its own `AGENTS.md`, so a nested repository file is **not guaranteed to be auto-loaded**. Explicitly instruct it to read this repository file or configure the project as its agent workspace.
 
 ## GitHub PR and CI contract (monorepo)
 
