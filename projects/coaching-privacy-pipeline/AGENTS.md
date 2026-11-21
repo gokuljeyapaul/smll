@@ -4,7 +4,7 @@
 
 Build a **production-evolvable, offline, CPU-first, non-generative** privacy-processing PoC using exclusively fictional coaching text and synthetic audio. Implement working code; do not stop at architecture or a notebook. Preserve the same reusable Python package in production. No generative LLM, paid AI API, public upload app, real coaching data or production deployment in the PoC.
 
-This project is located at `projects/coaching-privacy-pipeline/` **inside one GitHub monorepo**. First read the **monorepo-root `AGENTS.md`** for mandatory TDD, branch/PR/merge/continue rules. Then read this project's `README.md`, `docs/BUILD_PLAN.md` **in full**, `docs/status.md`, `milestone-status.json` if present, existing tests, and recent evidence. OpenClaw may not automatically load nested project files; explicitly read them. Do not run `git init` here.
+This project is located at `projects/coaching-privacy-pipeline/` **inside one GitHub monorepo**. First read the **monorepo-root `AGENTS.md`** for mandatory TDD, branch/PR/merge/continue rules. Then read this project's `README.md`, `docs/BUILD_PLAN.md` **in full**, `docs/status.md`, `milestone-status.json` if present, existing tests, and recent evidence. The autonomous agent (Atina) may not automatically load nested project files; explicitly read them. Do not run `git init` here.
 
 ## Mandatory technical constraints
 
