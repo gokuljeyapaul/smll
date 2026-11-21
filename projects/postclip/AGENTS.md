@@ -74,6 +74,8 @@ postclip follows the monorepo-wide **Work queue** rules in the root `AGENTS.md` 
 
 ## Merge policy (owner-authorized, guarded)
 
+**Do not wait for the owner.** The owner has chosen autonomous merging: when the conditions below hold, merge and continue to the next slice. Planner review (the `P` rows) and owner-visual confirmation (the `O` rows) are **asynchronous and never block a merge**; the owner and the planner review afterwards, and defects come back as new issues for a later round. `READY_FOR_MERGE` is only for when the platform refuses the merge, not for caution.
+
 `main` is branch-protected (a PR and a passing `monorepo / verify` are required, enforced for admins), and the agent is still the final judge. You may merge your own PR (squash) — using the merge command of your runner doc — only when **all** hold: `monorepo / verify` passed on the PR head; `bash scripts/verify.sh` and the full local suite passed on the same tree with committed evidence whose `source_digest` matches; the diff contains only in-scope files; nothing is BLOCKED. If the runner cannot create or merge PRs (refused by the platform), stop with the slice `READY_FOR_MERGE` and report the exact error; never work around it. Then verify GitHub reports `MERGED`, pull `main`, record the merge SHA in the **next** slice's status update (never in its own PR), and continue automatically.
 
 Never: push to `main`, force-push, bypass checks, change repo/org/runner settings, edit `.github/` (unless the owner explicitly approves the single `setup-node` contingency in plan D1), spend money, tag or release, upload anything, install anything beyond plan D6.
