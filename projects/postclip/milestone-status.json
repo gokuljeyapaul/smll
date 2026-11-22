@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "project": "postclip",
   "phase": "BUILDING",
-  "current_slice": "S1",
+  "current_slice": "S2",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -16,12 +16,15 @@
       "note": "merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here per the next-slice-updates-the-merge-SHA convention"
     },
     "S1": {
-      "status": "READY_FOR_MERGE",
-      "pr": null,
-      "note": "PR opened by the building agent; merge SHA is recorded in the next slice's update"
+      "status": "MERGED",
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/63",
+      "merge_sha": "bcc72240d490235ba812f56f9c3d8a30f2c23c14",
+      "note": "merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here per the next-slice-updates-the-merge-SHA convention"
     },
     "S2": {
-      "status": "NOT_STARTED"
+      "status": "READY_FOR_MERGE",
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/64",
+      "note": "PR opened by the building agent; merge SHA is recorded in the next slice's update"
     },
     "S3": {
       "status": "NOT_STARTED"
@@ -37,9 +40,9 @@
     }
   },
   "last_verified_merged_pr": {
-    "slice": "S0",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/61",
-    "merge_sha": "98353b05197c1fe7f70aa61e7724f0182ea5c8c9",
+    "slice": "S1",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/63",
+    "merge_sha": "bcc72240d490235ba812f56f9c3d8a30f2c23c14",
     "main_check_after_merge": "success"
   }
 }

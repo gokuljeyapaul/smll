@@ -85,6 +85,11 @@ body {
   margin: 8px 0 16px;
 }
 
+.dropzone-or {
+  color: var(--muted);
+  margin: 0 10px;
+}
+
 .btn {
   display: inline-block;
   background: var(--accent);

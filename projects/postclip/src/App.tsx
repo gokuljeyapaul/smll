@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Home } from './ui/Home';
 import { Review } from './ui/Review';
 import { createTesseractEngine } from './ocr/tesseract';
@@ -14,21 +14,28 @@ import {
   sniffImageHeader,
 } from './image/validate';
 import { redactText } from './privacy/audit';
+import {
+  imageFileFromDataTransferFiles,
+  shareTargetFileFromMessage,
+} from './ingest/route';
 import type { OcrEngine, OcrResult } from './ocr/types';
 
 export type OcrStatus = 'idle' | 'reading' | 'ready' | 'error';
 
 /**
- * The S1 pipeline (plan "Architecture"):
- *   pick → sniff (non-image / tiny, before OCR) → decode (corrupt) →
- *   downscale huge → real in-browser OCR → no-text check →
- *   English-only gate → deterministic cleanup → review (editable) →
- *   share / copy / export.
+ * The S2 pipeline (plan "Architecture"):
+ *   paste / share-target / pick → sniff → decode → downscale →
+ *   real in-browser OCR → no-text check → English-only gate →
+ *   deterministic cleanup → review (editable) → share / copy / export.
  *
- * Every failure degrades to the previous safe stage with a SPECIFIC visible
- * message (A07) — never a crash, never a silently empty review. The gate
- * runs BEFORE cleanup, so a non-English screenshot is rejected with the
- * gate's message and no cleanup happens (A06).
+ * S2 adds two input channels on top of S1's picker/drop (both fail closed
+ * exactly like a pick — every error degrades to the previous safe stage
+ * with a specific visible message):
+ *   - UC03: a paste event carrying an image file (Ctrl/Cmd+V), at document
+ *     level so it works on every screen; text-only pastes are never
+ *     hijacked (the review textarea keeps working normally);
+ *   - UC02: an image shared into the installed app, delivered by the
+ *     service worker as a message (the worker never stores it).
  */
 export function App() {
   const [status, setStatus] = useState<OcrStatus>('idle');
@@ -125,6 +132,41 @@ export function App() {
     [fail],
   );
 
+  // UC03 (S2): Ctrl/Cmd+V with an image on the clipboard routes it into the
+  // same pipeline as a pick, from any screen. A paste carrying no image file
+  // is ignored — the review textarea's normal text pasting keeps working.
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      const files = Array.from(event.clipboardData?.files ?? []);
+      const file = imageFileFromDataTransferFiles(files);
+      if (file) {
+        event.preventDefault();
+        onImageSelected(file);
+      }
+    };
+    document.addEventListener('paste', onPaste);
+    return () => document.removeEventListener('paste', onPaste);
+  }, [onImageSelected]);
+
+  // UC02 (S2): the service worker hands over an image shared into the
+  // installed app. shareTargetFileFromMessage fails closed on anything that
+  // is not exactly a well-formed share-image message.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      const file = shareTargetFileFromMessage(event.data);
+      if (file) onImageSelected(file);
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage);
+  }, [onImageSelected]);
+
+  // UC12 (S2): the clipboard explanations live on the Home screen; a failed
+  // clipboard read shows the specific message without touching the pipeline.
+  const onClipboardError = useCallback((message: string) => {
+    setError(message);
+  }, []);
+
   const onStartOver = useCallback(() => {
     runIdRef.current++;
     setStatus('idle');
@@ -149,5 +191,12 @@ export function App() {
     );
   }
 
-  return <Home status={status} error={error} onImageSelected={onImageSelected} />;
+  return (
+    <Home
+      status={status}
+      error={error}
+      onImageSelected={onImageSelected}
+      onClipboardError={onClipboardError}
+    />
+  );
 }

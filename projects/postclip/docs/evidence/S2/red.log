@@ -1,0 +1,728 @@
+# S2 RED evidence — real commands, real output, captured 2026-11-22T03:12:24Z
+
+RED state: the S1 app is unchanged; the S2 input-routing scaffold exists
+(src/ingest/route.ts returns null/empty — no behavior yet), and the new
+behavioral tests (vitest route suite + Playwright uc03/a08/a10/a11 specs)
+must fail on assertions (not import/build errors). The S0+S1 regression
+tests must stay green in the same run.
+
+## $ npx vitest run
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ src/evidence/evidence-integrity-s2.test.ts (0 test)
+ ❯ src/ingest/route.test.ts (16 tests | 10 failed) 37ms
+   ❯ imageFileFromDataTransferFiles — paste event routing (A09) (3)
+     × returns the first image file from a paste event 16ms
+     × returns the only image when the paste carries several files 3ms
+   ❯ imageFileFromClipboardRead — Paste button routing (A09) (3)
+     × picks the clipboard image and returns a named File 1ms
+     × propagates a getType failure instead of handing the pipeline half-read data 4ms
+   ❯ shareTargetFileFromMessage — service-worker message routing (A08) (5)
+     × turns a well-formed share-image message into the pipeline File 1ms
+     × keeps working when the OS share carried no filename (default name) 1ms
+   ❯ clipboardReadErrorMessage — permission states (A10) (3)
+     × explains a DENIED clipboard-read with the file-picker path 2ms
+     × explains an UNSUPPORTED clipboard with the file-picker path 1ms
+     × never fails silent: unknown failures still get the fail-closed message 1ms
+   ❯ clipboardPermissionHint — proactive Paste-button hint (A10) (2)
+     × warns when the permission state is known-denied 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/evidence/evidence-integrity-s2.test.ts [ src/evidence/evidence-integrity-s2.test.ts ]
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/docs/evidence/S2/summary.json'
+ ❯ src/evidence/evidence-integrity-s2.test.ts:71:30
+     69|
+     70| describe('evidence integrity (A25, S2)', () => {
+     71|   const summary = JSON.parse(readFileSync(SUMMARY, 'utf-8')) as Summar…
+       |                              ^
+     72|
+     73|   it('covers every S2 acceptance ID (and the re-verified S0/S1 IDs) wi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/ingest/route.test.ts > imageFileFromDataTransferFiles — paste event routing (A09) > returns the first image file from a paste event
+AssertionError: expected null to be File { size: 8, type: 'image/png', name: 'shot.png', lastModified: 1795317145484 } // Object.is equality
+
+- Expected:
+File {
+  Symbol(kHandle): Blob {},
+  Symbol(kLength): 8,
+  Symbol(kType): "image/png",
+  Symbol(state): FileState {
+    "lastModified": 1795317145484,
+    "name": "shot.png",
+  },
+}
+
++ Received:
+null
+
+ ❯ src/ingest/route.test.ts:27:75
+     25| describe('imageFileFromDataTransferFiles — paste event routing (A09)',…
+     26|   it('returns the first image file from a paste event', () => {
+     27|     expect(imageFileFromDataTransferFiles([textFile, pngFile, jpegFile…
+       |                                                                           ^
+     28|   });
+     29|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  src/ingest/route.test.ts > imageFileFromDataTransferFiles — paste event routing (A09) > returns the only image when the paste carries several files
+AssertionError: expected null to be File { size: 3, type: 'image/jpeg', name: 'photo.jpg', lastModified: 1795317145484 } // Object.is equality
+
+- Expected:
+File {
+  Symbol(kHandle): Blob {},
+  Symbol(kLength): 3,
+  Symbol(kType): "image/jpeg",
+  Symbol(state): FileState {
+    "lastModified": 1795317145484,
+    "name": "photo.jpg",
+  },
+}
+
++ Received:
+null
+
+ ❯ src/ingest/route.test.ts:31:56
+     29|
+     30|   it('returns the only image when the paste carries several files', ()…
+     31|     expect(imageFileFromDataTransferFiles([jpegFile])).toBe(jpegFile);
+       |                                                        ^
+     32|   });
+     33|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  src/ingest/route.test.ts > imageFileFromClipboardRead — Paste button routing (A09) > picks the clipboard image and returns a named File
+AssertionError: expected null not to be null
+ ❯ src/ingest/route.test.ts:50:22
+     48|     ];
+     49|     const file = await imageFileFromClipboardRead(items);
+     50|     expect(file).not.toBeNull();
+       |                      ^
+     51|     expect(file?.type).toBe('image/png');
+     52|     expect(file?.name.endsWith('.png')).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  src/ingest/route.test.ts > imageFileFromClipboardRead — Paste button routing (A09) > propagates a getType failure instead of handing the pipeline half-read data
+AssertionError: promise resolved "null" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+null
+
+ ❯ src/ingest/route.test.ts:73:52
+     71|       },
+     72|     ];
+     73|     await expect(imageFileFromClipboardRead(items)).rejects.toThrow();
+       |                                                    ^
+     74|   });
+     75| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  src/ingest/route.test.ts > shareTargetFileFromMessage — service-worker message routing (A08) > turns a well-formed share-image message into the pipeline File
+AssertionError: expected null not to be null
+ ❯ src/ingest/route.test.ts:87:22
+     85|       blob,
+     86|     });
+     87|     expect(file).not.toBeNull();
+       |                      ^
+     88|     expect(file?.name).toBe('shared.png');
+     89|     expect(file?.type).toBe('image/png');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  src/ingest/route.test.ts > shareTargetFileFromMessage — service-worker message routing (A08) > keeps working when the OS share carried no filename (default name)
+AssertionError: expected null not to be null
+ ❯ src/ingest/route.test.ts:100:22
+     98|       blob: new Blob([new Uint8Array([0xff, 0xd8])], { type: 'image/jp…
+     99|     });
+    100|     expect(file).not.toBeNull();
+       |                      ^
+    101|     expect(file?.name.length).toBeGreaterThan(0);
+    102|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  src/ingest/route.test.ts > clipboardReadErrorMessage — permission states (A10) > explains a DENIED clipboard-read with the file-picker path
+AssertionError: expected '' to be 'Pasting needs clipboard permission, w…' // Object.is equality
+
+- Expected
++ Received
+
+- Pasting needs clipboard permission, which is currently blocked for this site. You can still add your screenshot with the Choose screenshot button below.
+
+ ❯ src/ingest/route.test.ts:145:17
+    143|   it('explains a DENIED clipboard-read with the file-picker path', () …
+    144|     const msg = clipboardReadErrorMessage(new DOMException('denied', '…
+    145|     expect(msg).toBe(CLIPBOARD_DENIED_MESSAGE);
+       |                 ^
+    146|     expect(msg).toContain('Choose screenshot');
+    147|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  src/ingest/route.test.ts > clipboardReadErrorMessage — permission states (A10) > explains an UNSUPPORTED clipboard with the file-picker path
+AssertionError: expected '' to be 'This browser cannot hand images to Po…' // Object.is equality
+
+- Expected
++ Received
+
+- This browser cannot hand images to PostClip through the clipboard here. You can still add your screenshot with the Choose screenshot button below.
+
+ ❯ src/ingest/route.test.ts:150:93
+    148|
+    149|   it('explains an UNSUPPORTED clipboard with the file-picker path', ()…
+    150|     expect(clipboardReadErrorMessage(new DOMException('unsupported', '…
+       |                                                                                             ^
+    151|       CLIPBOARD_UNAVAILABLE_MESSAGE,
+    152|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  src/ingest/route.test.ts > clipboardReadErrorMessage — permission states (A10) > never fails silent: unknown failures still get the fail-closed message
+AssertionError: expected '' to be 'The clipboard could not be read right…' // Object.is equality
+
+- Expected
++ Received
+
+- The clipboard could not be read right now. You can still add your screenshot with the Choose screenshot button below.
+
+ ❯ src/ingest/route.test.ts:159:58
+    157|
+    158|   it('never fails silent: unknown failures still get the fail-closed m…
+    159|     expect(clipboardReadErrorMessage(new Error('boom'))).toBe(CLIPBOAR…
+       |                                                          ^
+    160|     expect(clipboardReadErrorMessage(undefined)).toBe(CLIPBOARD_READ_F…
+    161|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  src/ingest/route.test.ts > clipboardPermissionHint — proactive Paste-button hint (A10) > warns when the permission state is known-denied
+AssertionError: expected null to be 'Pasting needs clipboard permission, w…' // Object.is equality
+
+- Expected:
+"Pasting needs clipboard permission, which is currently blocked for this site. You can still add your screenshot with the Choose screenshot button below."
+
++ Received:
+null
+
+ ❯ src/ingest/route.test.ts:167:18
+    165|   it('warns when the permission state is known-denied', () => {
+    166|     const hint = clipboardPermissionHint('denied');
+    167|     expect(hint).toBe(CLIPBOARD_DENIED_MESSAGE);
+       |                  ^
+    168|   });
+    169|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  2 failed | 9 passed (11)
+      Tests  10 failed | 107 passed (117)
+   Start at  03:12:25
+   Duration  2.65s (environment 45%, setup 37%, tests 7%, transform 6%, import 3%, worker 2%)
+
+    Isolate  11 workers spawned · ~362ms startup each (spawn + environment, per file)
+             at least ~966ms faster with isolate: false — reuses workers across files instead of one per file
+
+VITEST_EXIT=1
+
+## $ npm run build
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 48 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.57 kB │ gzip:  0.35 kB
+dist/assets/index-Dy5wlMDn.css    3.72 kB │ gzip:  1.29 kB
+dist/assets/index-yktmOrpd.js   250.14 kB │ gzip: 80.74 kB
+
+✓ built in 562ms
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+BUILD_EXIT=0
+
+## $ npx playwright test --project=chromium --reporter=list
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=chromium --reporter=list
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 20 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (521ms)
+  ✘   2 [chromium] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image (285ms)
+  ✘   3 [chromium] › e2e/a08_share_target.spec.ts:79:1 › a08_share_target_ignores_posts_without_an_image (2.1m)
+  ✘   4 [chromium] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works (3.1m)
+  ✘   5 [chromium] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (532ms)
+  ✘   6 [chromium] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (2.1m)
+  ✘   7 [chromium] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (2.1m)
+  ✓   8 [chromium] › e2e/a15_privacy_audit.spec.ts:47:1 › a15_no_storage_log_request_leaks_after_flows (3.2s)
+  ✓   9 [chromium] › e2e/a15_privacy_audit.spec.ts:78:1 › a15_audit_negative_control_detects_seeded_leak (504ms)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 12 standard fixtures: F1=0.997 chrome_leakage=0.009 fabricated=0.000
+  ✓  10 [chromium] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (23.8s)
+eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78%
+eval_ocr_cer_clean_set mean: 1.33%
+  ✓  11 [chromium] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (9.0s)
+  ✓  12 [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (346ms)
+  ✓  13 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (2.6s)
+  ✘  14 [chromium] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image (3.1m)
+  ✘  15 [chromium] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file (2.1m)
+  ✓  16 [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (3.0s)
+  ✓  17 [chromium] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (2.9s)
+  ✓  18 [chromium] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (4.9s)
+  ✓  19 [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (2.2s)
+  ✓  20 [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (2.6s)
+
+
+  1) [chromium] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image ──────────────
+
+    Error: page.evaluate: TypeError: Failed to execute 'fetch' on 'Window': Failed to parse URL from /manifest.webmanifest
+        at eval (eval at evaluate (:370:30), <anonymous>:1:26)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:1:26)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a08_share_target.spec.ts:24:31
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a08_share_target-a08-share-target-receives-image-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a08_share_target-a08-share-target-receives-image-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a08_share_target-a08-share-target-receives-image-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a08_share_target-a08-share-target-receives-image-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/a08_share_target.spec.ts:79:1 › a08_share_target_ignores_posts_without_an_image 
+
+    Error: service worker active with a complete precache
+
+    service worker active with a complete precache
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 120000ms exceeded while waiting on the predicate
+
+       at helpers/pwa.ts:66
+
+      64 |       { timeout: 120_000, message: 'service worker active with a complete precache' },
+      65 |     )
+    > 66 |     .toBe(true);
+         |      ^
+      67 |   return last;
+      68 | }
+      69 |
+        at waitForAppShellReady (/opt/data/workspace/smll/projects/postclip/e2e/helpers/pwa.ts:66:6)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a08_share_target.spec.ts:81:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a08_share_target-a08-share-e045a-ores-posts-without-an-image-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a08_share_target-a08-share-e045a-ores-posts-without-an-image-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a08_share_target-a08-share-e045a-ores-posts-without-an-image-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a08_share_target-a08-share-e045a-ores-posts-without-an-image-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#paste-btn')
+
+
+      22 |
+      23 |   // The Paste button is offered; clicking it triggers a REAL (refused) read.
+    > 24 |   await page.locator('#paste-btn').click();
+         |                                    ^
+      25 |
+      26 |   // UC12: the explanation appears, says the clipboard is blocked, and points
+      27 |   // at the file picker that still works.
+        at /opt/data/workspace/smll/projects/postclip/e2e/a10_clipboard_denied.spec.ts:24:36
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a10_clipboard_denied-a10-d-1e1d2-e-explains-and-picker-works-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a10_clipboard_denied-a10-d-1e1d2-e-explains-and-picker-works-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a10_clipboard_denied-a10-d-1e1d2-e-explains-and-picker-works-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a10_clipboard_denied-a10-d-1e1d2-e-explains-and-picker-works-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered 
+
+    Error: page.evaluate: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+
+      19 |
+      20 |   // Structural installability: a valid manifest…
+    > 21 |   const manifest = await page.evaluate(async () => await (await fetch('/manifest.webmanifest')).json());
+         |                               ^
+      22 |   expect(manifest.name).toBe('PostClip');
+      23 |   expect(manifest.start_url).toBe('/');
+      24 |   expect(manifest.scope).toBe('/');
+        at /opt/data/workspace/smll/projects/postclip/e2e/a11_install_offline.spec.ts:21:31
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads ────────
+
+    Error: service worker active with a complete precache
+
+    service worker active with a complete precache
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 120000ms exceeded while waiting on the predicate
+
+       at helpers/pwa.ts:66
+
+      64 |       { timeout: 120_000, message: 'service worker active with a complete precache' },
+      65 |     )
+    > 66 |     .toBe(true);
+         |      ^
+      67 |   return last;
+      68 | }
+      69 |
+        at waitForAppShellReady (/opt/data/workspace/smll/projects/postclip/e2e/helpers/pwa.ts:66:6)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a11_install_offline.spec.ts:78:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-reload-app-shell-loads-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a11_install_offline-a11-offline-reload-app-shell-loads-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-reload-app-shell-loads-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a11_install_offline-a11-offline-reload-app-shell-loads-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load ──────────
+
+    Error: service worker active with a complete precache
+
+    service worker active with a complete precache
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 120000ms exceeded while waiting on the predicate
+
+       at helpers/pwa.ts:66
+
+      64 |       { timeout: 120_000, message: 'service worker active with a complete precache' },
+      65 |     )
+    > 66 |     .toBe(true);
+         |      ^
+      67 |   return last;
+      68 | }
+      69 |
+        at waitForAppShellReady (/opt/data/workspace/smll/projects/postclip/e2e/helpers/pwa.ts:66:6)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a11_install_offline.spec.ts:100:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-ocr-after-first-load-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a11_install_offline-a11-offline-ocr-after-first-load-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-ocr-after-first-load-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a11_install_offline-a11-offline-ocr-after-first-load-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image ────────
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#paste-btn')
+
+
+      31 |   }, bytes);
+      32 |
+    > 33 |   await page.locator('#paste-btn').click();
+         |                                    ^
+      34 |
+      35 |   // The pasted screenshot is processed: real OCR, review screen with text.
+      36 |   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc03_paste.spec.ts:33:36
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc03_paste-uc03-paste-button-processes-clipboard-image-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc03_paste-uc03-paste-button-processes-clipboard-image-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc03_paste-uc03-paste-button-processes-clipboard-image-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc03_paste-uc03-paste-button-processes-clipboard-image-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file ─────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Review' })
+    Expected: visible
+    Timeout: 120000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Review' }) with timeout 120000ms
+      - waiting for getByRole('heading', { name: 'Review' })
+
+
+      74 |   }, bytes);
+      75 |
+    > 76 |   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+         |                                                               ^
+      77 |   await expect
+      78 |     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
+      79 |       timeout: 120_000,
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc03_paste.spec.ts:76:63
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc03_paste-uc03-paste-event-processes-pasted-file-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc03_paste-uc03-paste-event-processes-pasted-file-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc03_paste-uc03-paste-event-processes-pasted-file-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc03_paste-uc03-paste-event-processes-pasted-file-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    [chromium] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image ───────────────
+    [chromium] › e2e/a08_share_target.spec.ts:79:1 › a08_share_target_ignores_posts_without_an_image 
+    [chromium] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works 
+    [chromium] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered ─
+    [chromium] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads ─────────
+    [chromium] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load ───────────
+    [chromium] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image ─────────
+    [chromium] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file ──────────────
+  12 passed (15.7m)
+CHROMIUM_EXIT=1
+
+## $ npx playwright test --project=webkit --reporter=list
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=webkit --reporter=list
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 20 tests using 1 worker
+
+  ✓   1 [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (1.1s)
+  -   2 [webkit] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image
+  -   3 [webkit] › e2e/a08_share_target.spec.ts:79:1 › a08_share_target_ignores_posts_without_an_image
+  -   4 [webkit] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works
+  ✘   5 [webkit] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (784ms)
+  ✘   6 [webkit] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (2.1m)
+  ✘   7 [webkit] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (2.1m)
+  ✓   8 [webkit] › e2e/a15_privacy_audit.spec.ts:47:1 › a15_no_storage_log_request_leaks_after_flows (3.3s)
+  ✓   9 [webkit] › e2e/a15_privacy_audit.spec.ts:78:1 › a15_audit_negative_control_detects_seeded_leak (722ms)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 12 standard fixtures: F1=0.997 chrome_leakage=0.009 fabricated=0.000
+  ✓  10 [webkit] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (18.1s)
+eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78%
+eval_ocr_cer_clean_set mean: 1.33%
+  ✓  11 [webkit] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (9.4s)
+  ✓  12 [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (841ms)
+  ✓  13 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (3.4s)
+  -  14 [webkit] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image
+  -  15 [webkit] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file
+  ✓  16 [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (3.1s)
+  ✓  17 [webkit] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (2.8s)
+  ✓  18 [webkit] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (4.7s)
+  ✓  19 [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (2.1s)
+  ✓  20 [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (3.4s)
+
+
+  1) [webkit] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered ──
+
+    Error: page.evaluate: SyntaxError: The string did not match the expected pattern.
+
+      19 |
+      20 |   // Structural installability: a valid manifest…
+    > 21 |   const manifest = await page.evaluate(async () => await (await fetch('/manifest.webmanifest')).json());
+         |                               ^
+      22 |   expect(manifest.name).toBe('PostClip');
+      23 |   expect(manifest.start_url).toBe('/');
+      24 |   expect(manifest.scope).toBe('/');
+        at /opt/data/workspace/smll/projects/postclip/e2e/a11_install_offline.spec.ts:21:31
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads ──────────
+
+    Error: service worker active with a complete precache
+
+    service worker active with a complete precache
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 120000ms exceeded while waiting on the predicate
+
+       at helpers/pwa.ts:66
+
+      64 |       { timeout: 120_000, message: 'service worker active with a complete precache' },
+      65 |     )
+    > 66 |     .toBe(true);
+         |      ^
+      67 |   return last;
+      68 | }
+      69 |
+        at waitForAppShellReady (/opt/data/workspace/smll/projects/postclip/e2e/helpers/pwa.ts:66:6)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a11_install_offline.spec.ts:78:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-reload-app-shell-loads-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a11_install_offline-a11-offline-reload-app-shell-loads-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-reload-app-shell-loads-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a11_install_offline-a11-offline-reload-app-shell-loads-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [webkit] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load ────────────
+
+    Error: service worker active with a complete precache
+
+    service worker active with a complete precache
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 120000ms exceeded while waiting on the predicate
+
+       at helpers/pwa.ts:66
+
+      64 |       { timeout: 120_000, message: 'service worker active with a complete precache' },
+      65 |     )
+    > 66 |     .toBe(true);
+         |      ^
+      67 |   return last;
+      68 | }
+      69 |
+        at waitForAppShellReady (/opt/data/workspace/smll/projects/postclip/e2e/helpers/pwa.ts:66:6)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a11_install_offline.spec.ts:100:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-ocr-after-first-load-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a11_install_offline-a11-offline-ocr-after-first-load-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a11_install_offline-a11-offline-ocr-after-first-load-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a11_install_offline-a11-offline-ocr-after-first-load-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [webkit] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered ───
+    [webkit] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads ───────────
+    [webkit] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load ─────────────
+  5 skipped
+  12 passed (5.2m)
+WEBKIT_EXIT=1
+
+# End of S2 RED log.

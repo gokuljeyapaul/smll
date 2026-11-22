@@ -36,7 +36,10 @@ import sys
 import xml.etree.ElementTree as ET
 
 STATUSES = {"PASS", "PARTIAL", "NOT_RUN", "BLOCKED"}
-DIGEST_PATHS = ["src", "app", "e2e", "fixtures/manifest.json", "package-lock.json",
+# The digest covers everything the committed evidence depends on. S2 added
+# the PWA source surface (public/sw.js, manifest, icons), so public/ is
+# digested from S2 on (src/e2e/fixtures/lockfile/config were the S0/S1 set).
+DIGEST_PATHS = ["src", "public", "e2e", "fixtures/manifest.json", "package-lock.json",
                 "app.json", "app.config.js", "app.config.ts", "package.json"]
 
 

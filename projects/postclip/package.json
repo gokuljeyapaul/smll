@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/fetch_ocr_assets.mjs",
+    "build": "tsc --noEmit && vite build && node scripts/fetch_ocr_assets.mjs && node scripts/build_pwa_precache.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",

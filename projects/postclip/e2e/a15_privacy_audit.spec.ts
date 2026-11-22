@@ -1,11 +1,19 @@
 import { test, expect, type Page } from '@playwright/test';
 import { runPrivacyAudit, startCapture } from './helpers/privacy';
+import { waitForAppShellReady } from './helpers/pwa';
+import { ALLOWED_CACHE_NAME_PATTERNS } from '../src/privacy/audit';
 
 /**
  * A15 (web): the no-storage audit as a first-class flow. After a full
  * happy-path flow (pick → OCR → cleanup → edit → share → copy → export),
  * only allow-listed storage exists and no post text appears in any
  * storage, URL, cookie, console output or network request.
+ *
+ * S2 evolution (planned in the allow-list, src/privacy/audit.ts): the
+ * service-worker app shell now exists, so the app-shell precache cache is
+ * the ONE cache allowed — and it must contain exactly this build's
+ * precache entries (never share-target POST bodies, never post content;
+ * plan "Privacy and no-storage design"). The model cache arrives in S3.
  *
  * The second testcase is the NEGATIVE CONTROL: a seeded leak must be
  * DETECTED by the audit (proving the audit is real, not trivially empty —
@@ -51,8 +59,15 @@ test('a15_no_storage_log_request_leaks_after_flows', async ({ page }) => {
   const audit = await runPrivacyAudit(page, capture, [original, edited]);
   expect(audit.violations, JSON.stringify(audit.violations, null, 2)).toEqual([]);
 
-  // Structural (allow-list) state is also asserted directly from the
-  // snapshot: S1 allows NO storage at all (no service worker, no model yet).
+  // The S2 app shell registers on this page's first load; wait until its
+  // precache is complete so the structural cache assertions are
+  // deterministic (if it never completes, the exact-keys check below
+  // fails with a readable diff — never silently passes).
+  await waitForAppShellReady(page);
+
+  // Structural (allow-list) state, asserted directly from the snapshot:
+  // no localStorage/sessionStorage/cookies ever; from S2 the ONLY cache
+  // allowed is the app-shell precache (the model cache is S3).
   const snapshot = await page.evaluate(async () => {
     let cacheNames: string[] = [];
     try {
@@ -69,7 +84,28 @@ test('a15_no_storage_log_request_leaks_after_flows', async ({ page }) => {
   });
   expect(snapshot.localStorageKeys, 'no localStorage entries allowed').toEqual([]);
   expect(snapshot.sessionStorageKeys, 'no sessionStorage entries allowed').toEqual([]);
-  expect(snapshot.cacheNames, 'no Cache Storage entries allowed in S1').toEqual([]);
+  for (const name of snapshot.cacheNames) {
+    expect(
+      ALLOWED_CACHE_NAME_PATTERNS.some((p) => p.test(name)),
+      `cache "${name}" must be on the A15 allow-list`,
+    ).toBe(true);
+  }
+  // …and the app-shell cache holds EXACTLY this build's precache entries:
+  // no share-target POST bodies, no post content, nothing dynamic.
+  const precacheUrls = await page.evaluate(async () => {
+    const text = await (await fetch('/precache-manifest.js')).text();
+    const entries = JSON.parse(text.slice(text.indexOf('['), text.lastIndexOf(']') + 1)) as {
+      cacheKey: string;
+    }[];
+    return entries.map((e) => new URL(e.cacheKey, location.origin).href).sort();
+  });
+  const cacheUrls = await page.evaluate(async () => {
+    const names = await caches.keys();
+    const shell = names.find((n) => n.startsWith('precache'));
+    const keys = shell ? (await (await caches.open(shell)).keys()).map((r) => r.url) : [];
+    return [...keys].sort();
+  });
+  expect(cacheUrls, 'the app-shell cache holds exactly the precache entries').toEqual(precacheUrls);
   expect(snapshot.cookies, 'no cookies allowed').toBe('');
   expect(audit.requestCount).toBeGreaterThan(0);
   expect(audit.crossOriginRequests, 'all requests must be same-origin').toEqual([]);

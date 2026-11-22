@@ -1,0 +1,283 @@
+{
+  "slice": "S2",
+  "source_digest": "345749499827f796a78998064c96f393700ff000db581423e9d45d0ca96a8075",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "webkit": "Version/27.2 (Playwright 1.65.1, build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM, 38 GB free disk at slice end (headless-Linux numbers; real-device behavior is NOT_RUN)"
+  },
+  "acceptance": {
+    "A08": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a08_share_target_receives_image",
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a08_share_target_ignores_posts_without_an_image",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::shareTargetFileFromMessage — service-worker message routing (A08) > fail closed: rejects a non-image mime",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::shareTargetFileFromMessage — service-worker message routing (A08) > fail closed: rejects a share without an image blob",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::shareTargetFileFromMessage — service-worker message routing (A08) > fail closed: rejects wrong message types",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::shareTargetFileFromMessage — service-worker message routing (A08) > keeps working when the OS share carried no filename (default name)",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::shareTargetFileFromMessage — service-worker message routing (A08) > turns a well-formed share-image message into the pipeline File"
+      ],
+      "videos": [
+        "video:a08_share_target_receives_image_chromium",
+        "video:a08_share_target_ignores_posts_without_an_image_chromium"
+      ],
+      "notes": "UC02: the manifest declares a share_target (POST, multipart/form-data, files accept image/*), and a real multipart POST to /share-target THROUGH the service worker hands the image to the pipeline: the review screen shows real OCR text. The app-shell cache is asserted to hold exactly this build's precache entries afterwards (the POST body is never cached or logged — plan privacy design). The negative testcase proves posts without an image are ignored fail-closed. Real installed-PWA sharing on Android is A27 (NOT_RUN). Chromium-only platform ID per the plan; Playwright's WebKit is not asserted for A08."
+    },
+    "A09": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc03_paste_button_processes_clipboard_image",
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc03_paste_event_processes_pasted_file",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::imageFileFromDataTransferFiles — paste event routing (A09) > returns null for a text-only paste so textarea pasting is never hijacked",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::imageFileFromDataTransferFiles — paste event routing (A09) > returns the first image file from a paste event",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::imageFileFromDataTransferFiles — paste event routing (A09) > returns the only image when the paste carries several files",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::imageFileFromClipboardRead — Paste button routing (A09) > picks the clipboard image and returns a named File",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::imageFileFromClipboardRead — Paste button routing (A09) > propagates a getType failure instead of handing the pipeline half-read data",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::imageFileFromClipboardRead — Paste button routing (A09) > returns null when the clipboard has no image (only text)"
+      ],
+      "videos": [
+        "video:uc03_paste_button_processes_clipboard_image_chromium",
+        "video:uc03_paste_event_processes_pasted_file_chromium"
+      ],
+      "notes": "UC03, chromium (platform ID per the plan): a REAL screenshot is written to the real clipboard (permission granted by the context) and the Paste button processes it end to end; a paste EVENT carrying an image file is processed too, and text-only pastes are never hijacked. The WebKit attempt is recorded honestly in docs/evidence/S2/webkit-paste-probe.log: Playwright's WebKit accepts clipboard.write(image) but read() is platform-denied, and a dispatched paste event WITH a file IS processed by the app there (review screen appears); the real-clipboard half cannot be automated in WebKit, so A09's junit evidence is chromium-only as planned."
+    },
+    "A10": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a10_denied_paste_explains_and_picker_works",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::clipboardReadErrorMessage — permission states (A10) > explains a DENIED clipboard-read with the file-picker path",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::clipboardReadErrorMessage — permission states (A10) > explains an UNSUPPORTED clipboard with the file-picker path",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::clipboardReadErrorMessage — permission states (A10) > never fails silent: unknown failures still get the fail-closed message",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::clipboardPermissionHint — proactive Paste-button hint (A10) > stays quiet for granted, prompt and not-queryable states",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::clipboardPermissionHint — proactive Paste-button hint (A10) > warns when the permission state is known-denied"
+      ],
+      "videos": [
+        "video:a10_denied_paste_explains_and_picker_works_chromium"
+      ],
+      "notes": "UC12, chromium: with the context's clipboard grants revoked, a real refused navigator.clipboard.read() makes the Paste button show the specific explanation naming the still-working Choose screenshot button, and the file picker then runs the full pipeline. Chromium-only platform ID per the plan; in WebKit read() is permanently platform-denied (the same explanation path is what its users always see — recorded in the probe log)."
+    },
+    "A11": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a11_installable_manifest_and_sw_registered",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::a11_installable_manifest_and_sw_registered",
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a11_offline_reload_app_shell_loads",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::a11_offline_reload_app_shell_loads",
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a11_offline_ocr_after_first_load",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::a11_offline_ocr_after_first_load"
+      ],
+      "videos": [
+        "video:a11_installable_manifest_and_sw_registered_chromium",
+        "video:a11_installable_manifest_and_sw_registered_webkit",
+        "video:a11_offline_reload_app_shell_loads_chromium",
+        "video:a11_offline_reload_app_shell_loads_webkit",
+        "video:a11_offline_ocr_after_first_load_chromium",
+        "video:a11_offline_ocr_after_first_load_webkit"
+      ],
+      "notes": "UC04, both engines: a valid manifest (name, standalone, icons 192/512 + maskable that download, share_target) and a registered service worker with a COMPLETE precache (every entry of the build's own dist/precache-manifest.js, including the 13 /ocr-assets/ files); after the first load, with the network disabled, the app shell reloads and renders (served by the worker, zero failed requests) — and a pick runs real OCR entirely offline in BOTH engines. The install prompt itself is browser chrome (not automatable); installability is checked structurally per the plan's testability map."
+    },
+    "A01": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a01_built_app_loads_home_screen_no_console_errors",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::a01_built_app_loads_home_screen_no_console_errors"
+      ],
+      "videos": [
+        "video:a01_built_app_loads_home_screen_no_console_errors_chromium",
+        "video:a01_built_app_loads_home_screen_no_console_errors_webkit"
+      ],
+      "notes": "S0 ID re-verified on the S2 tree: the built app (now a PWA: manifest link + SW registration) still loads the home screen with no console errors in both engines."
+    },
+    "A02": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::uc01_pick_ocr_review_share"
+      ],
+      "videos": [
+        "video:uc01_pick_ocr_review_share_chromium",
+        "video:uc01_pick_ocr_review_share_webkit"
+      ],
+      "notes": "S0 ID re-verified on the S2 tree: real in-browser OCR on clean01 produces the cleaned review text in both engines."
+    },
+    "A03": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::uc01_pick_ocr_review_share"
+      ],
+      "videos": [
+        "video:uc01_pick_ocr_review_share_chromium",
+        "video:uc01_pick_ocr_review_share_webkit"
+      ],
+      "notes": "S0 ID re-verified on the S2 tree: navigator.share spied with payload.text === review text; Copy verified by real granted clipboard read (chromium) and real paste round-trip (webkit)."
+    },
+    "A04": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc05_edit_reflects_in_payloads",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::uc05_edit_reflects_in_payloads",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::buildExportPayload — file export builders (S1, A05, A04) > the export payload always reflects the CURRENT text, edits included"
+      ],
+      "videos": [
+        "video:uc05_edit_reflects_in_payloads_chromium",
+        "video:uc05_edit_reflects_in_payloads_webkit"
+      ],
+      "notes": "S1 ID re-verified on the S2 tree: edits flow exactly into share/copy/export."
+    },
+    "A05": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc07_export_downloads_md_txt_json",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::uc07_export_downloads_md_txt_json",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::buildExportPayload — file export builders (S1, A05, A04) > .json content is a deterministic document carrying the exact review text"
+      ],
+      "videos": [
+        "video:uc07_export_downloads_md_txt_json_chromium",
+        "video:uc07_export_downloads_md_txt_json_webkit"
+      ],
+      "notes": "S1 ID re-verified on the S2 tree: real downloads read back in both engines."
+    },
+    "A06": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc10_non_english_rejected_no_cleanup",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::uc10_non_english_rejected_no_cleanup",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::language gate confusion matrix over fixtures (A06) > accepts every English fixture (>= 95% required)",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)"
+      ],
+      "videos": [
+        "video:uc10_non_english_rejected_no_cleanup_chromium",
+        "video:uc10_non_english_rejected_no_cleanup_webkit"
+      ],
+      "notes": "S1 ID re-verified on the S2 tree: de/es fixtures rejected with the clear message after real OCR, no cleanup; host confusion matrix green."
+    },
+    "A07": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc11_bad_input_error_states",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::uc11_bad_input_error_states",
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::uc11_huge_downscaled_before_ocr",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::uc11_huge_downscaled_before_ocr",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::image error classes and messages (A07) > has a distinct, specific, kind message per error code",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::planDownscale (A07) > flags images over the OCR side limit and preserves aspect ratio"
+      ],
+      "videos": [
+        "video:uc11_bad_input_error_states_chromium",
+        "video:uc11_bad_input_error_states_webkit",
+        "video:uc11_huge_downscaled_before_ocr_chromium",
+        "video:uc11_huge_downscaled_before_ocr_webkit"
+      ],
+      "notes": "S1 ID re-verified on the S2 tree: specific per-kind error messages; huge images downscaled before OCR."
+    },
+    "A15": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a15_no_storage_log_request_leaks_after_flows",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::a15_no_storage_log_request_leaks_after_flows",
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::a15_audit_negative_control_detects_seeded_leak",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::a15_audit_negative_control_detects_seeded_leak",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::auditStorageSnapshot — allow-list judgment (A15) > negative control: a seeded leak in every storage kind is detected"
+      ],
+      "videos": [
+        "video:a15_no_storage_log_request_leaks_after_flows_chromium",
+        "video:a15_no_storage_log_request_leaks_after_flows_webkit",
+        "video:a15_audit_negative_control_detects_seeded_leak_chromium",
+        "video:a15_audit_negative_control_detects_seeded_leak_webkit"
+      ],
+      "notes": "S1 ID re-verified on the S2 tree with the planned S2 evolution: the allow-list now admits exactly the app-shell precache cache (audit.ts patterns), and the a15 flow asserts the cache holds EXACTLY this build's precache entries (never share-target POST bodies, never post content); no localStorage/sessionStorage/cookies, no post text in storage/URL/console/network, same-origin requests only; the seeded-leak negative control still detects violations."
+    },
+    "A20": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/chromium-e2e.xml::eval_ocr_cer_clean_set",
+        "junit:docs/evidence/S2/junit/webkit-e2e.xml::eval_ocr_cer_clean_set"
+      ],
+      "videos": [
+        "video:eval_ocr_cer_clean_set_chromium",
+        "video:eval_ocr_cer_clean_set_webkit"
+      ],
+      "notes": "S0 ID re-verified on the S2 tree: raw-OCR CER vs gold on the clean set within the 5% bar in both engines."
+    },
+    "A25": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/host-vitest.xml::evidence integrity (A25, S2) > covers every S2 acceptance ID (and the re-verified S0/S1 IDs) with a valid status",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::evidence integrity (A25, S2) > every PASS points at JUnit testcases that exist and passed, per required engine",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::evidence integrity (A25, S2) > non-PASS entries carry notes, and referenced videos exist in the manifest",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::evidence integrity (A25, S2) > records a source digest over the shipped source tree"
+      ],
+      "notes": "S2 evidence-integrity host tests: every acceptance ID in this summary has an honest status; every PASS resolves to passing JUnit testcases per required engine (A25's own refs are validated by scripts/verify_evidence.py against the committed junit after this suite is green); non-PASS entries carry notes; the source digest matches the current tree (enforced by scripts/verify.sh on the S2 slice)."
+    },
+    "A31": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > every entry has a gold JSON with the fields its kind requires",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > every fixture file exists, matches its sha256, is small, and is flagged synthetic",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > every gold JSON on disk belongs to a manifest entry",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > has a manifest.json flagged synthetic",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > lists exactly the 25 S1 fixtures",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > no stray fixture files without a manifest entry",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > the corrupt fixture carries a PNG magic but is not a decodable image",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > the fixture families the plan names for S1 are all present",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > the huge fixture is >= 4000 px on its longest side",
+        "junit:docs/evidence/S2/junit/host-vitest.xml::fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB"
+      ],
+      "notes": "S0/S1 ID re-verified on the S2 tree: 25 synthetic fixtures, hashes and sizes verified, no strays (fixtures unchanged by S2)."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "npx vitest run && npm run build && npx playwright test --project=chromium && npx playwright test --project=webkit (S2 scaffold state; full sequence in docs/evidence/S2/red.log)",
+      "exit_code": 1,
+      "evidence": "docs/evidence/S2/red.log"
+    },
+    "green": {
+      "command": "npm run build && npx vitest run (final all-green unit run; see green.log)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S2/green.log"
+    },
+    "e2e": {
+      "command": "npx playwright test --project=chromium --reporter=list,junit && npx playwright test --project=webkit --reporter=list,junit (20 passed in each engine)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S2/e2e.log, docs/evidence/S2/junit/{chromium-e2e,webkit-e2e}.xml"
+    },
+    "negative": {
+      "command": "a08_share_target_ignores_posts_without_an_image, a10_denied_paste_explains_and_picker_works, uc11_* error states, s0_negative_corrupt_input_fails_closed and the a15 seeded-leak negative control in the same green Playwright runs",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S2/negative.log"
+    },
+    "webkit_paste_probe": {
+      "command": "node scripts/probe_webkit_paste.mjs (A09 WebKit attempt, recorded)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S2/webkit-paste-probe.log"
+    },
+    "demo": {
+      "command": "npm run demo (built app; S0+S1 flows plus paste event, share-target POST, offline reload + offline OCR, denied-clipboard explanation, both engines)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S2/demo.log"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh (plan lint + evidence integrity on the final tree)",
+      "exit_code": 0,
+      "evidence": "run on the final tree; output in the slice PR"
+    }
+  },
+  "videos_manifest": "docs/evidence/video_manifest.json (S2 adds 11 entries; all junit_verified)",
+  "owner_visual": {
+    "note": "The plan's Conformance table has NO O row for S2 (owner-visual items are O01 S0, O02 S1, O03 S3, O04 S4, O05 S5, O06 S6); nothing is PENDING_OWNER_REVIEW for this slice."
+  },
+  "limitations": [
+    "Real installed-PWA sharing on Android Chrome (the OS share sheet posting to the installed app) is A27 and remains NOT_RUN; A08 is proven by posting through the real service worker from the page, exactly as the plan's testability map specifies.",
+    "The OS share sheet, install prompt and installed-PWA behavior are browser/OS chrome and not automatable; installability (A11) is checked structurally (manifest + registered SW + complete precache + offline load), per the plan.",
+    "A09's real-clipboard half is chromium-only by the plan's platform table: Playwright's WebKit grants no clipboard permissions and navigator.clipboard.read() is platform-denied there. The recorded attempt (webkit-paste-probe.log) shows WebKit DOES accept clipboard.write(image) and DOES process a dispatched paste event carrying a file (review screen appears), so the paste-event channel works for real WebKit users; the Paste-button read channel cannot be automated there.",
+    "Offline OCR (a11_offline_ocr_after_first_load) proves the precached /ocr-assets/ route end to end in both engines on this machine; it does not measure cold-start disk-cache eviction, browser quota limits on other devices, or real-phone offline behavior (A27/A30 NOT_RUN).",
+    "The app shell precache is ~39.1 MB per session (13 ocr-assets files + the hashed app bundle + icons + manifest); Playwright contexts are ephemeral so each test context re-caches it — measured, not a device-quota claim.",
+    "A14 (zero network requests after the model cache exists) is S3; S2's request audit still asserts same-origin-only traffic and no post text in any request, URL, cookie, console or storage. The share-target POST body is consumed in memory by the service worker, handed to the page, and never cached or logged (asserted by the a08 cache-exactness check).",
+    "Service-worker update behavior (a new deploy taking over an open tab) is not exercised: each test context is fresh, so only first-install + activate + claim are covered.",
+    "The dispatch of synthetic ClipboardEvent('paste') measures the app's paste routing; a real Ctrl/Cmd+V with an image requires OS-level clipboard automation that Playwright does not offer — recorded honestly rather than faked."
+  ]
+}

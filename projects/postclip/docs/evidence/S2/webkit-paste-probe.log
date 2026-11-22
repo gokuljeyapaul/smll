@@ -1,0 +1,15 @@
+# WebKit paste attempt — recorded 2026-11-22T03:37:03.596Z by scripts/probe_webkit_paste.mjs
+# Built app on http://127.0.0.1:4199/ ; Playwright 1.65.1 webkit-2388 + chromium-1255 on this Linux container.
+# A09 is a chromium-only platform ID; these lines record what WebKit can and cannot do here.
+
+PASS — webkit: clipboard.write(image) API accepted
+BLOCKED — webkit: clipboard.read() returned types :: Error: page.evaluate: NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission.
+PASS — webkit: ClipboardEvent('paste') carries clipboardData with the file :: {"prevented":true,"hadFiles":true}
+PASS — webkit: dispatched paste event processed by the app (review screen)
+PASS — webkit: real Ctrl/Cmd+V paste round-trip of writeText text :: "webkit-probe-text"
+
+PASS — chromium (comparison): clipboard.write(image) API accepted
+PASS — chromium (comparison): clipboard.read() returned types :: ["image/png"]
+PASS — chromium (comparison): ClipboardEvent('paste') carries clipboardData with the file :: {"prevented":true,"hadFiles":true}
+PASS — chromium (comparison): dispatched paste event processed by the app (review screen)
+PASS — chromium (comparison): real Ctrl/Cmd+V paste round-trip of writeText text :: "webkit-probe-text"

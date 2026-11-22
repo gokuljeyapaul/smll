@@ -1,0 +1,75 @@
+== build ==
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 49 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.63 kB │ gzip:  0.37 kB
+dist/assets/index-C31qshgR.css    3.77 kB │ gzip:  1.30 kB
+dist/assets/index-CIT4GSVd.js   253.08 kB │ gzip: 81.65 kB
+
+✓ built in 853ms
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 20 entries, 39.1 MB of build output (incl. 13 ocr-assets)
+== vitest (unit) ==
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run --reporter=default --reporter=junit --outputFile.junit=docs/evidence/S2/junit/host-vitest.staging.xml
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ✓ src/evidence/evidence-integrity-s2.test.ts (4 tests) 60ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > accepts every English fixture (>= 95% required)
+language gate: English accepted 16/16 = 100.0%
+  en blur01: ratio=0.333 words=33 accepted=true
+  en chrome01: ratio=0.255 words=47 accepted=true
+  en chrome02: ratio=0.273 words=33 accepted=true
+  en clean01: ratio=0.405 words=42 accepted=true
+  en clean02: ratio=0.400 words=75 accepted=true
+  en clean03: ratio=0.175 words=40 accepted=true
+  en clean04: ratio=0.346 words=26 accepted=true
+  en clean05: ratio=0.350 words=40 accepted=true
+  en clean06: ratio=0.342 words=38 accepted=true
+  en dark01: ratio=0.306 words=36 accepted=true
+  en dark02: ratio=0.341 words=44 accepted=true
+  en emoji01: ratio=0.306 words=36 accepted=true
+  en heavychrome01: ratio=0.250 words=48 accepted=true
+  en huge01: ratio=0.441 words=34 accepted=true
+  en longpost01: ratio=0.457 words=151 accepted=true
+  en lowcontrast01: ratio=0.463 words=41 accepted=true
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+language gate: non-English accepted 0/5
+  de de01: ratio=0.024 words=42 reason=stopwords
+  de de02: ratio=0.022 words=46 reason=stopwords
+  de de03: ratio=0.033 words=61 reason=stopwords
+  es es01: ratio=0.024 words=41 reason=stopwords
+  es es02: ratio=0.019 words=53 reason=stopwords
+
+ ✓ src/cleanup/cleanup.test.ts (31 tests) 86ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+language gate margins: threshold=0.12 min(en)=0.175 max(non-en)=0.033
+
+ ✓ src/language/gate.test.ts (10 tests) 66ms
+ ✓ src/evidence/evidence-integrity-s1.test.ts (4 tests) 34ms
+stdout | fixtures/manifest.test.ts > fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB
+fixture bytes total: 1557715
+
+ ✓ fixtures/manifest.test.ts (10 tests) 44ms
+ ✓ src/privacy/audit.test.ts (15 tests) 21ms
+ ✓ src/image/validate.test.ts (10 tests) 20ms
+ ✓ src/evidence/evidence-integrity.test.ts (4 tests) 37ms
+ ✓ src/ingest/route.test.ts (16 tests) 41ms
+ ✓ src/ocr/normalize.test.ts (6 tests) 8ms
+ ✓ src/output/payload.test.ts (11 tests) 13ms
+
+ Test Files  11 passed (11)
+      Tests  121 passed (121)
+   Start at  03:56:12
+   Duration  2.83s (environment 44%, setup 38%, tests 10%, import 3%, transform 3%, worker 2%)
+
+    Isolate  11 workers spawned · ~384ms startup each (spawn + environment, per file)
+             at least ~1.02s faster with isolate: false — reuses workers across files instead of one per file
+
+JUNIT report written to /opt/data/workspace/smll/projects/postclip/docs/evidence/S2/junit/host-vitest.staging.xml
+EXIT CODES: build=0 unit=0 chromium=0 webkit=0

@@ -21,6 +21,15 @@ const NODE_SCRIPT_GLOBALS = {
   sessionStorage: 'readonly',
   caches: 'readonly',
   indexedDB: 'readonly',
+  atob: 'readonly',
+  Blob: 'readonly',
+  File: 'readonly',
+  FormData: 'readonly',
+  ClipboardItem: 'readonly',
+  ClipboardEvent: 'readonly',
+  DataTransfer: 'readonly',
+  requestAnimationFrame: 'readonly',
+  AbortSignal: 'readonly',
 };
 
 export default tseslint.config(
@@ -38,6 +47,30 @@ export default tseslint.config(
     rules: {
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
+    },
+  },
+  {
+    // The service worker is a classic worker script, not a module: lint it
+    // with worker-script semantics and the ServiceWorkerGlobalScope globals.
+    files: ['public/sw.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'script',
+      globals: {
+        self: 'readonly',
+        importScripts: 'readonly',
+        caches: 'readonly',
+        clients: 'readonly',
+        skipWaiting: 'readonly',
+        fetch: 'readonly',
+        Request: 'readonly',
+        Response: 'readonly',
+        URL: 'readonly',
+        File: 'readonly',
+        Blob: 'readonly',
+        console: 'readonly',
+        Promise: 'readonly',
+      },
     },
   },
 );
