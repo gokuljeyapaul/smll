@@ -16,10 +16,8 @@
  * start lowercase, exercising cleanup's line-break repair.
  */
 
-const ACTION_ROW = 'Like Comment Share';
-
-/** Localized UI furniture for non-English cards (the gate fixtures render
- *  with localized chrome, like a real localized app would). */
+/** Localized UI furniture per locale (the action row is the S0
+ *  "Like Comment Share" band; non-English cards render localized chrome). */
 const LOCALES = {
   en: { actionRow: 'Like Comment Share', promoted: 'Promoted' },
   de: { actionRow: 'Gefällt mir Kommentieren Teilen', promoted: 'Gesponsert' },

@@ -10,6 +10,14 @@ import type { OcrEngine, OcrResult } from './types';
  * English traineddata load from the same origin — no third-party CDN, no
  * upload. All inference happens in that worker, off the UI thread, which is
  * the requirement the plan puts on any OcrEngine implementation.
+ *
+ * S1 (A15): `cacheMethod: 'none'` stops tesseract.js from persisting the
+ * traineddata into an IndexedDB ("keyval-store" via its vendored idb-keyval).
+ * The plan allows only the app-shell cache and the model cache; by default
+ * the engine's language-data cache violated that, and the A15 storage audit
+ * caught it (see docs/evidence/S1/metrics.md). The pinned traineddata is
+ * re-fetched same-origin instead; the S2 service-worker app shell will
+ * precache /ocr-assets/ for offline use.
  */
 export function createTesseractEngine(): OcrEngine {
   let workerPromise: Promise<TesseractWorker> | null = null;
@@ -21,6 +29,9 @@ export function createTesseractEngine(): OcrEngine {
         corePath: '/ocr-assets/',
         langPath: '/ocr-assets/',
         workerBlobURL: false,
+        // No persistence: nothing but the app-shell and model caches is
+        // ever allowed to exist (plan "Privacy and no-storage design").
+        cacheMethod: 'none',
         // Failures already surface as a rejected recognize() promise, which the
         // app turns into a visible error (fail closed). Without this handler
         // tesseract.js ALSO throws the same error unhandled inside its message

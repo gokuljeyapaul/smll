@@ -132,6 +132,7 @@ async function demoIn(engineName, browserType) {
     step('clipboard paste round-trip delivers the edited text', pasted === edited, `${pasted.length} chars`);
 
     // A05: a real .txt export download whose content is read back.
+    await page.locator('#export-menu summary').click(); // open the export menu
     const downloadPromise = page.waitForEvent('download');
     await page.locator('#export-txt').click();
     const download = await downloadPromise;

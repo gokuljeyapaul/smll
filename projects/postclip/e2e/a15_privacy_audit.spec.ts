@@ -36,6 +36,7 @@ async function runFullFlow(page: Page): Promise<{ original: string; edited: stri
   await page.locator('#share-btn').click();
   await page.locator('#copy-btn').click();
   await expect(page.getByText('Copied')).toBeVisible();
+  await page.locator('#export-menu summary').click(); // open the export menu
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#export-md').click();
   const download = await downloadPromise;

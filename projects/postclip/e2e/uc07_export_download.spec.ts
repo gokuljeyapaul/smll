@@ -29,6 +29,7 @@ test('uc07_export_downloads_md_txt_json', async ({ page }) => {
     json: `${JSON.stringify({ app: 'postclip', format: 1, text: reviewText }, null, 2)}\n`,
   };
 
+  await page.locator('#export-menu summary').click(); // open the export menu
   for (const format of ['md', 'txt', 'json'] as const) {
     const downloadPromise = page.waitForEvent('download');
     await page.locator(`#export-${format}`).click();

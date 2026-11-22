@@ -51,10 +51,14 @@ const TESTCASES = [
   'a15_audit_negative_control_detects_seeded_leak',
 ];
 
-/** Match the sanitized testcase name inside a video directory name; exactly
- *  one testcase must match or we refuse to guess. */
+/** Match a video directory name to its testcase. Playwright names video dirs
+ *  `<spec base>-<sanitized testcase>-<project>` but SHORTENS long ids by
+ *  replacing the middle with a hash while PRESERVING the tail (~28 chars).
+ *  Matching on the last 26 chars of the sanitized testcase name covers both
+ *  the full and the shortened form. Exactly one testcase must match or we
+ *  refuse to guess. */
 function matchTestcase(dirName) {
-  const matches = TESTCASES.filter((tc) => dirName.includes(tc.replaceAll('_', '-')));
+  const matches = TESTCASES.filter((tc) => dirName.includes(tc.replaceAll('_', '-').slice(-26)));
   if (matches.length !== 1) {
     throw new Error(`video dir "${dirName}" matches ${matches.length} testcases (${matches.join(', ')}); refusing to guess`);
   }

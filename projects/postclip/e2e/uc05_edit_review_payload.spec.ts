@@ -78,6 +78,7 @@ test('uc05_edit_reflects_in_payloads', async ({ page }, testInfo: TestInfo) => {
   }
 
   // The exported .txt must reflect the edits exactly (real download, read back).
+  await page.locator('#export-menu summary').click(); // open the export menu
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#export-txt').click();
   const download = await downloadPromise;
