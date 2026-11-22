@@ -19,7 +19,8 @@ Facts below come from the Claude Code on the web docs (code.claude.com/docs/en/c
 - **`gh pr` and `gh issue` do not work** (the proxy rejects GraphQL, HTTP 403). Use REST through `gh api`:
   - Create PR: `gh api repos/gokuljeyapaul/smll/pulls -f title='...' -f head='<branch>' -f base=main -F body=@<body-file>` (body from `.github/pull_request_template.md`, filled in honestly).
   - Checks on the PR head: `gh api repos/gokuljeyapaul/smll/commits/<head-sha>/check-runs --jq '.check_runs[] | [.name,.status,.conclusion] | @tsv'` — need `verify  completed  success`.
-  - Merge (only under the AGENTS.md merge policy): `gh api -X PUT repos/gokuljeyapaul/smll/pulls/<n>/merge -f merge_method=squash -f sha=<head-sha>`.
+  - Wait for the check: poll the check-runs call above (every ~30 s, in the background) until `verify` is `completed success`; then merge. GitHub's auto-merge needs GraphQL, which this proxy blocks, so do not rely on it here.
+  - Merge (only under the AGENTS.md merge policy; do not wait for the owner once the gates hold): `gh api -X PUT repos/gokuljeyapaul/smll/pulls/<n>/merge -f merge_method=squash -f sha=<head-sha>`.
   - Verify: `gh api repos/gokuljeyapaul/smll/pulls/<n> --jq '[.merged,.merge_commit_sha]|@tsv'`.
   - Comment: `gh api repos/gokuljeyapaul/smll/issues/<n>/comments -f body='...'`.
 - If creating or merging a PR is refused (403/422, not allowed by the proxy or protection), do **not** work around it: stop, report the slice as `READY_FOR_MERGE` with the PR URL and the exact error, and wait for the owner. **UNCONFIRMED** whether merging is permitted from a cloud session.
