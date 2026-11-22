@@ -23,7 +23,7 @@
     },
     "S2": {
       "status": "READY_FOR_MERGE",
-      "pr": null,
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/64",
       "note": "PR opened by the building agent; merge SHA is recorded in the next slice's update"
     },
     "S3": {
