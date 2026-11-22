@@ -1,0 +1,2171 @@
+# S1 RED evidence — real commands, real output, captured 2026-11-22T01:34:51Z
+
+RED state: S1 scaffold modules exist (cleanup passthrough, gate accepts everything,
+sniff returns null, audit sees nothing, export builders return ''), the app is the
+S0 app; the new behavioral tests must fail on assertions (not import/build errors).
+
+## $ npx vitest run
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ src/image/validate.test.ts (10 tests | 6 failed) 23ms
+   ❯ sniffImageHeader over real fixture bytes (A07) (6)
+     × reads PNG dimensions from a real fixture 10ms
+     × parses the corrupt fixture structurally (valid magic + IHDR; decode catches the truncation) 2ms
+     × reads the tiny fixture as 64×64 1ms
+     × reads the huge fixture as >= 4000 px wide 2ms
+     × parses JPEG, GIF, BMP and WebP headers from minimal real byte sequences 1ms
+   ❯ planDownscale (A07) (2)
+     × flags images over the OCR side limit and preserves aspect ratio 3ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+language gate: non-English accepted 5/5
+  de de01: ratio=0.000 words=0 reason=ok
+  de de02: ratio=0.000 words=0 reason=ok
+  de de03: ratio=0.000 words=0 reason=ok
+  es es01: ratio=0.000 words=0 reason=ok
+  es es02: ratio=0.000 words=0 reason=ok
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+language gate margins: threshold=0.18 min(en)=0.000 max(non-en)=0.000
+
+ ❯ src/language/gate.test.ts (10 tests | 6 failed) 43ms
+   ❯ detectEnglish — gate behavior (S1) (5)
+     × rejects text with too few words (fail closed, honest reason) 10ms
+     × rejects empty text 3ms
+     × rejects non-Latin scripts before the stopword check 1ms
+   ❯ language gate confusion matrix over fixtures (A06) (5)
+     × rejects every German and Spanish fixture (zero non-English accepted) 10ms
+     × rejects the bad-input fixtures (empty text) as too-short, never accepts them 3ms
+     × separates English from non-English with a margin around the threshold 3ms
+ ❯ src/cleanup/cleanup.test.ts (30 tests | 25 failed) 106ms
+   ❯ cleanupOcrText — UI-chrome rules (S1) (8)
+     × removes the action row, including Follow/Connect variants 16ms
+     × removes promoted/sponsored/suggested labels 3ms
+     × removes reaction-count lines in their OCR separator variants 1ms
+     × removes the handle+time meta line in every separator OCR produces 1ms
+     × removes the author header line directly above the meta line 1ms
+     × removes symbol-only lines like the overflow dots 1ms
+     × keeps body lines that merely contain chrome words 2ms
+   ❯ cleanupOcrText — line-break repair (S1) (4)
+     × joins a wrapped sentence: line without end punctuation + lowercase continuation 1ms
+     × de-hyphenates a word wrapped across lines 1ms
+   ❯ cleanup quality on gold input — every English fixture (S1) (18)
+     × blur01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 5ms
+     × chrome01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 6ms
+     × chrome02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 2ms
+     × clean01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 2ms
+     × clean02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 8ms
+     × clean03: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 6ms
+     × clean04: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 1ms
+     × clean05: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 2ms
+     × clean06: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 1ms
+     × dark01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 1ms
+     × dark02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 3ms
+     × emoji01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 2ms
+     × heavychrome01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 2ms
+     × huge01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 2ms
+     × longpost01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 9ms
+     × lowcontrast01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0) 1ms
+ ❯ src/evidence/evidence-integrity-s1.test.ts (0 test)
+ ❯ src/privacy/audit.test.ts (15 tests | 12 failed) 33ms
+   ❯ distinctiveTokens (A15) (2)
+     × keeps only >= 6-char non-stopword tokens, deduplicated and lowercased 15ms
+   ❯ auditStorageSnapshot — allow-list judgment (A15) (10)
+     × flags post text in localStorage 1ms
+     × flags ANY localStorage entry, even without post text (allow-list: none in S1) 2ms
+     × flags post text in sessionStorage values 1ms
+     × flags cookies 1ms
+     × allows only the app-shell precache and model cache names 1ms
+     × flags IndexedDB databases (no post-derived DB is allowed) 1ms
+     × records unavailable IndexedDB enumeration as a note, not a violation 1ms
+     × flags post tokens in the URL and referrer 1ms
+     × negative control: a seeded leak in every storage kind is detected 1ms
+   ❯ redactText — log redaction (A15) (3)
+     × replaces exact secret occurrences with [redacted] 3ms
+     × replaces fragments of the secret (3+ consecutive words), not just the full text 1ms
+ ❯ src/output/payload.test.ts (11 tests | 4 failed) 21ms
+   ❯ buildExportPayload — file export builders (S1, A05, A04) (6)
+     × .txt content is exactly the review text, character for character 7ms
+     × .md content is exactly the review text, character for character 1ms
+     × .json content is a deterministic document carrying the exact review text 1ms
+     × the export payload always reflects the CURRENT text, edits included 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/evidence/evidence-integrity-s1.test.ts [ src/evidence/evidence-integrity-s1.test.ts ]
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/docs/evidence/S1/summary.json'
+ ❯ src/evidence/evidence-integrity-s1.test.ts:70:30
+     68|
+     69| describe('evidence integrity (A25, S1)', () => {
+     70|   const summary = JSON.parse(readFileSync(SUMMARY, 'utf-8')) as Summar…
+       |                              ^
+     71|
+     72|   it('covers every S1 acceptance ID (and the re-verified S0 IDs) with …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/54]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 53 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — UI-chrome rules (S1) > removes the action row, including Follow/Connect variants
+AssertionError: expected [] to deeply equal [ 'Like Comment Share' ]
+
+- Expected
++ Received
+
+- [
+-   "Like Comment Share",
+- ]
++ []
+
+ ❯ src/cleanup/cleanup.test.ts:41:65
+     39| describe('cleanupOcrText — UI-chrome rules (S1)', () => {
+     40|   it('removes the action row, including Follow/Connect variants', () =…
+     41|     expect(cleanupOcrText(['Like Comment Share']).removedLines).toEqua…
+       |                                                                 ^
+     42|     expect(cleanupOcrText(['Like Comment Share Follow Connect']).text)…
+     43|     expect(cleanupOcrText(['Follow']).text).toBe('');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — UI-chrome rules (S1) > removes promoted/sponsored/suggested labels
+AssertionError: expected 'Promoted\nHello world.' to be 'Hello world.' // Object.is equality
+
+- Expected
++ Received
+
++ Promoted
+  Hello world.
+
+ ❯ src/cleanup/cleanup.test.ts:48:63
+     46|
+     47|   it('removes promoted/sponsored/suggested labels', () => {
+     48|     expect(cleanupOcrText(['Promoted', 'Hello world.']).text).toBe('He…
+       |                                                               ^
+     49|     expect(cleanupOcrText(['Sponsored', 'Hello world.']).text).toBe('H…
+     50|     expect(cleanupOcrText(['Suggested', 'Hello world.']).text).toBe('H…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — UI-chrome rules (S1) > removes reaction-count lines in their OCR separator variants
+AssertionError: expected '42 reactions · 9 comments' to be '' // Object.is equality
+
+- Expected
++ Received
+
++ 42 reactions · 9 comments
+
+ ❯ src/cleanup/cleanup.test.ts:54:64
+     52|
+     53|   it('removes reaction-count lines in their OCR separator variants', (…
+     54|     expect(cleanupOcrText(['42 reactions · 9 comments']).text).toBe(''…
+       |                                                                ^
+     55|     expect(cleanupOcrText(['42 reactions - 9 comments']).text).toBe(''…
+     56|     expect(cleanupOcrText(['8 reactions']).text).toBe('');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — UI-chrome rules (S1) > removes the handle+time meta line in every separator OCR produces
+AssertionError: expected '@maya-builds · 2h' to be '' // Object.is equality
+
+- Expected
++ Received
+
++ @maya-builds · 2h
+
+ ❯ src/cleanup/cleanup.test.ts:62:56
+     60|
+     61|   it('removes the handle+time meta line in every separator OCR produce…
+     62|     expect(cleanupOcrText(['@maya-builds · 2h']).text).toBe('');
+       |                                                        ^
+     63|     expect(cleanupOcrText(['@maya-builds - 2h']).text).toBe('');
+     64|     expect(cleanupOcrText(['@lukas-berger - 3 Std.']).text).toBe('');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — UI-chrome rules (S1) > removes the author header line directly above the meta line
+AssertionError: expected 'Maya Lindqvist\n@maya-builds · 2h\nSh…' to be 'Shipped our first release today.' // Object.is equality
+
+- Expected
++ Received
+
++ Maya Lindqvist
++ @maya-builds · 2h
+  Shipped our first release today.
+
+ ❯ src/cleanup/cleanup.test.ts:72:18
+     70|   it('removes the author header line directly above the meta line', ()…
+     71|     const { text } = cleanupOcrText(['Maya Lindqvist', '@maya-builds ·…
+     72|     expect(text).toBe('Shipped our first release today.');
+       |                  ^
+     73|     // even when OCR garbles the name into a pseudo-handle
+     74|     const garbled = cleanupOcrText(['@ Nadia Farouk', '@nadia-f - 4h',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — UI-chrome rules (S1) > removes symbol-only lines like the overflow dots
+AssertionError: expected '···\nPromoted\nReal post text.' to be 'Real post text.' // Object.is equality
+
+- Expected
++ Received
+
++ ···
++ Promoted
+  Real post text.
+
+ ❯ src/cleanup/cleanup.test.ts:79:73
+     77|
+     78|   it('removes symbol-only lines like the overflow dots', () => {
+     79|     expect(cleanupOcrText(['···', 'Promoted', 'Real post text.']).text…
+       |                                                                         ^
+     80|     expect(cleanupOcrText(['—', 'Real post text.']).text).toBe('Real p…
+     81|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — UI-chrome rules (S1) > keeps body lines that merely contain chrome words
+AssertionError: expected 'Maya Lindqvist\n@maya-builds · 2h\nAs…' to be 'Ask me anything about the migration —…' // Object.is equality
+
+- Expected
++ Received
+
++ Maya Lindqvist
++ @maya-builds · 2h
+  Ask me anything about the migration — happy to share the runbook.
+  I like to comment on every share of my work.
++ 42 reactions · 9 comments
++ Like Comment Share
+
+ ❯ src/cleanup/cleanup.test.ts:102:40
+    100|       'Like Comment Share',
+    101|     ];
+    102|     expect(cleanupOcrText(lines).text).toBe(
+       |                                        ^
+    103|       [
+    104|         'Ask me anything about the migration — happy to share the runb…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — line-break repair (S1) > joins a wrapped sentence: line without end punctuation + lowercase continuation
+AssertionError: expected 'A long one for the readers: here is e…' to be 'A long one for the readers: here is e…' // Object.is equality
+
+- Expected
++ Received
+
+- A long one for the readers: here is everything we learned moving our ingestion pipeline to a single binary, and why the second attempt worked.
++ A long one for the readers: here is everything we learned moving
++ our ingestion pipeline to a single binary,
++ and why the second attempt worked.
+
+ ❯ src/cleanup/cleanup.test.ts:119:7
+    117|         'and why the second attempt worked.',
+    118|       ]).text,
+    119|     ).toBe('A long one for the readers: here is everything we learned …
+       |       ^
+    120|   });
+    121|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanupOcrText — line-break repair (S1) > de-hyphenates a word wrapped across lines
+AssertionError: expected 'The state-\nless design held up.' to be 'The stateless design held up.' // Object.is equality
+
+- Expected
++ Received
+
+- The stateless design held up.
++ The state-
++ less design held up.
+
+ ❯ src/cleanup/cleanup.test.ts:123:73
+    121|
+    122|   it('de-hyphenates a word wrapped across lines', () => {
+    123|     expect(cleanupOcrText(['The state-', 'less design held up.']).text…
+       |                                                                         ^
+    124|   });
+    125|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > blur01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: blur01 body-token F1: expected 0.8 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > chrome01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: chrome01 body-token F1: expected 0.825 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.825
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > chrome02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: chrome02 body-token F1: expected 0.7777777777777778 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.7777777777777778
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > clean01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: clean01 body-token F1: expected 0.8493150684931507 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8493150684931507
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > clean02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: clean02 body-token F1: expected 0.9208633093525179 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.9208633093525179
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > clean03: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: clean03 body-token F1: expected 0.8405797101449275 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8405797101449275
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > clean04: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: clean04 body-token F1: expected 0.7906976744186047 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.7906976744186047
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > clean05: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: clean05 body-token F1: expected 0.8405797101449275 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8405797101449275
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > clean06: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: clean06 body-token F1: expected 0.8307692307692308 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8307692307692308
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > dark01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: dark01 body-token F1: expected 0.819672131147541 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.819672131147541
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > dark02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: dark02 body-token F1: expected 0.8571428571428571 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8571428571428571
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > emoji01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: emoji01 body-token F1: expected 0.819672131147541 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.819672131147541
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > heavychrome01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: heavychrome01 body-token F1: expected 0.8148148148148148 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8148148148148148
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > huge01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: huge01 body-token F1: expected 0.8070175438596492 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8070175438596492
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > longpost01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: longpost01 body-token F1: expected 0.9621993127147767 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.9621993127147767
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/54]⎯
+
+ FAIL  src/cleanup/cleanup.test.ts > cleanup quality on gold input — every English fixture (S1) > lowcontrast01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)
+AssertionError: lowcontrast01 body-token F1: expected 0.8450704225352113 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0.8450704225352113
+
+ ❯ src/cleanup/cleanup.test.ts:158:46
+    156|       const leakage = chromeLeakageRate(text, gold.body.join('\n'), go…
+    157|       const fabricated = fabricatedTokenRate(text, input);
+    158|       expect(f1, `${gold.id} body-token F1`).toBe(1);
+       |                                              ^
+    159|       expect(leakage, `${gold.id} chrome leakage`).toBe(0);
+    160|       expect(fabricated, `${gold.id} fabricated-token rate`).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/54]⎯
+
+ FAIL  src/image/validate.test.ts > sniffImageHeader over real fixture bytes (A07) > reads PNG dimensions from a real fixture
+AssertionError: expected null to deeply equal { kind: 'png', width: 1184, …(1) }
+
+- Expected:
+{
+  "height": 556,
+  "kind": "png",
+  "width": 1184,
+}
+
++ Received:
+null
+
+ ❯ src/image/validate.test.ts:27:59
+     25| describe('sniffImageHeader over real fixture bytes (A07)', () => {
+     26|   it('reads PNG dimensions from a real fixture', () => {
+     27|     expect(sniffImageHeader(bytes('images/clean01.png'))).toEqual({ ki…
+       |                                                           ^
+     28|   });
+     29|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/54]⎯
+
+ FAIL  src/image/validate.test.ts > sniffImageHeader over real fixture bytes (A07) > parses the corrupt fixture structurally (valid magic + IHDR; decode catches the truncation)
+AssertionError: expected null to deeply equal { kind: 'png', width: 1184, …(1) }
+
+- Expected:
+{
+  "height": 1400,
+  "kind": "png",
+  "width": 1184,
+}
+
++ Received:
+null
+
+ ❯ src/image/validate.test.ts:31:61
+     29|
+     30|   it('parses the corrupt fixture structurally (valid magic + IHDR; dec…
+     31|     expect(sniffImageHeader(bytes('images/corrupt01.png'))).toEqual({ …
+       |                                                             ^
+     32|   });
+     33|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/54]⎯
+
+ FAIL  src/image/validate.test.ts > sniffImageHeader over real fixture bytes (A07) > reads the tiny fixture as 64×64
+AssertionError: expected null to deeply equal { kind: 'png', width: 64, height: 64 }
+
+- Expected:
+{
+  "height": 64,
+  "kind": "png",
+  "width": 64,
+}
+
++ Received:
+null
+
+ ❯ src/image/validate.test.ts:39:58
+     37|
+     38|   it('reads the tiny fixture as 64×64', () => {
+     39|     expect(sniffImageHeader(bytes('images/tiny01.png'))).toEqual({ kin…
+       |                                                          ^
+     40|   });
+     41|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/54]⎯
+
+ FAIL  src/image/validate.test.ts > sniffImageHeader over real fixture bytes (A07) > reads the huge fixture as >= 4000 px wide
+AssertionError: expected undefined to be 'png' // Object.is equality
+
+- Expected:
+"png"
+
++ Received:
+undefined
+
+ ❯ src/image/validate.test.ts:44:26
+     42|   it('reads the huge fixture as >= 4000 px wide', () => {
+     43|     const header = sniffImageHeader(bytes('images/huge01.png'));
+     44|     expect(header?.kind).toBe('png');
+       |                          ^
+     45|     expect(header?.width).toBeGreaterThanOrEqual(4000);
+     46|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/54]⎯
+
+ FAIL  src/image/validate.test.ts > sniffImageHeader over real fixture bytes (A07) > parses JPEG, GIF, BMP and WebP headers from minimal real byte sequences
+AssertionError: expected null to deeply equal { kind: 'jpeg', width: 240, …(1) }
+
+- Expected:
+{
+  "height": 120,
+  "kind": "jpeg",
+  "width": 240,
+}
+
++ Received:
+null
+
+ ❯ src/image/validate.test.ts:53:36
+     51|       0xff, 0xd8, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x00, 0x78, 0x00, 0xf0…
+     52|     ]);
+     53|     expect(sniffImageHeader(jpeg)).toEqual({ kind: 'jpeg', width: 240,…
+       |                                    ^
+     54|     // GIF87a, 10×20 little-endian
+     55|     const gif = new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/54]⎯
+
+ FAIL  src/image/validate.test.ts > planDownscale (A07) > flags images over the OCR side limit and preserves aspect ratio
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/image/validate.test.ts:93:25
+     91|   it('flags images over the OCR side limit and preserves aspect ratio'…
+     92|     const plan = planDownscale(4008, 684);
+     93|     expect(plan.needed).toBe(true);
+       |                         ^
+     94|     expect(plan.width).toBe(MAX_OCR_SIDE);
+     95|     expect(Math.abs(plan.width / plan.height - 4008 / 684)).toBeLessTh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/54]⎯
+
+ FAIL  src/language/gate.test.ts > detectEnglish — gate behavior (S1) > rejects text with too few words (fail closed, honest reason)
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/language/gate.test.ts:45:31
+     43|   it('rejects text with too few words (fail closed, honest reason)', (…
+     44|     const verdict = detectEnglish('Hello world');
+     45|     expect(verdict.isEnglish).toBe(false);
+       |                               ^
+     46|     expect(verdict.reason).toBe('too-short');
+     47|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/54]⎯
+
+ FAIL  src/language/gate.test.ts > detectEnglish — gate behavior (S1) > rejects empty text
+AssertionError: expected 'ok' to be 'too-short' // Object.is equality
+
+Expected: "too-short"
+Received: "ok"
+
+ ❯ src/language/gate.test.ts:50:38
+     48|
+     49|   it('rejects empty text', () => {
+     50|     expect(detectEnglish('').reason).toBe('too-short');
+       |                                      ^
+     51|   });
+     52|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/54]⎯
+
+ FAIL  src/language/gate.test.ts > detectEnglish — gate behavior (S1) > rejects non-Latin scripts before the stopword check
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/language/gate.test.ts:55:31
+     53|   it('rejects non-Latin scripts before the stopword check', () => {
+     54|     const verdict = detectEnglish('这是一个测试，不是英文的帖子内容。');
+     55|     expect(verdict.isEnglish).toBe(false);
+       |                               ^
+     56|     expect(verdict.reason).toBe('script');
+     57|     expect(verdict.latinRatio).toBeLessThan(LATIN_SCRIPT_MIN);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/54]⎯
+
+ FAIL  src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+AssertionError: expected [ { id: 'de01', …(9) }, …(4) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "author": "Lukas Berger",
++     "body": [
++       "Heute haben wir unsere erste offline-first Version veröffentlicht.",
++       "Kein Cloud-Zugriff, keine Konten, nur ein lokaler Cache, der nie lügt.",
++       "Welche App habt ihr zuletzt in einem Tunnel benutzt? #buildinpublic",
++     ],
++     "chrome": [
++       "@lukas-berger",
++       "3 Std.",
++       "Gefällt",
++       "mir",
++       "Kommentieren",
++       "Teilen",
++       "42 Reaktionen · 9 Kommentare",
++     ],
++     "handle": "@lukas-berger",
++     "id": "de01",
++     "kind": "lang-de",
++     "language": "de",
++     "ocr_expected": [
++       "Lukas Berger",
++       "@lukas-berger · 3 Std.",
++       "Heute haben wir unsere erste offline-first Version veröffentlicht.",
++       "Kein Cloud-Zugriff, keine Konten, nur ein lokaler Cache, der nie lügt.",
++       "Welche App habt ihr zuletzt in einem Tunnel benutzt? #buildinpublic",
++       "42 Reaktionen · 9 Kommentare",
++       "Gefällt mir Kommentieren Teilen",
++     ],
++     "synthetic": true,
++     "theme": "light",
++   },
++   {
++     "author": "Anja Schubert",
++     "body": [
++       "Debugging-Story aus dieser Woche: ein Cache, der zu schnell ablief,",
++       "eine Uhr, die um 90 Sekunden log, und ein sehr geduldiger SRE.",
++       "Ursache? Zwei Dienste waren sich nicht einig, was „jetzt“ bedeutet. #postmortem",
++     ],
++     "chrome": [
++       "@anja-schreibt",
++       "6 Std.",
++       "Gefällt",
++       "mir",
++       "Kommentieren",
++       "Teilen",
++       "64 Reaktionen · 2 Kommentare",
++     ],
++     "handle": "@anja-schreibt",
++     "id": "de02",
++     "kind": "lang-de",
++     "language": "de",
++     "ocr_expected": [
++       "Anja Schubert",
++       "@anja-schreibt · 6 Std.",
++       "Debugging-Story aus dieser Woche: ein Cache, der zu schnell ablief,",
++       "eine Uhr, die um 90 Sekunden log, und ein sehr geduldiger SRE.",
++       "Ursache? Zwei Dienste waren sich nicht einig, was „jetzt“ bedeutet. #postmortem",
++       "64 Reaktionen · 2 Kommentare",
++       "Gefällt mir Kommentieren Teilen",
++     ],
++     "synthetic": true,
++     "theme": "dark",
++   },
++   {
++     "author": "Jonas Weber",
++     "body": [
++       "Drei Lehren aus dem Refactoring unserer Legacy-Ingest-Pipeline:",
++       "1. Erst das Schema aufschreiben, bevor man einen Handler anfasst.",
++       "2. Doppelt so viel Code löschen wie man hinzufügt.",
++       "3. Ein flatternder Test ist ein Vorfall, den man zweimal haben darf.",
++       "Die Pipeline verarbeitet nun einen Tag Traffic in elf Minuten.",
++     ],
++     "chrome": [
++       "@jonasw",
++       "1 Tag",
++       "Gefällt",
++       "mir",
++       "Kommentieren",
++       "Teilen",
++       "137 Reaktionen · 9 Kommentare",
++     ],
++     "handle": "@jonasw",
++     "id": "de03",
++     "kind": "lang-de",
++     "language": "de",
++     "ocr_expected": [
++       "Jonas Weber",
++       "@jonasw · 1 Tag",
++       "Drei Lehren aus dem Refactoring unserer Legacy-Ingest-Pipeline:",
++       "1. Erst das Schema aufschreiben, bevor man einen Handler anfasst.",
++       "2. Doppelt so viel Code löschen wie man hinzufügt.",
++       "3. Ein flatternder Test ist ein Vorfall, den man zweimal haben darf.",
++       "Die Pipeline verarbeitet nun einen Tag Traffic in elf Minuten.",
++       "137 Reaktionen · 9 Kommentare",
++       "Gefällt mir Kommentieren Teilen",
++     ],
++     "synthetic": true,
++     "theme": "light",
++   },
++   {
++     "author": "Elena Ruiz",
++     "body": [
++       "Hoy publicamos nuestra primera versión offline-first.",
++       "Sin nube, sin cuentas, solo una memoria local que nunca miente.",
++       "¿Cuál fue la última app que usaste en un túnel? #buildinpublic",
++     ],
++     "chrome": [
++       "@elena-ruiz",
++       "2 h",
++       "Me",
++       "gusta",
++       "Comentar",
++       "Compartir",
++       "51 reacciones · 3 comentarios",
++     ],
++     "handle": "@elena-ruiz",
++     "id": "es01",
++     "kind": "lang-es",
++     "language": "es",
++     "ocr_expected": [
++       "Elena Ruiz",
++       "@elena-ruiz · 2 h",
++       "Hoy publicamos nuestra primera versión offline-first.",
++       "Sin nube, sin cuentas, solo una memoria local que nunca miente.",
++       "¿Cuál fue la última app que usaste en un túnel? #buildinpublic",
++       "51 reacciones · 3 comentarios",
++       "Me gusta Comentar Compartir",
++     ],
++     "synthetic": true,
++     "theme": "light",
++   },
++   {
++     "author": "Mateo Ortega",
++     "body": [
++       "Tres lecciones de refactorizar un pipeline heredado:",
++       "1. Escribe el esquema antes de tocar un solo handler.",
++       "2. Borra el doble de código del que añades.",
++       "3. Un test inestable es un incidente de producción que te pasa dos veces.",
++     ],
++     "chrome": [
++       "@mateo.ortega",
++       "5 h",
++       "Me",
++       "gusta",
++       "Comentar",
++       "Compartir",
++       "77 reacciones · 4 comentarios",
++     ],
++     "handle": "@mateo.ortega",
++     "id": "es02",
++     "kind": "lang-es",
++     "language": "es",
++     "ocr_expected": [
++       "Mateo Ortega",
++       "@mateo.ortega · 5 h",
++       "Tres lecciones de refactorizar un pipeline heredado:",
++       "1. Escribe el esquema antes de tocar un solo handler.",
++       "2. Borra el doble de código del que añades.",
++       "3. Un test inestable es un incidente de producción que te pasa dos veces.",
++       "77 reacciones · 4 comentarios",
++       "Me gusta Comentar Compartir",
++     ],
++     "synthetic": true,
++     "theme": "dark",
++   },
++ ]
+
+ ❯ src/language/gate.test.ts:96:22
+     94|       console.log(`  ${g.language} ${g.id}: ratio=${v.stopwordRatio.to…
+     95|     }
+     96|     expect(accepted).toEqual([]);
+       |                      ^
+     97|   });
+     98|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/54]⎯
+
+ FAIL  src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects the bad-input fixtures (empty text) as too-short, never accepts them
+AssertionError: expected 'ok' to be 'too-short' // Object.is equality
+
+Expected: "too-short"
+Received: "ok"
+
+ ❯ src/language/gate.test.ts:103:63
+    101|     expect(bad.map((g) => g.id).sort()).toEqual(['blank01', 'corrupt01…
+    102|     for (const g of bad) {
+    103|       expect(detectEnglish(g.ocr_expected.join('\n')).reason).toBe('to…
+       |                                                               ^
+    104|     }
+    105|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/54]⎯
+
+ FAIL  src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+AssertionError: expected 0 to be greater than or equal to 0.22999999999999998
+ ❯ src/language/gate.test.ts:117:19
+    115|     // The threshold must sit at least 0.05 away from both measured cl…
+    116|     // so OCR noise cannot flip a fixture across it.
+    117|     expect(minEn).toBeGreaterThanOrEqual(STOPWORD_THRESHOLD + 0.05);
+       |                   ^
+    118|     expect(maxNonEn).toBeLessThanOrEqual(STOPWORD_THRESHOLD - 0.05);
+    119|     expect(MIN_WORDS).toBeGreaterThanOrEqual(5);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/54]⎯
+
+ FAIL  src/output/payload.test.ts > buildExportPayload — file export builders (S1, A05, A04) > .txt content is exactly the review text, character for character
+AssertionError: expected '' to be 'Shipped our first offline-first relea…' // Object.is equality
+
+- Expected
++ Received
+
+- Shipped our first offline-first release today.
+- No cloud, no accounts. #buildinpublic
+
+ ❯ src/output/payload.test.ts:48:51
+     46|
+     47|   it('.txt content is exactly the review text, character for character…
+     48|     expect(buildExportPayload(reviewText, 'txt')).toBe(reviewText);
+       |                                                   ^
+     49|   });
+     50|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/54]⎯
+
+ FAIL  src/output/payload.test.ts > buildExportPayload — file export builders (S1, A05, A04) > .md content is exactly the review text, character for character
+AssertionError: expected '' to be 'Shipped our first offline-first relea…' // Object.is equality
+
+- Expected
++ Received
+
+- Shipped our first offline-first release today.
+- No cloud, no accounts. #buildinpublic
+
+ ❯ src/output/payload.test.ts:52:50
+     50|
+     51|   it('.md content is exactly the review text, character for character'…
+     52|     expect(buildExportPayload(reviewText, 'md')).toBe(reviewText);
+       |                                                  ^
+     53|   });
+     54|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/54]⎯
+
+ FAIL  src/output/payload.test.ts > buildExportPayload — file export builders (S1, A05, A04) > .json content is a deterministic document carrying the exact review text
+SyntaxError: Unexpected end of JSON input
+ ❯ src/output/payload.test.ts:57:25
+     55|   it('.json content is a deterministic document carrying the exact rev…
+     56|     const json = buildExportPayload(reviewText, 'json');
+     57|     const parsed = JSON.parse(json) as Record<string, unknown>;
+       |                         ^
+     58|     expect(Object.keys(parsed).sort()).toEqual(['app', 'format', 'text…
+     59|     expect(parsed.app).toBe('postclip');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/54]⎯
+
+ FAIL  src/output/payload.test.ts > buildExportPayload — file export builders (S1, A05, A04) > the export payload always reflects the CURRENT text, edits included
+AssertionError: expected '' to be 'Shipped our first offline-first relea…' // Object.is equality
+
+- Expected
++ Received
+
+- Shipped our first offline-first release today.
+- No cloud, no accounts. #buildinpublic
+-
+- (Added while reviewing.)
+
+ ❯ src/output/payload.test.ts:68:47
+     66|   it('the export payload always reflects the CURRENT text, edits inclu…
+     67|     const edited = reviewText + '\n\n(Added while reviewing.)';
+     68|     expect(buildExportPayload(edited, 'txt')).toBe(edited);
+       |                                               ^
+     69|     expect(JSON.parse(buildExportPayload(edited, 'json')).text).toBe(e…
+     70|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > distinctiveTokens (A15) > keeps only >= 6-char non-stopword tokens, deduplicated and lowercased
+AssertionError: expected [ 'shipped', 'offline-first', …(3) ] to deeply equal [ 'shipped', 'offline-first', …(1) ]
+
+- Expected
++ Received
+
+  [
+    "shipped",
+    "offline-first",
++   "release",
++   "today.",
+    "buildinpublic",
+  ]
+
+ ❯ src/privacy/audit.test.ts:34:96
+     32| describe('distinctiveTokens (A15)', () => {
+     33|   it('keeps only >= 6-char non-stopword tokens, deduplicated and lower…
+     34|     expect(distinctiveTokens('Shipped our first offline-first release …
+       |                                                                                                ^
+     35|       'shipped',
+     36|       'offline-first',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > flags post text in localStorage
+AssertionError: expected 0 to be greater than 0
+ ❯ src/privacy/audit.test.ts:57:38
+     55|       distinctiveTokens(POST_TEXT),
+     56|     );
+     57|     expect(report.violations.length).toBeGreaterThan(0);
+       |                                      ^
+     58|     expect(report.violations.some((v) => v.where.includes('localStorag…
+     59|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > flags ANY localStorage entry, even without post text (allow-list: none in S1)
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/privacy/audit.test.ts:66:77
+     64|       distinctiveTokens(POST_TEXT),
+     65|     );
+     66|     expect(report.violations.some((v) => v.where.includes('localStorag…
+       |                                                                             ^
+     67|   });
+     68|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > flags post text in sessionStorage values
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/privacy/audit.test.ts:74:79
+     72|       distinctiveTokens(POST_TEXT),
+     73|     );
+     74|     expect(report.violations.some((v) => v.where.includes('sessionStor…
+       |                                                                               ^
+     75|   });
+     76|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > flags cookies
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/privacy/audit.test.ts:82:71
+     80|       distinctiveTokens(POST_TEXT),
+     81|     );
+     82|     expect(report.violations.some((v) => v.where.includes('cookie'))).…
+       |                                                                       ^
+     83|   });
+     84|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > allows only the app-shell precache and model cache names
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/privacy/audit.test.ts:94:69
+     92|     expect(modelCache.violations.filter((v) => v.where.includes('cache…
+     93|     const alien = auditStorageSnapshot(snapshotWith({ cacheNames: ['my…
+     94|     expect(alien.violations.some((v) => v.where.includes('cache'))).to…
+       |                                                                     ^
+     95|     expect(ALLOWED_CACHE_NAME_PATTERNS.length).toBeGreaterThanOrEqual(…
+     96|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > flags IndexedDB databases (no post-derived DB is allowed)
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/privacy/audit.test.ts:103:74
+    101|       distinctiveTokens(POST_TEXT),
+    102|     );
+    103|     expect(report.violations.some((v) => v.where.includes('IndexedDB')…
+       |                                                                          ^
+    104|   });
+    105|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > records unavailable IndexedDB enumeration as a note, not a violation
+AssertionError: expected '' to contain 'IndexedDB'
+
+- Expected
++ Received
+
+- IndexedDB
+
+ ❯ src/privacy/audit.test.ts:112:36
+    110|     );
+    111|     expect(report.violations).toEqual([]);
+    112|     expect(report.notes.join(' ')).toContain('IndexedDB');
+       |                                    ^
+    113|   });
+    114|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > flags post tokens in the URL and referrer
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/privacy/audit.test.ts:120:71
+    118|       distinctiveTokens(POST_TEXT),
+    119|     );
+    120|     expect(urlReport.violations.some((v) => v.where.includes('url'))).…
+       |                                                                       ^
+    121|     const refReport = auditStorageSnapshot(
+    122|       snapshotWith({ referrer: 'http://evil.example/shipped' }),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > auditStorageSnapshot — allow-list judgment (A15) > negative control: a seeded leak in every storage kind is detected
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/privacy/audit.test.ts:139:60
+    137|     const report = auditStorageSnapshot(seeded, distinctiveTokens(POST…
+    138|     const wheres = report.violations.map((v) => v.where);
+    139|     expect(wheres.some((w) => w.includes('localStorage'))).toBe(true);
+       |                                                            ^
+    140|     expect(wheres.some((w) => w.includes('sessionStorage'))).toBe(true…
+    141|     expect(wheres.some((w) => w.includes('cache'))).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > redactText — log redaction (A15) > replaces exact secret occurrences with [redacted]
+AssertionError: expected 'processing failed on input "No cloud,…' not to contain 'local cache'
+
+Expected: "local cache"
+Received: "processing failed on input "No cloud, no accounts, just a local cache that never lies." at stage 2"
+
+ ❯ src/privacy/audit.test.ts:152:26
+    150|     const message = `processing failed on input "No cloud, no accounts…
+    151|     const redacted = redactText(message, [POST_TEXT]);
+    152|     expect(redacted).not.toContain('local cache');
+       |                          ^
+    153|     expect(redacted).toContain('[redacted]');
+    154|     expect(redacted).toContain('at stage 2');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/54]⎯
+
+ FAIL  src/privacy/audit.test.ts > redactText — log redaction (A15) > replaces fragments of the secret (3+ consecutive words), not just the full text
+AssertionError: expected 'error near: offline-first release tod…' not to contain 'release today'
+
+Expected: "release today"
+Received: "error near: offline-first release today"
+
+ ❯ src/privacy/audit.test.ts:159:26
+    157|   it('replaces fragments of the secret (3+ consecutive words), not jus…
+    158|     const redacted = redactText('error near: offline-first release tod…
+    159|     expect(redacted).not.toContain('release today');
+       |                          ^
+    160|   });
+    161|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/54]⎯
+
+
+ Test Files  6 failed | 3 passed (9)
+      Tests  53 failed | 43 passed (96)
+   Start at  01:34:52
+   Duration  2.68s (environment 49%, setup 36%, tests 8%, import 2%, transform 2%, worker 2%)
+
+    Isolate  9 workers spawned · ~378ms startup each (spawn + environment, per file)
+             at least ~757ms faster with isolate: false — reuses workers across files instead of one per file
+
+VITEST_EXIT=1
+
+## $ npm run build
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 43 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.57 kB │ gzip:  0.35 kB
+dist/assets/index-DmG9lcrN.css    2.57 kB │ gzip:  1.01 kB
+dist/assets/index-ClX5tEs6.js   242.35 kB │ gzip: 77.54 kB
+
+✓ built in 567ms
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+BUILD_EXIT=0
+
+## $ npx playwright test --project=chromium --reporter=list
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=chromium --reporter=list
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 12 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (531ms)
+  ✘   2 [chromium] › e2e/a15_privacy_audit.spec.ts:46:1 › a15_no_storage_log_request_leaks_after_flows (3.1m)
+  ✘   3 [chromium] › e2e/a15_privacy_audit.spec.ts:77:1 › a15_audit_negative_control_detects_seeded_leak (636ms)
+  ✘   4 [chromium] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (7.3m)
+  ✘   5 [chromium] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (2.1m)
+  ✘   6 [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (1.9s)
+  ✘   7 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (3.2s)
+  ✘   8 [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (3.3s)
+  ✘   9 [chromium] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (3.1m)
+  ✘  10 [chromium] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (2.1m)
+  ✘  11 [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (33.2s)
+  ✘  12 [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (1.1m)
+
+
+  1) [chromium] › e2e/a15_privacy_audit.spec.ts:46:1 › a15_no_storage_log_request_leaks_after_flows 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: page.waitForEvent: Test timeout of 180000ms exceeded.
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+      37 |   await page.locator('#copy-btn').click();
+      38 |   await expect(page.getByText('Copied')).toBeVisible();
+    > 39 |   const downloadPromise = page.waitForEvent('download');
+         |                                ^
+      40 |   await page.locator('#export-md').click();
+      41 |   const download = await downloadPromise;
+      42 |   expect(download.suggestedFilename()).toBe('postclip-export.md');
+        at runFullFlow (/opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:39:32)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:48:32
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#export-md')
+
+
+      38 |   await expect(page.getByText('Copied')).toBeVisible();
+      39 |   const downloadPromise = page.waitForEvent('download');
+    > 40 |   await page.locator('#export-md').click();
+         |                                    ^
+      41 |   const download = await downloadPromise;
+      42 |   expect(download.suggestedFilename()).toBe('postclip-export.md');
+      43 |   return { original, edited };
+        at runFullFlow (/opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:40:36)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:48:32
+
+    Error Context: test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-chromium/error-context.md
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/a15_privacy_audit.spec.ts:77:1 › a15_audit_negative_control_detects_seeded_leak 
+
+    Error: []
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      90 |   ]);
+      91 |   const storageViolations = audit.violations.filter((v) => v.where.includes('localStorage'));
+    > 92 |   expect(storageViolations.length, JSON.stringify(audit.violations, null, 2)).toBeGreaterThan(0);
+         |                                                                               ^
+      93 |   expect(storageViolations[0]?.detail).toContain('post-draft');
+      94 |
+      95 |   // Clean up the seeded state so nothing leaks out of this test.
+        at /opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:92:79
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a15_privacy_audit-a15-audi-cfc92-control-detects-seeded-leak-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a15_privacy_audit-a15-audi-cfc92-control-detects-seeded-leak-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a15_privacy_audit-a15-audi-cfc92-control-detects-seeded-leak-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a15_privacy_audit-a15-audi-cfc92-control-detects-seeded-leak-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set ────────
+
+    Test timeout of 420000ms exceeded.
+
+    Error: locator.textContent: Test timeout of 420000ms exceeded.
+    Call log:
+      - waiting for locator('#raw-ocr-text')
+
+
+      44 |     .toBeGreaterThan(0);
+      45 |   const cleaned = await page.locator('#review-text').inputValue();
+    > 46 |   const raw = await page.locator('#raw-ocr-text').textContent();
+         |                                                   ^
+      47 |   if (raw === null) throw new Error(`raw OCR text missing for ${id}`);
+      48 |   return { cleaned, raw };
+      49 | }
+        at ocrFixture (/opt/data/workspace/smll/projects/postclip/e2e/eval_cleanup_metrics.spec.ts:46:51)
+        at /opt/data/workspace/smll/projects/postclip/e2e/eval_cleanup_metrics.spec.ts:69:30
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set ───────────────────────────
+
+    Error: OCR of clean01
+
+    Timeout 120000ms exceeded while waiting on the predicate
+
+      63 |       message: `OCR of ${id}`,
+      64 |     })
+    > 65 |     .toBeGreaterThan(0);
+         |      ^
+      66 |   const raw = await page.locator('#raw-ocr-text').textContent();
+      67 |   if (raw === null) throw new Error(`raw OCR text missing for ${id}`);
+      68 |   return raw;
+        at ocrFixture (/opt/data/workspace/smll/projects/postclip/e2e/eval_ocr_cer.spec.ts:65:6)
+        at /opt/data/workspace/smll/projects/postclip/e2e/eval_ocr_cer.spec.ts:84:17
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/eval_ocr_cer-eval-ocr-cer-clean-set-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/eval_ocr_cer-eval-ocr-cer-clean-set-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/eval_ocr_cer-eval-ocr-cer-clean-set-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/eval_ocr_cer-eval-ocr-cer-clean-set-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed ────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "That image file appears to be damaged or incomplete, so it could not be opened. Try saving the screenshot again."
+    Received: "Could not read that image: Error: Error attempting to read image."
+
+      19 |   await expect(page.locator('.error-banner')).toBeVisible({ timeout: 120_000 });
+      20 |   const banner = await page.locator('.error-banner').textContent();
+    > 21 |   expect(banner).toBe(ERROR_MESSAGES.corrupt);
+         |                  ^
+      22 |
+      23 |   // The app is still alive and usable: the picker is still reachable.
+      24 |   await expect(page.getByRole('button', { name: 'Choose screenshot' })).toBeVisible();
+        at /opt/data/workspace/smll/projects/postclip/e2e/negative_s0.spec.ts:21:18
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/negative_s0-s0-negative-corrupt-input-fails-closed-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/negative_s0-s0-negative-corrupt-input-fails-closed-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/negative_s0-s0-negative-corrupt-input-fails-closed-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/negative_s0-s0-negative-corrupt-input-fails-closed-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share ─────────
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "Like Comment Share"
+    Received string:        "Maya Lindqvist
+    @maya-builds - 2h
+    Shipped our first offline-first release today.
+    No cloud, no accounts, just a local cache that never lies.
+    What is the last app you used that worked in a tunnel?
+    #buildinpublic #offline
+    42 reactions - 9 comments
+    Like Comment Share"
+
+      69 |
+      70 |   // S1: the review text is the CLEANED body — UI chrome is gone.
+    > 71 |   expect(reviewText).not.toContain('Like Comment Share');
+         |                          ^
+      72 |   expect(reviewText).not.toContain('reactions');
+      73 |
+      74 |   // A03: Web Share is called with a text payload equal to the review text.
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc01_pick_ocr_review_share.spec.ts:71:26
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads ───────
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "Like Comment Share"
+    Received string:        "Maya Lindqvist
+    @maya-builds - 2h
+    Shipped our first offline-first release today.
+    No cloud, no accounts, just a local cache that never lies.
+    What is the last app you used that worked in a tunnel?
+    #buildinpublic #offline
+    42 reactions - 9 comments
+    Like Comment Share"
+
+      53 |
+      54 |   // The cleaned review text must not contain UI chrome.
+    > 55 |   expect(original).not.toContain('Like Comment Share');
+         |                        ^
+      56 |   expect(original).not.toContain('reactions');
+      57 |
+      58 |   // Edit the text; every payload must carry the edits exactly.
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc05_edit_review_payload.spec.ts:55:24
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json ────────
+
+    Test timeout of 180000ms exceeded.
+
+    Error: page.waitForEvent: Test timeout of 180000ms exceeded.
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+      31 |
+      32 |   for (const format of ['md', 'txt', 'json'] as const) {
+    > 33 |     const downloadPromise = page.waitForEvent('download');
+         |                                  ^
+      34 |     await page.locator(`#export-${format}`).click();
+      35 |     const download = await downloadPromise;
+      36 |     expect(download.suggestedFilename()).toBe(`postclip-export.${format}`);
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc07_export_download.spec.ts:33:34
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#export-md')
+
+
+      32 |   for (const format of ['md', 'txt', 'json'] as const) {
+      33 |     const downloadPromise = page.waitForEvent('download');
+    > 34 |     await page.locator(`#export-${format}`).click();
+         |                                             ^
+      35 |     const download = await downloadPromise;
+      36 |     expect(download.suggestedFilename()).toBe(`postclip-export.${format}`);
+      37 |     const content = readFileSync(await download.path(), 'utf-8');
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc07_export_download.spec.ts:34:45
+
+    Error Context: test-results/uc07_export_download-uc07-export-downloads-md-txt-json-chromium/error-context.md
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc07_export_download-uc07-export-downloads-md-txt-json-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc07_export_download-uc07-export-downloads-md-txt-json-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc07_export_download-uc07-export-downloads-md-txt-json-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.error-banner')
+    Expected: visible
+    Timeout: 120000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.error-banner') with timeout 120000ms
+      - waiting for locator('.error-banner')
+
+
+      25 |   await page.setInputFiles('#file-input', fixtureFile(id));
+      26 |   const banner = page.locator('.error-banner');
+    > 27 |   await expect(banner).toBeVisible({ timeout: 120_000 });
+         |                        ^
+      28 |   await expect(banner).toHaveText(NON_ENGLISH_MESSAGE);
+      29 |   // Cleanup never ran: no review screen, no review text anywhere.
+      30 |   await expect(page.getByRole('heading', { name: 'Review' })).toHaveCount(0);
+        at expectRejected (/opt/data/workspace/smll/projects/postclip/e2e/uc10_non_english_rejected.spec.ts:27:24)
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc10_non_english_rejected.spec.ts:40:3
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states ──────────────────
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.error-banner')
+    Expected: "That file does not look like an image. Please choose a PNG or JPEG screenshot of a post."
+    Received: "Could not read that image: Error: Error attempting to read image."
+    Timeout:  30000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.error-banner') with timeout 30000ms
+      - waiting for locator('.error-banner')
+        63 × locator resolved to <div role="alert" class="error-banner">Could not read that image: Error: Error attemptin…</div>
+           - unexpected value "Could not read that image: Error: Error attempting to read image."
+
+
+      31 |   const banner = page.locator('.error-banner');
+      32 |   await expect(banner).toBeVisible({ timeout: 120_000 });
+    > 33 |   await expect(banner).toHaveText(message);
+         |                        ^
+      34 |   // No review screen for bad inputs, and the app stays usable.
+      35 |   await expect(page.getByRole('heading', { name: 'Review' })).toHaveCount(0);
+      36 |   await expect(page.getByRole('button', { name: 'Choose screenshot' })).toBeVisible();
+        at expectErrorState (/opt/data/workspace/smll/projects/postclip/e2e/uc11_bad_inputs.spec.ts:33:24)
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc11_bad_inputs.spec.ts:50:3
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-bad-input-error-states-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc11_bad_inputs-uc11-bad-input-error-states-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-bad-input-error-states-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc11_bad_inputs-uc11-bad-input-error-states-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr ──────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#downscale-note')
+    Expected: visible
+    Timeout: 60000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#downscale-note') with timeout 60000ms
+      - waiting for locator('#downscale-note')
+
+
+      78 |   await pick(page, fixtureFile('huge01'));
+      79 |   // The downscale note is visible while reading.
+    > 80 |   await expect(page.locator('#downscale-note')).toBeVisible({ timeout: 60_000 });
+         |                                                 ^
+      81 |   await expect(page.locator('#downscale-note')).toHaveText(DOWNSCALE_NOTE);
+      82 |   // The image is processed to the review screen with the body text.
+      83 |   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 180_000 });
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc11_bad_inputs.spec.ts:80:49
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: [chromium] › e2e/eval_cleanup_metrics.spec.ts (7.3m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  11 failed
+    [chromium] › e2e/a15_privacy_audit.spec.ts:46:1 › a15_no_storage_log_request_leaks_after_flows ─
+    [chromium] › e2e/a15_privacy_audit.spec.ts:77:1 › a15_audit_negative_control_detects_seeded_leak 
+    [chromium] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set ─────────
+    [chromium] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set ────────────────────────────
+    [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed ─────────────
+    [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share ──────────
+    [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads ────────
+    [chromium] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json ─────────
+    [chromium] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup ─
+    [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states ────────────────────
+    [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr ────────────────
+  1 passed (19.9m)
+CHROMIUM_EXIT=1
+
+## $ npx playwright test --project=webkit --reporter=list
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=webkit --reporter=list
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 12 tests using 1 worker
+
+  ✓   1 [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (1.9s)
+  ✘   2 [webkit] › e2e/a15_privacy_audit.spec.ts:46:1 › a15_no_storage_log_request_leaks_after_flows (3.1m)
+  ✓   3 [webkit] › e2e/a15_privacy_audit.spec.ts:77:1 › a15_audit_negative_control_detects_seeded_leak (1.1s)
+  ✘   4 [webkit] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (7.3m)
+  ✘   5 [webkit] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (2.1m)
+  ✘   6 [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (2.3s)
+  ✘   7 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (3.1s)
+  ✘   8 [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (2.7s)
+  ✘   9 [webkit] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (3.1m)
+  ✘  10 [webkit] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (2.1m)
+  ✘  11 [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (33.8s)
+  ✘  12 [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (1.1m)
+
+
+  1) [webkit] › e2e/a15_privacy_audit.spec.ts:46:1 › a15_no_storage_log_request_leaks_after_flows ──
+
+    Test timeout of 180000ms exceeded.
+
+    Error: page.waitForEvent: Test timeout of 180000ms exceeded.
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+      37 |   await page.locator('#copy-btn').click();
+      38 |   await expect(page.getByText('Copied')).toBeVisible();
+    > 39 |   const downloadPromise = page.waitForEvent('download');
+         |                                ^
+      40 |   await page.locator('#export-md').click();
+      41 |   const download = await downloadPromise;
+      42 |   expect(download.suggestedFilename()).toBe('postclip-export.md');
+        at runFullFlow (/opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:39:32)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:48:32
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#export-md')
+
+
+      38 |   await expect(page.getByText('Copied')).toBeVisible();
+      39 |   const downloadPromise = page.waitForEvent('download');
+    > 40 |   await page.locator('#export-md').click();
+         |                                    ^
+      41 |   const download = await downloadPromise;
+      42 |   expect(download.suggestedFilename()).toBe('postclip-export.md');
+      43 |   return { original, edited };
+        at runFullFlow (/opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:40:36)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a15_privacy_audit.spec.ts:48:32
+
+    Error Context: test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-webkit/error-context.md
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set ──────────
+
+    Test timeout of 420000ms exceeded.
+
+    Error: locator.textContent: Test timeout of 420000ms exceeded.
+    Call log:
+      - waiting for locator('#raw-ocr-text')
+
+
+      44 |     .toBeGreaterThan(0);
+      45 |   const cleaned = await page.locator('#review-text').inputValue();
+    > 46 |   const raw = await page.locator('#raw-ocr-text').textContent();
+         |                                                   ^
+      47 |   if (raw === null) throw new Error(`raw OCR text missing for ${id}`);
+      48 |   return { cleaned, raw };
+      49 | }
+        at ocrFixture (/opt/data/workspace/smll/projects/postclip/e2e/eval_cleanup_metrics.spec.ts:46:51)
+        at /opt/data/workspace/smll/projects/postclip/e2e/eval_cleanup_metrics.spec.ts:69:30
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [webkit] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set ─────────────────────────────
+
+    Error: OCR of clean01
+
+    Timeout 120000ms exceeded while waiting on the predicate
+
+      63 |       message: `OCR of ${id}`,
+      64 |     })
+    > 65 |     .toBeGreaterThan(0);
+         |      ^
+      66 |   const raw = await page.locator('#raw-ocr-text').textContent();
+      67 |   if (raw === null) throw new Error(`raw OCR text missing for ${id}`);
+      68 |   return raw;
+        at ocrFixture (/opt/data/workspace/smll/projects/postclip/e2e/eval_ocr_cer.spec.ts:65:6)
+        at /opt/data/workspace/smll/projects/postclip/e2e/eval_ocr_cer.spec.ts:84:17
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/eval_ocr_cer-eval-ocr-cer-clean-set-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/eval_ocr_cer-eval-ocr-cer-clean-set-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/eval_ocr_cer-eval-ocr-cer-clean-set-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/eval_ocr_cer-eval-ocr-cer-clean-set-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed ──────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "That image file appears to be damaged or incomplete, so it could not be opened. Try saving the screenshot again."
+    Received: "Could not read that image: Error: Error attempting to read image."
+
+      19 |   await expect(page.locator('.error-banner')).toBeVisible({ timeout: 120_000 });
+      20 |   const banner = await page.locator('.error-banner').textContent();
+    > 21 |   expect(banner).toBe(ERROR_MESSAGES.corrupt);
+         |                  ^
+      22 |
+      23 |   // The app is still alive and usable: the picker is still reachable.
+      24 |   await expect(page.getByRole('button', { name: 'Choose screenshot' })).toBeVisible();
+        at /opt/data/workspace/smll/projects/postclip/e2e/negative_s0.spec.ts:21:18
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/negative_s0-s0-negative-corrupt-input-fails-closed-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/negative_s0-s0-negative-corrupt-input-fails-closed-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/negative_s0-s0-negative-corrupt-input-fails-closed-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/negative_s0-s0-negative-corrupt-input-fails-closed-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share ───────────
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "Like Comment Share"
+    Received string:        "Maya Lindqvist
+    @maya-builds - 2h
+    Shipped our first offline-first release today.
+    No cloud, no accounts, just a local cache that never lies.
+    What is the last app you used that worked in a tunnel?
+    #buildinpublic #offline
+    42 reactions - 9 comments
+    Like Comment Share"
+
+      69 |
+      70 |   // S1: the review text is the CLEANED body — UI chrome is gone.
+    > 71 |   expect(reviewText).not.toContain('Like Comment Share');
+         |                          ^
+      72 |   expect(reviewText).not.toContain('reactions');
+      73 |
+      74 |   // A03: Web Share is called with a text payload equal to the review text.
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc01_pick_ocr_review_share.spec.ts:71:26
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads ─────────
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "Like Comment Share"
+    Received string:        "Maya Lindqvist
+    @maya-builds - 2h
+    Shipped our first offline-first release today.
+    No cloud, no accounts, just a local cache that never lies.
+    What is the last app you used that worked in a tunnel?
+    #buildinpublic #offline
+    42 reactions - 9 comments
+    Like Comment Share"
+
+      53 |
+      54 |   // The cleaned review text must not contain UI chrome.
+    > 55 |   expect(original).not.toContain('Like Comment Share');
+         |                        ^
+      56 |   expect(original).not.toContain('reactions');
+      57 |
+      58 |   // Edit the text; every payload must carry the edits exactly.
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc05_edit_review_payload.spec.ts:55:24
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [webkit] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json ──────────
+
+    Test timeout of 180000ms exceeded.
+
+    Error: page.waitForEvent: Test timeout of 180000ms exceeded.
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+      31 |
+      32 |   for (const format of ['md', 'txt', 'json'] as const) {
+    > 33 |     const downloadPromise = page.waitForEvent('download');
+         |                                  ^
+      34 |     await page.locator(`#export-${format}`).click();
+      35 |     const download = await downloadPromise;
+      36 |     expect(download.suggestedFilename()).toBe(`postclip-export.${format}`);
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc07_export_download.spec.ts:33:34
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#export-md')
+
+
+      32 |   for (const format of ['md', 'txt', 'json'] as const) {
+      33 |     const downloadPromise = page.waitForEvent('download');
+    > 34 |     await page.locator(`#export-${format}`).click();
+         |                                             ^
+      35 |     const download = await downloadPromise;
+      36 |     expect(download.suggestedFilename()).toBe(`postclip-export.${format}`);
+      37 |     const content = readFileSync(await download.path(), 'utf-8');
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc07_export_download.spec.ts:34:45
+
+    Error Context: test-results/uc07_export_download-uc07-export-downloads-md-txt-json-webkit/error-context.md
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc07_export_download-uc07-export-downloads-md-txt-json-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc07_export_download-uc07-export-downloads-md-txt-json-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc07_export_download-uc07-export-downloads-md-txt-json-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [webkit] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup ──
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.error-banner')
+    Expected: visible
+    Timeout: 120000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.error-banner') with timeout 120000ms
+      - waiting for locator('.error-banner')
+
+
+      25 |   await page.setInputFiles('#file-input', fixtureFile(id));
+      26 |   const banner = page.locator('.error-banner');
+    > 27 |   await expect(banner).toBeVisible({ timeout: 120_000 });
+         |                        ^
+      28 |   await expect(banner).toHaveText(NON_ENGLISH_MESSAGE);
+      29 |   // Cleanup never ran: no review screen, no review text anywhere.
+      30 |   await expect(page.getByRole('heading', { name: 'Review' })).toHaveCount(0);
+        at expectRejected (/opt/data/workspace/smll/projects/postclip/e2e/uc10_non_english_rejected.spec.ts:27:24)
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc10_non_english_rejected.spec.ts:40:3
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states ─────────────────────
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('.error-banner')
+    Expected: "That file does not look like an image. Please choose a PNG or JPEG screenshot of a post."
+    Received: "Could not read that image: Error: Error attempting to read image."
+    Timeout:  30000ms
+
+    Call log:
+      - Expect "toHaveText" locator('.error-banner') with timeout 30000ms
+      - waiting for locator('.error-banner')
+        63 × locator resolved to <div role="alert" class="error-banner">Could not read that image: Error: Error attemptin…</div>
+           - unexpected value "Could not read that image: Error: Error attempting to read image."
+
+
+      31 |   const banner = page.locator('.error-banner');
+      32 |   await expect(banner).toBeVisible({ timeout: 120_000 });
+    > 33 |   await expect(banner).toHaveText(message);
+         |                        ^
+      34 |   // No review screen for bad inputs, and the app stays usable.
+      35 |   await expect(page.getByRole('heading', { name: 'Review' })).toHaveCount(0);
+      36 |   await expect(page.getByRole('button', { name: 'Choose screenshot' })).toBeVisible();
+        at expectErrorState (/opt/data/workspace/smll/projects/postclip/e2e/uc11_bad_inputs.spec.ts:33:24)
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc11_bad_inputs.spec.ts:50:3
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-bad-input-error-states-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc11_bad_inputs-uc11-bad-input-error-states-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-bad-input-error-states-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc11_bad_inputs-uc11-bad-input-error-states-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr ────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#downscale-note')
+    Expected: visible
+    Timeout: 60000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#downscale-note') with timeout 60000ms
+      - waiting for locator('#downscale-note')
+
+
+      78 |   await pick(page, fixtureFile('huge01'));
+      79 |   // The downscale note is visible while reading.
+    > 80 |   await expect(page.locator('#downscale-note')).toBeVisible({ timeout: 60_000 });
+         |                                                 ^
+      81 |   await expect(page.locator('#downscale-note')).toHaveText(DOWNSCALE_NOTE);
+      82 |   // The image is processed to the review screen with the body text.
+      83 |   await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 180_000 });
+        at /opt/data/workspace/smll/projects/postclip/e2e/uc11_bad_inputs.spec.ts:80:49
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: [webkit] › e2e/eval_cleanup_metrics.spec.ts (7.3m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  10 failed
+    [webkit] › e2e/a15_privacy_audit.spec.ts:46:1 › a15_no_storage_log_request_leaks_after_flows ───
+    [webkit] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set ───────────
+    [webkit] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set ──────────────────────────────
+    [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed ───────────────
+    [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share ────────────
+    [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads ──────────
+    [webkit] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json ───────────
+    [webkit] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup ───
+    [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states ──────────────────────
+    [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr ──────────────────
+  2 passed (20.0m)
+WEBKIT_EXIT=1
+
+# End of S1 RED log.

@@ -1,4 +1,5 @@
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { runPrivacyAudit, startCapture } from './helpers/privacy';
 
 /**
  * UC01 + UC06 (A02, A03, web): pick a fixture screenshot, real in-browser OCR
@@ -50,6 +51,7 @@ async function verifyClipboardByPasteRoundTrip(page: Page): Promise<string> {
 }
 
 test('uc01_pick_ocr_review_share', async ({ page }, testInfo: TestInfo) => {
+  const capture = startCapture(page);
   await spyNavigatorShare(page);
   await page.goto('/');
 
@@ -64,6 +66,10 @@ test('uc01_pick_ocr_review_share', async ({ page }, testInfo: TestInfo) => {
     })
     .toBeGreaterThan(40);
   const reviewText = await page.locator('#review-text').inputValue();
+
+  // S1: the review text is the CLEANED body — UI chrome is gone.
+  expect(reviewText).not.toContain('Like Comment Share');
+  expect(reviewText).not.toContain('reactions');
 
   // A03: Web Share is called with a text payload equal to the review text.
   await page.locator('#share-btn').click();
@@ -85,4 +91,8 @@ test('uc01_pick_ocr_review_share', async ({ page }, testInfo: TestInfo) => {
     const pasted = await verifyClipboardByPasteRoundTrip(page);
     expect(pasted, 'paste round-trip must deliver exactly the copied review text').toBe(reviewText);
   }
+
+  // A15: no post text in any storage, URL, console output or network request.
+  const audit = await runPrivacyAudit(page, capture, [reviewText]);
+  expect(audit.violations, JSON.stringify(audit.violations, null, 2)).toEqual([]);
 });
