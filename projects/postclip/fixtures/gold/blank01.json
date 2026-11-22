@@ -1,0 +1,13 @@
+{
+  "id": "blank01",
+  "kind": "blank",
+  "theme": "light",
+  "author": "",
+  "handle": "",
+  "language": "none",
+  "body": [],
+  "chrome": [],
+  "ocr_expected": [],
+  "synthetic": true,
+  "expected_error": "no-text"
+}

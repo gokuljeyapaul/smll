@@ -1,0 +1,29 @@
+{
+  "id": "huge01",
+  "kind": "huge",
+  "theme": "light",
+  "author": "Maya Lindqvist",
+  "handle": "@maya-builds",
+  "language": "en",
+  "body": [
+    "This is a very large screenshot, and PostClip shrinks it before reading.",
+    "The text stays readable after the downscale, and nothing is uploaded."
+  ],
+  "chrome": [
+    "@maya-builds",
+    "2h",
+    "Like",
+    "Comment",
+    "Share",
+    "42 reactions · 9 comments"
+  ],
+  "ocr_expected": [
+    "Maya Lindqvist",
+    "@maya-builds · 2h",
+    "This is a very large screenshot, and PostClip shrinks it before reading.",
+    "The text stays readable after the downscale, and nothing is uploaded.",
+    "42 reactions · 9 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

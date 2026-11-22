@@ -1,0 +1,36 @@
+{
+  "id": "de03",
+  "kind": "lang-de",
+  "theme": "light",
+  "author": "Jonas Weber",
+  "handle": "@jonasw",
+  "language": "de",
+  "body": [
+    "Drei Lehren aus dem Refactoring unserer Legacy-Ingest-Pipeline:",
+    "1. Erst das Schema aufschreiben, bevor man einen Handler anfasst.",
+    "2. Doppelt so viel Code löschen wie man hinzufügt.",
+    "3. Ein flatternder Test ist ein Vorfall, den man zweimal haben darf.",
+    "Die Pipeline verarbeitet nun einen Tag Traffic in elf Minuten."
+  ],
+  "chrome": [
+    "@jonasw",
+    "1 Tag",
+    "Gefällt",
+    "mir",
+    "Kommentieren",
+    "Teilen",
+    "137 Reaktionen · 9 Kommentare"
+  ],
+  "ocr_expected": [
+    "Jonas Weber",
+    "@jonasw · 1 Tag",
+    "Drei Lehren aus dem Refactoring unserer Legacy-Ingest-Pipeline:",
+    "1. Erst das Schema aufschreiben, bevor man einen Handler anfasst.",
+    "2. Doppelt so viel Code löschen wie man hinzufügt.",
+    "3. Ein flatternder Test ist ein Vorfall, den man zweimal haben darf.",
+    "Die Pipeline verarbeitet nun einen Tag Traffic in elf Minuten.",
+    "137 Reaktionen · 9 Kommentare",
+    "Gefällt mir Kommentieren Teilen"
+  ],
+  "synthetic": true
+}

@@ -1,0 +1,3 @@
+PostClip synthetic test file.
+This is not an image at all, just plain text bytes.
+Generated for the S1 fixture set (use case UC11).

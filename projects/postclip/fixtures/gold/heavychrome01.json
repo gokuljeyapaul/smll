@@ -1,0 +1,37 @@
+{
+  "id": "heavychrome01",
+  "kind": "heavychrome",
+  "theme": "light",
+  "author": "Sofia Marchetti",
+  "handle": "@sofia-m",
+  "language": "en",
+  "body": [
+    "Harborlight Systems is hiring a founding engineer for our storage team.",
+    "You will own the replication layer end to end, from design to on-call.",
+    "Fully remote, four-day weeks, real on-call compensation. Apply below."
+  ],
+  "chrome": [
+    "Promoted",
+    "@sofia-m",
+    "1h",
+    "Like",
+    "Comment",
+    "Share",
+    "1,208 reactions · 89 comments",
+    "Follow",
+    "Connect",
+    "···"
+  ],
+  "ocr_expected": [
+    "Promoted",
+    "···",
+    "Sofia Marchetti",
+    "@sofia-m · 1h",
+    "Harborlight Systems is hiring a founding engineer for our storage team.",
+    "You will own the replication layer end to end, from design to on-call.",
+    "Fully remote, four-day weeks, real on-call compensation. Apply below.",
+    "1,208 reactions · 89 comments",
+    "Like Comment Share Follow Connect"
+  ],
+  "synthetic": true
+}

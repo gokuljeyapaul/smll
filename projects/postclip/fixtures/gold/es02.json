@@ -1,0 +1,34 @@
+{
+  "id": "es02",
+  "kind": "lang-es",
+  "theme": "dark",
+  "author": "Mateo Ortega",
+  "handle": "@mateo.ortega",
+  "language": "es",
+  "body": [
+    "Tres lecciones de refactorizar un pipeline heredado:",
+    "1. Escribe el esquema antes de tocar un solo handler.",
+    "2. Borra el doble de código del que añades.",
+    "3. Un test inestable es un incidente de producción que te pasa dos veces."
+  ],
+  "chrome": [
+    "@mateo.ortega",
+    "5 h",
+    "Me",
+    "gusta",
+    "Comentar",
+    "Compartir",
+    "77 reacciones · 4 comentarios"
+  ],
+  "ocr_expected": [
+    "Mateo Ortega",
+    "@mateo.ortega · 5 h",
+    "Tres lecciones de refactorizar un pipeline heredado:",
+    "1. Escribe el esquema antes de tocar un solo handler.",
+    "2. Borra el doble de código del que añades.",
+    "3. Un test inestable es un incidente de producción que te pasa dos veces.",
+    "77 reacciones · 4 comentarios",
+    "Me gusta Comentar Compartir"
+  ],
+  "synthetic": true
+}

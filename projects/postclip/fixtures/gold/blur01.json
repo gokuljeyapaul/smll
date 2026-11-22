@@ -1,0 +1,29 @@
+{
+  "id": "blur01",
+  "kind": "blur",
+  "theme": "light",
+  "author": "Tomas Ricci",
+  "handle": "@tomas-ricci",
+  "language": "en",
+  "body": [
+    "Reading the OCR tea leaves this week taught me patience.",
+    "A slight blur is fine for humans and a puzzle for machines."
+  ],
+  "chrome": [
+    "@tomas-ricci",
+    "12h",
+    "Like",
+    "Comment",
+    "Share",
+    "12 reactions · 1 comment"
+  ],
+  "ocr_expected": [
+    "Tomas Ricci",
+    "@tomas-ricci · 12h",
+    "Reading the OCR tea leaves this week taught me patience.",
+    "A slight blur is fine for humans and a puzzle for machines.",
+    "12 reactions · 1 comment",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

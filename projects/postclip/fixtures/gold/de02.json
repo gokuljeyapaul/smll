@@ -1,0 +1,32 @@
+{
+  "id": "de02",
+  "kind": "lang-de",
+  "theme": "dark",
+  "author": "Anja Schubert",
+  "handle": "@anja-schreibt",
+  "language": "de",
+  "body": [
+    "Debugging-Story aus dieser Woche: ein Cache, der zu schnell ablief,",
+    "eine Uhr, die um 90 Sekunden log, und ein sehr geduldiger SRE.",
+    "Ursache? Zwei Dienste waren sich nicht einig, was „jetzt“ bedeutet. #postmortem"
+  ],
+  "chrome": [
+    "@anja-schreibt",
+    "6 Std.",
+    "Gefällt",
+    "mir",
+    "Kommentieren",
+    "Teilen",
+    "64 Reaktionen · 2 Kommentare"
+  ],
+  "ocr_expected": [
+    "Anja Schubert",
+    "@anja-schreibt · 6 Std.",
+    "Debugging-Story aus dieser Woche: ein Cache, der zu schnell ablief,",
+    "eine Uhr, die um 90 Sekunden log, und ein sehr geduldiger SRE.",
+    "Ursache? Zwei Dienste waren sich nicht einig, was „jetzt“ bedeutet. #postmortem",
+    "64 Reaktionen · 2 Kommentare",
+    "Gefällt mir Kommentieren Teilen"
+  ],
+  "synthetic": true
+}

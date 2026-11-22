@@ -1,0 +1,13 @@
+{
+  "id": "nonimage01",
+  "kind": "non-image",
+  "theme": "light",
+  "author": "",
+  "handle": "",
+  "language": "none",
+  "body": [],
+  "chrome": [],
+  "ocr_expected": [],
+  "synthetic": true,
+  "expected_error": "non-image"
+}

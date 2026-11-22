@@ -1,0 +1,31 @@
+{
+  "id": "lowcontrast01",
+  "kind": "lowcontrast",
+  "theme": "light",
+  "author": "Ines Karlsson",
+  "handle": "@ines-k",
+  "language": "en",
+  "body": [
+    "Accessibility is not a feature you add at the end.",
+    "It is a constraint you design with from the first sketch.",
+    "Contrast ratios are a floor, not a ceiling. #a11y"
+  ],
+  "chrome": [
+    "@ines-k",
+    "9h",
+    "Like",
+    "Comment",
+    "Share",
+    "34 reactions · 6 comments"
+  ],
+  "ocr_expected": [
+    "Ines Karlsson",
+    "@ines-k · 9h",
+    "Accessibility is not a feature you add at the end.",
+    "It is a constraint you design with from the first sketch.",
+    "Contrast ratios are a floor, not a ceiling. #a11y",
+    "34 reactions · 6 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

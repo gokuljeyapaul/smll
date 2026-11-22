@@ -1,0 +1,45 @@
+{
+  "id": "longpost01",
+  "kind": "longpost",
+  "theme": "light",
+  "author": "Nadia Farouk",
+  "handle": "@nadia-f",
+  "language": "en",
+  "body": [
+    "A long one for the readers: here is everything we learned moving our ingestion pipeline to a single binary, and why the second attempt worked when the first one did not, and what we would do differently if we started over next quarter.",
+    "Short version: delete first, measure second, celebrate third.",
+    "1. We wrote down the schema before touching a handler.",
+    "2. We deleted twice as much code as we added.",
+    "3. We made the flaky tests fail loudly instead of silently retrying.",
+    "4. We gave every service one owner with a name and a face.",
+    "5. We stopped calling pages heroic and started calling them expensive.",
+    "The pipeline now processes a full day of traffic in eleven minutes,",
+    "down from four hours, with fewer incidents and better sleep for everyone.",
+    "Ask me anything about the migration below. #engineering #longread"
+  ],
+  "chrome": [
+    "@nadia-f",
+    "4h",
+    "Like",
+    "Comment",
+    "Share",
+    "98 reactions · 5 comments"
+  ],
+  "ocr_expected": [
+    "Nadia Farouk",
+    "@nadia-f · 4h",
+    "A long one for the readers: here is everything we learned moving our ingestion pipeline to a single binary, and why the second attempt worked when the first one did not, and what we would do differently if we started over next quarter.",
+    "Short version: delete first, measure second, celebrate third.",
+    "1. We wrote down the schema before touching a handler.",
+    "2. We deleted twice as much code as we added.",
+    "3. We made the flaky tests fail loudly instead of silently retrying.",
+    "4. We gave every service one owner with a name and a face.",
+    "5. We stopped calling pages heroic and started calling them expensive.",
+    "The pipeline now processes a full day of traffic in eleven minutes,",
+    "down from four hours, with fewer incidents and better sleep for everyone.",
+    "Ask me anything about the migration below. #engineering #longread",
+    "98 reactions · 5 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}
