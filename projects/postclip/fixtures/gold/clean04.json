@@ -1,0 +1,27 @@
+{
+  "id": "clean04",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Felix Brandt",
+  "handle": "@felixb",
+  "language": "en",
+  "body": [
+    "The best commit message is the one a tired colleague reads in six months and still understands."
+  ],
+  "chrome": [
+    "@felixb",
+    "4h",
+    "Like",
+    "Comment",
+    "Share",
+    "8 reactions"
+  ],
+  "ocr_expected": [
+    "Felix Brandt",
+    "@felixb · 4h",
+    "The best commit message is the one a tired colleague reads in six months and still understands.",
+    "8 reactions",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

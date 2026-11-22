@@ -1,0 +1,37 @@
+{
+  "id": "clean02",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Devon Park",
+  "handle": "@devon.park",
+  "language": "en",
+  "body": [
+    "Three lessons from refactoring a legacy ingest pipeline:",
+    "1. Write the schema down before touching a single handler.",
+    "2. Delete twice as much code as you add.",
+    "3. A flaky test is a production incident you get to have twice.",
+    "The pipeline now processes a day of traffic in eleven minutes.",
+    "Ask me anything about the migration — happy to share the runbook. #engineering #refactor"
+  ],
+  "chrome": [
+    "@devon.park",
+    "5h",
+    "Like",
+    "Comment",
+    "Share",
+    "137 reactions · 9 comments"
+  ],
+  "ocr_expected": [
+    "Devon Park",
+    "@devon.park · 5h",
+    "Three lessons from refactoring a legacy ingest pipeline:",
+    "1. Write the schema down before touching a single handler.",
+    "2. Delete twice as much code as you add.",
+    "3. A flaky test is a production incident you get to have twice.",
+    "The pipeline now processes a day of traffic in eleven minutes.",
+    "Ask me anything about the migration — happy to share the runbook. #engineering #refactor",
+    "137 reactions · 9 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

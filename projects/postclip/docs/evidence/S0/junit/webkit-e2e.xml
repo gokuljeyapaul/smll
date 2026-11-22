@@ -1,0 +1,40 @@
+<testsuites id="" name="" tests="4" failures="0" skipped="0" errors="0" time="19.255847999999997">
+<testsuite name="a01_smoke.spec.ts" timestamp="2026-11-21T11:03:21.347Z" hostname="webkit" tests="1" failures="0" skipped="0" time="0.95" errors="0">
+<testcase name="a01_built_app_loads_home_screen_no_console_errors" classname="a01_smoke.spec.ts" time="0.95">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_ocr_cer.spec.ts" timestamp="2026-11-21T11:03:21.347Z" hostname="webkit" tests="1" failures="0" skipped="0" time="10.55" errors="0">
+<testcase name="eval_ocr_cer_clean_set" classname="eval_ocr_cer.spec.ts" time="10.55">
+<system-out>
+<![CDATA[eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78%
+eval_ocr_cer_clean_set mean: 1.33%
+
+[[ATTACHMENT|../../../../test-results/eval_ocr_cer-eval-ocr-cer-clean-set-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="negative_s0.spec.ts" timestamp="2026-11-21T11:03:21.347Z" hostname="webkit" tests="1" failures="0" skipped="0" time="1.867" errors="0">
+<testcase name="s0_negative_corrupt_input_fails_closed" classname="negative_s0.spec.ts" time="1.867">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/negative_s0-s0-negative-corrupt-input-fails-closed-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc01_pick_ocr_review_share.spec.ts" timestamp="2026-11-21T11:03:21.347Z" hostname="webkit" tests="1" failures="0" skipped="0" time="2.462" errors="0">
+<testcase name="uc01_pick_ocr_review_share" classname="uc01_pick_ocr_review_share.spec.ts" time="2.462">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

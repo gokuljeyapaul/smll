@@ -1,0 +1,134 @@
+{
+  "slice": "S0",
+  "source_digest": "084d98fb759aa9d3e6b869ffc0664c8141fb82db3f7e889aab8ed18891213e41",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "webkit": "Version/27.2 (Playwright 1.65.1, build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM, 39 GB free disk at slice start (headless-Linux numbers; real-device behavior is NOT_RUN)"
+  },
+  "acceptance": {
+    "A01": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S0/junit/chromium-e2e.xml::a01_built_app_loads_home_screen_no_console_errors",
+        "junit:docs/evidence/S0/junit/webkit-e2e.xml::a01_built_app_loads_home_screen_no_console_errors"
+      ],
+      "videos": [
+        "video:a01_smoke_chromium",
+        "video:a01_smoke_webkit"
+      ],
+      "notes": "Clean checkout build (tsc --noEmit + vite build + verified OCR asset fetch) succeeds; the built dist/ serves and renders the home screen with zero console errors in both engines."
+    },
+    "A02": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S0/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S0/junit/webkit-e2e.xml::uc01_pick_ocr_review_share"
+      ],
+      "videos": [
+        "video:uc01_pick_ocr_review_share_chromium",
+        "video:uc01_pick_ocr_review_share_webkit"
+      ],
+      "notes": "Real in-browser OCR (tesseract.js in its own worker, same-origin assets, verified eng.traineddata.gz) on fixture clean01; review screen shows the extracted text in both engines."
+    },
+    "A03": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S0/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S0/junit/webkit-e2e.xml::uc01_pick_ocr_review_share"
+      ],
+      "videos": [
+        "video:uc01_pick_ocr_review_share_chromium",
+        "video:uc01_pick_ocr_review_share_webkit"
+      ],
+      "notes": "navigator.share spied (OS share sheet not automatable, A27): payload.text equals the review text exactly. Chromium verifies Copy with a real granted clipboard read; Playwright WebKit grants no clipboard permissions and readText is platform-denied, so the clipboard content is verified there with a real paste round-trip (writeText needs no permission; see runner-smoke.md). The native share sheet on a real device remains NOT_RUN (A27)."
+    },
+    "A20": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S0/junit/chromium-e2e.xml::eval_ocr_cer_clean_set",
+        "junit:docs/evidence/S0/junit/webkit-e2e.xml::eval_ocr_cer_clean_set"
+      ],
+      "videos": [
+        "video:eval_ocr_cer_chromium",
+        "video:eval_ocr_cer_webkit"
+      ],
+      "notes": "Clean-set mean CER through the full app pipeline: 1.33% in Chromium and 1.33% in WebKit (bar <= 5%). Per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78%, identical across engines. Engine selection by measurement incl. rejected candidates: docs/evidence/S0/ocr_engine_comparison.md (bench CER 2.31% on raw engine output; app-level normalization narrows it to 1.33%)."
+    },
+    "A25": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S0/junit/host-vitest.xml::evidence integrity (A25) > covers every S0 acceptance ID with a valid status",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::evidence integrity (A25) > every PASS points at JUnit testcases that exist and passed, per required engine",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::evidence integrity (A25) > non-PASS entries carry notes, and referenced videos exist in the manifest",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::evidence integrity (A25) > records a source digest over the shipped source tree"
+      ],
+      "notes": "Every S0 acceptance ID has an honest status with backing evidence; scripts/verify_evidence.py (verify.sh) additionally enforces the source digest and JUnit linkage on the current tree."
+    },
+    "A31": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S0/junit/host-vitest.xml::fixture manifest lint (A31) > has a manifest.json",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::fixture manifest lint (A31) > lists at least the 10 S0 fixtures",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::fixture manifest lint (A31) > every image file exists, matches its sha256, is small, and is flagged synthetic",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::fixture manifest lint (A31) > every entry has a gold JSON with the required fields",
+        "junit:docs/evidence/S0/junit/host-vitest.xml::fixture manifest lint (A31) > no stray images without a manifest entry"
+      ],
+      "notes": "All 10 fixtures are generated from fictional fixture-data.mjs content (fictional authors/companies, no real people, brands or logos), flagged synthetic in the manifest, hashed; 698,510 bytes total (<= 6 MB), each <= 150 KB."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "npx vitest run && npx playwright test  (RED evidence; see docs/evidence/S0/red.log for the full sequence incl. fixture-manifest lint failure before fixtures existed)",
+      "exit_code": 1,
+      "evidence": "docs/evidence/S0/red.log"
+    },
+    "green": {
+      "command": "npm run build && npx vitest run (17 passed; +4 A25 host tests = 21 in the final junit)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S0/green.log"
+    },
+    "e2e": {
+      "command": "npx playwright test --project=chromium --reporter=list,junit && npx playwright test --project=webkit --reporter=list,junit",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S0/e2e.log"
+    },
+    "negative": {
+      "command": "s0_negative_corrupt_input_fails_closed in the same Playwright runs (corrupt 'PNG' -> visible error banner, app stays usable, no page errors)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S0/negative.log"
+    },
+    "demo": {
+      "command": "npm run demo (built app served, pick -> real OCR -> review -> share spy -> copy -> paste round-trip, both engines)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S0/demo.log"
+    },
+    "ocr_bench": {
+      "command": "node eval/run_ocr_bench.mjs --engines tesseract-fast,tesseract-best,ppocr,tesseract-fast-psm4,tesseract-fast-psm6",
+      "exit_code": 0,
+      "evidence": "eval/ocr_bench_results.json, docs/evidence/S0/ocr_engine_comparison.md, artifacts/logs/ocr-bench.log"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh (plan lint + evidence integrity)",
+      "exit_code": 0,
+      "evidence": "run on the final tree; output in the slice PR"
+    }
+  },
+  "videos_manifest": "docs/evidence/video_manifest.json (8 entries, all junit_verified)",
+  "owner_visual": {
+    "O01": {
+      "state": "PENDING_OWNER_REVIEW",
+      "artifact": "docs/evidence/S0/owner/gallery.md"
+    }
+  },
+  "limitations": [
+    "The OS share sheet itself is not automatable; navigator.share is spied and its payload asserted (A27 real-device checks remain NOT_RUN by design).",
+    "Playwright's WebKit on Linux cannot grant clipboard permissions; readText is platform-denied there. Copy is verified in WebKit via a real paste round-trip, and by a real granted clipboard read in Chromium.",
+    "WebKit-on-Linux is not iOS Safari; no real-device claim is made anywhere.",
+    "OCR accuracy is measured on the synthetic fixture set (clean-set CER 1.33%); it does not prove accuracy on arbitrary real screenshots.",
+    "The LLM cleanup, storage audits, paste/share-target, installability, and model manager are S1+ slices; the OCR engine assets (worker/core/traineddata) are fetched at build time and served same-origin, while app-shell caching lands with the PWA slice (S2)."
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "postclip-fixtures/1",
+  "synthetic": true,
+  "images": [
+    {
+      "id": "clean01",
+      "file": "images/clean01.png",
+      "sha256": "a3f419b3d8df531ccab0bfaa6c5f008990d4842f54191e26e3561a330ee0f445",
+      "size_bytes": 66263,
+      "synthetic": true,
+      "gold": "gold/clean01.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "clean02",
+      "file": "images/clean02.png",
+      "sha256": "b96cb2be5b6bdb00021f71dbb467161b139aa99262f1c6ea1761a95bfaac2b56",
+      "size_bytes": 109990,
+      "synthetic": true,
+      "gold": "gold/clean02.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "clean03",
+      "file": "images/clean03.png",
+      "sha256": "79c1b5e7488c969706144f23dd61093186bd248d74f3344a3121b06b37e6cb9c",
+      "size_bytes": 85377,
+      "synthetic": true,
+      "gold": "gold/clean03.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "clean04",
+      "file": "images/clean04.png",
+      "sha256": "fc4d313142ba44577a8be052d3dd423d4477aeac4b4575d0d16c99133f772369",
+      "size_bytes": 42432,
+      "synthetic": true,
+      "gold": "gold/clean04.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "clean05",
+      "file": "images/clean05.png",
+      "sha256": "7ac75b77078f45d5eb59b5eeecb1d9bcbe7b3901db16aa051650da4893235edc",
+      "size_bytes": 70376,
+      "synthetic": true,
+      "gold": "gold/clean05.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "clean06",
+      "file": "images/clean06.png",
+      "sha256": "c3abd5fef5cf030cf60656f523fa4662bdd53d074967d6ba05491fd5abdff6f8",
+      "size_bytes": 58669,
+      "synthetic": true,
+      "gold": "gold/clean06.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "dark01",
+      "file": "images/dark01.png",
+      "sha256": "799b19f3fe072eb0aee6a58f9fdb22e252d725717983f6b03dd3aa2863cf93bf",
+      "size_bytes": 52101,
+      "synthetic": true,
+      "gold": "gold/dark01.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "dark02",
+      "file": "images/dark02.png",
+      "sha256": "334afcc2bc25430039538397969da24f4ee917648be384a593e4027bd2be700f",
+      "size_bytes": 76863,
+      "synthetic": true,
+      "gold": "gold/dark02.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "chrome01",
+      "file": "images/chrome01.png",
+      "sha256": "96875b32a46eb8ed10ef54d08e1dd181367a0641a027079ac69476c7ff0e856e",
+      "size_bytes": 79041,
+      "synthetic": true,
+      "gold": "gold/chrome01.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "chrome02",
+      "file": "images/chrome02.png",
+      "sha256": "194282235437ccaadd551af08f9407b2c29c0af5b69a6d539e22ef41f349f706",
+      "size_bytes": 57398,
+      "synthetic": true,
+      "gold": "gold/chrome02.json",
+      "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    }
+  ]
+}
