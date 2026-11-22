@@ -11,7 +11,7 @@ No cloud, no accounts, nothing stored. English only (v1). An installable web app
 
 ## Project state
 
-**BUILDING.** S0 (foundations: pick a screenshot, real in-browser OCR, review, share or copy) is merged and verified; S1 (deterministic cleanup, editable review, .md/.txt/.json export, the English-only language gate, specific bad-input errors with downscale-before-OCR, and the no-storage/log/request audit) is delivered in Chromium and WebKit; slices S2–S6 follow per the plan. The ledger in [docs/status.md](docs/status.md) tracks per-slice and per-acceptance-ID status with committed evidence.
+**BUILDING.** S0 (foundations: pick a screenshot, real in-browser OCR, review, share or copy) is merged and verified; S1 (deterministic cleanup, editable review, .md/.txt/.json export, the English-only language gate, specific bad-input errors with downscale-before-OCR, and the no-storage/log/request audit) is merged and verified; S2 (paste button + paste events, the share-target receiver in the service worker, an installable offline app shell — including offline OCR — and clipboard-permission states) is delivered in Chromium and WebKit with zero new dependencies; slices S3–S6 follow per the plan. The ledger in [docs/status.md](docs/status.md) tracks per-slice and per-acceptance-ID status with committed evidence.
 
 | What | Where |
 |---|---|

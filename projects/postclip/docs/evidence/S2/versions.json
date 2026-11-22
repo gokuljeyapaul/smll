@@ -1,0 +1,53 @@
+{
+  "slice": "S2",
+  "recorded_at": "2026-11-22T03:52:00Z",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1 (.nvmrc)",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1 build chromium-1255)",
+    "webkit": "Version/27.2 (Playwright 1.65.1 build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM, 38 GB free disk at slice end (headless-Linux numbers only; real-device behavior is NOT_RUN)"
+  },
+  "toolchain": {
+    "npm": "12.0.2",
+    "typescript": "5.9.3",
+    "vite": "8.3.8",
+    "vitest": "5.1.1",
+    "playwright": "1.65.1",
+    "react": "19.3.1",
+    "react_dom": "19.3.1",
+    "eslint": "9.39.5",
+    "typescript-eslint": "8.73.0",
+    "jsdom": "31.0.1",
+    "python3": "3.14.9",
+    "git": "2.47.3",
+    "ffmpeg": "n9.0.1-11-ge47273f4d9-20260831"
+  },
+  "new_dependencies": "none — S2 adds zero npm dependencies (package-lock.json unchanged; package.json only gains the build_pwa_precache step). The PWA surface is hand-built: manifest.webmanifest, a ~130-line classic service worker (public/sw.js), a build-time precache-manifest generator (scripts/build_pwa_precache.mjs) and deterministic icons (scripts/generate_icons.mjs).",
+  "pwa_decision": {
+    "chosen": "purpose-built classic-script service worker + static manifest, no PWA library",
+    "rejected": [
+      "vite-plugin-pwa / Workbox generateSW — its precache glob runs at vite-build time, but this app's OCR runtime is fetched into dist/ocr-assets/ AFTER the vite build (scripts/fetch_ocr_assets.mjs, pinned + hash-verified), so a workbox precache would miss exactly the files offline OCR needs unless the build order were restructured around the library",
+      "a bundled/ES-module service worker — module SW support differs across engines and importScripts() of the generated precache list keeps the worker a plain classic script every engine with SW support can run unchanged"
+    ],
+    "share_target_privacy": "the worker parses the multipart POST in memory, reads ONLY the file field named in the manifest's share_target params, hands the image to a window client via postMessage, and never caches, stores or logs the request or its body (asserted by the a08 cache-exactness check: the app-shell cache contains exactly the build's precache entries afterwards)"
+  },
+  "app_shell": {
+    "cache_name": "precache-v1 (matches the A15 allow-list patterns in src/privacy/audit.ts)",
+    "precache_entries": 20,
+    "total_bytes": 39100000,
+    "ocr_assets_precached": 13,
+    "generator": "scripts/build_pwa_precache.mjs — sha256 revision per file, cache key url + ?__pcv=<rev12> so fixed-name files bust on every deploy; the SW itself and the manifest are never precached",
+    "offline_measured": "after first load, context.setOffline(true) + reload renders the shell with zero failed requests, and a pick runs real OCR offline in BOTH engines (a11_offline_ocr_after_first_load)"
+  },
+  "icons": {
+    "files": ["public/icons/icon-192.png (13944 bytes)", "public/icons/icon-512.png (58735 bytes)", "public/icons/icon-512-maskable.png (52848 bytes)"],
+    "generated_by": "scripts/generate_icons.mjs — headless Chromium renders the deterministic CSS mark (192/512 + a maskable safe-zone variant); committed output, CI never regenerates; pixel-verified programmatically (dimensions, dark shell #101418, light-blue glyph center, 900+ distinct colors)"
+  },
+  "clipboard_capabilities_measured": {
+    "chromium": "with context permissions clipboard-read/clipboard-write granted: clipboard.write(image) works, clipboard.read() returns image/png, dispatched ClipboardEvent('paste') carries the file; with the grants revoked (permissions: []): read() is refused with NotAllowedError — the A10 denial flow is real",
+    "webkit": "clipboard.write(image) is accepted without any permission; clipboard.read() is platform-denied (NotAllowedError — Playwright's WebKit grants no clipboard permissions); dispatched ClipboardEvent('paste') carries the file AND the app processes it (review screen appears); real Ctrl/Cmd+V round-trip of writeText text works",
+    "evidence": "docs/evidence/S2/webkit-paste-probe.log"
+  },
+  "ocr_engine": "unchanged from S0/S1 (tesseract.js 7.0.0, cacheMethod 'none'); S2's service-worker precache now covers /ocr-assets/, so the 2 MB pinned traineddata that S1 re-fetched per fresh session is served from the app-shell cache after the first load — including offline."
+}

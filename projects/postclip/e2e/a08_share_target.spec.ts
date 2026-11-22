@@ -19,6 +19,7 @@ test.skip(
 
 test('a08_share_target_receives_image', async ({ page }) => {
   const capture = startCapture(page);
+  await page.goto('/');
 
   // A08, manifest half: share_target declared, POST + multipart, images only.
   const manifest = await page.evaluate(async () => await (await fetch('/manifest.webmanifest')).json());

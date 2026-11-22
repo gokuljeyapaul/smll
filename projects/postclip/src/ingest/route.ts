@@ -3,11 +3,8 @@
  * input channel — a paste event, a clipboard read, or a share-target
  * message from the service worker — into the File the pipeline consumes,
  * or a specific, kind, fail-closed message. The UI layer only wires these
- * helpers to real browser events; the behavior itself is unit-tested here.
- *
- * SCAFFOLD STATE (S2 RED): every function returns null / empty so the new
- * behavioral tests fail on assertions (never import errors), exactly like
- * the S1 scaffold pattern in docs/evidence/S1/red.log.
+ * helpers to real browser events; the behavior itself is unit-tested in
+ * route.test.ts and driven end to end by the uc03/a08/a10/a11 e2e specs.
  */
 
 /** The message the service worker sends when a shared image arrives (UC02). */
@@ -32,8 +29,11 @@ export const CLIPBOARD_READ_FAILED_MESSAGE =
  * or null when the paste carries no image (text-only pastes stay untouched
  * — the review textarea's normal text pasting must keep working).
  */
-export function imageFileFromDataTransferFiles(_files: readonly File[]): File | null {
-  return null; // scaffold (S2 RED)
+export function imageFileFromDataTransferFiles(files: readonly File[]): File | null {
+  for (const file of files) {
+    if (file.type.startsWith('image/')) return file;
+  }
+  return null;
 }
 
 /**
@@ -43,9 +43,17 @@ export function imageFileFromDataTransferFiles(_files: readonly File[]): File | 
  * message; the pipeline never receives a half-read blob).
  */
 export async function imageFileFromClipboardRead(
-  _items: ReadonlyArray<{ types: readonly string[]; getType(mime: string): Promise<Blob> }>,
+  items: ReadonlyArray<{ types: readonly string[]; getType(mime: string): Promise<Blob> }>,
 ): Promise<File | null> {
-  return null; // scaffold (S2 RED)
+  const IMAGE_TYPE_RE = /^image\/[a-z0-9.+-]+$/i;
+  for (const item of items) {
+    const mime = item.types.find((t) => IMAGE_TYPE_RE.test(t));
+    if (!mime) continue;
+    const blob = await item.getType(mime);
+    const ext = mime.split('/')[1]?.split('+')[0] ?? 'img';
+    return new File([blob], `pasted-from-clipboard.${ext}`, { type: mime });
+  }
+  return null;
 }
 
 /**
@@ -54,13 +62,23 @@ export async function imageFileFromClipboardRead(
  * a well-formed share-image message with an image blob yields null — an
  * unknown or malformed message never reaches the pipeline.
  */
-export function shareTargetFileFromMessage(_data: unknown): File | null {
-  return null; // scaffold (S2 RED)
+export function shareTargetFileFromMessage(data: unknown): File | null {
+  if (typeof data !== 'object' || data === null) return null;
+  const msg = data as Partial<ShareTargetImageMessage>;
+  if (msg.type !== 'postclip-share-image') return null;
+  if (typeof msg.mime !== 'string' || !msg.mime.startsWith('image/')) return null;
+  if (!(msg.blob instanceof Blob)) return null;
+  const name =
+    typeof msg.name === 'string' && msg.name.trim().length > 0 ? msg.name : `shared-image.${msg.mime.split('/')[1] ?? 'img'}`;
+  return new File([msg.blob], name, { type: msg.mime });
 }
 
 /** UC12: map a clipboard failure to the specific, kind message the UI shows. */
-export function clipboardReadErrorMessage(_err: unknown): string {
-  return ''; // scaffold (S2 RED)
+export function clipboardReadErrorMessage(err: unknown): string {
+  const name = err instanceof DOMException ? err.name : err instanceof TypeError ? 'TypeError' : '';
+  if (name === 'NotAllowedError' || name === 'SecurityError') return CLIPBOARD_DENIED_MESSAGE;
+  if (name === 'NotSupportedError' || name === 'TypeError') return CLIPBOARD_UNAVAILABLE_MESSAGE;
+  return CLIPBOARD_READ_FAILED_MESSAGE;
 }
 
 /**
@@ -68,6 +86,7 @@ export function clipboardReadErrorMessage(_err: unknown): string {
  * known-denied (queried via navigator.permissions where supported), or null
  * when no hint is warranted (granted, prompt, or not queryable).
  */
-export function clipboardPermissionHint(_permissionState: string | null): string | null {
-  return null; // scaffold (S2 RED)
+export function clipboardPermissionHint(permissionState: string | null): string | null {
+  if (permissionState === 'denied') return CLIPBOARD_DENIED_MESSAGE;
+  return null;
 }

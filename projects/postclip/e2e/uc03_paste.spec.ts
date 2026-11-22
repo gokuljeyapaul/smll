@@ -51,6 +51,12 @@ test('uc03_paste_button_processes_clipboard_image', async ({ page }) => {
 test('uc03_paste_event_processes_pasted_file', async ({ page }) => {
   const bytes = await readFixtureB64('fixtures/images/clean02.png');
   await page.goto('/');
+  // The paste handler registers in a post-paint effect; wait for a rendered
+  // frame so the flow measures paste behavior, not the app's startup race.
+  await page.waitForSelector('#paste-btn');
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 50))),
+  );
 
   // A text-only paste is NOT hijacked (normal textarea pasting keeps working).
   const textPastePrevented = await page.evaluate(() => {

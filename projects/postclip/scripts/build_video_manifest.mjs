@@ -35,7 +35,7 @@ const videoSources = [
 const videoDir = join(ROOT, 'artifacts/video');
 const manifestPath = join(ROOT, 'docs/evidence/video_manifest.json');
 
-/** Every testcase that may own a video (S0 + S1 flows and evals). */
+/** Every testcase that may own a video (S0 + S1 + S2 flows and evals). */
 const TESTCASES = [
   'a01_built_app_loads_home_screen_no_console_errors',
   'uc01_pick_ocr_review_share',
@@ -49,6 +49,14 @@ const TESTCASES = [
   'eval_cleanup_body_f1_standard_set',
   'a15_no_storage_log_request_leaks_after_flows',
   'a15_audit_negative_control_detects_seeded_leak',
+  'a08_share_target_receives_image',
+  'a08_share_target_ignores_posts_without_an_image',
+  'uc03_paste_button_processes_clipboard_image',
+  'uc03_paste_event_processes_pasted_file',
+  'a10_denied_paste_explains_and_picker_works',
+  'a11_installable_manifest_and_sw_registered',
+  'a11_offline_reload_app_shell_loads',
+  'a11_offline_ocr_after_first_load',
 ];
 
 /** Match a video directory name to its testcase. Playwright names video dirs
