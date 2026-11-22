@@ -1,0 +1,29 @@
+{
+  "id": "lowcontrast02",
+  "kind": "lowcontrast",
+  "theme": "light",
+  "author": "Yuki Mori",
+  "handle": "@yuki-mori",
+  "language": "en",
+  "body": [
+    "Small fonts and pale colors are the quiet enemies of every reader.",
+    "We bumped our minimum contrast and support tickets about unreadable text went to zero. #a11y"
+  ],
+  "chrome": [
+    "@yuki-mori",
+    "3h",
+    "Like",
+    "Comment",
+    "Share",
+    "41 reactions · 5 comments"
+  ],
+  "ocr_expected": [
+    "Yuki Mori",
+    "@yuki-mori · 3h",
+    "Small fonts and pale colors are the quiet enemies of every reader.",
+    "We bumped our minimum contrast and support tickets about unreadable text went to zero. #a11y",
+    "41 reactions · 5 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

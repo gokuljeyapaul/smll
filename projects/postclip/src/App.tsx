@@ -21,8 +21,22 @@ import {
   shareTargetFileFromMessage,
 } from './ingest/route';
 import type { OcrEngine, OcrResult } from './ocr/types';
+import { llmCleanupClient } from './cleanup/llm/client';
+import type { LlmCleanupOutput } from './cleanup/llm/schema';
+import { LLM_CLEANUP_ENABLED_BY_DEFAULT } from './cleanup/llm/config';
 
 export type OcrStatus = 'idle' | 'reading' | 'ready' | 'error';
+
+/** The model-cleanup UI state (S4 — A19: disabled by default; the user
+ *  opts in per session; nothing persists — the storage allow-list has no
+ *  room for a settings flag, and a reset-on-reload default is the safe
+ *  side of the A19 decision). */
+export type LlmStatus = 'off' | 'running' | 'applied' | 'unavailable';
+
+export interface LlmSuggestions {
+  output: LlmCleanupOutput;
+  demoted: boolean;
+}
 
 /**
  * The S2 pipeline (plan "Architecture"):
@@ -49,6 +63,10 @@ export function App() {
   const engineRef = useRef<OcrEngine | null>(null);
   const runIdRef = useRef(0);
   const [modelProgress, setModelProgress] = useState<ModelProgress>(modelManager.getStatus());
+  const [llmEnabled, setLlmEnabled] = useState(LLM_CLEANUP_ENABLED_BY_DEFAULT);
+  const llmEnabledRef = useRef(LLM_CLEANUP_ENABLED_BY_DEFAULT);
+  const [llmStatus, setLlmStatus] = useState<LlmStatus>('off');
+  const [llmSuggestions, setLlmSuggestions] = useState<LlmSuggestions | null>(null);
 
   const fail = useCallback((message: string, secrets: string[] = []) => {
     setStatus('error');
@@ -69,6 +87,19 @@ export function App() {
     void modelManager.download();
   }, []);
 
+  // S4 (A19/A21): the user opts into the model cleanup for this session.
+  // The opt-in applies to the NEXT pick (the current text already has a
+  // cleanup; re-running it silently would swap text under the user's
+  // cursor mid-edit). Nothing persists (see the state declaration).
+  const onLlmToggle = useCallback((enabled: boolean) => {
+    llmEnabledRef.current = enabled;
+    setLlmEnabled(enabled);
+    if (!enabled) {
+      setLlmStatus('off');
+      setLlmSuggestions(null);
+    }
+  }, []);
+
   const onImageSelected = useCallback(
     (file: File) => {
       const runId = ++runIdRef.current;
@@ -78,6 +109,8 @@ export function App() {
       setNote(null);
       setRawText('');
       setText('');
+      setLlmStatus('off');
+      setLlmSuggestions(null);
 
       void (async () => {
         try {
@@ -135,10 +168,68 @@ export function App() {
             return;
           }
 
-          // 6. Deterministic cleanup → editable review text.
+          // 6. Deterministic cleanup → editable review text (always shown
+          //    first: the model path is a progressive upgrade, never a
+          //    dependency — D8).
+          const deterministic = cleanupOcrText(normalized.lines);
           setRawText(normalized.text);
-          setText(cleanupOcrText(normalized.lines).text);
+          setText(deterministic.text);
           setStatus('ready');
+          setLlmSuggestions(null);
+          setLlmStatus('off');
+
+          // 7. S4 model cleanup (A19: OFF by default; the user opted in):
+          //    runs in the Worker on the cached weights, goes through the
+          //    deterministic validator + faithfulness guard, and REPLACES
+          //    the review text only when it passed. Any failure leaves
+          //    the deterministic result with an explicit visible flag —
+          //    unvalidated model text is never shown (plan point 4).
+          if (llmEnabledRef.current && modelManager.getStatus().state === 'ready') {
+            setLlmStatus('running');
+            const { outcome } = await llmCleanupClient.cleanup(normalized.lines);
+            if (runId !== runIdRef.current) return; // superseded by a newer pick
+            if (outcome.kind === 'model') {
+              setText(outcome.output.body);
+              setLlmSuggestions({ output: outcome.output, demoted: outcome.validation.demoted ?? false });
+              setLlmStatus('applied');
+            } else {
+              setLlmStatus('unavailable');
+            }
+            if (__POSTCLIP_TEST_BUILD__) {
+              // Test-build-only debug record (A29: eliminated from the
+              // production bundle): the eval reads the raw model text and
+              // the guard verdict as evidence. Never user-facing.
+              (window as unknown as Record<string, unknown>).__postclipLlmDebug = {
+                mode: outcome.kind === 'model' ? 'applied' : 'unavailable',
+                modelText: outcome.kind === 'model' ? outcome.output.body : null,
+                rawModelText: outcome.kind === 'fallback' ? outcome.rawModelText ?? null : null,
+                guardVerdict: outcome.kind === 'model' ? 'pass' : `reject:${outcome.reason}`,
+                fallbackReason: outcome.kind === 'fallback' ? outcome.reason : null,
+                author: outcome.kind === 'model' ? outcome.output.author : null,
+                tags: outcome.kind === 'model' ? outcome.output.tags : [],
+                summary: outcome.kind === 'model' ? outcome.output.summary : null,
+                removedChrome: outcome.kind === 'model' ? outcome.output.removed_chrome : [],
+                latencyMs: outcome.latencyMs,
+                attempts: outcome.kind === 'model' ? outcome.attempts : 0,
+                deterministicText: deterministic.text,
+              };
+            }
+          } else if (__POSTCLIP_TEST_BUILD__) {
+            (window as unknown as Record<string, unknown>).__postclipLlmDebug = {
+              mode: 'off',
+              modelText: null,
+              rawModelText: null,
+              guardVerdict: null,
+              fallbackReason: null,
+              author: null,
+              tags: [],
+              summary: null,
+              removedChrome: [],
+              latencyMs: 0,
+              attempts: 0,
+              deterministicText: deterministic.text,
+            };
+          }
         } catch (err) {
           if (runId !== runIdRef.current) return;
           // Fail closed: degrade to the safe previous stage with a visible flag.
@@ -192,6 +283,8 @@ export function App() {
     setRawText('');
     setError(null);
     setNote(null);
+    setLlmStatus('off');
+    setLlmSuggestions(null);
   }, []);
 
   const modelState: ModelState = modelProgress.state;
@@ -205,6 +298,10 @@ export function App() {
         note={note}
         imageFile={imageFile}
         modelState={modelState}
+        llmEnabled={llmEnabled}
+        llmStatus={llmStatus}
+        llmSuggestions={llmSuggestions}
+        onLlmToggle={onLlmToggle}
         onTextChange={setText}
         onStartOver={onStartOver}
       />
@@ -218,6 +315,9 @@ export function App() {
       onModelDownload={onModelDownload}
       onImageSelected={onImageSelected}
       onClipboardError={onClipboardError}
+      modelState={modelState}
+      llmEnabled={llmEnabled}
+      onLlmToggle={onLlmToggle}
     />
   );
 }

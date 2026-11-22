@@ -70,8 +70,8 @@ describe('detectEnglish — gate behavior (S1)', () => {
 });
 
 describe('language gate confusion matrix over fixtures (A06)', () => {
-  it('covers the 16 English and 5 German/Spanish fixtures', () => {
-    expect(english().length).toBe(16);
+  it('covers the 30 English and 5 German/Spanish fixtures', () => {
+    expect(english().length).toBe(30);
     expect(nonEnglish().length).toBe(5);
   });
 
@@ -98,7 +98,7 @@ describe('language gate confusion matrix over fixtures (A06)', () => {
 
   it('rejects the bad-input fixtures (empty text) as too-short, never accepts them', () => {
     const bad = loadGold().filter((g) => g.language === 'none');
-    expect(bad.map((g) => g.id).sort()).toEqual(['blank01', 'corrupt01', 'nonimage01', 'tiny01'].sort());
+    expect(bad.map((g) => g.id).sort()).toEqual(['blank01', 'corrupt01', 'nonimage01', 'photo01', 'tiny01'].sort());
     for (const g of bad) {
       expect(detectEnglish(g.ocr_expected.join('\n')).reason).toBe('too-short');
     }

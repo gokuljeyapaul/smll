@@ -1,0 +1,29 @@
+{
+  "id": "clean08",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Greta Vogel",
+  "handle": "@greta-vogel",
+  "language": "en",
+  "body": [
+    "Hot take: your offline mode is not a feature, it is a promise.",
+    "If the app still needs a server to say hello, it is not yours, it is a rental. #offline"
+  ],
+  "chrome": [
+    "@greta-vogel",
+    "10h",
+    "Like",
+    "Comment",
+    "Share",
+    "19 reactions"
+  ],
+  "ocr_expected": [
+    "Greta Vogel",
+    "@greta-vogel · 10h",
+    "Hot take: your offline mode is not a feature, it is a promise.",
+    "If the app still needs a server to say hello, it is not yours, it is a rental. #offline",
+    "19 reactions",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

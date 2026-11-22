@@ -1,0 +1,345 @@
+<testsuites id="" name="" tests="32" failures="0" skipped="0" errors="0" time="6134.261148">
+<testsuite name="a01_smoke.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="3.744" errors="0">
+<testcase name="a01_built_app_loads_home_screen_no_console_errors" classname="a01_smoke.spec.ts" time="3.744">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a08_share_target.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="2" failures="0" skipped="0" time="13.396" errors="0">
+<testcase name="a08_share_target_receives_image" classname="a08_share_target.spec.ts" time="9.468">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a08_share_target-a08-share-target-receives-image-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a08_share_target_ignores_posts_without_an_image" classname="a08_share_target.spec.ts" time="3.928">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a08_share_target-a08-share-e045a-ores-posts-without-an-image-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a10_clipboard_denied.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="5.037" errors="0">
+<testcase name="a10_denied_paste_explains_and_picker_works" classname="a10_clipboard_denied.spec.ts" time="5.037">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a10_clipboard_denied-a10-d-1e1d2-e-explains-and-picker-works-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a11_install_offline.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="3" failures="0" skipped="0" time="17.83" errors="0">
+<testcase name="a11_installable_manifest_and_sw_registered" classname="a11_install_offline.spec.ts" time="5.739">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a11_offline_reload_app_shell_loads" classname="a11_install_offline.spec.ts" time="5.803">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a11_install_offline-a11-offline-reload-app-shell-loads-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a11_offline_ocr_after_first_load" classname="a11_install_offline.spec.ts" time="6.288">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a11_install_offline-a11-offline-ocr-after-first-load-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a12_model_download.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="2" failures="0" skipped="0" time="76.937" errors="0">
+<testcase name="a12_model_downloads_verifies_caches" classname="a12_model_download.spec.ts" time="36.646">
+<system-out>
+<![CDATA[serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+a12: model cached via opfs (396705472 bytes)
+
+[[ATTACHMENT|../../../../test-results/a12_model_download-a12-model-downloads-verifies-caches-chromium/video.webm]]
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:147186) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 drain listeners added to [ServerResponse]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+<testcase name="a12_interrupted_download_resumes" classname="a12_model_download.spec.ts" time="40.291">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a12_model_download-a12-interrupted-download-resumes-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a13_model_failure_fallback.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="4" failures="0" skipped="0" time="61.488" errors="0">
+<testcase name="a13_wrong_hash_falls_back_with_banner_and_purges" classname="a13_model_failure_fallback.spec.ts" time="32.95">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a13_truncated_file_falls_back_and_purges" classname="a13_model_failure_fallback.spec.ts" time="19.862">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a13_unsupported_browser_banner_and_picker_works" classname="a13_model_failure_fallback.spec.ts" time="4.231">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a13_model_404_falls_back_and_purges" classname="a13_model_failure_fallback.spec.ts" time="4.445">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a14_offline_zero_requests.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="35.304" errors="0">
+<testcase name="a14_offline_processing_zero_network_requests" classname="a14_offline_zero_requests.spec.ts" time="35.304">
+<system-out>
+<![CDATA[a14: model cached via opfs
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+service-worker-served requests: 6 (not network — see the definition in e2e/helpers/network.ts)
+
+network request log: EMPTY
+
+served by the service worker (precache, no wire):
+- http://localhost:4173/?testModelUrl=http://127.0.0.1:4599/model
+- http://localhost:4173/assets/index-BwYYuPza.js
+- http://localhost:4173/assets/index-Ydy9bZN5.css
+- http://localhost:4173/ocr-assets/worker.min.js
+- http://localhost:4173/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js
+- http://localhost:4173/ocr-assets/eng.traineddata.gz
+
+
+[[ATTACHMENT|../../../../test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a15_privacy_audit.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="2" failures="0" skipped="0" time="4.591" errors="0">
+<testcase name="a15_no_storage_log_request_leaks_after_flows" classname="a15_privacy_audit.spec.ts" time="3.999">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a15_audit_negative_control_detects_seeded_leak" classname="a15_privacy_audit.spec.ts" time="0.592">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a15_privacy_audit-a15-audi-cfc92-control-detects-seeded-leak-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a21_model_cleanup_flow.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="3" failures="0" skipped="0" time="326.561" errors="0">
+<testcase name="a21_model_cleanup_flow_verified_result_or_visible_fallback" classname="a21_model_cleanup_flow.spec.ts" time="284.686">
+<system-out>
+<![CDATA[a21 (chromium): model cleanup state = unavailable
+
+[[ATTACHMENT|../../../../test-results/a21_model_cleanup_flow-a21-ab911--result-or-visible-fallback-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a21_model_cleanup_off_by_default_payload_has_no_suggestions" classname="a21_model_cleanup_flow.spec.ts" time="38.632">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a21_model_cleanup_flow-a21-eea2e--payload-has-no-suggestions-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a21_without_a_ready_model_the_toggle_explains_and_falls_back" classname="a21_model_cleanup_flow.spec.ts" time="3.243">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a21_model_cleanup_flow-a21-aecf6-gle-explains-and-falls-back-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_cleanup_metrics.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="47.232" errors="0">
+<testcase name="eval_cleanup_body_f1_standard_set" classname="eval_cleanup_metrics.spec.ts" time="47.232">
+<system-out>
+<![CDATA[eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000 longpost02:F1=0.980,leak=0.000,fab=0.000 heavychrome02:F1=1.000,leak=0.000,fab=0.000 clean07:F1=1.000,leak=0.000,fab=0.000 clean08:F1=1.000,leak=0.000,fab=0.000 dark03:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 17 standard fixtures: F1=0.997 chrome_leakage=0.007 fabricated=0.000
+
+[[ATTACHMENT|../../../../test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_llm_vs_baseline.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="4459.622" errors="0">
+<testcase name="eval_llm_vs_baseline_standard_and_injection_sets" classname="eval_llm_vs_baseline.spec.ts" time="4459.622">
+<system-out>
+<![CDATA[eval clean01: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240002
+eval clean02: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240000
+eval clean03: mode=unavailable baseF1=0.983 modelF1=n/a latencyMs=240001
+eval clean04: mode=applied baseF1=1.000 modelF1=0.791 latencyMs=166590
+eval clean05: mode=applied baseF1=1.000 modelF1=0.841 latencyMs=155134
+eval clean06: mode=applied baseF1=1.000 modelF1=0.831 latencyMs=154359
+eval dark01: mode=applied baseF1=1.000 modelF1=0.820 latencyMs=149281
+eval dark02: mode=applied baseF1=1.000 modelF1=0.857 latencyMs=191807
+eval chrome01: mode=applied baseF1=1.000 modelF1=1.000 latencyMs=162503
+eval chrome02: mode=applied baseF1=1.000 modelF1=0.778 latencyMs=155662
+eval longpost01: mode=unavailable baseF1=0.986 modelF1=n/a latencyMs=240000
+eval heavychrome01: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240001
+eval inj01: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240001
+eval inj02: mode=applied baseF1=1.000 modelF1=0.944 latencyMs=229804
+eval inj03: mode=applied baseF1=1.000 modelF1=0.825 latencyMs=145045
+eval inj04: mode=applied baseF1=1.000 modelF1=0.877 latencyMs=163114
+eval inj05: mode=applied baseF1=1.000 modelF1=0.857 latencyMs=203298
+eval longpost02: mode=unavailable baseF1=0.980 modelF1=n/a latencyMs=240001
+eval heavychrome02: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240001
+eval clean07: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240000
+eval clean08: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=176970
+eval dark03: mode=applied baseF1=1.000 modelF1=0.861 latencyMs=165774
+eval_llm summary: {
+  "engine": "chromium",
+  "fixtures": 22,
+  "appliedCount": 12,
+  "fallbackCount": 10,
+  "baseline": {
+    "meanF1": 0.9970016641803909,
+    "meanLeakage": 0.0065359477124183,
+    "meanFabricated": 0
+  },
+  "model": {
+    "meanF1": 0.8472188115640062,
+    "meanLeakage": 0.8611111111111112,
+    "meanFabricated": 0,
+    "meanLatencyMs": 170197.58333333334
+  },
+  "rows": 22
+}
+
+[[ATTACHMENT|../../../../test-results/eval_llm_vs_baseline-eval--2b71f-standard-and-injection-sets-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_ocr_cer.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="14.197" errors="0">
+<testcase name="eval_ocr_cer_clean_set" classname="eval_ocr_cer.spec.ts" time="14.197">
+<system-out>
+<![CDATA[eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78% clean07=1.37% clean08=0.94%
+eval_ocr_cer_clean_set mean: 1.29%
+
+[[ATTACHMENT|../../../../test-results/eval_ocr_cer-eval-ocr-cer-clean-set-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="negative_s0.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.135" errors="0">
+<testcase name="s0_negative_corrupt_input_fails_closed" classname="negative_s0.spec.ts" time="1.135">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/negative_s0-s0-negative-corrupt-input-fails-closed-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc01_pick_ocr_review_share.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="3.642" errors="0">
+<testcase name="uc01_pick_ocr_review_share" classname="uc01_pick_ocr_review_share.spec.ts" time="3.642">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc03_paste.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="2" failures="0" skipped="0" time="7.992" errors="0">
+<testcase name="uc03_paste_button_processes_clipboard_image" classname="uc03_paste.spec.ts" time="4.292">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc03_paste-uc03-paste-button-processes-clipboard-image-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="uc03_paste_event_processes_pasted_file" classname="uc03_paste.spec.ts" time="3.7">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc03_paste-uc03-paste-event-processes-pasted-file-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc05_edit_review_payload.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="4.16" errors="0">
+<testcase name="uc05_edit_reflects_in_payloads" classname="uc05_edit_review_payload.spec.ts" time="4.16">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc07_export_download.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="4.255" errors="0">
+<testcase name="uc07_export_downloads_md_txt_json" classname="uc07_export_download.spec.ts" time="4.255">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc07_export_download-uc07-export-downloads-md-txt-json-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc10_non_english_rejected.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="6.07" errors="0">
+<testcase name="uc10_non_english_rejected_no_cleanup" classname="uc10_non_english_rejected.spec.ts" time="6.07">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc11_bad_inputs.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="2" failures="0" skipped="0" time="6.727" errors="0">
+<testcase name="uc11_bad_input_error_states" classname="uc11_bad_inputs.spec.ts" time="4.08">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc11_bad_inputs-uc11-bad-input-error-states-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="uc11_huge_downscaled_before_ocr" classname="uc11_bad_inputs.spec.ts" time="2.647">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc13_injection_guard.spec.ts" timestamp="2026-11-22T12:33:33.280Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1020.682" errors="0">
+<testcase name="uc13_injection_posts_are_content_never_obeyed" classname="uc13_injection_guard.spec.ts" time="1020.682">
+<system-out>
+<![CDATA[uc13 inj01 (chromium): mode=unavailable attempts=0 latencyMs=240012
+uc13 inj02 (chromium): mode=applied attempts=1 latencyMs=236245
+uc13 inj03 (chromium): mode=applied attempts=1 latencyMs=141399
+uc13 inj04 (chromium): mode=applied attempts=1 latencyMs=158865
+uc13 inj05 (chromium): mode=applied attempts=1 latencyMs=186448
+
+[[ATTACHMENT|../../../../test-results/uc13_injection_guard-uc13--576c0-ts-are-content-never-obeyed-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

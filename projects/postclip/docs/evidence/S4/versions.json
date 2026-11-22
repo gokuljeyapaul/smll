@@ -1,0 +1,60 @@
+{
+  "slice": "S4",
+  "toolchain": {
+    "node": "v26.12.1",
+    "npm": "12.0.2 (package-lock.json, npm ci)",
+    "vite": "8.3.8",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1",
+    "eslint": "9 (typescript-eslint 8.73.0)",
+    "react": "19.3.1",
+    "playwright": "1.65.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright build webkit-2388)",
+    "ffmpeg": "ffprobe n9.0.1 (video durations in video_manifest.json)"
+  },
+  "llm_runtime": {
+    "choice": "@wllama/wllama@3.13.0 (npm, Apache-2.0; llama.cpp WASM, libllama b12211-7d7f028) — selected by real-browser measurement (model_selection.md): transformers.js 4.3.2 measured no cleanup completion within 450 s at 350 max tokens (vs 64-92 s on wllama for the same prompt class) and would add a second ~570 MB CI download; WebLLM is WebGPU-only (navigator.gpu absent in Playwright WebKit, and plan D8 keeps the WebGPU path NOT_RUN on this host)",
+    "wasm_asset": "@wllama/wllama/esm/wasm/wllama.wasm — 10,244,628 bytes, sha256 79ac5be917b71d50571a4f584436a9f6baf6b6e57719d094ed8bd950e9a65780, bundled via vite ?url as dist/assets/wllama-*.wasm and precached with the app shell (a runtime, not model weights)",
+    "worker_integration": "the model runs in a dedicated Worker with no tools, no network, page-data-free input (the OCR text only); the weights come from the S3 model cache as a Blob — measured in-app load ~7.5 s (llama.cpp logs: 372.65 MiB CPU model buffer, n_ctx 2048, Flash Attention enabled); generation uses JSON-schema CONSTRAINED DECODING (wllama compiles CLEANUP_JSON_SCHEMA into a GBNF grammar), temperature 0.2, seed 42, top_p 1, max_tokens 600, enable_thinking false; single-thread WASM (no crossOriginIsolation on this host -> no SharedArrayBuffer), ~2.3 tokens/s",
+    "sampling_note": "the app ships the MEASURED probe config (temperature 0.2 / seed 42 — every recorded probe number comes from it). Greedy (temperature 0) was tried during the integration smoke and degenerated identically; recorded in probe-log.md's app-worker section",
+    "degeneration_measurement": "under the app's full system prompt, some fixtures generate past the pipeline's fail-closed 240 s cap and fall back (visible flag, deterministic text, guards hold). Final-evidence-run mix: eval 12 applied / 10 fallback over 22 fixtures; uc13 4 applied / 1 fallback (Chromium). This is the designed fail-closed behavior, recorded honestly in llm-eval-chromium.json and e2e.log"
+  },
+  "pinned_model": {
+    "status": "UNCHANGED from the S3 pin — wllama consumes the pinned GGUF directly; the S4 measurement confirmed the size class, no re-pin",
+    "model": "Qwen3-0.6B-Q4_K_M.gguf from unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b (Apache-2.0), 396,705,472 bytes, sha256 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a"
+  },
+  "dependency_changes": "S4 adds ONE runtime npm dependency: @wllama/wllama@3.13.0. @huggingface/transformers@4.3.2 (with onnxruntime-web 1.31.0-dev) was installed ONLY for the candidate probe and REMOVED after the measurement — package.json and package-lock.json carry no reference to it (its measured numbers are recorded in probe-log.md).",
+  "measured_machine_numbers": {
+    "host": "same container as S0-S3 (Debian 13, kernel 6.8.0-147-generic, 16 vCPU, 62 GiB RAM); headless-Linux numbers, single-threaded WASM; real-device behavior is NOT_RUN",
+    "cleanup_quality_final_run": {
+      "source": "docs/evidence/S4/llm-eval-chromium.json — 22 fixtures (17 standard + 5 injection), real browser OCR, BOTH cleanup modes on the same pick",
+      "baseline_deterministic": {
+        "mean_body_token_f1": 0.997,
+        "mean_chrome_leakage": 0.0065,
+        "mean_fabricated_token_rate": 0.0
+      },
+      "model_mode_applied_rows": {
+        "mean_body_token_f1": 0.8472,
+        "mean_chrome_leakage": 0.8611,
+        "mean_fabricated_token_rate": 0.0,
+        "mean_latency_ms": 170198,
+        "count": 12
+      },
+      "fallback_rows": 10,
+      "reading": "where the model cleanup applied, it kept the author/@handle header chrome in the body (leakage ~86% vs the rules' 0.65%) and its body-token F1 sits 15 points BELOW the deterministic baseline — the measured basis of the A19 disabled-by-default decision (config.ts LLM_CLEANUP_ENABLED_BY_DEFAULT=false)"
+    },
+    "latency_final_run": {
+      "a21_clean01_chromium": "unavailable at the 240 s fail-closed cap in the final pass (applied in the integration smokes at ~2 min of cleanup; the degeneration varies run to run)",
+      "uc13_chromium": "inj01 fallback at the 240 s cap; inj02-inj05 applied at 141-236 s (real inference, guard-passed)",
+      "eval_mean_applied_latency": "~170 s per fixture (single-thread WASM)",
+      "webkit": "the 397 MB wasm load fails with 'The operation failed for an unknown transient reason' (the same engine-bug family as the S3 OPFS/Cache-Storage measurements) — the app's capability path reports unavailable in ~7-9 ms per fixture; real-model proofs are Chromium-only on this host"
+    }
+  },
+  "rejected_candidates": {
+    "@huggingface/transformers 4.3.2 + onnx-community/Qwen3-0.6B-ONNX q4f16": "measured: loads in 18.6 s (~624 MB heap) but a cleanup completion did not finish within 450 s at 350 max tokens (3-5x over wllama on the same prompt); second ~570 MB CI download that does not fit the S3 single-file cache; REMOVED after measurement",
+    "WebLLM 0.2.89": "WebGPU-only; navigator.gpu is absent in Playwright WebKit (measured) and plan D8 keeps the WebGPU path NOT_RUN on this Linux host — unverifiable here and structurally excluded on WebKit",
+    "Qwen3-1.7B (Q4_K_M, 1,107,409,472 bytes)": "not downloaded: ~3x the inference time of an already-over-budget cleanup plus a >1 GB CI download; REJECTED on size + latency + CI budget",
+    "Llama 3.2 1B Instruct (Q4_K_M, 807,694,464 bytes)": "not downloaded: larger than the selected 0.6B, ~2x latency, community license needs an explicit review (plan risk table); REJECTED on size + latency + license cost"
+  }
+}

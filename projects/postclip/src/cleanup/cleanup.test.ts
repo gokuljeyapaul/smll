@@ -145,13 +145,15 @@ describe('cleanupOcrText — line-break repair (S1)', () => {
   });
 });
 
-describe('cleanup quality on gold input — every English fixture (S1)', () => {
+describe('cleanup quality on gold input — every English fixture (S1 + S4)', () => {
   const golds = englishFixtures();
-  it('covers all 16 English fixtures', () => {
-    expect(golds.length).toBe(16);
+  it('covers all 30 English fixtures', () => {
+    expect(golds.length).toBe(30);
     expect(golds.map((g) => g.id).sort()).toEqual([
       'blur01', 'chrome01', 'chrome02', 'clean01', 'clean02', 'clean03', 'clean04', 'clean05',
-      'clean06', 'dark01', 'dark02', 'emoji01', 'heavychrome01', 'huge01', 'longpost01', 'lowcontrast01',
+      'clean06', 'clean07', 'clean08', 'dark01', 'dark02', 'dark03', 'emoji01', 'emoji02',
+      'heavychrome01', 'heavychrome02', 'huge01', 'inj01', 'inj02', 'inj03', 'inj04', 'inj05',
+      'longpost01', 'longpost02', 'lowcontrast01', 'lowcontrast02', 'rotate01', 'tinytext01',
     ].sort());
   });
 

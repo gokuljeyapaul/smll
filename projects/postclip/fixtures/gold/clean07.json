@@ -1,0 +1,31 @@
+{
+  "id": "clean07",
+  "kind": "clean",
+  "theme": "light",
+  "author": "Ravi Chandran",
+  "handle": "@ravi-c",
+  "language": "en",
+  "body": [
+    "We deleted our analytics SDK last Tuesday.",
+    "Two weeks later: zero crashes, faster cold starts, and nobody asked for the numbers back.",
+    "Every byte you do not collect is a byte you do not have to defend. #privacy #localfirst"
+  ],
+  "chrome": [
+    "@ravi-c",
+    "2h",
+    "Like",
+    "Comment",
+    "Share",
+    "56 reactions · 2 comments"
+  ],
+  "ocr_expected": [
+    "Ravi Chandran",
+    "@ravi-c · 2h",
+    "We deleted our analytics SDK last Tuesday.",
+    "Two weeks later: zero crashes, faster cold starts, and nobody asked for the numbers back.",
+    "Every byte you do not collect is a byte you do not have to defend. #privacy #localfirst",
+    "56 reactions · 2 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

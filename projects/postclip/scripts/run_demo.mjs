@@ -488,6 +488,61 @@ async function demoIn(engineName, browserType) {
       `${fallbackText.length} chars`,
     );
 
+    // S4 (UC05/UC13, A21): the model-cleanup opt-in. The model is re-cached
+    // (the wrong-hash step purged it), the user toggles the model cleanup
+    // on, picks a fixture, and the app either applies the VALIDATED model
+    // cleanup (Chromium on this machine: the real wasm inference runs) or
+    // says explicitly it could not (this Playwright WebKit build cannot
+    // load the 397 MB weights — measured, docs/evidence/S4/
+    // model_selection.md). Both are the designed behavior; raw model text
+    // never shows either way.
+    await clearModelCache(page);
+    await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model`);
+    await page.locator('#model-download-btn').click();
+    const modelReadyAgain = await page
+      .locator('#model-ready')
+      .waitFor({ timeout: 180000 })
+      .then(() => true)
+      .catch(() => false);
+    step('the model re-downloads and is ready for the cleanup step', modelReadyAgain);
+    const toggleThere = await page
+      .locator('#llm-cleanup-toggle')
+      .waitFor({ timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false);
+    step('the model-cleanup opt-in toggle is offered (default off)', toggleThere);
+    const toggleDefaultOff = toggleThere ? await page.locator('#llm-cleanup-toggle').isChecked() : true;
+    step('model cleanup is OFF by default (A19 decision)', toggleDefaultOff === false);
+    if (toggleThere) {
+      await page.locator('#llm-cleanup-toggle').check();
+      await page.setInputFiles('#file-input', fixturePath('clean01'));
+      let llmState = '';
+      for (let i = 0; i < 300; i++) {
+        llmState = (await page.locator('#llm-status').getAttribute('data-state').catch(() => '')) ?? '';
+        if (llmState === 'applied' || llmState === 'unavailable') break;
+        await sleep(1000);
+      }
+      const llmStatusText = await page.locator('#llm-status').textContent().catch(() => '');
+      const llmText = await page.locator('#review-text').inputValue().catch(() => '');
+      const suggestionsVisible = (await page.locator('#llm-suggestions').count()) > 0;
+      step(
+        `model cleanup settles into a designed state (state=${llmState})`,
+        (llmState === 'applied' || llmState === 'unavailable') && llmText.length > 40,
+        `state=${llmState} status="${llmStatusText?.trim()}" text=${llmText.length} chars suggestions=${suggestionsVisible}`,
+      );
+      if (llmState === 'applied') {
+        // Suggestions exist but stay out of the payload until toggled on.
+        const includeTags = (await page.locator('#llm-include-tags').count()) > 0
+          ? await page.locator('#llm-include-tags').isChecked()
+          : null;
+        step(
+          'suggestion payload toggles default off (plan point 5)',
+          includeTags === null || includeTags === false,
+          `includeTags=${includeTags}`,
+        );
+      }
+    }
+
     // S2 (UC03/UC12, chromium only): the Paste button reads the REAL
     // clipboard; with the grant revoked the button explains and the picker
     // still works (A10). WebKit grants no clipboard permissions at all

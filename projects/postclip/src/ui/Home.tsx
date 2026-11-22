@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react';
 import type { OcrStatus } from '../App';
+import type { ModelState } from '../model/state';
 import { ModelStatusCard } from './ModelStatusCard';
 import {
   CLIPBOARD_UNAVAILABLE_MESSAGE,
@@ -16,12 +17,27 @@ export interface HomeProps {
   onImageSelected: (file: File) => void;
   /** UC12: shows the specific clipboard explanation (never touches the pipeline). */
   onClipboardError: (message: string) => void;
+  /** S4 (A21): the model-cleanup opt-in is offered on the HOME screen once
+   *  the tidy-up model is ready — the user opts in BEFORE picking (the same
+   *  toggle also lives on the review screen for the next pick). */
+  modelState: ModelState;
+  llmEnabled: boolean;
+  onLlmToggle: (enabled: boolean) => void;
 }
 
 const CLIPBOARD_NO_IMAGE_MESSAGE =
   'No screenshot found on the clipboard. Copy a screenshot first, or add one with the Choose screenshot button below.';
 
-export function Home({ status, error, onModelDownload, onImageSelected, onClipboardError }: HomeProps) {
+export function Home({
+  status,
+  error,
+  onModelDownload,
+  onImageSelected,
+  onClipboardError,
+  modelState,
+  llmEnabled,
+  onLlmToggle,
+}: HomeProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [permissionHint, setPermissionHint] = useState<string | null>(null);
@@ -132,6 +148,19 @@ export function Home({ status, error, onModelDownload, onImageSelected, onClipbo
         />
       </div>
       <ModelStatusCard onDownload={onModelDownload} />
+      {modelState === 'ready' ? (
+        <p className="llm-toggle-row">
+          <label className="llm-toggle" htmlFor="llm-cleanup-toggle">
+            <input
+              type="checkbox"
+              id="llm-cleanup-toggle"
+              checked={llmEnabled}
+              onChange={(e) => onLlmToggle(e.target.checked)}
+            />{' '}
+            Use the model to tidy this screenshot (experimental, slower)
+          </label>
+        </p>
+      ) : null}
       {permissionHint ? (
         <p className="status" id="clipboard-permission-hint">
           {permissionHint}
