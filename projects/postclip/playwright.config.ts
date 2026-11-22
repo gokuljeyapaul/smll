@@ -8,6 +8,12 @@ export default defineConfig({
   expect: { timeout: 30_000 },
   reporter: process.env.PW_JUNIT ? process.env.PW_JUNIT : 'list',
   outputDir: 'test-results',
+  // S5 (A29): e2e/prod/ specs assert PRODUCTION-build properties (the strict
+  // CSP shipped verbatim, test hooks absent) and run ONLY against a
+  // production build — `npm run test:e2e:prod` sets POSTCLIP_PROD_RUN=1 and
+  // runs that directory after `npm run build`. Normal test-build invocations
+  // (npm run test:e2e, CI's test.sh) skip the directory.
+  testIgnore: process.env.POSTCLIP_PROD_RUN ? undefined : /e2e\/prod\//,
   use: {
     baseURL: 'http://localhost:4173',
     video: 'on',

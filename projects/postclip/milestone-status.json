@@ -2,9 +2,9 @@
   "schema_version": "1.0",
   "project": "postclip",
   "phase": "BUILDING",
-  "current_slice": "S4",
+  "current_slice": "S5",
   "owner_decisions": {
-    "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
+    "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model; S5 adds the production-build e2e pass + bundle inspection to test.sh); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
     "hosts": "building agent on Linux, runner-neutral: Hermes (openclawlaunch) or Claude Code on the web (docs/runners/); optional ~30 min real-device pass by the owner (A27/A30)"
   },
@@ -18,7 +18,7 @@
     "S1": {
       "status": "MERGED",
       "pr": "https://github.com/gokuljeyapaul/smll/pull/63",
-      "merge_sha": "bcc72240d490235ba812f56f9c3d8a30f2c23c14",
+      "merge_sha": "bcc72240d490235ba812f56b9c3d8a30f2c23c14",
       "note": "merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here per the next-slice-updates-the-merge-SHA convention"
     },
     "S2": {
@@ -31,23 +31,26 @@
       "status": "MERGED",
       "pr": "https://github.com/gokuljeyapaul/smll/pull/65",
       "merge_sha": "ae333a508d784dc5b09878c931be90d24cfb0149",
-      "note": "merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here by the S4 slice per the next-slice-updates-the-merge-SHA convention"
+      "note": "merged under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here by the S4 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S4": {
-      "status": "READY_FOR_MERGE",
-      "note": "Local LLM cleanup and its guards delivered: measured runtime+model selection (wllama 3.13 + the pinned Qwen3-0.6B-Q4_K_M), Worker + JSON-schema constrained decoding from the S3 model cache, deterministic validator + faithfulness guard + injection demotion (fail-closed fallback), suggestion toggles default-off, and the A19 decision recorded by measurement (LLM disabled by default). PR opened by the building agent (branch feature/postclip/S4-local-llm-cleanup, closes issue #57); the merge SHA is recorded in the next slice's update per convention"
+      "status": "MERGED",
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/66",
+      "merge_sha": "97a082c03867dc72c077dcbfe3ef6054262532c2",
+      "note": "merged under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; merge SHA recorded here by the S5 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S5": {
-      "status": "NOT_STARTED"
+      "status": "READY_FOR_MERGE",
+      "note": "Hardening and production build delivered: headless-Linux latency/memory budgets on the default pipeline (OCR <= 5 s per fixture met with wide margin; deterministic cleanup ms-level; the opt-in LLM path's 65-236 s recorded as disclosed limitations behind its disabled-by-default state), axe (@axe-core/playwright 4.14.0) in BOTH color schemes on every screen + a keyboard-only main flow (the RED run found and S5 fixed two real shipped contrast violations: the dark primary-button label 2.55:1 and the hovered secondary button 2.63:1/1.29:1), large-image memory safety (the 4000 px fixture + a generated ~20 MB input processed end to end with no crash/hang/tab failure; the noise input's ~30 s OCR stage recorded honestly as exceeding the per-fixture budget, with the measured-and-rejected mitigations documented), and a clean production build: bundle inspection proves zero test hooks/eval in dist/ (scripts/inspect_bundle.mjs; the negative control trips on the test build's hooks), the strict CSP ships verbatim and is ENFORCED (connect-src same-origin + the pinned model host only; inline scripts blocked via the engine's own violation signal), and the dist/ smoke passes in both engines through the new e2e/prod pass (npm run test:e2e:prod). PR opened by the building agent (branch feature/postclip/S5-hardening-production-build, closes issue #58); the merge SHA is recorded in the next slice's update per convention"
     },
     "S6": {
       "status": "NOT_STARTED"
     }
   },
   "last_verified_merged_pr": {
-    "slice": "S3",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/65",
-    "merge_sha": "ae333a508d784dc5b09878c931be90d24cfb0149",
+    "slice": "S4",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/66",
+    "merge_sha": "97a082c03867dc72c077dcbfe3ef6054262532c2",
     "main_check_after_merge": "success"
   }
 }

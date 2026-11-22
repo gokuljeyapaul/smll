@@ -1,0 +1,245 @@
+== S5 RED run (2026-11-22T17:05:37Z) ==
+== build:test (measurement scaffolding only; no behavioral S5 fixes) ==
+npm notice run postclip@0.1.0 build:test
+npm notice run POSTCLIP_TEST_BUILD=1 npm run build
+npm notice run postclip@0.1.0 build
+npm notice run tsc --noEmit && vite build && node scripts/fetch_ocr_assets.mjs && node scripts/build_pwa_precache.mjs
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 59 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        0.63 kB │ gzip:     0.38 kB
+dist/assets/worker-CN7yFvEc.js       224.97 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-Ydy9bZN5.css         6.19 kB │ gzip:     1.76 kB
+dist/assets/index-BLbBJgNR.js        277.23 kB │ gzip:    89.25 kB
+
+✓ built in 2.73s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+EXIT build:test=0
+== playwright chromium: the new S5 specs (a23 accessibility, eval_latency budgets, eval_large_images) ==
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=chromium e2e/a23_accessibility.spec.ts e2e/eval_latency_memory.spec.ts e2e/eval_large_images.spec.ts
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 4 tests using 1 worker
+
+axe home (light): no violations
+axe home (dark): [serious] color-contrast (button:nth-child(2))
+  ✘  1 [chromium] › e2e/a23_accessibility.spec.ts:80:1 › a23_axe_no_serious_or_critical_violations_every_screen (7.6s)
+  ✓  2 [chromium] › e2e/a23_accessibility.spec.ts:115:1 › a23_keyboard_only_main_flow_pick_review_copy_share_export (5.6s)
+eval_large_images: ~20MB stress input 3200x1900, 19.9 MB, sha256 577bcc16d6221d83… (generated at run time, never committed)
+eval_large_images chromium huge01 (4000 px): ocr=1928ms heap=10MiB (headless-Linux)
+eval_large_images chromium ~20MB: wall=31995ms decode=1132 downscale=697 ocr=29756 heap=10MiB (headless-Linux)
+eval_large_images chromium ~20MB review text (recorded verbatim): "oe . ae ee oe\nSe oo ee oe ee aac oo oo oo ao ee a oo oe oo a a a Se ee ee ee oo ae 2 2 . ae 2 a a oe oo oo oe\n. a : . ce"
+  ✘  3 [chromium] › e2e/eval_large_images.spec.ts:61:1 › eval_large_images_4000px_and_20mb_processed_safely (42.0s)
+eval_latency chromium clean01: wall=2665ms decode=24 downscale=null ocr=2380 cleanup=4 heap=10MiB (headless-Linux)
+eval_latency chromium clean02: wall=1019ms decode=27 downscale=null ocr=898 cleanup=1 heap=10MiB (headless-Linux)
+eval_latency chromium clean03: wall=620ms decode=15 downscale=null ocr=545 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean04: wall=351ms decode=11 downscale=null ocr=286 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean05: wall=462ms decode=12 downscale=null ocr=404 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean06: wall=466ms decode=17 downscale=null ocr=381 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean07: wall=570ms decode=12 downscale=null ocr=499 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean08: wall=400ms decode=13 downscale=null ocr=318 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium: 8 clean fixtures, peak usedJSHeapSize 10 MiB (headless-Linux)
+  ✓  4 [chromium] › e2e/eval_latency_memory.spec.ts:78:1 › eval_latency_budgets_clean_set (8.3s)
+
+
+  1) [chromium] › e2e/a23_accessibility.spec.ts:80:1 › a23_axe_no_serious_or_critical_violations_every_screen 
+
+    Error: home (dark): serious/critical axe violations must be empty (got [{"id":"color-contrast","impact":"serious","targets":"button:nth-child(2)"}])
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 7
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "id": "color-contrast",
+    +     "impact": "serious",
+    +     "targets": "button:nth-child(2)",
+    +   },
+    + ]
+
+      56 |     serious,
+      57 |     `${screenName}: serious/critical axe violations must be empty (got ${JSON.stringify(serious)})`,
+    > 58 |   ).toEqual([]);
+         |     ^
+      59 | }
+      60 |
+      61 | /** The computed focus indicator must actually draw (O05: focus is visible). */
+        at assertNoSeriousCritical (/opt/data/workspace/smll/projects/postclip/e2e/a23_accessibility.spec.ts:58:5)
+        at /opt/data/workspace/smll/projects/postclip/e2e/a23_accessibility.spec.ts:86:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-chromium/video-1.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-chromium/video-2.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-chromium/error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/eval_large_images.spec.ts:61:1 › eval_large_images_4000px_and_20mb_processed_safely 
+
+    Error: A22: OCR stage of the ~20 MB input (headless-Linux) <= 5 s
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 5000
+    Received:    29756
+
+      120 |   console.log(`eval_large_images ${test.info().project.name} ~20MB review text (recorded verbatim): ${JSON.stringify(bigReview.slice(0, 120))}`);
+      121 |   // A22's OCR budget applied to the harshest input too.
+    > 122 |   expect(bigOcr, 'A22: OCR stage of the ~20 MB input (headless-Linux) <= 5 s').toBeLessThanOrEqual(OCR_BUDGET_MS);
+          |                                                                                ^
+      123 |
+      124 |   // --- No crash, no hang, tab failure checked structurally. ---
+      125 |   expect(await page.evaluate(() => 1 + 1)).toBe(2); // the tab still evaluates
+        at /opt/data/workspace/smll/projects/postclip/e2e/eval_large_images.spec.ts:122:80
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/eval_large_images-eval-lar-f76a3-x-and-20mb-processed-safely-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/eval_large_images-eval-lar-f76a3-x-and-20mb-processed-safely-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/eval_large_images-eval-lar-f76a3-x-and-20mb-processed-safely-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/eval_large_images-eval-lar-f76a3-x-and-20mb-processed-safely-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › e2e/a23_accessibility.spec.ts:80:1 › a23_axe_no_serious_or_critical_violations_every_screen 
+    [chromium] › e2e/eval_large_images.spec.ts:61:1 › eval_large_images_4000px_and_20mb_processed_safely 
+  2 passed (1.3m)
+EXIT playwright chromium (new specs)=1
+== production build + a29 spec (the strict CSP must ship; it does not yet) ==
+npm notice run postclip@0.1.0 build
+npm notice run tsc --noEmit && vite build && node scripts/fetch_ocr_assets.mjs && node scripts/build_pwa_precache.mjs
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 59 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        0.63 kB │ gzip:     0.37 kB
+dist/assets/worker-CN7yFvEc.js       224.97 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-Ydy9bZN5.css         6.19 kB │ gzip:     1.76 kB
+dist/assets/index-BRYc-cQ-.js        276.10 kB │ gzip:    88.93 kB
+
+✓ built in 1.57s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+EXIT build=0
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=chromium e2e/prod
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 3 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/prod/a29_production.spec.ts:61:1 › a29_production_smoke_pick_review_share_copy_from_dist (4.0s)
+  ✘  2 [chromium] › e2e/prod/a29_production.spec.ts:100:1 › a29_production_strict_csp_shipped_and_enforced (986ms)
+  ✓  3 [chromium] › e2e/prod/a29_production.spec.ts:177:1 › a29_production_test_hooks_absent_and_inert (2.7s)
+
+
+  1) [chromium] › e2e/prod/a29_production.spec.ts:100:1 › a29_production_strict_csp_shipped_and_enforced 
+
+    Error: the production build must ship the CSP meta
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://huggingface.co; base-uri 'none'; form-action 'none'; object-src 'none'"
+    Received: null
+
+      107 |     return el ? el.getAttribute('content') : null;
+      108 |   });
+    > 109 |   expect(meta, 'the production build must ship the CSP meta').toBe(PROD_CSP);
+          |                                                               ^
+      110 |   expect(meta).not.toContain('unsafe-eval');
+      111 |   expect(meta).not.toContain('unsafe-inline');
+      112 |   expect(meta).not.toContain('127.0.0.1');
+        at /opt/data/workspace/smll/projects/postclip/e2e/prod/a29_production.spec.ts:109:63
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/prod-a29_production-a29-pr-f02c3-ct-csp-shipped-and-enforced-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prod-a29_production-a29-pr-f02c3-ct-csp-shipped-and-enforced-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/prod-a29_production-a29-pr-f02c3-ct-csp-shipped-and-enforced-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/prod-a29_production-a29-pr-f02c3-ct-csp-shipped-and-enforced-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/prod/a29_production.spec.ts:100:1 › a29_production_strict_csp_shipped_and_enforced 
+  2 passed (11.6s)
+EXIT playwright chromium prod (a29)=1
+== bundle inspection: PRODUCTION build (missing strict CSP -> must fail) ==
+# bundle inspection (prod mode) — dist
+index.html resource URLs: 3, all same-origin
+no source maps shipped
+scanned 10 .js files (21711731 bytes)
+PROBLEM: index.html has NO Content-Security-Policy meta tag
+PRODUCTION BUNDLE: NOT CLEAN (0 hook finds, 1 problems)
+EXIT inspect prod=1
+== bundle inspection: TEST build (negative control — must TRIP on the test hooks) ==
+npm notice run postclip@0.1.0 build:test
+npm notice run POSTCLIP_TEST_BUILD=1 npm run build
+npm notice run postclip@0.1.0 build
+npm notice run tsc --noEmit && vite build && node scripts/fetch_ocr_assets.mjs && node scripts/build_pwa_precache.mjs
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 59 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        0.63 kB │ gzip:     0.38 kB
+dist/assets/worker-CN7yFvEc.js       224.97 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-Ydy9bZN5.css         6.19 kB │ gzip:     1.76 kB
+dist/assets/index-BLbBJgNR.js        277.23 kB │ gzip:    89.25 kB
+
+✓ built in 975ms
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+# bundle inspection (test mode) — dist
+index.html resource URLs: 3, all same-origin
+no source maps shipped
+scanned 10 .js files (21712867 bytes)
+TRIPPED (expected in a test build): dist/assets/index-BLbBJgNR.js: "__postclipLlmDebug" at byte 275024 (context: "),x(`applied`)):x(`unavailable`),window.__postclipLlmDebug={mode:e.kind===`model`?`applied`:`unava")
+TRIPPED (expected in a test build): dist/assets/index-BLbBJgNR.js: "__postclipLlmDebug" at byte 275590 (context: "0,deterministicText:m.text}}else window.__postclipLlmDebug={mode:`off`,modelText:null,rawModelText")
+TRIPPED (expected in a test build): dist/assets/index-BLbBJgNR.js: "testModelUrl" at byte 220925 (context: "){let t=new URLSearchParams(e),n=t.get(`testModelUrl`),r=null;if(n)try{let e=new URL(n);(e.p")
+TRIPPED (expected in a test build): dist/assets/index-BLbBJgNR.js: "testProbe" at byte 221092 (context: "turn{modelUrl:r,forceUnsupported:t.get(`testProbe`)===`unsupported`}}function C(){try{ret")
+PROBLEM: index.html has NO Content-Security-Policy meta tag
+TEST-BUILD CONTROL FAILED: 4 trips (need > 0), 1 problems (need 0)
+EXIT inspect test-control=1
+== S5 RED run complete ==

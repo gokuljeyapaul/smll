@@ -8,6 +8,13 @@
   --accent-pressed: #1d4ed8;
   --border: #d9dde3;
   --focus: #2563eb;
+  /* Button surfaces carry their own tokens (S5 — A23): the dark ACCENT
+     (#60a5fa) is a link/border/text color on the dark page background and
+     passes contrast there, but WHITE TEXT ON IT fails 4.5:1 (measured by
+     axe: 2.6:1). The button fill stays the deeper blue in BOTH schemes so
+     its white label always passes. */
+  --btn-bg: #2563eb;
+  --btn-bg-hover: #1d4ed8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -92,7 +99,7 @@ body {
 
 .btn {
   display: inline-block;
-  background: var(--accent);
+  background: var(--btn-bg);
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -103,7 +110,17 @@ body {
 }
 
 .btn:hover {
-  background: var(--accent-pressed);
+  background: var(--btn-bg-hover);
+}
+
+/* S5 (A23): secondary buttons are OUTLINE buttons — hovering must keep the
+   transparent fill (accent text on a page background passes 4.5:1 in both
+   schemes), not inherit the primary .btn:hover fill. The RED axe run
+   measured accent-on-fill at 2.63:1 (dark) / 1.29:1 (light) — a serious
+   color-contrast violation whenever the pointer rests on one. */
+.btn-secondary:hover {
+  background: transparent;
+  border-color: var(--accent);
 }
 
 .btn:focus-visible {

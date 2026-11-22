@@ -129,6 +129,7 @@ export function App() {
 
           // 2. Full decode catches truncated streams (corrupt01.png has a
           //    valid PNG header and a garbage stream).
+          performance.mark('postclip:decode-start');
           let bitmap: ImageBitmap;
           try {
             bitmap = await createImageBitmap(file);
@@ -143,13 +144,23 @@ export function App() {
           const plan = planDownscale(header.width, header.height);
           if (plan.needed) {
             setNote(DOWNSCALE_NOTE);
+            performance.mark('postclip:downscale-start');
             ocrInput = await downscaleToPngBlob(bitmap, plan.width, plan.height);
+            performance.mark('postclip:downscale-end');
+            performance.measure('postclip:downscale', 'postclip:downscale-start', 'postclip:downscale-end');
           }
+          performance.mark('postclip:decode-end');
+          performance.measure('postclip:decode', 'postclip:decode-start', 'postclip:decode-end');
           bitmap.close();
 
           // 4. Real in-browser OCR (tesseract.js in its own worker).
+          //    The user Timing marks are the A22 measurement surface
+          //    (headless-Linux numbers; the eval reads postclip:ocr).
           engineRef.current ??= createTesseractEngine();
+          performance.mark('postclip:ocr-start');
           const result: OcrResult = await engineRef.current.recognize(ocrInput);
+          performance.mark('postclip:ocr-end');
+          performance.measure('postclip:ocr', 'postclip:ocr-start', 'postclip:ocr-end');
           if (runId !== runIdRef.current) return; // superseded by a newer pick
 
           const normalized = normalizeOcrLines(result.lines.map((line) => line.text));
@@ -170,8 +181,13 @@ export function App() {
 
           // 6. Deterministic cleanup → editable review text (always shown
           //    first: the model path is a progressive upgrade, never a
-          //    dependency — D8).
+          //    dependency — D8). The mark is the A22 measurement surface for
+          //    the DEFAULT cleanup path (the opt-in LLM path's numbers are
+          //    recorded by the S4 eval; it ships disabled by default).
+          performance.mark('postclip:cleanup-start');
           const deterministic = cleanupOcrText(normalized.lines);
+          performance.mark('postclip:cleanup-end');
+          performance.measure('postclip:cleanup', 'postclip:cleanup-start', 'postclip:cleanup-end');
           setRawText(normalized.text);
           setText(deterministic.text);
           setStatus('ready');
