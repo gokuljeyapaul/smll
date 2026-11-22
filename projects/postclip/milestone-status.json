@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "project": "postclip",
   "phase": "BUILDING",
-  "current_slice": "S3",
+  "current_slice": "S4",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -28,11 +28,14 @@
       "note": "merged under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; merge SHA recorded here by the S3 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S3": {
-      "status": "READY_FOR_MERGE",
-      "note": "Model manager delivered: pinned download with visible progress, streamed sha256 verified before the cache, OPFS/Cache-Storage model cache, resume, fail-closed fallback, offline zero-network. PR opened by the building agent (branch feature/postclip/S3-model-manager, closes issue #56); the merge SHA is recorded in the next slice's update per convention"
+      "status": "MERGED",
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/65",
+      "merge_sha": "ae333a508d784dc5b09878c931be90d24cfb0149",
+      "note": "merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here by the S4 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S4": {
-      "status": "NOT_STARTED"
+      "status": "READY_FOR_MERGE",
+      "note": "Local LLM cleanup and its guards delivered: measured runtime+model selection (wllama 3.13 + the pinned Qwen3-0.6B-Q4_K_M), Worker + JSON-schema constrained decoding from the S3 model cache, deterministic validator + faithfulness guard + injection demotion (fail-closed fallback), suggestion toggles default-off, and the A19 decision recorded by measurement (LLM disabled by default). PR opened by the building agent (branch feature/postclip/S4-local-llm-cleanup, closes issue #57); the merge SHA is recorded in the next slice's update per convention"
     },
     "S5": {
       "status": "NOT_STARTED"
@@ -42,9 +45,9 @@
     }
   },
   "last_verified_merged_pr": {
-    "slice": "S2",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/64",
-    "merge_sha": "57b810483f66d9b1d4e00f2d02a1c873cc893a04",
+    "slice": "S3",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/65",
+    "merge_sha": "ae333a508d784dc5b09878c931be90d24cfb0149",
     "main_check_after_merge": "success"
   }
 }
