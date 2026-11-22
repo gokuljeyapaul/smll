@@ -29,6 +29,7 @@ const NODE_SCRIPT_GLOBALS = {
   ClipboardEvent: 'readonly',
   DataTransfer: 'readonly',
   requestAnimationFrame: 'readonly',
+  AbortSignal: 'readonly',
 };
 
 export default tseslint.config(

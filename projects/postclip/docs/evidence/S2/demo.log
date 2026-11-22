@@ -3,6 +3,7 @@ npm notice run node scripts/run_demo.mjs
 [preview-out] ➜  Local:   http://127.0.0.1:4197/
 demo: serving built app at http://127.0.0.1:4197/
   [chromium] PASS — home screen renders
+  [chromium] PASS — installable: service worker registered with a complete precache ({"manifestCount":20,"cachedCount":20,"active":true})
   [chromium] PASS — real OCR + cleanup produce review text (184 chars)
   [chromium] PASS — review text is the cleaned body (first gold body line present) ('Shipped our first offline-first release today.')
   [chromium] PASS — UI chrome is removed from the review text
@@ -14,13 +15,13 @@ demo: serving built app at http://127.0.0.1:4197/
   [chromium] PASS — no cleanup ran for the rejected screenshot
   [chromium] PASS — tiny image is rejected before OCR with the too-small message
   [chromium] PASS — no-storage audit: only the allow-listed app-shell cache exists (caches: precache-v1)
-  [chromium] PASS — installable: service worker registered with a complete precache ({"manifestCount":20,"cachedCount":20,"active":true})
   [chromium] PASS — paste event with an image file is processed end to end (372 chars)
   [chromium] PASS — share-target POST through the service worker is processed (246 chars)
   [chromium] PASS — offline reload renders the app shell
   [chromium] PASS — real OCR works with the network disabled (195 chars)
   [chromium] PASS — denied clipboard explains and the file picker still works (explained=true)
   [webkit] PASS — home screen renders
+  [webkit] PASS — installable: service worker registered with a complete precache ({"manifestCount":20,"cachedCount":20,"active":true})
   [webkit] PASS — real OCR + cleanup produce review text (184 chars)
   [webkit] PASS — review text is the cleaned body (first gold body line present) ('Shipped our first offline-first release today.')
   [webkit] PASS — UI chrome is removed from the review text
@@ -32,7 +33,6 @@ demo: serving built app at http://127.0.0.1:4197/
   [webkit] PASS — no cleanup ran for the rejected screenshot
   [webkit] PASS — tiny image is rejected before OCR with the too-small message
   [webkit] PASS — no-storage audit: only the allow-listed app-shell cache exists (caches: precache-v1)
-  [webkit] PASS — installable: service worker registered with a complete precache ({"manifestCount":20,"cachedCount":20,"active":true})
   [webkit] PASS — paste event with an image file is processed end to end (372 chars)
   [webkit] PASS — share-target POST through the service worker is processed (246 chars)
   [webkit] PASS — offline reload renders the app shell

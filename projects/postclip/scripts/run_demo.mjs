@@ -99,6 +99,46 @@ async function demoIn(engineName, browserType) {
     const title = await page.getByRole('heading', { name: 'PostClip' }).isVisible();
     step('home screen renders', title);
 
+    // S2 (A11): wait for the service worker and its COMPLETE precache FIRST,
+    // on the fresh network stack, before the OCR-heavy flows: every later
+    // OCR asset load is then served by the worker instead of re-downloading
+    // ~28 MB per page load through the browser's network process (which
+    // wedged Playwright WebKit on Linux under exactly that repeated load —
+    // the failing CI run and the first local demo run, see the PR thread).
+    // The e2e suite proves the same readiness with a 120 s budget
+    // (a11_installable_manifest_and_sw_registered); the demo polls 90 s.
+    let swReady = null;
+    for (let i = 0; i < 90; i++) {
+      swReady = await page.evaluate(async () => {
+        let manifestCount = -1;
+        let cachedCount = -1;
+        let active = false;
+        try {
+          const text = await (await fetch('/precache-manifest.js')).text();
+          manifestCount = JSON.parse(text.slice(text.indexOf('['), text.lastIndexOf(']') + 1)).length;
+        } catch {
+          // precache manifest not readable (yet) — treated as -1 entries
+        }
+        try {
+          const names = await caches.keys();
+          const shell = names.find((n) => n.startsWith('precache'));
+          if (shell) cachedCount = (await (await caches.open(shell)).keys()).length;
+        } catch {
+          // Cache Storage unavailable — treated as -1 entries
+        }
+        const reg = await navigator.serviceWorker.getRegistration();
+        active = !!reg && !!reg.active;
+        return { manifestCount, cachedCount, active };
+      });
+      if (swReady.active && swReady.cachedCount === swReady.manifestCount) break;
+      await sleep(1000);
+    }
+    step(
+      'installable: service worker registered with a complete precache',
+      swReady.active && swReady.cachedCount === swReady.manifestCount,
+      JSON.stringify(swReady),
+    );
+
     // S1 flow: pick → real OCR → CLEANED review text.
     const cleaned = await pickAndWait(page, 'clean01');
     step('real OCR + cleanup produce review text', cleaned.length > 40, `${cleaned.length} chars`);
@@ -189,39 +229,6 @@ async function demoIn(engineName, browserType) {
       `caches: ${storage.cacheNames.join(',') || 'none'}`,
     );
 
-    // S2 (A11): the service worker is registered with a complete precache.
-    let swReady = null;
-    for (let i = 0; i < 30; i++) {
-      swReady = await page.evaluate(async () => {
-        let manifestCount = -1;
-        let cachedCount = -1;
-        let active = false;
-        try {
-          const text = await (await fetch('/precache-manifest.js')).text();
-          manifestCount = JSON.parse(text.slice(text.indexOf('['), text.lastIndexOf(']') + 1)).length;
-        } catch {
-          // precache manifest not readable (yet) — treated as -1 entries
-        }
-        try {
-          const names = await caches.keys();
-          const shell = names.find((n) => n.startsWith('precache'));
-          if (shell) cachedCount = (await (await caches.open(shell)).keys()).length;
-        } catch {
-          // Cache Storage unavailable — treated as -1 entries
-        }
-        const reg = await navigator.serviceWorker.getRegistration();
-        active = !!reg && !!reg.active;
-        return { manifestCount, cachedCount, active };
-      });
-      if (swReady.active && swReady.cachedCount === swReady.manifestCount) break;
-      await sleep(1000);
-    }
-    step(
-      'installable: service worker registered with a complete precache',
-      swReady.active && swReady.cachedCount === swReady.manifestCount,
-      JSON.stringify(swReady),
-    );
-
     // S2 (UC03): a paste EVENT carrying an image file is processed.
     const pasteBytes = readFileSync(fixturePath('clean02')).toString('base64');
     await page.goto(`http://127.0.0.1:${PORT}/`);
@@ -268,7 +275,9 @@ async function demoIn(engineName, browserType) {
       const buf = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
       const body = new FormData();
       body.append('image', new File([buf], 'shared.png', { type: 'image/png' }));
-      const res = await fetch('/share-target', { method: 'POST', body });
+      // Bounded: a wedged network stack must fail this step in 30 s, not
+      // hang a CI runner for an hour (observed once in the CI failure log).
+      const res = await fetch('/share-target', { method: 'POST', body, signal: AbortSignal.timeout(30000) });
       return res.ok;
     }, sharedBytes);
     let sharedText = '';
