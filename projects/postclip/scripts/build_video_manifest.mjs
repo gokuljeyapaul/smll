@@ -64,6 +64,12 @@ const TESTCASES = [
   'a13_unsupported_browser_banner_and_picker_works',
   'a13_model_404_falls_back_and_purges',
   'a14_offline_processing_zero_network_requests',
+  // S4 (model cleanup + guards): every testcase that may own a video.
+  'a21_model_cleanup_flow_verified_result_or_visible_fallback',
+  'a21_model_cleanup_off_by_default_payload_has_no_suggestions',
+  'a21_without_a_ready_model_the_toggle_explains_and_falls_back',
+  'uc13_injection_posts_are_content_never_obeyed',
+  'eval_llm_vs_baseline_standard_and_injection_sets',
 ];
 
 /** Match a video directory name to its testcase. Playwright names video dirs
