@@ -6,3 +6,9 @@
  * test hooks exist only in test builds and must be absent from production).
  */
 declare const __POSTCLIP_TEST_BUILD__: boolean;
+
+/** Vite `?url` asset imports (the wllama WASM binary the worker loads). */
+declare module '*?url' {
+  const url: string;
+  export default url;
+}
