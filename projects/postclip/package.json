@@ -9,11 +9,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node scripts/fetch_ocr_assets.mjs && node scripts/build_pwa_precache.mjs",
+    "build:test": "POSTCLIP_TEST_BUILD=1 npm run build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:e2e": "npm run build && playwright test",
+    "test:e2e": "npm run build:test && playwright test",
+    "fetch:model": "node scripts/fetch_model.mjs",
     "demo": "node scripts/run_demo.mjs",
     "bench:ocr": "node eval/run_ocr_bench.mjs",
     "generate:fixtures": "node fixtures/generate.mjs"

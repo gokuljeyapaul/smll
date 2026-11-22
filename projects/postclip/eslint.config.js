@@ -10,6 +10,9 @@ const NODE_SCRIPT_GLOBALS = {
   URL: 'readonly',
   setTimeout: 'readonly',
   clearTimeout: 'readonly',
+  setInterval: 'readonly',
+  clearInterval: 'readonly',
+  URLSearchParams: 'readonly',
   // Referenced inside page.evaluate() callbacks, which execute in the browser:
   window: 'readonly',
   document: 'readonly',

@@ -76,11 +76,15 @@ export interface AuditOutcome {
 }
 
 /** Run the full A15 audit after a flow: storage allow-list + forbidden-token
- *  scan across storage/URL/console/network + same-origin-only requests. */
+ *  scan across storage/URL/console/network + same-origin-only requests.
+ *  extraAllowedOrigins: cross-origin origins the flow is ALLOWED to talk to
+ *  (the pinned model host — model download is the plan's one designed
+ *  cross-origin network use; default: none). */
 export async function runPrivacyAudit(
   page: Page,
   capture: FlowCapture,
   forbiddenTexts: string[],
+  extraAllowedOrigins: string[] = [],
 ): Promise<AuditOutcome> {
   const tokens = [...new Set(forbiddenTexts.flatMap((t) => distinctiveTokens(t)))];
   const snapshot = await collectStorageSnapshot(page);
@@ -94,7 +98,8 @@ export async function runPrivacyAudit(
     .filter((r) => {
       try {
         const u = new URL(r.url);
-        return u.protocol !== 'blob:' && u.origin !== origin;
+        if (u.protocol === 'blob:') return false;
+        return u.origin !== origin && !extraAllowedOrigins.includes(u.origin);
       } catch {
         return false;
       }
