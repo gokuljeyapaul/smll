@@ -1,0 +1,1225 @@
+# S3 RED evidence — real commands, real output, captured 2026-11-22T05:51:32Z
+
+RED state: the S2 app is unchanged (no model UI); the S3 model-manager
+scaffold exists (src/model/* — no behavior yet: sha256 returns the
+all-zero digest, the state machine ignores events, integrity checks
+always claim ok, the manager does nothing), and the new behavioral
+tests (vitest model suite + Playwright a12/a13/a14 specs) must fail on
+assertions (not import/build errors). The S0+S1+S2 regression tests
+must stay green in the same run.
+
+## $ npx vitest run
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ src/model/manager.test.ts (14 tests | 13 failed) 83ms
+   ❯ ModelManager — download, verify, cache, fallback (S3) (14)
+     × downloads the pinned file with streaming progress and ends ready (A12) 14ms
+     × a checksum mismatch purges the cache and ends failed (A13) 2ms
+     × a truncated file (stream ends short of the pinned size) fails closed with a purge (A13) 2ms
+     × an HTTP error (404) fails closed without caching (A13) 1ms
+     × an interrupted download RESUMES with a Range request and ends ready (A12) 1ms
+     × a server that ignores Range makes the app restart cleanly from zero (A12) 1ms
+     × gives up after the attempt budget and fails closed with a purge (A12/A13) 1ms
+     × a cached model is ready without any network (A14) 45ms
+     × a stale cached entry with the wrong size is re-downloaded and replaced 5ms
+     × an unsupported browser ends unsupported without any fetch (A13) 1ms
+     × readCached() returns the cached bytes (the S4 runtime entry point) 1ms
+     × concurrent download() calls are single-flight (one download, one put) 3ms
+     × a failed download can be retried back to ready (the Try again path) 1ms
+ ❯ src/model/state.test.ts (2 tests | 1 failed) 15ms
+   ❯ nextModelState — model state machine (S3) (2)
+     × implements the exact legal transition table 11ms
+ ❯ src/model/download.test.ts (10 tests | 8 failed) 44ms
+   ❯ checkIntegrity — verify-before-cache judgment (S3) (4)
+     × rejects a checksum mismatch as checksum-mismatch 12ms
+     × judges a truncated (shorter) stream as size-mismatch, before hashing matters 2ms
+     × judges an oversized stream as size-mismatch 2ms
+   ❯ planResume — interrupted download decision (S3) (4)
+     × resumes from the received offset while attempts remain and ranges are supported 2ms
+     × restarts from zero when nothing was received yet 2ms
+     × restarts from zero when the server does not support ranges 2ms
+     × gives up once the attempt budget is spent 1ms
+   ❯ parseRangeStart (S3) (2)
+     × parses a bytes=N- start offset 2ms
+ ❯ src/model/sha256.test.ts (5 tests | 5 failed) 46ms
+   ❯ Sha256Incremental — streaming sha256 (S3) (5)
+     × digests the canonical vectors (empty, "abc", fox) 14ms
+     × agrees with node:crypto on every block-length boundary 4ms
+     × agrees with node:crypto across multi-update splits (including empty updates) 4ms
+     × reset() starts a fresh digest over new data 3ms
+     × hashes a ~1 MiB random buffer byte-for-byte like node:crypto 18ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 27 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/model/download.test.ts > checkIntegrity — verify-before-cache judgment (S3) > rejects a checksum mismatch as checksum-mismatch
+AssertionError: expected { ok: true, reason: null } to deeply equal { ok: false, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "ok": false,
+-   "reason": "checksum-mismatch",
++   "ok": true,
++   "reason": null,
+  }
+
+ ❯ src/model/download.test.ts:25:15
+     23|   it('rejects a checksum mismatch as checksum-mismatch', () => {
+     24|     const r = checkIntegrity({ ...base, receivedBytes: 1000, digestHex…
+     25|     expect(r).toEqual({ ok: false, reason: 'checksum-mismatch' });
+       |               ^
+     26|   });
+     27|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/27]⎯
+
+ FAIL  src/model/download.test.ts > checkIntegrity — verify-before-cache judgment (S3) > judges a truncated (shorter) stream as size-mismatch, before hashing matters
+AssertionError: expected { ok: true, reason: null } to deeply equal { ok: false, reason: 'size-mismatch' }
+
+- Expected
++ Received
+
+  {
+-   "ok": false,
+-   "reason": "size-mismatch",
++   "ok": true,
++   "reason": null,
+  }
+
+ ❯ src/model/download.test.ts:34:15
+     32|       digestHex: 'cc'.repeat(32), // even a matching digest must not e…
+     33|     });
+     34|     expect(r).toEqual({ ok: false, reason: 'size-mismatch' });
+       |               ^
+     35|   });
+     36|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/27]⎯
+
+ FAIL  src/model/download.test.ts > checkIntegrity — verify-before-cache judgment (S3) > judges an oversized stream as size-mismatch
+AssertionError: expected { ok: true, reason: null } to deeply equal { ok: false, reason: 'size-mismatch' }
+
+- Expected
++ Received
+
+  {
+-   "ok": false,
+-   "reason": "size-mismatch",
++   "ok": true,
++   "reason": null,
+  }
+
+ ❯ src/model/download.test.ts:39:15
+     37|   it('judges an oversized stream as size-mismatch', () => {
+     38|     const r = checkIntegrity({ ...base, receivedBytes: 1500, digestHex…
+     39|     expect(r).toEqual({ ok: false, reason: 'size-mismatch' });
+       |               ^
+     40|   });
+     41| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/27]⎯
+
+ FAIL  src/model/download.test.ts > planResume — interrupted download decision (S3) > resumes from the received offset while attempts remain and ranges are supported
+AssertionError: expected { action: 'resume', offset: +0 } to deeply equal { action: 'resume', offset: 700 }
+
+- Expected
++ Received
+
+  {
+    "action": "resume",
+-   "offset": 700,
++   "offset": 0,
+  }
+
+ ❯ src/model/download.test.ts:47:7
+     45|     expect(
+     46|       planResume({ bytesReceived: 700, attemptsUsed: 1, maxAttempts: 3…
+     47|     ).toEqual({ action: 'resume', offset: 700 });
+       |       ^
+     48|   });
+     49|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/27]⎯
+
+ FAIL  src/model/download.test.ts > planResume — interrupted download decision (S3) > restarts from zero when nothing was received yet
+AssertionError: expected { action: 'resume', offset: +0 } to deeply equal { action: 'restart' }
+
+- Expected
++ Received
+
+  {
+-   "action": "restart",
++   "action": "resume",
++   "offset": 0,
+  }
+
+ ❯ src/model/download.test.ts:53:7
+     51|     expect(
+     52|       planResume({ bytesReceived: 0, attemptsUsed: 1, maxAttempts: 3, …
+     53|     ).toEqual({ action: 'restart' });
+       |       ^
+     54|   });
+     55|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/27]⎯
+
+ FAIL  src/model/download.test.ts > planResume — interrupted download decision (S3) > restarts from zero when the server does not support ranges
+AssertionError: expected { action: 'resume', offset: +0 } to deeply equal { action: 'restart' }
+
+- Expected
++ Received
+
+  {
+-   "action": "restart",
++   "action": "resume",
++   "offset": 0,
+  }
+
+ ❯ src/model/download.test.ts:59:7
+     57|     expect(
+     58|       planResume({ bytesReceived: 700, attemptsUsed: 1, maxAttempts: 3…
+     59|     ).toEqual({ action: 'restart' });
+       |       ^
+     60|   });
+     61|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/27]⎯
+
+ FAIL  src/model/download.test.ts > planResume — interrupted download decision (S3) > gives up once the attempt budget is spent
+AssertionError: expected { action: 'resume', offset: +0 } to deeply equal { action: 'give-up' }
+
+- Expected
++ Received
+
+  {
+-   "action": "give-up",
++   "action": "resume",
++   "offset": 0,
+  }
+
+ ❯ src/model/download.test.ts:65:7
+     63|     expect(
+     64|       planResume({ bytesReceived: 700, attemptsUsed: 3, maxAttempts: 3…
+     65|     ).toEqual({ action: 'give-up' });
+       |       ^
+     66|     expect(
+     67|       planResume({ bytesReceived: 0, attemptsUsed: 3, maxAttempts: 3, …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/27]⎯
+
+ FAIL  src/model/download.test.ts > parseRangeStart (S3) > parses a bytes=N- start offset
+AssertionError: expected -1 to be 700 // Object.is equality
+
+- Expected
++ Received
+
+- 700
++ -1
+
+ ❯ src/model/download.test.ts:74:43
+     72| describe('parseRangeStart (S3)', () => {
+     73|   it('parses a bytes=N- start offset', () => {
+     74|     expect(parseRangeStart('bytes=700-')).toBe(700);
+       |                                           ^
+     75|     expect(parseRangeStart('bytes=0-')).toBe(0);
+     76|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+AssertionError: expected 'absent' to be 'ready' // Object.is equality
+
+Expected: "ready"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:157:39
+    155|     await manager.download();
+    156|
+    157|     expect(manager.getStatus().state).toBe('ready');
+       |                                       ^
+    158|     expect(manager.getStatus().receivedBytes).toBe(bytes.length);
+    159|     expect(fetcher.calls.map((c) => c.url)).toEqual([manifest.url]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+AssertionError: expected 'absent' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:183:26
+    181|
+    182|     const status = manager.getStatus();
+    183|     expect(status.state).toBe('failed');
+       |                          ^
+    184|     expect(status.reason).toBe('checksum-mismatch');
+    185|     // the bad file must be purged: nothing cached, cache deleted
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+AssertionError: expected 'absent' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:200:39
+    198|     await manager.download();
+    199|
+    200|     expect(manager.getStatus().state).toBe('failed');
+       |                                       ^
+    201|     expect(manager.getStatus().reason).toBe('size-mismatch');
+    202|     expect(storage.deletedNames).toContain(MODEL_CACHE_NAME);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an HTTP error (404) fails closed without caching (A13)
+AssertionError: expected 'absent' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:212:39
+    210|     await manager.download();
+    211|
+    212|     expect(manager.getStatus().state).toBe('failed');
+       |                                       ^
+    213|     expect(manager.getStatus().reason).toBe('http-error');
+    214|     expect(storage.deletedNames).toContain(MODEL_CACHE_NAME);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+AssertionError: expected 'absent' to be 'ready' // Object.is equality
+
+Expected: "ready"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:228:39
+    226|     await manager.download();
+    227|
+    228|     expect(manager.getStatus().state).toBe('ready');
+       |                                       ^
+    229|     expect(fetcher.calls).toHaveLength(2);
+    230|     expect(fetcher.calls[0]!.range).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+AssertionError: expected 'absent' to be 'ready' // Object.is equality
+
+Expected: "ready"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:246:39
+    244|     await manager.download();
+    245|
+    246|     expect(manager.getStatus().state).toBe('ready');
+       |                                       ^
+    247|     const cache = storage.caches.get(MODEL_CACHE_NAME)!;
+    248|     expect(Buffer.compare(Buffer.from(cache.puts[0]!.bytes), Buffer.fr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > gives up after the attempt budget and fails closed with a purge (A12/A13)
+AssertionError: expected 'absent' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:258:39
+    256|     await manager.download();
+    257|
+    258|     expect(manager.getStatus().state).toBe('failed');
+       |                                       ^
+    259|     expect(manager.getStatus().reason).toBe('network-error');
+    260|     expect(fetcher.calls).toHaveLength(3); // maxAttempts = 3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a cached model is ready without any network (A14)
+AssertionError: expected 'absent' to be 'ready' // Object.is equality
+
+Expected: "ready"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:274:39
+    272|
+    273|     await manager.check();
+    274|     expect(manager.getStatus().state).toBe('ready');
+       |                                       ^
+    275|     await manager.download(); // a download request short-circuits on …
+    276|     expect(fetcher.calls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+AssertionError: expected 'absent' to be 'ready' // Object.is equality
+
+Expected: "ready"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:290:39
+    288|     await manager.download();
+    289|
+    290|     expect(manager.getStatus().state).toBe('ready');
+       |                                       ^
+    291|     const cacheAfter = storage.caches.get(MODEL_CACHE_NAME)!;
+    292|     expect(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an unsupported browser ends unsupported without any fetch (A13)
+AssertionError: expected 'absent' to be 'unsupported' // Object.is equality
+
+Expected: "unsupported"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:305:39
+    303|
+    304|     await manager.check();
+    305|     expect(manager.getStatus().state).toBe('unsupported');
+       |                                       ^
+    306|
+    307|     await manager.download();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+AssertionError: expected null not to be null
+ ❯ src/model/manager.test.ts:330:24
+    328|     await manager.download();
+    329|     const cached = await manager.readCached();
+    330|     expect(cached).not.toBeNull();
+       |                        ^
+    331|     expect(Buffer.compare(Buffer.from(cached!), Buffer.from(bytes))).t…
+    332|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one put)
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/model/manager.test.ts:341:27
+    339|     await Promise.all([manager.download(), manager.download(), manager…
+    340|
+    341|     expect(fetcher.calls).toHaveLength(1);
+       |                           ^
+    342|     expect(storage.caches.get(MODEL_CACHE_NAME)!.puts).toHaveLength(1);
+    343|     expect(manager.getStatus().state).toBe('ready');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/27]⎯
+
+ FAIL  src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+AssertionError: expected 'absent' to be 'failed' // Object.is equality
+
+Expected: "failed"
+Received: "absent"
+
+ ❯ src/model/manager.test.ts:355:39
+    353|
+    354|     await manager.download();
+    355|     expect(manager.getStatus().state).toBe('failed');
+       |                                       ^
+    356|     await manager.download(); // retry
+    357|     expect(manager.getStatus().state).toBe('ready');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/27]⎯
+
+ FAIL  src/model/sha256.test.ts > Sha256Incremental — streaming sha256 (S3) > digests the canonical vectors (empty, "abc", fox)
+AssertionError: expected '0000000000000000000000000000000000000…' to be 'e3b0c44298fc1c149afbf4c8996fb92427ae4…' // Object.is equality
+
+Expected: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+Received: "0000000000000000000000000000000000000000000000000000000000000000"
+
+ ❯ src/model/sha256.test.ts:21:31
+     19|     const fox = new TextEncoder().encode('The quick brown fox jumps ov…
+     20|     const empty = new Sha256Incremental();
+     21|     expect(empty.digestHex()).toBe(
+       |                               ^
+     22|       'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b85…
+     23|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/27]⎯
+
+ FAIL  src/model/sha256.test.ts > Sha256Incremental — streaming sha256 (S3) > agrees with node:crypto on every block-length boundary
+AssertionError: length 1: expected '0000000000000000000000000000000000000…' to be '8e35c2cd3bf6641bdb0e2050b76932cbb2e60…' // Object.is equality
+
+Expected: "8e35c2cd3bf6641bdb0e2050b76932cbb2e6034a0ddacc1d9bea82a6ba57f7cf"
+Received: "0000000000000000000000000000000000000000000000000000000000000000"
+
+ ❯ src/model/sha256.test.ts:40:46
+     38|       const h = new Sha256Incremental();
+     39|       h.update(bytes);
+     40|       expect(h.digestHex(), `length ${len}`).toBe(nodeSha(bytes));
+       |                                              ^
+     41|     }
+     42|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/27]⎯
+
+ FAIL  src/model/sha256.test.ts > Sha256Incremental — streaming sha256 (S3) > agrees with node:crypto across multi-update splits (including empty updates)
+AssertionError: trial 0: expected '0000000000000000000000000000000000000…' to be 'eb2ef0f3083b5540afa121a1bd8a58054b49b…' // Object.is equality
+
+Expected: "eb2ef0f3083b5540afa121a1bd8a58054b49bb9afd04484055671489cb1453f9"
+Received: "0000000000000000000000000000000000000000000000000000000000000000"
+
+ ❯ src/model/sha256.test.ts:55:47
+     53|       }
+     54|       h.update(new Uint8Array(0)); // empty update must be a no-op
+     55|       expect(h.digestHex(), `trial ${trial}`).toBe(nodeSha(bytes));
+       |                                               ^
+     56|     }
+     57|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/27]⎯
+
+ FAIL  src/model/sha256.test.ts > Sha256Incremental — streaming sha256 (S3) > reset() starts a fresh digest over new data
+AssertionError: expected '0000000000000000000000000000000000000…' to be '5ddb3641168f33504273aa787c1d1f2898d7b…' // Object.is equality
+
+Expected: "5ddb3641168f33504273aa787c1d1f2898d7bb7889e63c487bb7c5a5f25a2ee8"
+Received: "0000000000000000000000000000000000000000000000000000000000000000"
+
+ ❯ src/model/sha256.test.ts:66:27
+     64|     h.reset();
+     65|     h.update(b);
+     66|     expect(h.digestHex()).toBe(nodeSha(b));
+       |                           ^
+     67|     expect(h.digestHex()).toBe(nodeSha(b)); // digest() is stable (no …
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/27]⎯
+
+ FAIL  src/model/sha256.test.ts > Sha256Incremental — streaming sha256 (S3) > hashes a ~1 MiB random buffer byte-for-byte like node:crypto
+AssertionError: expected '0000000000000000000000000000000000000…' to be 'e48b4c060e19dd393b40b70f677d9f0a1c44d…' // Object.is equality
+
+Expected: "e48b4c060e19dd393b40b70f677d9f0a1c44d4b1d2ecb7e87393ba26ba4240fc"
+Received: "0000000000000000000000000000000000000000000000000000000000000000"
+
+ ❯ src/model/sha256.test.ts:74:27
+     72|     const h = new Sha256Incremental();
+     73|     h.update(bytes);
+     74|     expect(h.digestHex()).toBe(nodeSha(bytes));
+       |                           ^
+     75|   });
+     76| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/27]⎯
+
+ FAIL  src/model/state.test.ts > nextModelState — model state machine (S3) > implements the exact legal transition table
+AssertionError: absent + PROBE_FAILED: expected 'absent' to be 'unsupported' // Object.is equality
+
+Expected: "unsupported"
+Received: "absent"
+
+ ❯ src/model/state.test.ts:57:69
+     55|     ];
+     56|     for (const [from, event, expected] of table) {
+     57|       expect(nextModelState(from, ev(event)), `${from} + ${event}`).to…
+       |                                                                     ^
+     58|     }
+     59|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/27]⎯
+
+
+ Test Files  4 failed | 12 passed (16)
+      Tests  27 failed | 132 passed (159)
+   Start at  05:51:33
+   Duration  4.71s (setup 33%, environment 32%, transform 22%, tests 8%, import 3%, worker 2%)
+
+Environment  jsdom was created 16 times · 2.84s total, 32% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+VITEST_EXIT=1
+
+## $ npm run build (production build of the scaffold tree)
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 49 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.63 kB │ gzip:  0.37 kB
+dist/assets/index-C31qshgR.css    3.77 kB │ gzip:  1.30 kB
+dist/assets/index-CIT4GSVd.js   253.08 kB │ gzip: 81.65 kB
+
+✓ built in 2.09s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 20 entries, 39.1 MB of build output (incl. 13 ocr-assets)
+BUILD_EXIT=0
+
+## $ npm run build:test (test build for the S3 e2e specs)
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 49 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.63 kB │ gzip:  0.37 kB
+dist/assets/index-C31qshgR.css    3.77 kB │ gzip:  1.30 kB
+dist/assets/index-CIT4GSVd.js   253.08 kB │ gzip: 81.65 kB
+
+✓ built in 2.19s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 20 entries, 39.1 MB of build output (incl. 13 ocr-assets)
+BUILD_TEST_EXIT=0
+
+## $ npx playwright test --project=chromium --reporter=list
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=chromium --reporter=list
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 27 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (558ms)
+  ✓   2 [chromium] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image (5.0s)
+  ✓   3 [chromium] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image (3.1s)
+  ✓   4 [chromium] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works (4.0s)
+  ✓   5 [chromium] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (3.5s)
+  ✓   6 [chromium] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (2.9s)
+  ✓   7 [chromium] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (5.0s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘   8 [chromium] › e2e/a12_model_download.spec.ts:34:1 › a12_model_downloads_verifies_caches (36.2s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘   9 [chromium] › e2e/a12_model_download.spec.ts:74:1 › a12_interrupted_download_resumes (3.2m)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  10 [chromium] › e2e/a13_model_failure_fallback.spec.ts:40:1 › a13_wrong_hash_falls_back_with_banner_and_purges (3.1m)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  11 [chromium] › e2e/a13_model_failure_fallback.spec.ts:57:1 › a13_truncated_file_falls_back_and_purges (3.2m)
+  ✘  12 [chromium] › e2e/a13_model_failure_fallback.spec.ts:73:1 › a13_unsupported_browser_banner_and_picker_works (33.9s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  13 [chromium] › e2e/a13_model_failure_fallback.spec.ts:90:1 › a13_model_404_falls_back_and_purges (3.2m)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  14 [chromium] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests (3.2m)
+  ✓  15 [chromium] › e2e/a15_privacy_audit.spec.ts:55:1 › a15_no_storage_log_request_leaks_after_flows (3.1s)
+  ✓  16 [chromium] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (484ms)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 12 standard fixtures: F1=0.997 chrome_leakage=0.009 fabricated=0.000
+  ✓  17 [chromium] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (26.0s)
+eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78%
+eval_ocr_cer_clean_set mean: 1.33%
+  ✓  18 [chromium] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (10.7s)
+  ✓  19 [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (725ms)
+  ✓  20 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (3.4s)
+  ✓  21 [chromium] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image (3.4s)
+  ✓  22 [chromium] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file (3.4s)
+  ✓  23 [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (2.8s)
+  ✓  24 [chromium] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (2.5s)
+  ✓  25 [chromium] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (4.7s)
+  ✓  26 [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (2.6s)
+  ✓  27 [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (3.1s)
+
+
+  1) [chromium] › e2e/a12_model_download.spec.ts:34:1 › a12_model_downloads_verifies_caches ────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#model-download-btn')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#model-download-btn') with timeout 30000ms
+      - waiting for locator('#model-download-btn')
+
+
+      37 |
+      38 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-slow`);
+    > 39 |   await expect(page.locator('#model-download-btn')).toBeVisible();
+         |                                                     ^
+      40 |   await page.locator('#model-download-btn').click();
+      41 |
+      42 |   // Visible progress: the paced server guarantees the bar moves; every
+        at /opt/data/workspace/smll/projects/postclip/e2e/a12_model_download.spec.ts:39:53
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-model-downloads-verifies-caches-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a12_model_download-a12-model-downloads-verifies-caches-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-model-downloads-verifies-caches-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a12_model_download-a12-model-downloads-verifies-caches-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/a12_model_download.spec.ts:74:1 › a12_interrupted_download_resumes ───────────
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      78 |   // the only way to `ready` is to resume from the received offset.
+      79 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-kill-fresh`);
+    > 80 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      81 |   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 120_000 });
+      82 |
+      83 |   const bytes = await cachedEntryBytes(page, `${MODEL_SERVER}/model-kill-fresh`);
+        at /opt/data/workspace/smll/projects/postclip/e2e/a12_model_download.spec.ts:80:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-interrupted-download-resumes-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a12_model_download-a12-interrupted-download-resumes-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-interrupted-download-resumes-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a12_model_download-a12-interrupted-download-resumes-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/a13_model_failure_fallback.spec.ts:40:1 › a13_wrong_hash_falls_back_with_banner_and_purges 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      43 |
+      44 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-wrong-hash`);
+    > 45 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      46 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
+      47 |   await expect(page.locator('#model-banner')).toContainText('integrity check');
+      48 |   await expect(page.locator('#model-banner')).toContainText('standard rules');
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:45:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/a13_model_failure_fallback.spec.ts:57:1 › a13_truncated_file_falls_back_and_purges 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      60 |
+      61 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-truncated`);
+    > 62 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      63 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
+      64 |   await expect(page.locator('#model-banner')).toContainText("didn't finish");
+      65 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:62:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/a13_model_failure_fallback.spec.ts:73:1 › a13_unsupported_browser_banner_and_picker_works 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#model-banner')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#model-banner') with timeout 30000ms
+      - waiting for locator('#model-banner')
+
+
+      77 |   // reports the browser cannot run the model, without any server involved.
+      78 |   await page.goto('/?testProbe=unsupported');
+    > 79 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 30_000 });
+         |                                               ^
+      80 |   await expect(page.locator('#model-banner')).toContainText("can't run");
+      81 |   await expect(page.locator('#model-download-btn')).toHaveCount(0);
+      82 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:79:47
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › e2e/a13_model_failure_fallback.spec.ts:90:1 › a13_model_404_falls_back_and_purges 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      92 |
+      93 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-404`);
+    > 94 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      95 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
+      96 |   await expect(page.locator('#model-banner')).toContainText('could not be reached');
+      97 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:94:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      23 |   // Online first: download the pinned model and let the shell precache.
+      24 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model`);
+    > 25 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      26 |   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 120_000 });
+      27 |
+      28 |   const cachedBytes = await page.evaluate(
+        at /opt/data/workspace/smll/projects/postclip/e2e/a14_offline_zero_requests.spec.ts:25:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7 failed
+    [chromium] › e2e/a12_model_download.spec.ts:34:1 › a12_model_downloads_verifies_caches ─────────
+    [chromium] › e2e/a12_model_download.spec.ts:74:1 › a12_interrupted_download_resumes ────────────
+    [chromium] › e2e/a13_model_failure_fallback.spec.ts:40:1 › a13_wrong_hash_falls_back_with_banner_and_purges 
+    [chromium] › e2e/a13_model_failure_fallback.spec.ts:57:1 › a13_truncated_file_falls_back_and_purges 
+    [chromium] › e2e/a13_model_failure_fallback.spec.ts:73:1 › a13_unsupported_browser_banner_and_picker_works 
+    [chromium] › e2e/a13_model_failure_fallback.spec.ts:90:1 › a13_model_404_falls_back_and_purges ─
+    [chromium] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests 
+  20 passed (19.0m)
+CHROMIUM_EXIT=1
+
+## $ npx playwright test --project=webkit --reporter=list
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=webkit --reporter=list
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 27 tests using 1 worker
+
+  ✓   1 [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (1.2s)
+  -   2 [webkit] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image
+  -   3 [webkit] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image
+  -   4 [webkit] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works
+  ✓   5 [webkit] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (1.9s)
+  ✓   6 [webkit] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (2.0s)
+  ✓   7 [webkit] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (3.5s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘   8 [webkit] › e2e/a12_model_download.spec.ts:34:1 › a12_model_downloads_verifies_caches (34.0s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘   9 [webkit] › e2e/a12_model_download.spec.ts:74:1 › a12_interrupted_download_resumes (3.1m)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  10 [webkit] › e2e/a13_model_failure_fallback.spec.ts:40:1 › a13_wrong_hash_falls_back_with_banner_and_purges (3.1m)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  11 [webkit] › e2e/a13_model_failure_fallback.spec.ts:57:1 › a13_truncated_file_falls_back_and_purges (3.1m)
+  ✘  12 [webkit] › e2e/a13_model_failure_fallback.spec.ts:73:1 › a13_unsupported_browser_banner_and_picker_works (31.7s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  13 [webkit] › e2e/a13_model_failure_fallback.spec.ts:90:1 › a13_model_404_falls_back_and_purges (3.1m)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+  ✘  14 [webkit] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests (3.1m)
+  ✓  15 [webkit] › e2e/a15_privacy_audit.spec.ts:55:1 › a15_no_storage_log_request_leaks_after_flows (4.1s)
+  ✓  16 [webkit] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (1.2s)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 12 standard fixtures: F1=0.997 chrome_leakage=0.009 fabricated=0.000
+  ✓  17 [webkit] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (20.7s)
+eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78%
+eval_ocr_cer_clean_set mean: 1.33%
+  ✓  18 [webkit] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (9.3s)
+  ✓  19 [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (2.1s)
+  ✓  20 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (3.8s)
+  -  21 [webkit] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image
+  -  22 [webkit] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file
+  ✓  23 [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (3.7s)
+  ✓  24 [webkit] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (3.5s)
+  ✓  25 [webkit] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (5.2s)
+  ✓  26 [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (2.6s)
+  ✓  27 [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (2.7s)
+
+
+  1) [webkit] › e2e/a12_model_download.spec.ts:34:1 › a12_model_downloads_verifies_caches ──────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#model-download-btn')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#model-download-btn') with timeout 30000ms
+      - waiting for locator('#model-download-btn')
+
+
+      37 |
+      38 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-slow`);
+    > 39 |   await expect(page.locator('#model-download-btn')).toBeVisible();
+         |                                                     ^
+      40 |   await page.locator('#model-download-btn').click();
+      41 |
+      42 |   // Visible progress: the paced server guarantees the bar moves; every
+        at /opt/data/workspace/smll/projects/postclip/e2e/a12_model_download.spec.ts:39:53
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-model-downloads-verifies-caches-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a12_model_download-a12-model-downloads-verifies-caches-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-model-downloads-verifies-caches-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a12_model_download-a12-model-downloads-verifies-caches-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [webkit] › e2e/a12_model_download.spec.ts:74:1 › a12_interrupted_download_resumes ─────────────
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      78 |   // the only way to `ready` is to resume from the received offset.
+      79 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-kill-fresh`);
+    > 80 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      81 |   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 120_000 });
+      82 |
+      83 |   const bytes = await cachedEntryBytes(page, `${MODEL_SERVER}/model-kill-fresh`);
+        at /opt/data/workspace/smll/projects/postclip/e2e/a12_model_download.spec.ts:80:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-interrupted-download-resumes-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a12_model_download-a12-interrupted-download-resumes-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a12_model_download-a12-interrupted-download-resumes-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a12_model_download-a12-interrupted-download-resumes-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [webkit] › e2e/a13_model_failure_fallback.spec.ts:40:1 › a13_wrong_hash_falls_back_with_banner_and_purges 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      43 |
+      44 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-wrong-hash`);
+    > 45 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      46 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
+      47 |   await expect(page.locator('#model-banner')).toContainText('integrity check');
+      48 |   await expect(page.locator('#model-banner')).toContainText('standard rules');
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:45:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [webkit] › e2e/a13_model_failure_fallback.spec.ts:57:1 › a13_truncated_file_falls_back_and_purges 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      60 |
+      61 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-truncated`);
+    > 62 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      63 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
+      64 |   await expect(page.locator('#model-banner')).toContainText("didn't finish");
+      65 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:62:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [webkit] › e2e/a13_model_failure_fallback.spec.ts:73:1 › a13_unsupported_browser_banner_and_picker_works 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#model-banner')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#model-banner') with timeout 30000ms
+      - waiting for locator('#model-banner')
+
+
+      77 |   // reports the browser cannot run the model, without any server involved.
+      78 |   await page.goto('/?testProbe=unsupported');
+    > 79 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 30_000 });
+         |                                               ^
+      80 |   await expect(page.locator('#model-banner')).toContainText("can't run");
+      81 |   await expect(page.locator('#model-download-btn')).toHaveCount(0);
+      82 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:79:47
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [webkit] › e2e/a13_model_failure_fallback.spec.ts:90:1 › a13_model_404_falls_back_and_purges ──
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      92 |
+      93 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-404`);
+    > 94 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      95 |   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
+      96 |   await expect(page.locator('#model-banner')).toContainText('could not be reached');
+      97 |
+        at /opt/data/workspace/smll/projects/postclip/e2e/a13_model_failure_fallback.spec.ts:94:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [webkit] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for locator('#model-download-btn')
+
+
+      23 |   // Online first: download the pinned model and let the shell precache.
+      24 |   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model`);
+    > 25 |   await page.locator('#model-download-btn').click();
+         |                                             ^
+      26 |   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 120_000 });
+      27 |
+      28 |   const cachedBytes = await page.evaluate(
+        at /opt/data/workspace/smll/projects/postclip/e2e/a14_offline_zero_requests.spec.ts:25:45
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-webkit/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7 failed
+    [webkit] › e2e/a12_model_download.spec.ts:34:1 › a12_model_downloads_verifies_caches ───────────
+    [webkit] › e2e/a12_model_download.spec.ts:74:1 › a12_interrupted_download_resumes ──────────────
+    [webkit] › e2e/a13_model_failure_fallback.spec.ts:40:1 › a13_wrong_hash_falls_back_with_banner_and_purges 
+    [webkit] › e2e/a13_model_failure_fallback.spec.ts:57:1 › a13_truncated_file_falls_back_and_purges 
+    [webkit] › e2e/a13_model_failure_fallback.spec.ts:73:1 › a13_unsupported_browser_banner_and_picker_works 
+    [webkit] › e2e/a13_model_failure_fallback.spec.ts:90:1 › a13_model_404_falls_back_and_purges ───
+    [webkit] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests 
+  5 skipped
+  15 passed (18.0m)
+WEBKIT_EXIT=1
+
+# End of S3 RED log.

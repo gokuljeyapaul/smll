@@ -21,11 +21,16 @@ export interface IntegrityResult {
 }
 
 /**
- * RED scaffold: no judgment behavior yet — always claims integrity ok, so
- * the wrong-hash/truncated tests fail on the missing checks.
+ * Verify-before-cache judgment: size first (a truncated or oversized body
+ * is a size-mismatch no digest can excuse), then the pinned sha256.
  */
 export function checkIntegrity(check: IntegrityCheck): IntegrityResult {
-  void check;
+  if (check.receivedBytes !== check.expectedBytes) {
+    return { ok: false, reason: 'size-mismatch' };
+  }
+  if (check.digestHex !== check.expectedSha256) {
+    return { ok: false, reason: 'checksum-mismatch' };
+  }
   return { ok: true, reason: null };
 }
 
@@ -43,19 +48,23 @@ export type ResumePlan =
   | { action: 'give-up' };
 
 /**
- * RED scaffold: no resume behavior yet — always "resume from zero" so the
- * resume/restart/give-up tests fail on the missing decision table.
+ * After a dropped connection: resume from the received offset while the
+ * attempt budget lasts and the server speaks Range; restart from zero when
+ * there is nothing to resume from or Range is unsupported; give up when
+ * the budget is spent (the app then falls back — A13).
  */
 export function planResume(input: ResumeInput): ResumePlan {
-  void input;
-  return { action: 'resume', offset: 0 };
+  if (input.attemptsUsed >= input.maxAttempts) {
+    return { action: 'give-up' };
+  }
+  if (input.bytesReceived > 0 && input.serverSupportsRanges) {
+    return { action: 'resume', offset: input.bytesReceived };
+  }
+  return { action: 'restart' };
 }
 
 /** Parse the start offset of a `bytes=N-` style Range header (-1 if none). */
 export function parseRangeStart(rangeHeader: string | null): number {
-  if (rangeHeader === null) {
-    return -1;
-  }
-  void rangeHeader;
-  return -1;
+  const m = rangeHeader?.match(/^bytes=(\d+)-/);
+  return m ? Number(m[1]) : -1;
 }

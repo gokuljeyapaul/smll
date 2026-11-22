@@ -14,6 +14,8 @@ import {
   sniffImageHeader,
 } from './image/validate';
 import { redactText } from './privacy/audit';
+import { modelManager, type ModelProgress } from './model/manager';
+import type { ModelState } from './model/state';
 import {
   imageFileFromDataTransferFiles,
   shareTargetFileFromMessage,
@@ -46,10 +48,25 @@ export function App() {
   const [note, setNote] = useState<string | null>(null);
   const engineRef = useRef<OcrEngine | null>(null);
   const runIdRef = useRef(0);
+  const [modelProgress, setModelProgress] = useState<ModelProgress>(modelManager.getStatus());
 
   const fail = useCallback((message: string, secrets: string[] = []) => {
     setStatus('error');
     setError(redactText(message, secrets));
+  }, []);
+
+  // S3 (UC08/UC09/UC14): the model manager runs beside the pipeline —
+  // capability probe + cache check on mount (never network), live progress
+  // while downloading, and a fail-closed state the UI turns into the
+  // explicit fallback banner. The pipeline never depends on it.
+  useEffect(() => {
+    const unsubscribe = modelManager.subscribe(setModelProgress);
+    void modelManager.check();
+    return unsubscribe;
+  }, []);
+
+  const onModelDownload = useCallback(() => {
+    void modelManager.download();
   }, []);
 
   const onImageSelected = useCallback(
@@ -177,6 +194,8 @@ export function App() {
     setNote(null);
   }, []);
 
+  const modelState: ModelState = modelProgress.state;
+
   if (status === 'ready' || status === 'reading') {
     return (
       <Review
@@ -185,6 +204,7 @@ export function App() {
         status={status}
         note={note}
         imageFile={imageFile}
+        modelState={modelState}
         onTextChange={setText}
         onStartOver={onStartOver}
       />
@@ -195,6 +215,7 @@ export function App() {
     <Home
       status={status}
       error={error}
+      onModelDownload={onModelDownload}
       onImageSelected={onImageSelected}
       onClipboardError={onClipboardError}
     />

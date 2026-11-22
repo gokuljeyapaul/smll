@@ -162,9 +162,14 @@ const server = http.createServer((req, res) => {
         // A resumed request is served fully — the app recovered from the kill.
         serveBuffer(req, res, path, real);
       } else {
-        // Kill every fresh download after ~25% of the body: the connection
-        // is destroyed mid-stream exactly like a flaky network (A12).
+        // Kill every fresh download after ~25% of the body, PACED: writing the
+        // whole slice and destroying immediately would let the TCP reset
+        // discard the client's unread receive buffer (the app would then see
+        // zero bytes and restart instead of resuming). Pacing the writes lets
+        // the client consume data first, so the kill lands mid-download and
+        // the app has a non-zero offset to resume from (A12).
         const quarter = Math.floor(real.length / 4);
+        const CHUNK = 8 * 1024 * 1024;
         res.writeHead(200, {
           ...CORS,
           'content-type': 'application/octet-stream',
@@ -172,8 +177,17 @@ const server = http.createServer((req, res) => {
           'accept-ranges': 'bytes',
         });
         logLine(`GET ${path} range=${req.headers['range'] ?? '-'} status=200-kill sent=${quarter}`);
-        res.write(real.subarray(0, quarter));
-        res.destroy();
+        let at = 0;
+        const timer = setInterval(() => {
+          const end = Math.min(at + CHUNK, quarter);
+          const ok = res.write(real.subarray(at, end));
+          at = end;
+          if (at >= quarter && ok) {
+            clearInterval(timer);
+            res.destroy();
+          }
+        }, 40);
+        req.on('close', () => clearInterval(timer));
       }
       return;
     }

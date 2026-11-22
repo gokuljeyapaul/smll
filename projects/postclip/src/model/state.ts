@@ -31,6 +31,7 @@ export type ModelEvent =
   | { type: 'VERIFY_FAILED' }
   | { type: 'HTTP_ERROR' }
   | { type: 'GIVE_UP' }
+  | { type: 'CACHE_HIT' }
   | { type: 'PURGED' };
 
 export const MODEL_STATES: ModelState[] = [
@@ -42,12 +43,27 @@ export const MODEL_STATES: ModelState[] = [
   'unsupported',
 ];
 
-/**
- * RED scaffold: no transition behavior yet — every event is ignored, so the
- * state can never leave `absent` (the behavioral tests fail on exactly the
- * missing transitions).
- */
+/** The exact legal transitions; everything else is a no-op. */
+const TABLE: Partial<Record<ModelEvent['type'], Partial<Record<ModelState, ModelState>>>> = {
+  PROBE_OK: { absent: 'absent', unsupported: 'absent' },
+  PROBE_FAILED: { absent: 'unsupported' },
+  DOWNLOAD_START: { absent: 'downloading', downloading: 'downloading', failed: 'downloading', ready: 'downloading' },
+  STREAM_COMPLETE: { downloading: 'verifying' },
+  VERIFY_OK: { verifying: 'ready' },
+  VERIFY_FAILED: { verifying: 'failed' },
+  HTTP_ERROR: { downloading: 'failed' },
+  GIVE_UP: { downloading: 'failed', verifying: 'failed' },
+  CACHE_HIT: { absent: 'ready' },
+  PURGED: {
+    absent: 'absent',
+    downloading: 'absent',
+    verifying: 'absent',
+    ready: 'absent',
+    failed: 'failed',
+    unsupported: 'unsupported',
+  },
+};
+
 export function nextModelState(current: ModelState, event: ModelEvent): ModelState {
-  void event;
-  return current;
+  return TABLE[event.type]?.[current] ?? current;
 }

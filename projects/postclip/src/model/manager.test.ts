@@ -1,62 +1,64 @@
 // @vitest-environment node
 /**
- * ModelManager unit tests (S3 — A12/A13/A14) with stubbed fetch/cache/probe
+ * ModelManager unit tests (S3 — A12/A13/A14) with stubbed fetch/store/probe
  * boundaries (the e2e suite proves the same contract against the real
- * browsers, the real pinned file and the real Cache Storage): the pinned
- * model downloads with progress, is verified size+sha256 BEFORE it enters
- * the cache, survives interrupted downloads via Range resume or a clean
- * restart, fails closed with a purge on every bad variant, and a cached
- * model is found without any network.
+ * browsers, the real pinned file and the real OPFS/Cache-Storage backends):
+ * the pinned model downloads with streamed progress into the store temp,
+ * is verified size+sha256 BEFORE the promote that moves it into the cache,
+ * survives interrupted downloads via Range resume or a clean restart, fails
+ * closed with a purge on every bad variant, and a cached model is found
+ * without any network.
  */
 import { createHash, randomBytes } from 'node:crypto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ModelManager, type ModelProgress } from './manager';
-import { MODEL_CACHE_NAME, type PinnedModel } from './manifest';
+import type { ModelStore } from './store';
+import type { PinnedModel } from './manifest';
 
 /** Fresh ArrayBuffer-backed copy so Blob/Response accept the bytes. */
 const u8 = (bytes: Uint8Array): Uint8Array<ArrayBuffer> => new Uint8Array(bytes);
 
-// ---- fake browser boundaries -------------------------------------------------
+// ---- fake boundaries -----------------------------------------------------------
 
-class FakeCache {
-  puts: { url: string; bytes: Uint8Array }[] = [];
-  entries = new Map<string, Uint8Array<ArrayBuffer>>();
+/** In-memory ModelStore: temp accumulates appends; promote is verify-gated
+ *  by the MANAGER, so the fake records every call for the assertions. */
+class FakeModelStore implements ModelStore {
+  readonly kind = 'cache-storage' as const;
+  temp: Uint8Array[] = [];
+  entries = new Map<string, Uint8Array>();
+  promotes: string[] = [];
+  discards = 0;
+  clears = 0;
 
-  async put(url: string, response: Response): Promise<void> {
-    const bytes = u8(new Uint8Array(await response.arrayBuffer()));
-    this.entries.set(url, bytes);
-    this.puts.push({ url, bytes });
+  async appendTemp(chunk: Uint8Array): Promise<void> {
+    this.temp.push(chunk);
   }
-  async match(url: string): Promise<Response | undefined> {
-    const bytes = this.entries.get(url);
-    return bytes ? new Response(new Blob([bytes])) : undefined;
+  async discardTemp(): Promise<void> {
+    this.discards += 1;
+    this.temp = [];
   }
-  async keys(): Promise<Request[]> {
-    return [...this.entries.keys()].map((u) => new Request(u));
-  }
-}
-
-class FakeCacheStorage {
-  caches = new Map<string, FakeCache>();
-  deletedNames: string[] = [];
-
-  async open(name: string): Promise<FakeCache> {
-    let c = this.caches.get(name);
-    if (!c) {
-      c = new FakeCache();
-      this.caches.set(name, c);
+  async promoteTemp(key: string): Promise<void> {
+    const total = this.temp.reduce((n, c) => n + c.length, 0);
+    const bytes = new Uint8Array(total);
+    let at = 0;
+    for (const c of this.temp) {
+      bytes.set(c, at);
+      at += c.length;
     }
-    return c;
+    this.entries.set(key, bytes);
+    this.promotes.push(key);
+    this.temp = [];
   }
-  async delete(name: string): Promise<boolean> {
-    this.deletedNames.push(name);
-    return this.caches.delete(name);
+  async size(key: string): Promise<number | null> {
+    return this.entries.get(key)?.length ?? null;
   }
-  async keys(): Promise<string[]> {
-    return [...this.caches.keys()];
+  async read(key: string): Promise<Uint8Array | null> {
+    return this.entries.get(key) ?? null;
   }
-  async has(name: string): Promise<boolean> {
-    return this.caches.has(name);
+  async clear(): Promise<void> {
+    this.clears += 1;
+    this.entries.clear();
+    this.temp = [];
   }
 }
 
@@ -76,10 +78,17 @@ function chunked(chunks: Uint8Array[], init?: ResponseInit): Response {
 }
 
 function killingStream(chunks: Uint8Array[]): Response {
+  // Deliver every chunk on pull, then error on the NEXT read: enqueueing
+  // and immediately erroring would discard the unread queue (streams spec),
+  // so this is the only deterministic "connection dropped mid-body" fake.
+  let i = 0;
   const stream = new ReadableStream<Uint8Array>({
-    start(controller) {
-      for (const c of chunks) controller.enqueue(c);
-      controller.error(new TypeError('simulated connection drop'));
+    pull(controller) {
+      if (i < chunks.length) {
+        controller.enqueue(chunks[i++]!);
+      } else {
+        controller.error(new TypeError('simulated connection drop'));
+      }
     },
   });
   return new Response(stream);
@@ -126,17 +135,21 @@ function makeFakeManifest(): {
 const PROBE_OK = async () => ({ supported: true, reasons: [] as string[] });
 const PROBE_NO = async () => ({ supported: false, reasons: ['test override'] as string[] });
 
-function freshManager(overrides: Partial<ConstructorParameters<typeof ModelManager>[0]> = {}) {
-  const { manifest, bytes, chunks } = makeFakeManifest();
-  const storage = new FakeCacheStorage();
+function freshManager(
+  model: ReturnType<typeof makeFakeManifest> = makeFakeManifest(),
+  overrides: Partial<ConstructorParameters<typeof ModelManager>[0]> = {},
+) {
+  const store = new FakeModelStore();
   const manager = new ModelManager({
-    manifest,
-    cacheStorage: storage as unknown as CacheStorage,
+    manifest: model.manifest,
+    store,
     probe: PROBE_OK,
     ...overrides,
   });
-  return { manager, manifest, bytes, chunks, storage };
+  return { manager, manifest: model.manifest, bytes: model.bytes, chunks: model.chunks, store };
 }
+
+const keyOf = (manifest: PinnedModel): string => `model-${manifest.sha256}.gguf`;
 
 describe('ModelManager — download, verify, cache, fallback (S3)', () => {
   beforeEach(() => {
@@ -144,11 +157,11 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
   });
 
   it('downloads the pinned file with streaming progress and ends ready (A12)', async () => {
-    const fetcher = fakeFetch([{ make: () => chunked(makeFakeManifest().chunks) }]);
-    const { manager, manifest, bytes, chunks, storage } = freshManager({
+    const model = makeFakeManifest();
+    const fetcher = fakeFetch([{ make: () => chunked(model.chunks) }]);
+    const { manager, manifest, bytes, store } = freshManager(model, {
       fetchImpl: fetcher.impl as typeof fetch,
     });
-    void chunks;
 
     const seen: ModelProgress[] = [];
     manager.subscribe((p) => seen.push({ ...p }));
@@ -157,17 +170,21 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     expect(manager.getStatus().state).toBe('ready');
     expect(manager.getStatus().receivedBytes).toBe(bytes.length);
     expect(fetcher.calls.map((c) => c.url)).toEqual([manifest.url]);
-    // progress streamed monotonically through 'downloading' → 'verifying' → 'ready'
+    // progress streamed monotonically through the download lifecycle
+    // 'downloading' → 'verifying' → 'ready' (the initial probe emissions in
+    // 'absent' precede the lifecycle and are not part of it).
     const downloading = seen.filter((p) => p.state === 'downloading');
     expect(downloading.length, 'chunk-level progress updates').toBeGreaterThan(1);
     const received = downloading.map((p) => p.receivedBytes);
     expect([...received].sort((a, b) => a - b)).toEqual(received);
-    expect(new Set(seen.map((p) => p.state))).toEqual(new Set(['downloading', 'verifying', 'ready']));
-    // verified BEFORE cached: the single put carries the exact pinned bytes
-    const cache = storage.caches.get(MODEL_CACHE_NAME)!;
-    expect(cache.puts).toHaveLength(1);
-    expect(cache.puts[0]!.url).toBe(manifest.url);
-    expect(Buffer.compare(Buffer.from(cache.puts[0]!.bytes), Buffer.from(bytes))).toBe(0);
+    const lifecycleStart = seen.findIndex((p) => p.state === 'downloading');
+    expect(
+      new Set(seen.slice(lifecycleStart).map((p) => p.state)),
+      'the observed lifecycle is exactly downloading → verifying → ready',
+    ).toEqual(new Set(['downloading', 'verifying', 'ready']));
+    // verified BEFORE cached: exactly one promote carries the exact pinned bytes
+    expect(store.promotes).toEqual([keyOf(manifest)]);
+    expect(Buffer.compare(Buffer.from(store.entries.get(keyOf(manifest))!), Buffer.from(bytes))).toBe(0);
   });
 
   it('a checksum mismatch purges the cache and ends failed (A13)', async () => {
@@ -175,17 +192,18 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     const bad = u8(model.bytes);
     bad[123] ^= 0xff;
     const fetcher = fakeFetch([{ make: () => chunked([bad]) }]);
-    const { manager, manifest, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, store } = freshManager(model, { fetchImpl: fetcher.impl as typeof fetch });
 
     await manager.download();
 
     const status = manager.getStatus();
     expect(status.state).toBe('failed');
     expect(status.reason).toBe('checksum-mismatch');
-    // the bad file must be purged: nothing cached, cache deleted
-    expect(storage.deletedNames).toContain(MODEL_CACHE_NAME);
-    expect((await storage.caches.get(MODEL_CACHE_NAME)?.match(manifest.url)) ?? null).toBeNull();
-    expect(storage.caches.get(MODEL_CACHE_NAME)?.puts ?? []).toHaveLength(0);
+    // the bad file must be purged: temp discarded, cache cleared, nothing promoted
+    expect(store.promotes).toEqual([]);
+    expect(store.discards).toBeGreaterThan(0);
+    expect(store.clears).toBeGreaterThan(0);
+    expect([...store.entries.keys()]).toEqual([]);
   });
 
   it('a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)', async () => {
@@ -193,25 +211,27 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     const fetcher = fakeFetch([
       { make: () => chunked([model.bytes.subarray(0, model.bytes.length - 500)]) },
     ]);
-    const { manager, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, store } = freshManager(model, { fetchImpl: fetcher.impl as typeof fetch });
 
     await manager.download();
 
     expect(manager.getStatus().state).toBe('failed');
     expect(manager.getStatus().reason).toBe('size-mismatch');
-    expect(storage.deletedNames).toContain(MODEL_CACHE_NAME);
-    expect(storage.caches.get(MODEL_CACHE_NAME)?.puts ?? []).toHaveLength(0);
+    expect(store.promotes).toEqual([]);
+    expect(store.discards).toBeGreaterThan(0);
+    expect(store.clears).toBeGreaterThan(0);
   });
 
   it('an HTTP error (404) fails closed without caching (A13)', async () => {
     const fetcher = fakeFetch([{ make: () => new Response('nope', { status: 404 }) }]);
-    const { manager, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, store } = freshManager(undefined, { fetchImpl: fetcher.impl as typeof fetch });
 
     await manager.download();
 
     expect(manager.getStatus().state).toBe('failed');
     expect(manager.getStatus().reason).toBe('http-error');
-    expect(storage.deletedNames).toContain(MODEL_CACHE_NAME);
+    expect(store.promotes).toEqual([]);
+    expect(store.clears).toBeGreaterThan(0);
   });
 
   it('an interrupted download RESUMES with a Range request and ends ready (A12)', async () => {
@@ -221,7 +241,9 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
       { make: () => killingStream(first) },
       { make: () => chunked([model.bytes.subarray(2000)], { status: 206 }) },
     ]);
-    const { manager, bytes, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, manifest, bytes, store } = freshManager(model, {
+      fetchImpl: fetcher.impl as typeof fetch,
+    });
 
     await manager.download();
 
@@ -229,8 +251,9 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     expect(fetcher.calls).toHaveLength(2);
     expect(fetcher.calls[0]!.range).toBeNull();
     expect(fetcher.calls[1]!.range).toBe(`bytes=${2000}-`); // resumed from 2000, not from zero
-    const cache = storage.caches.get(MODEL_CACHE_NAME)!;
-    expect(Buffer.compare(Buffer.from(cache.puts[0]!.bytes), Buffer.from(bytes))).toBe(0);
+    // the temp continued across the resume; the promote carries the full bytes
+    expect(store.discards).toBe(1); // only the fresh-start cleanup — the resume kept the temp
+    expect(Buffer.compare(Buffer.from(store.entries.get(keyOf(manifest))!), Buffer.from(bytes))).toBe(0);
   });
 
   it('a server that ignores Range makes the app restart cleanly from zero (A12)', async () => {
@@ -239,36 +262,41 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
       { make: () => killingStream([model.bytes.subarray(0, 1000)]) },
       { make: () => chunked([model.bytes], { status: 200 }) }, // full 200, no 206
     ]);
-    const { manager, bytes, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, manifest, bytes, store } = freshManager(model, {
+      fetchImpl: fetcher.impl as typeof fetch,
+    });
 
     await manager.download();
 
     expect(manager.getStatus().state).toBe('ready');
-    const cache = storage.caches.get(MODEL_CACHE_NAME)!;
-    expect(Buffer.compare(Buffer.from(cache.puts[0]!.bytes), Buffer.from(bytes))).toBe(0);
     expect(manager.getStatus().receivedBytes).toBe(bytes.length);
+    expect(store.discards).toBe(2); // fresh-start cleanup + the restart's temp drop
+    expect(Buffer.compare(Buffer.from(store.entries.get(keyOf(manifest))!), Buffer.from(bytes))).toBe(0);
   });
 
   it('gives up after the attempt budget and fails closed with a purge (A12/A13)', async () => {
     const fetcher = fakeFetch([{ make: () => killingStream([u8(randomBytes(10))]) }]);
-    const { manager, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, store } = freshManager(undefined, { fetchImpl: fetcher.impl as typeof fetch });
 
     await manager.download();
 
     expect(manager.getStatus().state).toBe('failed');
     expect(manager.getStatus().reason).toBe('network-error');
     expect(fetcher.calls).toHaveLength(3); // maxAttempts = 3
-    expect(storage.deletedNames).toContain(MODEL_CACHE_NAME);
+    expect(store.promotes).toEqual([]);
+    expect(store.discards).toBeGreaterThan(0);
+    expect(store.clears).toBeGreaterThan(0);
   });
 
   it('a cached model is ready without any network (A14)', async () => {
     const model = makeFakeManifest();
     const fetcher = fakeFetch([{ make: () => chunked(model.chunks) }]);
-    const { manager, manifest, bytes, storage } = freshManager({
+    const { manager, manifest, store } = freshManager(model, {
       fetchImpl: fetcher.impl as typeof fetch,
     });
-    const cache = await storage.open(MODEL_CACHE_NAME);
-    await cache.put(manifest.url, new Response(new Blob([bytes])));
+    await store.promoteTemp(keyOf(manifest));
+    await store.appendTemp(model.bytes);
+    await store.promoteTemp(keyOf(manifest));
 
     await manager.check();
     expect(manager.getStatus().state).toBe('ready');
@@ -279,24 +307,25 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
   it('a stale cached entry with the wrong size is re-downloaded and replaced', async () => {
     const model = makeFakeManifest();
     const fetcher = fakeFetch([{ make: () => chunked(model.chunks) }]);
-    const { manager, manifest, bytes, storage } = freshManager({
+    const { manager, manifest, bytes, store } = freshManager(model, {
       fetchImpl: fetcher.impl as typeof fetch,
     });
-    const cache = await storage.open(MODEL_CACHE_NAME);
-    await cache.put(manifest.url, new Response(new Blob([u8(randomBytes(500))]))); // stale garbage
+    // stale entry: right key, wrong size (an older revision's leftovers)
+    await store.appendTemp(u8(randomBytes(500)));
+    await store.promoteTemp(keyOf(manifest));
+    await expect(store.size(keyOf(manifest))).resolves.toBe(500);
 
     await manager.download();
 
     expect(manager.getStatus().state).toBe('ready');
-    const cacheAfter = storage.caches.get(MODEL_CACHE_NAME)!;
-    expect(
-      Buffer.compare(Buffer.from(cacheAfter.entries.get(manifest.url)!), Buffer.from(bytes)),
-    ).toBe(0);
+    expect(fetcher.calls).toHaveLength(1); // the stale size forced a re-download
+    expect(store.clears).toBeGreaterThan(0); // the stale entry was purged first
+    expect(Buffer.compare(Buffer.from(store.entries.get(keyOf(manifest))!), Buffer.from(bytes))).toBe(0);
   });
 
   it('an unsupported browser ends unsupported without any fetch (A13)', async () => {
     const fetcher = fakeFetch([{ make: () => chunked([u8(randomBytes(1))]) }]);
-    const { manager, storage } = freshManager({
+    const { manager, store } = freshManager(undefined, {
       probe: PROBE_NO,
       fetchImpl: fetcher.impl as typeof fetch,
     });
@@ -307,12 +336,24 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     await manager.download();
     expect(manager.getStatus().state).toBe('unsupported');
     expect(fetcher.calls).toHaveLength(0);
-    expect(storage.caches.size).toBe(0);
+    expect(store.promotes).toEqual([]);
+  });
+
+  it('a missing model store (no OPFS, no Cache Storage) ends unsupported (A13)', async () => {
+    const fetcher = fakeFetch([{ make: () => chunked([u8(randomBytes(1))]) }]);
+    const { manager } = freshManager(undefined, {
+      store: null, // the real openModelStore() returning null
+      fetchImpl: fetcher.impl as typeof fetch,
+    });
+    // probe says fine (WASM etc.) but no store backend exists
+    await manager.check();
+    expect(manager.getStatus().state).toBe('unsupported');
+    expect(fetcher.calls).toHaveLength(0);
   });
 
   it('check() with no cache and a supported browser stays absent (no network)', async () => {
     const fetcher = fakeFetch([{ make: () => chunked([u8(randomBytes(1))]) }]);
-    const { manager } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager } = freshManager(undefined, { fetchImpl: fetcher.impl as typeof fetch });
 
     await manager.check();
     expect(manager.getStatus().state).toBe('absent');
@@ -322,7 +363,7 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
   it('readCached() returns the cached bytes (the S4 runtime entry point)', async () => {
     const model = makeFakeManifest();
     const fetcher = fakeFetch([{ make: () => chunked(model.chunks) }]);
-    const { manager, bytes } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, bytes } = freshManager(model, { fetchImpl: fetcher.impl as typeof fetch });
 
     expect(await manager.readCached()).toBeNull();
     await manager.download();
@@ -331,15 +372,15 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     expect(Buffer.compare(Buffer.from(cached!), Buffer.from(bytes))).toBe(0);
   });
 
-  it('concurrent download() calls are single-flight (one download, one put)', async () => {
+  it('concurrent download() calls are single-flight (one download, one promote)', async () => {
     const model = makeFakeManifest();
     const fetcher = fakeFetch([{ make: () => chunked(model.chunks) }]);
-    const { manager, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, store } = freshManager(model, { fetchImpl: fetcher.impl as typeof fetch });
 
     await Promise.all([manager.download(), manager.download(), manager.download()]);
 
     expect(fetcher.calls).toHaveLength(1);
-    expect(storage.caches.get(MODEL_CACHE_NAME)!.puts).toHaveLength(1);
+    expect(store.promotes).toHaveLength(1);
     expect(manager.getStatus().state).toBe('ready');
   });
 
@@ -349,12 +390,12 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
       { make: () => new Response('boom', { status: 500 }) },
       { make: () => chunked(model.chunks) },
     ]);
-    const { manager, storage } = freshManager({ fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, store } = freshManager(model, { fetchImpl: fetcher.impl as typeof fetch });
 
     await manager.download();
     expect(manager.getStatus().state).toBe('failed');
     await manager.download(); // retry
     expect(manager.getStatus().state).toBe('ready');
-    expect(storage.caches.get(MODEL_CACHE_NAME)!.puts).toHaveLength(1);
+    expect(store.promotes).toHaveLength(1);
   });
 });

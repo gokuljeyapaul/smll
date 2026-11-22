@@ -1,25 +1,27 @@
 /**
  * ModelManager (S3 — UC08/UC09/UC14): download the pinned model ONCE,
  * verify its sha256 BEFORE it enters the cache, keep it in the model cache
- * (Cache Storage — one of only two allowed persistences), and fall back
- * cleanly (purged, banner, OCR + rules still working) on every failure.
+ * (the plan's second allowed persistence — OPFS or Cache Storage, selected
+ * by a real capability probe, see store.ts), and fall back cleanly (purged,
+ * banner, OCR + rules still working) on every failure.
  *
  * Fail-closed rules the manager enforces:
- *  - the file NEVER enters the cache unless size AND sha256 both match the
- *    pinned manifest (A13);
- *  - on any failure the staged bytes are dropped and the cache entry is
- *    purged (A13);
- *  - a cached model is found by reading Cache Storage only — checking it
- *    never touches the network (A14);
+ *  - the bytes NEVER reach the cache key unless size AND sha256 both match
+ *    the pinned manifest (A13): chunks stream into a temp, verification
+ *    gates the promote;
+ *  - on any failure the temp is discarded and the cache cleared (A13);
+ *  - a cached model is found by reading the store only — checking it never
+ *    touches the network (A14);
  *  - an interrupted download resumes with a Range request when the server
  *    supports it, and restarts cleanly from zero when it does not (A12).
  */
 
 import { probeModelCapabilities, type ModelCapabilities } from './capability';
 import { checkIntegrity, planResume } from './download';
-import { MODEL_CACHE_NAME, PINNED_MODEL, modelUrl, type PinnedModel } from './manifest';
+import { PINNED_MODEL, testModelUrlOverride, type PinnedModel } from './manifest';
+import { openModelStore, type ModelStore } from './store';
 import { Sha256Incremental } from './sha256';
-import { nextModelState, type ModelFailReason, type ModelState } from './state';
+import { nextModelState, type ModelEvent, type ModelFailReason, type ModelState } from './state';
 
 export interface ModelProgress {
   state: ModelState;
@@ -35,7 +37,7 @@ export type ModelListener = (progress: ModelProgress) => void;
 export interface ModelManagerOptions {
   manifest?: PinnedModel;
   fetchImpl?: typeof fetch;
-  cacheStorage?: CacheStorage;
+  store?: ModelStore | null;
   probe?: () => Promise<ModelCapabilities>;
   maxAttempts?: number;
 }
@@ -48,28 +50,32 @@ export const INITIAL_MODEL_PROGRESS: ModelProgress = {
   reason: null,
 };
 
+/** Internal fail-closed signal: stop everything, purge, end `failed`. */
+class ModelFlowError extends Error {
+  constructor(readonly reason: ModelFailReason) {
+    super(`model flow failed: ${reason}`);
+  }
+}
+
 export class ModelManager {
   private readonly manifest: PinnedModel;
   private readonly fetchImpl: typeof fetch;
-  private readonly cacheStorage: CacheStorage;
+  private readonly providedStore: ModelStore | null;
   private readonly probe: () => Promise<ModelCapabilities>;
   private readonly maxAttempts: number;
   private progress: ModelProgress = { ...INITIAL_MODEL_PROGRESS };
   private listeners = new Set<ModelListener>();
   private inFlight: Promise<void> | null = null;
+  private lastEmittedBytes = 0;
+  private lastPaintAt = 0;
+  private store: ModelStore | null = null;
 
   constructor(options: ModelManagerOptions = {}) {
     this.manifest = options.manifest ?? PINNED_MODEL;
     this.fetchImpl = options.fetchImpl ?? globalThis.fetch.bind(globalThis);
-    this.cacheStorage = options.cacheStorage ?? globalThis.caches;
+    this.providedStore = options.store ?? null;
     this.probe = options.probe ?? probeModelCapabilities;
     this.maxAttempts = options.maxAttempts ?? 3;
-    void checkIntegrity;
-    void planResume;
-    void nextModelState;
-    void MODEL_CACHE_NAME;
-    void modelUrl;
-    void Sha256Incremental;
   }
 
   /** Current status snapshot (poll-friendly for tests and the UI). */
@@ -85,51 +91,238 @@ export class ModelManager {
     };
   }
 
-  private emit(next: Partial<ModelProgress>): void {
-    this.progress = { ...this.progress, ...next };
+  /** Apply one state-machine event (+ progress patch) and notify. */
+  private apply(event: ModelEvent, patch: Partial<ModelProgress> = {}): void {
+    this.progress = {
+      ...this.progress,
+      ...patch,
+      state: nextModelState(this.progress.state, event),
+    };
+    this.lastEmittedBytes = this.progress.receivedBytes;
     for (const listener of [...this.listeners]) {
       listener(this.progress);
     }
   }
 
-  /**
-   * Cheap startup check (A14: never network): probe capabilities, then look
-   * for the cached model in Cache Storage. Updates the state to
-   * unsupported / ready / absent accordingly.
-   */
+  /** Chunk-level progress, throttled to ~200 updates per download. */
+  private emitProgress(receivedBytes: number, attemptsUsed: number): Promise<void> {
+    const threshold = Math.max(1, Math.floor(this.progress.totalBytes / 200));
+    if (receivedBytes - this.lastEmittedBytes < threshold) return Promise.resolve();
+    this.apply({ type: 'DOWNLOAD_START' }, { receivedBytes, attemptsUsed });
+    // Yield to the renderer every ~250 ms so each committed state actually
+    // PAINTS: React otherwise batches the whole read loop into one frame and
+    // the bar would jump 0→100 without the user ever seeing it move (observed
+    // in WebKit, whose fetch delivers ~15 MiB chunks back to back).
+    const now = Date.now();
+    if (now - this.lastPaintAt < 250) return Promise.resolve();
+    this.lastPaintAt = now;
+    return new Promise<void>((resolve) => {
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(() => resolve());
+      } else {
+        resolve(); // non-browser test environments
+      }
+    });
+  }
+
+  /** The cache key: content-addressed by the pinned sha256. */
+  private cacheKey(): string {
+    return `model-${this.manifest.sha256}.gguf`;
+  }
+
+  /** The download URL: the pinned one, or the test override in test builds. */
+  private downloadUrl(): string {
+    return testModelUrlOverride() ?? this.manifest.url;
+  }
+
+  /** Resolve the backend once (injectable for unit tests). */
+  private async resolveStore(): Promise<ModelStore | null> {
+    this.store ??= this.providedStore ?? (await openModelStore());
+    return this.store;
+  }
+
+  /** Probe + cache check; never network. Absent/ready/unsupported result. */
   async check(): Promise<void> {
-    void this.cacheStorage;
-    void this.probe;
-    void this.manifest;
-    void this.emit;
-    // RED scaffold: no check behavior yet.
+    const caps = await this.probe();
+    if (!caps.supported) {
+      this.apply({ type: 'PROBE_FAILED' }, { reason: 'unsupported' });
+      return;
+    }
+    this.apply({ type: 'PROBE_OK' }, { reason: null });
+    const store = await this.resolveStore();
+    if (!store) {
+      this.apply({ type: 'PROBE_FAILED' }, { reason: 'unsupported' });
+      return;
+    }
+    if ((await store.size(this.cacheKey())) === this.manifest.sizeBytes) {
+      this.apply({ type: 'CACHE_HIT' }, { receivedBytes: this.manifest.sizeBytes });
+    }
   }
 
   /**
    * The full download flow (single flight): probe → cache short-circuit →
-   * resumable download with streamed hashing → size+sha256 verification →
-   * cache (only on match). Any failure purges and ends `failed`.
+   * resumable download, streamed into the store temp while hashing →
+   * size+sha256 verification → promote into the cache (only on match).
+   * Any failure purges and ends `failed`.
    */
   async download(): Promise<void> {
-    void this.inFlight;
-    void this.fetchImpl;
-    void this.maxAttempts;
-    void this.emit;
-    // RED scaffold: no download behavior yet — the state stays `absent`.
+    if (this.inFlight) return this.inFlight;
+    this.inFlight = this.runDownload();
+    try {
+      await this.inFlight;
+    } finally {
+      this.inFlight = null;
+    }
   }
 
-  /** Drop the model cache entry and any staged bytes (A13 "purged"). */
+  private async runDownload(): Promise<void> {
+    // The capability probe gates everything (A13 unsupported-browser path).
+    const caps = await this.probe();
+    if (!caps.supported) {
+      this.apply({ type: 'PROBE_FAILED' }, { reason: 'unsupported' });
+      return;
+    }
+    this.apply({ type: 'PROBE_OK' }, { reason: null });
+    const store = await this.resolveStore();
+    if (!store) {
+      this.apply({ type: 'PROBE_FAILED' }, { reason: 'unsupported' });
+      return;
+    }
+
+    // Cached (and size-verified) short-circuit: no network at all (A14).
+    if ((await store.size(this.cacheKey())) === this.manifest.sizeBytes) {
+      this.apply({ type: 'CACHE_HIT' }, { receivedBytes: this.manifest.sizeBytes });
+      return;
+    }
+
+    // Fresh download. Start from a purged cache so a stale entry from an
+    // older revision can never be served or measured as "the" model.
+    await store.clear();
+    await store.discardTemp();
+    const url = this.downloadUrl();
+    const hasher = new Sha256Incremental();
+    let received = 0;
+    // Optimistic until disproven: a 206 proves Range support, a 200 that
+    // answers a Range request disproves it (then a restart is the only way).
+    let rangesUsable = true;
+
+    this.apply(
+      { type: 'DOWNLOAD_START' },
+      { receivedBytes: 0, totalBytes: this.manifest.sizeBytes, attemptsUsed: 0, reason: null },
+    );
+
+    for (let attempt = 1; ; attempt++) {
+      try {
+        const headers = new Headers();
+        if (received > 0) headers.set('range', `bytes=${received}-`);
+        const res = await this.fetchImpl(url, {
+          headers,
+          cache: 'no-store',
+          credentials: 'omit',
+          redirect: 'follow',
+        });
+        if (!res.ok) {
+          await store.discardTemp();
+          await store.clear();
+          this.apply({ type: 'HTTP_ERROR' }, { reason: 'http-error' });
+          return;
+        }
+        if (received > 0 && res.status === 206) {
+          rangesUsable = true; // the server honored the resume
+        } else if (received > 0 && res.status === 200) {
+          // The server ignored the Range header: restart cleanly from zero.
+          rangesUsable = false;
+          await store.discardTemp();
+          hasher.reset();
+          received = 0;
+          this.apply({ type: 'DOWNLOAD_START' }, { receivedBytes: 0, attemptsUsed: attempt });
+        }
+        const reader = res.body?.getReader();
+        if (!reader) {
+          throw new ModelFlowError('network-error'); // no body to verify — fail closed
+        }
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          hasher.update(value);
+          await store.appendTemp(value);
+          received += value.length;
+          await this.emitProgress(received, attempt);
+        }
+        this.apply({ type: 'STREAM_COMPLETE' }, { receivedBytes: received, attemptsUsed: attempt });
+
+        // Verified BEFORE cached (A12/A13): size first, then the pinned sha256.
+        const verdict = checkIntegrity({
+          receivedBytes: received,
+          expectedBytes: this.manifest.sizeBytes,
+          digestHex: hasher.digestHex(),
+          expectedSha256: this.manifest.sha256,
+        });
+        if (!verdict.ok || verdict.reason !== null) {
+          await store.discardTemp();
+          await store.clear();
+          this.apply({ type: 'VERIFY_FAILED' }, { reason: verdict.reason });
+          return;
+        }
+        try {
+          await store.promoteTemp(this.cacheKey());
+        } catch {
+          await store.discardTemp();
+          await store.clear();
+          this.apply({ type: 'GIVE_UP' }, { reason: 'storage-error' });
+          return;
+        }
+        this.apply({ type: 'VERIFY_OK' }, { receivedBytes: received });
+        return;
+      } catch (err) {
+        if (err instanceof ModelFlowError) {
+          await store.discardTemp();
+          await store.clear();
+          this.apply({ type: 'GIVE_UP' }, { reason: err.reason });
+          return;
+        }
+        // A dropped connection (or any unexpected error): resume/restart
+        // while the budget lasts, give up afterwards (fail closed).
+        const plan = planResume({
+          bytesReceived: received,
+          attemptsUsed: attempt,
+          maxAttempts: this.maxAttempts,
+          serverSupportsRanges: rangesUsable,
+        });
+        if (plan.action === 'give-up') {
+          await store.discardTemp();
+          await store.clear();
+          this.apply({ type: 'GIVE_UP' }, { reason: 'network-error', attemptsUsed: attempt });
+          return;
+        }
+        if (plan.action === 'restart') {
+          await store.discardTemp();
+          hasher.reset();
+          received = 0;
+        }
+        // 'resume' keeps the temp bytes/hash state and continues from `received`.
+        this.apply({ type: 'DOWNLOAD_START' }, { receivedBytes: received, attemptsUsed: attempt });
+      }
+    }
+  }
+
+  /** Drop the cache entry and any staged bytes (A13 "purged"). */
   async purge(): Promise<void> {
-    void this.cacheStorage;
-    void this.emit;
-    // RED scaffold: no purge behavior yet.
+    const store = await this.resolveStore();
+    if (store) {
+      await store.discardTemp();
+      await store.clear();
+    }
+    this.apply({ type: 'PURGED' }, { receivedBytes: 0, reason: null });
   }
 
   /** Read the cached model bytes (S4 runtime entry point); null if absent. */
   async readCached(): Promise<Uint8Array | null> {
-    void this.cacheStorage;
-    void this.manifest;
-    return null;
+    const store = await this.resolveStore();
+    if (!store) return null;
+    const bytes = await store.read(this.cacheKey());
+    if (bytes && bytes.length !== this.manifest.sizeBytes) return null; // stale — not trusted
+    return bytes;
   }
 }
 

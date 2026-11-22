@@ -1,0 +1,53 @@
+{
+  "pinned_model": {
+    "id": "qwen3-0.6b-q4_k_m",
+    "repo": "unsloth/Qwen3-0.6B-GGUF",
+    "revision": "50968a4468ef4233ed78cd7c3de230dd1d61a56b",
+    "filename": "Qwen3-0.6B-Q4_K_M.gguf",
+    "url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_K_M.gguf",
+    "sha256": "ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a",
+    "size_bytes": 396705472,
+    "size_mib": 377.0,
+    "format": "gguf",
+    "license": "Apache-2.0",
+    "license_url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/blob/main/LICENSE",
+    "choice_note": "Smallest plausible D5 candidate (Qwen3 0.6B, Apache-2.0), pinned as a single GGUF file. The runtime+model pair is resolved by measurement in S4, which may re-pin; the S3 manager machinery is format-agnostic (repo+revision+URL+sha256+size+license pinned in src/model/manifest.ts, the single source of truth)."
+  },
+  "provenance": {
+    "huggingface_lfs_metadata": {
+      "command": "curl -sI 'https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_K_M.gguf'",
+      "observed_headers": {
+        "x-linked-size": "396705472",
+        "x-linked-etag": "\"ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a\""
+      },
+      "exit_code": 0
+    },
+    "real_download_and_hash": {
+      "command": "curl -sL --fail --retry 3 -C - -o .cache/models/Qwen3-0.6B-Q4_K_M.gguf '<pinned url>' && sha256sum .cache/models/Qwen3-0.6B-Q4_K_M.gguf",
+      "observed": "ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a  .cache/models/Qwen3-0.6B-Q4_K_M.gguf (396,705,472 bytes)",
+      "exit_code": 0
+    },
+    "committed_verifier": {
+      "command": "node scripts/fetch_model.mjs  (idempotent: verifies size AND sha256 against src/model/manifest.ts; run by scripts/setup.sh in CI)",
+      "observed": "fetch_model: sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a size=396705472 (matches src/model/manifest.ts)",
+      "exit_code": 0
+    },
+    "agreement": "The sha256 in src/model/manifest.ts was recorded from HF's LFS metadata for the pinned revision and independently reproduced from the real downloaded bytes by sha256sum and by scripts/fetch_model.mjs — three independent observations agree, so no fabricated hash is possible."
+  },
+  "ci_impact": {
+    "setup": "scripts/setup.sh runs scripts/fetch_model.mjs after npm ci — the ubuntu-latest CI runner downloads the 396,705,472-byte file once per job (network allowed) into the gitignored .cache/models/; disk headroom on the runner is far above the ~400 MB needed.",
+    "note": "The weights are NEVER committed (.gitignore: .cache/, *.gguf)."
+  },
+  "local_server_variants": {
+    "script": "scripts/serve_model.mjs (spawned by e2e/helpers/model-server.ts and the demo)",
+    "endpoints": {
+      "/model": "the real pinned file, Range-supported (A12 happy path, A14)",
+      "/model-slow": "the real pinned file paced ~100 ms per 8 MiB so progress is observable (A12)",
+      "/model-wrong-hash": "the real file with one byte flipped at offset 100000 (sha256 36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb) — A13 checksum mismatch",
+      "/model-truncated": "an honest 200 response with the first 198,352,736 bytes (half) — A13 truncation",
+      "/model-kill-fresh": "every non-resumed request is destroyed after ~25% of the body; resumed (Range) requests are served fully — A12 interrupted-download resume",
+      "/model-404": "a hard 404 — A13 server-side failure"
+    },
+    "logs": "model-server-chromium.log / model-server-webkit.log (one line per request: path, Range header, status, bytes sent)"
+  }
+}

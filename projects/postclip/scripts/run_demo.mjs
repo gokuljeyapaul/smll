@@ -22,6 +22,10 @@ const ROOT = join(HERE, '..');
 const PORT = 4197;
 
 const MANIFEST = JSON.parse(readFileSync(join(ROOT, 'fixtures/manifest.json'), 'utf-8'));
+// The pinned model size, read from the single source of truth (src/model/manifest.ts).
+const MODEL_SIZE_BYTES = Number(
+  readFileSync(join(ROOT, 'src/model/manifest.ts'), 'utf-8').match(/\bsizeBytes:\s*(\d+)/)?.[1],
+);
 const fixturePath = (id) => {
   const entry = MANIFEST.images.find((i) => i.id === id);
   if (!entry) throw new Error(`demo: fixture ${id} missing from the manifest`);
@@ -36,6 +40,22 @@ const NON_ENGLISH_MESSAGE =
   'PostClip reads posts written in English only for now. This screenshot looks like it is written in another language, so it was not processed.';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Clear the model cache in the page (OPFS dir + postclip-model* caches) so
+ *  a demo step can exercise a fresh download (the key is content-addressed —
+ *  two variants of the same model share it). */
+async function clearModelCache(page) {
+  await page.evaluate(async () => {
+    try {
+      const root = await navigator.storage.getDirectory();
+      await root.removeEntry('postclip-model', { recursive: true });
+    } catch { /* no OPFS model dir on this engine */ }
+    try {
+      const names = await caches.keys();
+      for (const n of names) if (n.startsWith('postclip-model')) await caches.delete(n);
+    } catch { /* no Cache Storage model cache */ }
+  });
+}
 
 async function waitUp() {
   await sleep(2000); // vite preview needs a moment to bind
@@ -221,11 +241,11 @@ async function demoIn(engineName, browserType) {
       };
     });
     step(
-      'no-storage audit: only the allow-listed app-shell cache exists',
+      'no-storage audit: only the allow-listed caches exist (app shell; model cache from S3)',
       storage.localStorageKeys.length === 0 &&
         storage.sessionStorageKeys.length === 0 &&
         storage.cookies === '' &&
-        storage.cacheNames.every((n) => n.startsWith('precache')),
+        storage.cacheNames.every((n) => n.startsWith('precache') || n.startsWith('postclip-model')),
       `caches: ${storage.cacheNames.join(',') || 'none'}`,
     );
 
@@ -316,6 +336,158 @@ async function demoIn(engineName, browserType) {
     step('real OCR works with the network disabled', offlineText.length > 40, `${offlineText.length} chars`);
     await context.setOffline(false);
 
+    // S3 (UC08): first use downloads the pinned model with visible progress,
+    // verifies sha256 and ends ready — the local server serves the REAL file,
+    // paced so the progress bar is observable.
+    await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-slow`);
+    await page.locator('#model-download-btn').click();
+    // Record every REAL progress-bar DOM state with a MutationObserver
+    // (timer sampling starves while the streamed hash runs on the main
+    // thread in WebKit; the observer sees the same commits the user does).
+    const progressPcts = await page.evaluate(async () => {
+      const pcts = [];
+      const record = () => {
+        const bar = document.querySelector('#model-progress');
+        const v = bar && bar.getAttribute('aria-valuenow');
+        if (v !== null) pcts.push(Number(v));
+      };
+      const observer = new MutationObserver(record);
+      observer.observe(document.body, { subtree: true, childList: true, attributes: true });
+      record();
+      const deadline = Date.now() + 120_000;
+      while (Date.now() < deadline) {
+        if (document.querySelector('#model-ready') || document.querySelector('#model-banner')) break;
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      }
+      observer.disconnect();
+      return pcts;
+    });
+    const modelReady = progressPcts.length >= 0 && !!(await page.locator('#model-ready').count());
+    step(
+      'model download shows live progress and ends ready (UC08)',
+      modelReady && progressPcts.some((p) => p > 0 && p < 100),
+      `ready=${modelReady} maxSeen=${Math.max(...progressPcts, 0)}% samples=${progressPcts.length}`,
+    );
+    // The model cache lives in OPFS (Chromium) or Cache Storage (WebKit) —
+    // the app probes and picks per engine (src/model/store.ts).
+    const cachedBytes = await page.evaluate(async () => {
+      let total = 0;
+      let entries = 0;
+      try {
+        const root = await navigator.storage.getDirectory();
+        const dir = await root.getDirectoryHandle('postclip-model');
+        for await (const [name, handle] of dir.entries()) {
+          entries += 1;
+          total += (await handle.getFile()).size;
+          void name;
+        }
+      } catch { /* no OPFS model dir to clear */ }
+      try {
+        const names = await caches.keys();
+        const model = names.find((n) => n.startsWith('postclip-model'));
+        if (model) {
+          const cache = await caches.open(model);
+          for (const k of await cache.keys()) {
+            entries += 1;
+            total += (await (await cache.match(k.url)).blob()).size;
+          }
+        }
+      } catch { /* no Cache Storage model cache */ }
+      return entries === 1 ? total : -entries;
+    });
+    step(
+      'the model cache holds exactly one entry of the pinned size',
+      cachedBytes === MODEL_SIZE_BYTES,
+      `${cachedBytes} bytes (pinned ${MODEL_SIZE_BYTES})`,
+    );
+
+    // S3 (UC08): an interrupted download RESUMES — the server destroys every
+    // fresh request after ~25%, so only a Range resume can reach ready.
+    // The resume step must actually download: clear the model cache first
+    // (the progress step cached the same content-addressed key).
+    await clearModelCache(page);
+    await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-kill-fresh`);
+    await page.locator('#model-download-btn').click();
+    const resumed = await page
+      .locator('#model-ready')
+      .waitFor({ timeout: 120000 })
+      .then(() => true)
+      .catch(() => false);
+    step('an interrupted model download resumes and ends ready', resumed);
+
+    // S3 (UC14): with the model cached, OFFLINE processing issues ZERO
+    // network requests (responses served by the service worker are not
+    // network — the same definition as e2e/helpers/network.ts).
+    await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-kill-fresh`);
+    await sleep(1500);
+    const netEvents = { failed: [], nonSw: [] };
+    page.on('requestfailed', (r) => netEvents.failed.push(r.url()));
+    page.on('response', (r) => {
+      if (!r.fromServiceWorker()) netEvents.nonSw.push(r.url());
+    });
+    await context.setOffline(true);
+    await page.reload();
+    const offlineModelReady = await page
+      .locator('#model-ready')
+      .waitFor({ timeout: 60000 })
+      .then(() => true)
+      .catch(() => false);
+    step('the cached model is found offline with no network', offlineModelReady);
+    await page.setInputFiles('#file-input', fixturePath('clean02'));
+    let offlineModelText = '';
+    for (let i = 0; i < 150; i++) {
+      offlineModelText = await page.locator('#review-text').inputValue().catch(() => '');
+      if (offlineModelText.length > 0) break;
+      await sleep(1000);
+    }
+    const cleanupModeOffline = await page.locator('#cleanup-mode').textContent().catch(() => '');
+    step(
+      'offline processing with the model cached still produces review text',
+      offlineModelText.length > 40 && cleanupModeOffline.includes('Tidy-up model ready'),
+      `${offlineModelText.length} chars`,
+    );
+    step(
+      'offline processing issued ZERO network requests',
+      netEvents.failed.length === 0 && netEvents.nonSw.length === 0,
+      `failed=${netEvents.failed.length} nonSW=${netEvents.nonSw.length}`,
+    );
+    await context.setOffline(false);
+
+    // S3 (UC09): a checksum mismatch leaves the app in fallback mode with
+    // the explicit banner, the bad file purged — and a pick still works.
+    // (Clear the cache first: the key is content-addressed and the good
+    // model from the resume step would otherwise short-circuit to ready.)
+    await clearModelCache(page);
+    await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-wrong-hash`);
+    await page.locator('#model-download-btn').click();
+    const badModelBanner = await page
+      .locator('#model-banner')
+      .waitFor({ timeout: 120000 })
+      .then(() => true)
+      .catch(() => false);
+    step('a checksum failure shows the fallback banner', badModelBanner);
+    const modelPurged = await page.evaluate(async () => {
+      const names = await caches.keys();
+      const model = names.find((n) => n.startsWith('postclip-model'));
+      if (!model) return true;
+      const keys = await (await caches.open(model)).keys();
+      return keys.length === 0;
+    });
+    step('the bad model file is purged from the cache', modelPurged);
+    await page.setInputFiles('#file-input', fixturePath('clean03'));
+    let fallbackText = '';
+    for (let i = 0; i < 150; i++) {
+      fallbackText = await page.locator('#review-text').inputValue().catch(() => '');
+      if (fallbackText.length > 0) break;
+      await sleep(1000);
+    }
+    const cleanupModeFallback = await page.locator('#cleanup-mode').textContent().catch(() => '');
+    step(
+      'standard cleanup still works after the model failure',
+      fallbackText.length > 40 && cleanupModeFallback.includes('Standard cleanup'),
+      `${fallbackText.length} chars`,
+    );
+
     // S2 (UC03/UC12, chromium only): the Paste button reads the REAL
     // clipboard; with the grant revoked the button explains and the picker
     // still works (A10). WebKit grants no clipboard permissions at all
@@ -373,6 +545,24 @@ async function demoIn(engineName, browserType) {
 }
 
 async function main() {
+  // S3: the local model server serves the REAL pinned model file plus the
+  // failure variants, so the demo exercises the real download path (the
+  // built dist must be the test build: npm run build:test).
+  const modelServer = spawn(
+    process.execPath,
+    [
+      join('scripts', 'serve_model.mjs'),
+      '--port',
+      '4599',
+      '--file',
+      join('.cache/models', 'Qwen3-0.6B-Q4_K_M.gguf'),
+      '--log',
+      'artifacts/model-server.log',
+    ],
+    { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+  modelServer.stdout.on('data', (d) => console.error(`[model-server] ${d.toString().trim()}`));
+  modelServer.stderr.on('data', (d) => console.error(`[model-server] ${d.toString().trim()}`));
   const preview = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--port', String(PORT), '--host', '127.0.0.1', '--strictPort'], {
     cwd: ROOT,
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -383,6 +573,7 @@ async function main() {
   preview.on('exit', (code, sig) => console.error(`[preview] exited code=${code} sig=${sig}`));
   try {
     await waitUp();
+    await waitUp(`http://127.0.0.1:4599/healthz`);
     console.log(`demo: serving built app at http://127.0.0.1:${PORT}/`);
     const okChrome = await demoIn('chromium', chromium);
     const okWebkit = await demoIn('webkit', webkit);
@@ -390,6 +581,7 @@ async function main() {
     process.exitCode = okChrome && okWebkit ? 0 : 1;
   } finally {
     preview.kill('SIGTERM');
+    modelServer.kill('SIGTERM');
   }
 }
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react';
 import type { OcrStatus } from '../App';
+import { ModelStatusCard } from './ModelStatusCard';
 import {
   CLIPBOARD_UNAVAILABLE_MESSAGE,
   clipboardPermissionHint,
@@ -10,6 +11,8 @@ import {
 export interface HomeProps {
   status: OcrStatus;
   error: string | null;
+  /** S3 (UC08/UC09): the model download card's trigger. */
+  onModelDownload: () => void;
   onImageSelected: (file: File) => void;
   /** UC12: shows the specific clipboard explanation (never touches the pipeline). */
   onClipboardError: (message: string) => void;
@@ -18,7 +21,7 @@ export interface HomeProps {
 const CLIPBOARD_NO_IMAGE_MESSAGE =
   'No screenshot found on the clipboard. Copy a screenshot first, or add one with the Choose screenshot button below.';
 
-export function Home({ status, error, onImageSelected, onClipboardError }: HomeProps) {
+export function Home({ status, error, onModelDownload, onImageSelected, onClipboardError }: HomeProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [permissionHint, setPermissionHint] = useState<string | null>(null);
@@ -128,6 +131,7 @@ export function Home({ status, error, onImageSelected, onClipboardError }: HomeP
           onChange={(e) => onInputChange(e.target.files)}
         />
       </div>
+      <ModelStatusCard onDownload={onModelDownload} />
       {permissionHint ? (
         <p className="status" id="clipboard-permission-hint">
           {permissionHint}

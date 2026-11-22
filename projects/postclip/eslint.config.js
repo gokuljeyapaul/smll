@@ -13,6 +13,7 @@ const NODE_SCRIPT_GLOBALS = {
   setInterval: 'readonly',
   clearInterval: 'readonly',
   URLSearchParams: 'readonly',
+  MutationObserver: 'readonly',
   // Referenced inside page.evaluate() callbacks, which execute in the browser:
   window: 'readonly',
   document: 'readonly',

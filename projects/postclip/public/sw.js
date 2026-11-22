@@ -51,10 +51,12 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       // Purge caches from earlier builds; only the current app-shell cache
-      // may persist (A15 allow-list: nothing else).
+      // and the S3 model cache (postclip-model-*, one of the two allowed
+      // persistences — plan "Privacy and no-storage design") may persist.
+      // A new deploy must never purge the user's downloaded model.
       const names = await caches.keys();
       for (const name of names) {
-        if (name !== SHELL_CACHE) await caches.delete(name);
+        if (name !== SHELL_CACHE && !name.startsWith('postclip-model')) await caches.delete(name);
       }
       // Take control of the loading page so its fetches (including the
       // share-target POST and the OCR asset loads) go through this worker.

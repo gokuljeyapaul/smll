@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "project": "postclip",
   "phase": "BUILDING",
-  "current_slice": "S2",
+  "current_slice": "S3",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -22,12 +22,14 @@
       "note": "merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here per the next-slice-updates-the-merge-SHA convention"
     },
     "S2": {
-      "status": "READY_FOR_MERGE",
+      "status": "MERGED",
       "pr": "https://github.com/gokuljeyapaul/smll/pull/64",
-      "note": "PR opened by the building agent; merge SHA is recorded in the next slice's update"
+      "merge_sha": "57b810483f66d9b1d4e00f2d02a1c873cc893a04",
+      "note": "merged under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; merge SHA recorded here by the S3 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S3": {
-      "status": "NOT_STARTED"
+      "status": "READY_FOR_MERGE",
+      "note": "Model manager delivered: pinned download with visible progress, streamed sha256 verified before the cache, OPFS/Cache-Storage model cache, resume, fail-closed fallback, offline zero-network. PR opened by the building agent (branch feature/postclip/S3-model-manager, closes issue #56); the merge SHA is recorded in the next slice's update per convention"
     },
     "S4": {
       "status": "NOT_STARTED"
@@ -40,9 +42,9 @@
     }
   },
   "last_verified_merged_pr": {
-    "slice": "S1",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/63",
-    "merge_sha": "bcc72240d490235ba812f56f9c3d8a30f2c23c14",
+    "slice": "S2",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/64",
+    "merge_sha": "57b810483f66d9b1d4e00f2d02a1c873cc893a04",
     "main_check_after_merge": "success"
   }
 }

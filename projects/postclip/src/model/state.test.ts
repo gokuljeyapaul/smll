@@ -8,6 +8,14 @@
 import { describe, expect, it } from 'vitest';
 import { MODEL_STATES, nextModelState, type ModelEvent, type ModelState } from './state';
 
+const ev = (type: ModelEvent['type']): ModelEvent =>
+  ({ PROBE_OK: { type: 'PROBE_OK' }, PROBE_FAILED: { type: 'PROBE_FAILED' },
+     DOWNLOAD_START: { type: 'DOWNLOAD_START' }, STREAM_COMPLETE: { type: 'STREAM_COMPLETE' },
+     VERIFY_OK: { type: 'VERIFY_OK' }, VERIFY_FAILED: { type: 'VERIFY_FAILED' },
+     HTTP_ERROR: { type: 'HTTP_ERROR' }, GIVE_UP: { type: 'GIVE_UP' },
+     CACHE_HIT: { type: 'CACHE_HIT' },
+     PURGED: { type: 'PURGED' } })[type] as ModelEvent;
+
 const EVENTS: ModelEvent['type'][] = [
   'PROBE_OK',
   'PROBE_FAILED',
@@ -17,15 +25,9 @@ const EVENTS: ModelEvent['type'][] = [
   'VERIFY_FAILED',
   'HTTP_ERROR',
   'GIVE_UP',
+  'CACHE_HIT',
   'PURGED',
 ];
-
-const ev = (type: ModelEvent['type']): ModelEvent =>
-  ({ PROBE_OK: { type: 'PROBE_OK' }, PROBE_FAILED: { type: 'PROBE_FAILED' },
-     DOWNLOAD_START: { type: 'DOWNLOAD_START' }, STREAM_COMPLETE: { type: 'STREAM_COMPLETE' },
-     VERIFY_OK: { type: 'VERIFY_OK' }, VERIFY_FAILED: { type: 'VERIFY_FAILED' },
-     HTTP_ERROR: { type: 'HTTP_ERROR' }, GIVE_UP: { type: 'GIVE_UP' },
-     PURGED: { type: 'PURGED' } })[type] as ModelEvent;
 
 describe('nextModelState — model state machine (S3)', () => {
   it('implements the exact legal transition table', () => {
@@ -41,6 +43,10 @@ describe('nextModelState — model state machine (S3)', () => {
       ['verifying', 'VERIFY_FAILED', 'failed'],
       ['downloading', 'HTTP_ERROR', 'failed'],
       ['downloading', 'GIVE_UP', 'failed'],
+      // a cache write failure during verification fails closed too
+      ['verifying', 'GIVE_UP', 'failed'],
+      // an already-cached (size-verified) model is ready with no download
+      ['absent', 'CACHE_HIT', 'ready'],
       // retry from failure (the Try again button re-enters the lifecycle)
       ['failed', 'DOWNLOAD_START', 'downloading'],
       // a new revision may be re-downloaded over a ready model
@@ -67,8 +73,9 @@ describe('nextModelState — model state machine (S3)', () => {
       VERIFY_OK: new Set(['verifying']),
       VERIFY_FAILED: new Set(['verifying']),
       HTTP_ERROR: new Set(['downloading']),
-      GIVE_UP: new Set(['downloading']),
+      GIVE_UP: new Set(['downloading', 'verifying']),
       PURGED: new Set([...MODEL_STATES]),
+      CACHE_HIT: new Set(['absent']),
     };
     for (const from of MODEL_STATES) {
       for (const type of EVENTS) {

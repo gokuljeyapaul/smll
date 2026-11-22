@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { MODEL_SERVER, startModelServer } from './helpers/model-server';
+import { readModelCacheState } from './helpers/model-cache';
 import { runPrivacyAudit, startCapture } from './helpers/privacy';
 
 /**
@@ -24,20 +25,17 @@ async function assertStandardCleanupStillWorks(page: Page): Promise<string> {
   return page.locator('#review-text').inputValue();
 }
 
-/** Nothing from the model may remain in the model cache (purged). */
+/** Nothing from the model may remain in the model cache (purged), in either
+ *  sanctioned backend (OPFS / Cache Storage — see helpers/model-cache.ts). */
 async function assertModelCachePurged(page: Page): Promise<void> {
-  const purged = await page.evaluate(async () => {
-    if (typeof caches === 'undefined') return { empty: true };
-    const names = await caches.keys();
-    const model = names.find((n) => n.startsWith('postclip-model'));
-    if (!model) return { empty: true };
-    const keys = await (await caches.open(model)).keys();
-    return { empty: keys.length === 0 };
-  });
-  expect(purged.empty, 'the bad file must be purged from the model cache').toBe(true);
+  const state = await readModelCacheState(page);
+  if (state.opfsEntryBytes !== null || state.cacheStorageEntryBytes !== null || state.totalEntries !== 0) {
+    throw new Error(`the bad model file must be purged from the model cache, saw ${JSON.stringify(state)}`);
+  }
 }
 
 test('a13_wrong_hash_falls_back_with_banner_and_purges', async ({ page }) => {
+  test.setTimeout(240_000); // a real 397 MB wrong-hash download + OCR pick
   await startModelServer();
   const capture = startCapture(page);
 
@@ -55,6 +53,7 @@ test('a13_wrong_hash_falls_back_with_banner_and_purges', async ({ page }) => {
 });
 
 test('a13_truncated_file_falls_back_and_purges', async ({ page }) => {
+  test.setTimeout(240_000); // a real 198 MB truncated download + OCR pick
   await startModelServer();
   const capture = startCapture(page);
 
@@ -66,7 +65,7 @@ test('a13_truncated_file_falls_back_and_purges', async ({ page }) => {
   await assertModelCachePurged(page);
   await assertStandardCleanupStillWorks(page);
 
-  const audit = await runPrivacyAudit(page, capture, []);
+  const audit = await runPrivacyAudit(page, capture, [], [MODEL_SERVER]);
   expect(audit.violations, JSON.stringify(audit.violations, null, 2)).toEqual([]);
 });
 
@@ -88,6 +87,7 @@ test('a13_unsupported_browser_banner_and_picker_works', async ({ page }) => {
 });
 
 test('a13_model_404_falls_back_and_purges', async ({ page }) => {
+  test.setTimeout(240_000); // banner + OCR pick on a slower machine
   await startModelServer();
 
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-404`);

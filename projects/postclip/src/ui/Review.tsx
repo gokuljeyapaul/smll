@@ -6,6 +6,7 @@ import {
   type ExportFormat,
 } from '../output/payload';
 import type { OcrStatus } from '../App';
+import type { ModelState } from '../model/state';
 
 export interface ReviewProps {
   text: string;
@@ -15,6 +16,8 @@ export interface ReviewProps {
   /** Informational note (e.g. the huge-image downscale notice). */
   note: string | null;
   imageFile: File | null;
+  /** S3 (UC09): which cleanup mode the review used — the visible "says so". */
+  modelState: ModelState;
   onTextChange: (text: string) => void;
   onStartOver: () => void;
 }
@@ -25,7 +28,7 @@ const EXPORT_ITEMS: { format: ExportFormat; id: string; label: string }[] = [
   { format: 'json', id: 'export-json', label: 'Export as JSON (.json)' },
 ];
 
-export function Review({ text, rawText, status, note, imageFile, onTextChange, onStartOver }: ReviewProps) {
+export function Review({ text, rawText, status, note, imageFile, modelState, onTextChange, onStartOver }: ReviewProps) {
   const [copied, setCopied] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
@@ -82,6 +85,11 @@ export function Review({ text, rawText, status, note, imageFile, onTextChange, o
           {note}
         </p>
       ) : null}
+      <p className="cleanup-mode" id="cleanup-mode">
+        {modelState === 'ready'
+          ? 'Tidy-up model ready — tidier cleanup, works offline.'
+          : "Standard cleanup — the tidy-up model isn't set up on this device."}
+      </p>
       <label className="review-label" htmlFor="review-text">
         Cleaned text — edit anything you like
       </label>

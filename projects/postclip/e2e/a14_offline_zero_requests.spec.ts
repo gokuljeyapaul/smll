@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { MODEL_SERVER, startModelServer } from './helpers/model-server';
+import { expectModelCachedExactly } from './helpers/model-cache';
 import { formatNetworkLog, startNetworkLog } from './helpers/network';
 import { waitForAppShellReady } from './helpers/pwa';
-import { MODEL_CACHE_NAME, PINNED_MODEL } from '../src/model/manifest';
 
 /**
  * UC14 (A14, web platform — Chromium AND WebKit): with the model cached,
@@ -18,22 +18,24 @@ import { MODEL_CACHE_NAME, PINNED_MODEL } from '../src/model/manifest';
  * re-verifies A02's pick path offline, in both engines.
  */
 test('a14_offline_processing_zero_network_requests', async ({ page }) => {
+  test.setTimeout(300_000); // real download + offline OCR
   await startModelServer();
 
-  // Online first: download the pinned model and let the shell precache.
+  // Online first: let the service worker finish its COMPLETE precache
+  // BEFORE any download or offline step (going offline mid-install would
+  // fail the install and leave no shell to serve).
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model`);
+  const shell = await waitForAppShellReady(page);
+  const precacheEntries = shell.manifestCount;
+
+  // Download the pinned model with the shell already ready.
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 120_000 });
 
-  const cachedBytes = await page.evaluate(
-    async ({ cacheName, url }) => {
-      const cache = await caches.open(cacheName);
-      const res = await cache.match(url);
-      return res ? (await res.blob()).size : null;
-    },
-    { cacheName: MODEL_CACHE_NAME, url: `${MODEL_SERVER}/model` },
-  );
-  expect(cachedBytes, 'the cached model must be the exact pinned size').toBe(PINNED_MODEL.sizeBytes);
+  // The cached model is verified-and-cached (exactly one entry, pinned size,
+  // in whichever backend this engine uses) BEFORE going offline.
+  const cacheState = await expectModelCachedExactly(page);
+  console.log(`a14: model cached via ${cacheState.backend}`);
 
   // The request log covers everything from here: offline reload + processing.
   const net = startNetworkLog(page);
@@ -41,7 +43,25 @@ test('a14_offline_processing_zero_network_requests', async ({ page }) => {
   await page.context().setOffline(true);
   await page.reload();
   await expect(page.getByRole('heading', { name: 'PostClip' })).toBeVisible({ timeout: 60_000 });
-  await waitForAppShellReady(page);
+
+  // The offline shell is complete and worker-served, asserted WITHOUT any
+  // network fetch: the app-shell cache still holds every entry the online
+  // precache manifest listed (captured above), and the worker is active.
+  // (The S2 helper fetches /precache-manifest.js, which is fine online but
+  // is not itself a precache key — offline it would be a network fetch.)
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(async () => {
+          const names = await caches.keys();
+          const shellName = names.find((n) => n.startsWith('precache'));
+          const cached = shellName ? (await (await caches.open(shellName)).keys()).length : -1;
+          const reg = await navigator.serviceWorker.getRegistration();
+          return { cached, active: !!reg?.active };
+        }),
+      { timeout: 120_000, message: 'the complete app shell is served offline from the worker' },
+    )
+    .toEqual({ cached: precacheEntries, active: true });
 
   // The cached model is found OFFLINE by reading Cache Storage only —
   // ready, zero fetches (any fetch would also be a failed request below).
