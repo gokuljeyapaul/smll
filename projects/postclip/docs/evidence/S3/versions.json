@@ -1,0 +1,47 @@
+{
+  "slice": "S3",
+  "toolchain": {
+    "node": "v26.12.1",
+    "npm_lockfile": "package-lock.json (npm ci)",
+    "vite": "8.3.8",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1",
+    "eslint": "9 (typescript-eslint 8.73.0)",
+    "react": "19.3.1",
+    "playwright": "1.65.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright build webkit-2388)",
+    "ffmpeg": "ffprobe from the runner's PATH (video durations in video_manifest.json)"
+  },
+  "pinned_model": {
+    "choice": "Qwen3-0.6B-Q4_K_M.gguf from unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b — the smallest plausible D5 candidate (Apache-2.0), 396,705,472 bytes (377.0 MiB), single GGUF file",
+    "rejected_alternatives": {
+      "Qwen/Qwen3-0.6B-GGUF official": "only Q8_0 (639,446,688 bytes) — larger than needed for a first pin",
+      "bartowski/Qwen_Qwen3-0.6B-GGUF": "Q4_K_M is 484,220,320 bytes — larger than the unsloth build for the same quant",
+      "Llama 3.2 1B": "community license, larger — S3 pins the smallest plausible candidate; S4's measurement may re-pin"
+    },
+    "sha256_provenance": "recorded from HF's LFS x-linked-etag for the pinned revision AND reproduced from the real downloaded bytes (sha256sum + scripts/fetch_model.mjs) — see docs/evidence/S3/model-manifest.json"
+  },
+  "storage_backend_decision": {
+    "summary": "The model cache uses OPFS where it works and Cache Storage where OPFS is broken, selected at runtime by a real 4 KiB write probe (src/model/store.ts). Both are plan-sanctioned (\"Cache Storage or OPFS\").",
+    "measurements": {
+      "chromium_cache_storage_put_397MB": "FAILS: \"UnknownError: Failed to execute 'put' on 'Cache': Unexpected internal error.\" (headless Chromium 159) — the original single-backend design could not work here",
+      "chromium_opfs_streaming": "WORKS: stream chunks to a temp file while hashing (constant memory), promote temp -> <sha>.gguf after verification; download+write 5.0 s, promote 2.1 s, read-back 396,705,472 bytes, purge works",
+      "webkit_opfs_async_writable": "BROKEN in this build at EVERY size (4 KiB .. 32 MiB): \"The operation failed for an unknown transient reason\" — hence the runtime probe",
+      "webkit_cache_storage_put_397MB": "WORKS: 396,705,472 bytes stored in ~8.1 s (quota 1 GiB, usage 438 MiB)",
+      "webkit_full_buffer_paths": "assembling the whole 397 MiB in JS memory (chunks+blob+arrayBuffer ~1.2 GiB) OOMs the WebKit renderer — the manager streams chunks into the temp instead and never materializes the full file in JS"
+    }
+  },
+  "sha256_implementation": {
+    "choice": "hand-written incremental SHA-256 (src/model/sha256.ts), differential-tested against node:crypto on canonical vectors, block boundaries, random splits and ~1 MiB buffers",
+    "rejected_alternatives": {
+      "crypto.subtle.digest": "only digests COMPLETE buffers — useless for hashing while a resumable download streams; also forces the whole 397 MiB into JS memory on WebKit (measured OOM)"
+    },
+    "measured_throughput": "~23 MB/s single-threaded on this host (64 MiB probe) — the download is hash-bound on fast links (~17 s for the pinned file); the hash runs between chunk reads so the UI keeps painting (manager yields to the renderer every ~250 ms)"
+  },
+  "test_infra": {
+    "serve_model": "scripts/serve_model.mjs — real pinned file + /model-slow (paced ~100 ms per 8 MiB), /model-wrong-hash (one byte flipped), /model-truncated (honest half-size body), /model-kill-fresh (paced destroy at ~25% so the client holds a non-zero offset, resumed Range requests served), /model-404; every request logged with its Range header",
+    "test_only_overrides": "?testModelUrl= and ?testProbe=unsupported exist ONLY in test builds (POSTCLIP_TEST_BUILD=1 npm run build); the production build inlines __POSTCLIP_TEST_BUILD__=false and the bundler eliminates the branches (A29; verified by the S5 bundle inspection)"
+  },
+  "no_new_npm_dependencies": "S3 adds ZERO npm dependencies — the state machine, streaming sha256, download/resume logic, storage backends and the local model server are hand-built on platform APIs"
+}

@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="164" failures="0" errors="0" time="0.81943107">
+    <testsuite name="fixtures/manifest.test.ts" timestamp="2026-11-22T08:12:31.281Z" hostname="a3a76cec2ba0" tests="10" failures="0" errors="0" skipped="0" time="0.054680377">
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; has a manifest.json flagged synthetic" time="0.005344253">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; lists exactly the 25 S1 fixtures" time="0.003435566">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; every fixture file exists, matches its sha256, is small, and is flagged synthetic" time="0.018533674">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; total committed fixture bytes stay under 6 MB" time="0.002463014">
+            <system-out>
+fixture bytes total: 1557715
+
+            </system-out>
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; every entry has a gold JSON with the fields its kind requires" time="0.013152561">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; the fixture families the plan names for S1 are all present" time="0.001956348">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; the huge fixture is &gt;= 4000 px on its longest side" time="0.001523513">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; the corrupt fixture carries a PNG magic but is not a decodable image" time="0.000869658">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; no stray fixture files without a manifest entry" time="0.003778238">
+        </testcase>
+        <testcase classname="fixtures/manifest.test.ts" name="fixture manifest lint (A31) &gt; every gold JSON on disk belongs to a manifest entry" time="0.001120265">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/cleanup/cleanup.test.ts" timestamp="2026-11-22T08:12:31.289Z" hostname="a3a76cec2ba0" tests="31" failures="0" errors="0" skipped="0" time="0.112909638">
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; removes the action row, including Follow/Connect variants" time="0.006767485">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; is English-only by design: localized chrome (German) is NOT cleaned — those posts are rejected by the language gate before cleanup ever runs" time="0.000631013">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; removes promoted/sponsored/suggested labels" time="0.000496715">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; removes reaction-count lines in their OCR separator variants" time="0.006431164">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; removes the handle+time meta line in every separator OCR produces" time="0.000748746">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; removes the author header line directly above the meta line" time="0.000651511">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; removes symbol-only lines like the overflow dots" time="0.00184221">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; never removes body content: bullets, hashtags, numbers, mentions stay" time="0.003518825">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — UI-chrome rules (S1) &gt; keeps body lines that merely contain chrome words" time="0.000793091">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — line-break repair (S1) &gt; joins a wrapped sentence: line without end punctuation + lowercase continuation" time="0.000564234">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — line-break repair (S1) &gt; de-hyphenates a word wrapped across lines" time="0.000252482">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — line-break repair (S1) &gt; does not join list items or new sentences" time="0.000297377">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanupOcrText — line-break repair (S1) &gt; does not join when the next line starts uppercase" time="0.000335078">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; covers all 16 English fixtures" time="0.000559486">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; blur01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.006095493">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; chrome01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.00331177">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; chrome02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.001964814">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; clean01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.006825014">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; clean02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.005455815">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; clean03: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.004263573">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; clean04: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.001129633">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; clean05: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.003612744">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; clean06: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.001696773">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; dark01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.001393835">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; dark02: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.009414127">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; emoji01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.001577326">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; heavychrome01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.005359081">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; huge01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.001654883">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; longpost01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.016354062">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; lowcontrast01: keeps the body, removes all chrome, fabricates nothing (F1=1, leakage=0, fabricated=0)" time="0.001370391">
+        </testcase>
+        <testcase classname="src/cleanup/cleanup.test.ts" name="cleanup quality on gold input — every English fixture (S1) &gt; output tokens are always a subset of the input tokens (multiset)" time="0.013563514">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/evidence/evidence-integrity-s1.test.ts" timestamp="2026-11-22T08:12:31.304Z" hostname="a3a76cec2ba0" tests="4" failures="0" errors="0" skipped="0" time="0.038969723">
+        <testcase classname="src/evidence/evidence-integrity-s1.test.ts" name="evidence integrity (A25, S1) &gt; covers every S1 acceptance ID (and the re-verified S0 IDs) with a valid status" time="0.003716462">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s1.test.ts" name="evidence integrity (A25, S1) &gt; every PASS points at JUnit testcases that exist and passed, per required engine" time="0.019405716">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s1.test.ts" name="evidence integrity (A25, S1) &gt; non-PASS entries carry notes, and referenced videos exist in the manifest" time="0.012424674">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s1.test.ts" name="evidence integrity (A25, S1) &gt; records a source digest over the shipped source tree" time="0.000555198">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/evidence/evidence-integrity-s2.test.ts" timestamp="2026-11-22T08:12:31.305Z" hostname="a3a76cec2ba0" tests="4" failures="0" errors="0" skipped="0" time="0.071368726">
+        <testcase classname="src/evidence/evidence-integrity-s2.test.ts" name="evidence integrity (A25, S2) &gt; covers every S2 acceptance ID (and the re-verified S0/S1 IDs) with a valid status" time="0.005359652">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s2.test.ts" name="evidence integrity (A25, S2) &gt; every PASS points at JUnit testcases that exist and passed, per required engine" time="0.038568439">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s2.test.ts" name="evidence integrity (A25, S2) &gt; non-PASS entries carry notes, and referenced videos exist in the manifest" time="0.024070034">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s2.test.ts" name="evidence integrity (A25, S2) &gt; records a source digest over the shipped source tree" time="0.000759677">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/evidence/evidence-integrity-s3.test.ts" timestamp="2026-11-22T08:12:31.308Z" hostname="a3a76cec2ba0" tests="4" failures="0" errors="0" skipped="0" time="0.085812467">
+        <testcase classname="src/evidence/evidence-integrity-s3.test.ts" name="evidence integrity (A25, S3) &gt; covers every S3 acceptance ID (and the re-verified S0/S1/S2 IDs) with a valid status" time="0.005499559">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s3.test.ts" name="evidence integrity (A25, S3) &gt; every PASS points at JUnit testcases that exist and passed, per required engine" time="0.058878937">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s3.test.ts" name="evidence integrity (A25, S3) &gt; non-PASS entries carry notes, and referenced videos exist in the manifest" time="0.0163066">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity-s3.test.ts" name="evidence integrity (A25, S3) &gt; records a source digest over the shipped source tree" time="0.00219374">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/evidence/evidence-integrity.test.ts" timestamp="2026-11-22T08:12:31.310Z" hostname="a3a76cec2ba0" tests="4" failures="0" errors="0" skipped="0" time="0.029177425">
+        <testcase classname="src/evidence/evidence-integrity.test.ts" name="evidence integrity (A25) &gt; covers every S0 acceptance ID with a valid status" time="0.006337355">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity.test.ts" name="evidence integrity (A25) &gt; every PASS points at JUnit testcases that exist and passed, per required engine" time="0.010132256">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity.test.ts" name="evidence integrity (A25) &gt; non-PASS entries carry notes, and referenced videos exist in the manifest" time="0.009301383">
+        </testcase>
+        <testcase classname="src/evidence/evidence-integrity.test.ts" name="evidence integrity (A25) &gt; records a source digest over the shipped source tree" time="0.000911086">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/image/validate.test.ts" timestamp="2026-11-22T08:12:31.314Z" hostname="a3a76cec2ba0" tests="10" failures="0" errors="0" skipped="0" time="0.011529047">
+        <testcase classname="src/image/validate.test.ts" name="sniffImageHeader over real fixture bytes (A07) &gt; reads PNG dimensions from a real fixture" time="0.003273336">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="sniffImageHeader over real fixture bytes (A07) &gt; parses the corrupt fixture structurally (valid magic + IHDR; decode catches the truncation)" time="0.0006772">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="sniffImageHeader over real fixture bytes (A07) &gt; returns null for the non-image text file" time="0.000507297">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="sniffImageHeader over real fixture bytes (A07) &gt; reads the tiny fixture as 64×64" time="0.000597729">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="sniffImageHeader over real fixture bytes (A07) &gt; reads the huge fixture as &gt;= 4000 px wide" time="0.000838357">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="sniffImageHeader over real fixture bytes (A07) &gt; parses JPEG, GIF, BMP and WebP headers from minimal real byte sequences" time="0.000747695">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="image error classes and messages (A07) &gt; has a distinct, specific, kind message per error code" time="0.000809883">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="image error classes and messages (A07) &gt; downscale note is user-facing and mentions downsizing" time="0.000336972">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="planDownscale (A07) &gt; flags images over the OCR side limit and preserves aspect ratio" time="0.000586108">
+        </testcase>
+        <testcase classname="src/image/validate.test.ts" name="planDownscale (A07) &gt; leaves normal screenshots untouched" time="0.000577069">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/ingest/route.test.ts" timestamp="2026-11-22T08:12:31.318Z" hostname="a3a76cec2ba0" tests="16" failures="0" errors="0" skipped="0" time="0.029406922">
+        <testcase classname="src/ingest/route.test.ts" name="imageFileFromDataTransferFiles — paste event routing (A09) &gt; returns the first image file from a paste event" time="0.004561672">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="imageFileFromDataTransferFiles — paste event routing (A09) &gt; returns the only image when the paste carries several files" time="0.000545279">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="imageFileFromDataTransferFiles — paste event routing (A09) &gt; returns null for a text-only paste so textarea pasting is never hijacked" time="0.001876456">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="imageFileFromClipboardRead — Paste button routing (A09) &gt; picks the clipboard image and returns a named File" time="0.006154617">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="imageFileFromClipboardRead — Paste button routing (A09) &gt; returns null when the clipboard has no image (only text)" time="0.000860159">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="imageFileFromClipboardRead — Paste button routing (A09) &gt; propagates a getType failure instead of handing the pipeline half-read data" time="0.00371553">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="shareTargetFileFromMessage — service-worker message routing (A08) &gt; turns a well-formed share-image message into the pipeline File" time="0.001532009">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="shareTargetFileFromMessage — service-worker message routing (A08) &gt; keeps working when the OS share carried no filename (default name)" time="0.000645129">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="shareTargetFileFromMessage — service-worker message routing (A08) &gt; fail closed: rejects wrong message types" time="0.000571419">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="shareTargetFileFromMessage — service-worker message routing (A08) &gt; fail closed: rejects a share without an image blob" time="0.002359906">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="shareTargetFileFromMessage — service-worker message routing (A08) &gt; fail closed: rejects a non-image mime" time="0.00048834">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="clipboardReadErrorMessage — permission states (A10) &gt; explains a DENIED clipboard-read with the file-picker path" time="0.000478131">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="clipboardReadErrorMessage — permission states (A10) &gt; explains an UNSUPPORTED clipboard with the file-picker path" time="0.000528829">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="clipboardReadErrorMessage — permission states (A10) &gt; never fails silent: unknown failures still get the fail-closed message" time="0.000277228">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="clipboardPermissionHint — proactive Paste-button hint (A10) &gt; warns when the permission state is known-denied" time="0.000240648">
+        </testcase>
+        <testcase classname="src/ingest/route.test.ts" name="clipboardPermissionHint — proactive Paste-button hint (A10) &gt; stays quiet for granted, prompt and not-queryable states" time="0.000315991">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/language/gate.test.ts" timestamp="2026-11-22T08:12:31.328Z" hostname="a3a76cec2ba0" tests="10" failures="0" errors="0" skipped="0" time="0.048108836">
+        <testcase classname="src/language/gate.test.ts" name="detectEnglish — gate behavior (S1) &gt; rejects text with too few words (fail closed, honest reason)" time="0.006890589">
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="detectEnglish — gate behavior (S1) &gt; rejects empty text" time="0.000453323">
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="detectEnglish — gate behavior (S1) &gt; rejects non-Latin scripts before the stopword check" time="0.0040933">
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="detectEnglish — gate behavior (S1) &gt; accepts a plain English sentence" time="0.000558504">
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="detectEnglish — gate behavior (S1) &gt; exposes a clear, kind user-facing rejection message" time="0.000537233">
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="language gate confusion matrix over fixtures (A06) &gt; covers the 16 English and 5 German/Spanish fixtures" time="0.003665014">
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="language gate confusion matrix over fixtures (A06) &gt; accepts every English fixture (&gt;= 95% required)" time="0.011839708">
+            <system-out>
+language gate: English accepted 16/16 = 100.0%
+  en blur01: ratio=0.333 words=33 accepted=true
+  en chrome01: ratio=0.255 words=47 accepted=true
+  en chrome02: ratio=0.273 words=33 accepted=true
+  en clean01: ratio=0.405 words=42 accepted=true
+  en clean02: ratio=0.400 words=75 accepted=true
+  en clean03: ratio=0.175 words=40 accepted=true
+  en clean04: ratio=0.346 words=26 accepted=true
+  en clean05: ratio=0.350 words=40 accepted=true
+  en clean06: ratio=0.342 words=38 accepted=true
+  en dark01: ratio=0.306 words=36 accepted=true
+  en dark02: ratio=0.341 words=44 accepted=true
+  en emoji01: ratio=0.306 words=36 accepted=true
+  en heavychrome01: ratio=0.250 words=48 accepted=true
+  en huge01: ratio=0.441 words=34 accepted=true
+  en longpost01: ratio=0.457 words=151 accepted=true
+  en lowcontrast01: ratio=0.463 words=41 accepted=true
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="language gate confusion matrix over fixtures (A06) &gt; rejects every German and Spanish fixture (zero non-English accepted)" time="0.006442526">
+            <system-out>
+language gate: non-English accepted 0/5
+  de de01: ratio=0.024 words=42 reason=stopwords
+  de de02: ratio=0.022 words=46 reason=stopwords
+  de de03: ratio=0.033 words=61 reason=stopwords
+  es es01: ratio=0.024 words=41 reason=stopwords
+  es es02: ratio=0.019 words=53 reason=stopwords
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="language gate confusion matrix over fixtures (A06) &gt; rejects the bad-input fixtures (empty text) as too-short, never accepts them" time="0.003718395">
+        </testcase>
+        <testcase classname="src/language/gate.test.ts" name="language gate confusion matrix over fixtures (A06) &gt; separates English from non-English with a margin around the threshold" time="0.006089442">
+            <system-out>
+language gate margins: threshold=0.12 min(en)=0.175 max(non-en)=0.033
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/model/download.test.ts" timestamp="2026-11-22T08:12:31.341Z" hostname="a3a76cec2ba0" tests="10" failures="0" errors="0" skipped="0" time="0.009685315">
+        <testcase classname="src/model/download.test.ts" name="checkIntegrity — verify-before-cache judgment (S3) &gt; accepts exact size with the pinned sha256" time="0.003087764">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="checkIntegrity — verify-before-cache judgment (S3) &gt; rejects a checksum mismatch as checksum-mismatch" time="0.000363403">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="checkIntegrity — verify-before-cache judgment (S3) &gt; judges a truncated (shorter) stream as size-mismatch, before hashing matters" time="0.000374824">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="checkIntegrity — verify-before-cache judgment (S3) &gt; judges an oversized stream as size-mismatch" time="0.000356018">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="planResume — interrupted download decision (S3) &gt; resumes from the received offset while attempts remain and ranges are supported" time="0.000470837">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="planResume — interrupted download decision (S3) &gt; restarts from zero when nothing was received yet" time="0.000263091">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="planResume — interrupted download decision (S3) &gt; restarts from zero when the server does not support ranges" time="0.000371699">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="planResume — interrupted download decision (S3) &gt; gives up once the attempt budget is spent" time="0.000490194">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="parseRangeStart (S3) &gt; parses a bytes=N- start offset" time="0.000677852">
+        </testcase>
+        <testcase classname="src/model/download.test.ts" name="parseRangeStart (S3) &gt; returns -1 for no header or a malformed one" time="0.000359305">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/model/manager.test.ts" timestamp="2026-11-22T08:12:31.346Z" hostname="a3a76cec2ba0" tests="15" failures="0" errors="0" skipped="0" time="0.152995648">
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; downloads the pinned file with streaming progress and ends ready (A12)" time="0.099719435">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; a checksum mismatch purges the cache and ends failed (A13)" time="0.010668327">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)" time="0.002492349">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; an HTTP error (404) fails closed without caching (A13)" time="0.002405073">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; an interrupted download RESUMES with a Range request and ends ready (A12)" time="0.006504223">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; a server that ignores Range makes the app restart cleanly from zero (A12)" time="0.002914263">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; gives up after the attempt budget and fails closed with a purge (A12/A13)" time="0.002873445">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; a cached model is ready without any network (A14)" time="0.001608284">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; a stale cached entry with the wrong size is re-downloaded and replaced" time="0.00446105">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; an unsupported browser ends unsupported without any fetch (A13)" time="0.00182074">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; a missing model store (no OPFS, no Cache Storage) ends unsupported (A13)" time="0.002222735">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; check() with no cache and a supported browser stays absent (no network)" time="0.00130191">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; readCached() returns the cached bytes (the S4 runtime entry point)" time="0.002165075">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; concurrent download() calls are single-flight (one download, one promote)" time="0.003838794">
+        </testcase>
+        <testcase classname="src/model/manager.test.ts" name="ModelManager — download, verify, cache, fallback (S3) &gt; a failed download can be retried back to ready (the Try again path)" time="0.002333697">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/model/manifest.test.ts" timestamp="2026-11-22T08:12:31.363Z" hostname="a3a76cec2ba0" tests="7" failures="0" errors="0" skipped="0" time="0.008787823">
+        <testcase classname="src/model/manifest.test.ts" name="PINNED_MODEL manifest invariants (S3) &gt; pins repo, revision, url, sha256 and size consistently" time="0.002992522">
+        </testcase>
+        <testcase classname="src/model/manifest.test.ts" name="PINNED_MODEL manifest invariants (S3) &gt; records the license (plan D5: license recorded for the pinned candidate)" time="0.000510512">
+        </testcase>
+        <testcase classname="src/model/manifest.test.ts" name="PINNED_MODEL manifest invariants (S3) &gt; the model cache name is on the A15 storage allow-list" time="0.000437033">
+        </testcase>
+        <testcase classname="src/model/manifest.test.ts" name="PINNED_MODEL manifest invariants (S3) &gt; modelUrl() is the pinned production URL when no test override applies" time="0.000311153">
+        </testcase>
+        <testcase classname="src/model/manifest.test.ts" name="parseTestFlags — test-only overrides (S3, A29) &gt; parses an http(s) test model URL" time="0.001399788">
+        </testcase>
+        <testcase classname="src/model/manifest.test.ts" name="parseTestFlags — test-only overrides (S3, A29) &gt; rejects non-http schemes and malformed URLs (fail closed)" time="0.000433216">
+        </testcase>
+        <testcase classname="src/model/manifest.test.ts" name="parseTestFlags — test-only overrides (S3, A29) &gt; parses the unsupported-probe override" time="0.000385995">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/model/sha256.test.ts" timestamp="2026-11-22T08:12:31.365Z" hostname="a3a76cec2ba0" tests="5" failures="0" errors="0" skipped="0" time="0.094865967">
+        <testcase classname="src/model/sha256.test.ts" name="Sha256Incremental — streaming sha256 (S3) &gt; digests the canonical vectors (empty, &quot;abc&quot;, fox)" time="0.00492827">
+        </testcase>
+        <testcase classname="src/model/sha256.test.ts" name="Sha256Incremental — streaming sha256 (S3) &gt; agrees with node:crypto on every block-length boundary" time="0.006408511">
+        </testcase>
+        <testcase classname="src/model/sha256.test.ts" name="Sha256Incremental — streaming sha256 (S3) &gt; agrees with node:crypto across multi-update splits (including empty updates)" time="0.012911202">
+        </testcase>
+        <testcase classname="src/model/sha256.test.ts" name="Sha256Incremental — streaming sha256 (S3) &gt; reset() starts a fresh digest over new data" time="0.000715254">
+        </testcase>
+        <testcase classname="src/model/sha256.test.ts" name="Sha256Incremental — streaming sha256 (S3) &gt; hashes a ~1 MiB random buffer byte-for-byte like node:crypto" time="0.067358264">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/model/state.test.ts" timestamp="2026-11-22T08:12:31.368Z" hostname="a3a76cec2ba0" tests="2" failures="0" errors="0" skipped="0" time="0.007873723">
+        <testcase classname="src/model/state.test.ts" name="nextModelState — model state machine (S3) &gt; implements the exact legal transition table" time="0.004275176">
+        </testcase>
+        <testcase classname="src/model/state.test.ts" name="nextModelState — model state machine (S3) &gt; keeps the current state for every event outside the table (fail closed)" time="0.001439683">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/ocr/normalize.test.ts" timestamp="2026-11-22T08:12:31.370Z" hostname="a3a76cec2ba0" tests="6" failures="0" errors="0" skipped="0" time="0.008752647">
+        <testcase classname="src/ocr/normalize.test.ts" name="normalizeOcrLines — OCR result normalizer (S0) &gt; trims leading and trailing whitespace from each line" time="0.003738002">
+        </testcase>
+        <testcase classname="src/ocr/normalize.test.ts" name="normalizeOcrLines — OCR result normalizer (S0) &gt; drops empty and whitespace-only lines" time="0.000369174">
+        </testcase>
+        <testcase classname="src/ocr/normalize.test.ts" name="normalizeOcrLines — OCR result normalizer (S0) &gt; collapses runs of spaces and tabs inside a line to a single space" time="0.000321383">
+        </testcase>
+        <testcase classname="src/ocr/normalize.test.ts" name="normalizeOcrLines — OCR result normalizer (S0) &gt; joins surviving lines with single newlines and trims the result" time="0.000672662">
+        </testcase>
+        <testcase classname="src/ocr/normalize.test.ts" name="normalizeOcrLines — OCR result normalizer (S0) &gt; returns empty output for all-empty input" time="0.000696977">
+        </testcase>
+        <testcase classname="src/ocr/normalize.test.ts" name="normalizeOcrLines — OCR result normalizer (S0) &gt; preserves character content exactly, including punctuation and emoji" time="0.000439357">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/output/payload.test.ts" timestamp="2026-11-22T08:12:31.373Z" hostname="a3a76cec2ba0" tests="11" failures="0" errors="0" skipped="0" time="0.012288364">
+        <testcase classname="src/output/payload.test.ts" name="buildSharePayload — Web Share payload builder (S0) &gt; carries the exact review text, character for character" time="0.002715034">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildSharePayload — Web Share payload builder (S0) &gt; uses the fixed app title" time="0.00030475">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildSharePayload — Web Share payload builder (S0) &gt; never trims or mutates the review text" time="0.000292837">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="copyReviewText — clipboard copy (S0) &gt; writes the exact review text to the clipboard" time="0.001984802">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="copyReviewText — clipboard copy (S0) &gt; rejects when the clipboard refuses, so the UI can surface the failure" time="0.002289252">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildExportPayload — file export builders (S1, A05, A04) &gt; .txt content is exactly the review text, character for character" time="0.000365126">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildExportPayload — file export builders (S1, A05, A04) &gt; .md content is exactly the review text, character for character" time="0.00028824">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildExportPayload — file export builders (S1, A05, A04) &gt; .json content is a deterministic document carrying the exact review text" time="0.00062947">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildExportPayload — file export builders (S1, A05, A04) &gt; the export payload always reflects the CURRENT text, edits included" time="0.000366889">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildExportPayload — file export builders (S1, A05, A04) &gt; filenames are fixed per format and carry no post text" time="0.00033071">
+        </testcase>
+        <testcase classname="src/output/payload.test.ts" name="buildExportPayload — file export builders (S1, A05, A04) &gt; MIME types match the formats" time="0.000291826">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/privacy/audit.test.ts" timestamp="2026-11-22T08:12:31.379Z" hostname="a3a76cec2ba0" tests="15" failures="0" errors="0" skipped="0" time="0.042218422">
+        <testcase classname="src/privacy/audit.test.ts" name="distinctiveTokens (A15) &gt; keeps only &gt;= 6-char non-stopword tokens, deduplicated and lowercased" time="0.015328567">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="distinctiveTokens (A15) &gt; is empty for stopword-only text" time="0.007957632">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; passes a genuinely empty snapshot" time="0.002693282">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; flags post text in localStorage" time="0.0011912">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; flags ANY localStorage entry, even without post text (allow-list: none in S1)" time="0.000683713">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; flags post text in sessionStorage values" time="0.000541142">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; flags cookies" time="0.000791328">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; allows only the app-shell precache and model cache names" time="0.002143724">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; flags IndexedDB databases (no post-derived DB is allowed)" time="0.000584986">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; records unavailable IndexedDB enumeration as a note, not a violation" time="0.001127409">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; flags post tokens in the URL and referrer" time="0.0005672">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="auditStorageSnapshot — allow-list judgment (A15) &gt; negative control: a seeded leak in every storage kind is detected" time="0.00061424">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="redactText — log redaction (A15) &gt; replaces exact secret occurrences with [redacted]" time="0.002197357">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="redactText — log redaction (A15) &gt; replaces fragments of the secret (3+ consecutive words), not just the full text" time="0.000490393">
+        </testcase>
+        <testcase classname="src/privacy/audit.test.ts" name="redactText — log redaction (A15) &gt; leaves messages that carry no secret text untouched" time="0.000476878">
+        </testcase>
+    </testsuite>
+</testsuites>

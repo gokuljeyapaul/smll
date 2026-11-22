@@ -1,0 +1,138 @@
+== build:test ==
+fetch_model: Qwen3-0.6B-Q4_K_M.gguf already present and VERIFIED
+fetch_model: sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a size=396705472 (matches src/model/manifest.ts)
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 57 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.63 kB │ gzip:  0.37 kB
+dist/assets/index-D-M3H26b.css    4.83 kB │ gzip:  1.50 kB
+dist/assets/index-Bp3AAlT8.js   269.53 kB │ gzip: 87.15 kB
+
+✓ built in 918ms
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 20 entries, 39.1 MB of build output (incl. 13 ocr-assets)
+== lint ==
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+== video manifest ==
+a01_built_app_loads_home_screen_no_console_errors_chromium: 0.05 MB, 1.3s, junit_verified=true
+a08_share_target_ignores_posts_without_an_image_chromium: 0.06 MB, 2.7s, junit_verified=true
+a08_share_target_receives_image_chromium: 0.16 MB, 5.8s, junit_verified=true
+a10_denied_paste_explains_and_picker_works_chromium: 0.11 MB, 4.2s, junit_verified=true
+a11_installable_manifest_and_sw_registered_chromium: 0.06 MB, 2.4s, junit_verified=true
+a11_offline_ocr_after_first_load_chromium: 0.15 MB, 5.2s, junit_verified=true
+a11_offline_reload_app_shell_loads_chromium: 0.12 MB, 4.5s, junit_verified=true
+a12_interrupted_download_resumes_chromium: 0.52 MB, 28.5s, junit_verified=true
+a12_model_downloads_verifies_caches_chromium: 0.50 MB, 28s, junit_verified=true
+a13_wrong_hash_falls_back_with_banner_and_purges_chromium: 0.49 MB, 24.1s, junit_verified=true
+a13_unsupported_browser_banner_and_picker_works_chromium: 0.09 MB, 3.9s, junit_verified=true
+a13_truncated_file_falls_back_and_purges_chromium: 0.29 MB, 14.5s, junit_verified=true
+a13_model_404_falls_back_and_purges_chromium: 0.11 MB, 5s, junit_verified=true
+a14_offline_processing_zero_network_requests_chromium: 0.58 MB, 28.8s, junit_verified=true
+a15_audit_negative_control_detects_seeded_leak_chromium: 0.04 MB, 1.5s, junit_verified=true
+a15_no_storage_log_request_leaks_after_flows_chromium: 0.12 MB, 4.8s, junit_verified=true
+eval_cleanup_body_f1_standard_set_chromium: 1.01 MB, 26.4s, junit_verified=true
+eval_ocr_cer_clean_set_chromium: 0.46 MB, 13s, junit_verified=true
+s0_negative_corrupt_input_fails_closed_chromium: 0.08 MB, 1.3s, junit_verified=true
+uc01_pick_ocr_review_share_chromium: 0.09 MB, 4.1s, junit_verified=true
+uc03_paste_button_processes_clipboard_image_chromium: 0.10 MB, 4.7s, junit_verified=true
+uc03_paste_event_processes_pasted_file_chromium: 0.11 MB, 4.7s, junit_verified=true
+uc05_edit_reflects_in_payloads_chromium: 0.13 MB, 5s, junit_verified=true
+uc07_export_downloads_md_txt_json_chromium: 0.10 MB, 4.2s, junit_verified=true
+uc10_non_english_rejected_no_cleanup_chromium: 0.26 MB, 5.9s, junit_verified=true
+uc11_bad_input_error_states_chromium: 0.16 MB, 4.7s, junit_verified=true
+uc11_huge_downscaled_before_ocr_chromium: 0.10 MB, 4.6s, junit_verified=true
+a01_built_app_loads_home_screen_no_console_errors_webkit: 0.01 MB, 1.3s, junit_verified=true
+a11_installable_manifest_and_sw_registered_webkit: 0.05 MB, 1.7s, junit_verified=true
+a11_offline_ocr_after_first_load_webkit: 0.19 MB, 6.8s, junit_verified=true
+a11_offline_reload_app_shell_loads_webkit: 0.08 MB, 4.2s, junit_verified=true
+a12_interrupted_download_resumes_webkit: 0.63 MB, 40.4s, junit_verified=true
+a12_model_downloads_verifies_caches_webkit: 0.74 MB, 48.7s, junit_verified=true
+a13_wrong_hash_falls_back_with_banner_and_purges_webkit: 0.56 MB, 31.8s, junit_verified=true
+a13_unsupported_browser_banner_and_picker_works_webkit: 0.09 MB, 4s, junit_verified=true
+a13_truncated_file_falls_back_and_purges_webkit: 0.33 MB, 17.7s, junit_verified=true
+a13_model_404_falls_back_and_purges_webkit: 0.12 MB, 4.8s, junit_verified=true
+a14_offline_processing_zero_network_requests_webkit: 0.81 MB, 47.4s, junit_verified=true
+a15_audit_negative_control_detects_seeded_leak_webkit: 0.05 MB, 1.6s, junit_verified=true
+a15_no_storage_log_request_leaks_after_flows_webkit: 0.13 MB, 4.2s, junit_verified=true
+eval_cleanup_body_f1_standard_set_webkit: 0.96 MB, 21.7s, junit_verified=true
+eval_ocr_cer_clean_set_webkit: 0.43 MB, 9.7s, junit_verified=true
+s0_negative_corrupt_input_fails_closed_webkit: 0.11 MB, 2.2s, junit_verified=true
+uc01_pick_ocr_review_share_webkit: 0.11 MB, 4s, junit_verified=true
+uc05_edit_reflects_in_payloads_webkit: 0.13 MB, 4.3s, junit_verified=true
+uc07_export_downloads_md_txt_json_webkit: 0.10 MB, 3.9s, junit_verified=true
+uc10_non_english_rejected_no_cleanup_webkit: 0.32 MB, 6.3s, junit_verified=true
+uc11_bad_input_error_states_webkit: 0.21 MB, 4.3s, junit_verified=true
+uc11_huge_downscaled_before_ocr_webkit: 0.10 MB, 4s, junit_verified=true
+video_manifest.json updated: 55 videos
+== vitest (unit + evidence integrity; JUnit staged) ==
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run --reporter=default --reporter=junit --outputFile.junit=docs/evidence/S3/junit/host-vitest.staging.xml
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ✓ src/evidence/evidence-integrity-s3.test.ts (4 tests) 86ms
+ ✓ src/model/sha256.test.ts (5 tests) 95ms
+ ✓ src/cleanup/cleanup.test.ts (31 tests) 113ms
+stdout | fixtures/manifest.test.ts > fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB
+fixture bytes total: 1557715
+
+ ✓ fixtures/manifest.test.ts (10 tests) 55ms
+ ✓ src/evidence/evidence-integrity-s2.test.ts (4 tests) 71ms
+ ✓ src/model/manager.test.ts (15 tests) 153ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > accepts every English fixture (>= 95% required)
+language gate: English accepted 16/16 = 100.0%
+  en blur01: ratio=0.333 words=33 accepted=true
+  en chrome01: ratio=0.255 words=47 accepted=true
+  en chrome02: ratio=0.273 words=33 accepted=true
+  en clean01: ratio=0.405 words=42 accepted=true
+  en clean02: ratio=0.400 words=75 accepted=true
+  en clean03: ratio=0.175 words=40 accepted=true
+  en clean04: ratio=0.346 words=26 accepted=true
+  en clean05: ratio=0.350 words=40 accepted=true
+  en clean06: ratio=0.342 words=38 accepted=true
+  en dark01: ratio=0.306 words=36 accepted=true
+  en dark02: ratio=0.341 words=44 accepted=true
+  en emoji01: ratio=0.306 words=36 accepted=true
+  en heavychrome01: ratio=0.250 words=48 accepted=true
+  en huge01: ratio=0.441 words=34 accepted=true
+  en longpost01: ratio=0.457 words=151 accepted=true
+  en lowcontrast01: ratio=0.463 words=41 accepted=true
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+language gate: non-English accepted 0/5
+  de de01: ratio=0.024 words=42 reason=stopwords
+  de de02: ratio=0.022 words=46 reason=stopwords
+  de de03: ratio=0.033 words=61 reason=stopwords
+  es es01: ratio=0.024 words=41 reason=stopwords
+  es es02: ratio=0.019 words=53 reason=stopwords
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+language gate margins: threshold=0.12 min(en)=0.175 max(non-en)=0.033
+
+ ✓ src/evidence/evidence-integrity-s1.test.ts (4 tests) 39ms
+ ✓ src/language/gate.test.ts (10 tests) 48ms
+ ✓ src/privacy/audit.test.ts (15 tests) 42ms
+ ✓ src/ingest/route.test.ts (16 tests) 29ms
+ ✓ src/evidence/evidence-integrity.test.ts (4 tests) 29ms
+ ✓ src/image/validate.test.ts (10 tests) 12ms
+ ✓ src/model/manifest.test.ts (7 tests) 9ms
+ ✓ src/model/download.test.ts (10 tests) 10ms
+ ✓ src/model/state.test.ts (2 tests) 8ms
+ ✓ src/output/payload.test.ts (11 tests) 12ms
+ ✓ src/ocr/normalize.test.ts (6 tests) 9ms
+
+ Test Files  17 passed (17)
+      Tests  164 passed (164)
+   Start at  08:12:27
+   Duration  4.18s (setup 43%, environment 37%, tests 11%, transform 4%, import 3%, worker 2%)
+
+Environment  jsdom was created 17 times · 2.84s total, 37% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+JUNIT report written to /opt/data/workspace/smll/projects/postclip/docs/evidence/S3/junit/host-vitest.staging.xml
+EXIT CODES: model=0 build=0 lint=0 chromium=0 webkit=0 videos=0 unit=0 demo=0

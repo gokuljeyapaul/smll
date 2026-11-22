@@ -1,0 +1,15 @@
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+service-worker-served requests: 7 (not network — see the definition in e2e/helpers/network.ts)
+
+network request log: EMPTY
+
+served by the service worker (precache, no wire):
+- http://localhost:4173/?testModelUrl=http://127.0.0.1:4599/model
+- http://localhost:4173/manifest.webmanifest
+- http://localhost:4173/assets/index-Bp3AAlT8.js
+- http://localhost:4173/assets/index-D-M3H26b.css
+- http://localhost:4173/ocr-assets/worker.min.js
+- http://localhost:4173/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js
+- http://localhost:4173/ocr-assets/eng.traineddata.gz

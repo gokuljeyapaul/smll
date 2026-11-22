@@ -57,6 +57,13 @@ const TESTCASES = [
   'a11_installable_manifest_and_sw_registered',
   'a11_offline_reload_app_shell_loads',
   'a11_offline_ocr_after_first_load',
+  'a12_model_downloads_verifies_caches',
+  'a12_interrupted_download_resumes',
+  'a13_wrong_hash_falls_back_with_banner_and_purges',
+  'a13_truncated_file_falls_back_and_purges',
+  'a13_unsupported_browser_banner_and_picker_works',
+  'a13_model_404_falls_back_and_purges',
+  'a14_offline_processing_zero_network_requests',
 ];
 
 /** Match a video directory name to its testcase. Playwright names video dirs
