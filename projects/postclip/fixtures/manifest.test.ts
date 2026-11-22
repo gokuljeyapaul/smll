@@ -12,6 +12,12 @@
  * chrome). Non-PNG committed files (the .txt non-image fixture, and a .jpg
  * if the generator's JPEG fallback ever fires) are covered by the same
  * hash/size/synthetic checks.
+ *
+ * S4: the set grows to 40 (plan "Fixtures and metrics": variants ≥ 40 by
+ * S4): the ≥ 5 injection posts (gold.injection.markers — the attacker
+ * strings that must never appear in the model's metadata fields, A16), the
+ * non-text photo (a CSS-rendered dusk scene with no text → the no-text
+ * error), slight rotation, tiny text, plus more of the named families.
  */
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
@@ -45,9 +51,10 @@ interface Gold {
   chrome: string[];
   ocr_expected: string[];
   expected_error?: string;
+  injection?: { markers: string[] };
 }
 
-const S1_IDS = [
+const ALL_IDS = [
   // S0
   'clean01', 'clean02', 'clean03', 'clean04', 'clean05', 'clean06',
   'dark01', 'dark02', 'chrome01', 'chrome02',
@@ -57,6 +64,14 @@ const S1_IDS = [
   'emoji01', 'longpost01', 'lowcontrast01', 'blur01', 'huge01', 'heavychrome01',
   // S1 bad inputs
   'blank01', 'tiny01', 'corrupt01', 'nonimage01',
+  // S4 variants (plan "Fixtures and metrics": >= 40 by S4)
+  'clean07', 'clean08', 'dark03',
+  'emoji02', 'longpost02', 'lowcontrast02', 'heavychrome02',
+  'rotate01', 'tinytext01',
+  // S4 bad-input variant: a real non-text photo
+  'photo01',
+  // S4 injection posts (>= 5, A16)
+  'inj01', 'inj02', 'inj03', 'inj04', 'inj05',
 ];
 
 const BAD_INPUT_KINDS: Record<string, string> = {
@@ -64,6 +79,7 @@ const BAD_INPUT_KINDS: Record<string, string> = {
   tiny: 'tiny',
   corrupt: 'corrupt',
   'non-image': 'non-image',
+  photo: 'no-text',
 };
 
 function sha256(path: string): string {
@@ -82,9 +98,10 @@ describe('fixture manifest lint (A31)', () => {
     expect(m.schema).toBe('postclip-fixtures/1');
   });
 
-  it('lists exactly the 25 S1 fixtures', () => {
+  it('lists exactly the 40 S4 fixtures (plan: variants >= 40 by S4)', () => {
     const m = manifest();
-    expect(m.images.map((e) => e.id).sort()).toEqual([...S1_IDS].sort());
+    expect(m.images.map((e) => e.id).sort()).toEqual([...ALL_IDS].sort());
+    expect(m.images.length, 'fixture count').toBeGreaterThanOrEqual(40);
   });
 
   it('every fixture file exists, matches its sha256, is small, and is flagged synthetic', () => {
@@ -140,10 +157,38 @@ describe('fixture manifest lint (A31)', () => {
     }
   });
 
-  it('the fixture families the plan names for S1 are all present', () => {
+  it('the fixture families the plan names for S1 and S4 are all present', () => {
     const kinds = new Set(manifest().images.map((e) => (JSON.parse(readFileSync(join(FIXTURES_DIR, e.gold), 'utf-8')) as Gold).kind));
-    for (const kind of ['clean', 'dark', 'chrome', 'lang-de', 'lang-es', 'emoji', 'longpost', 'lowcontrast', 'blur', 'huge', 'heavychrome', 'blank', 'tiny', 'corrupt', 'non-image']) {
+    for (const kind of [
+      // S1 families
+      'clean', 'dark', 'chrome', 'lang-de', 'lang-es', 'emoji', 'longpost', 'lowcontrast', 'blur', 'huge', 'heavychrome', 'blank', 'tiny', 'corrupt', 'non-image',
+      // S4 families (plan "Fixtures and metrics", >= 40 by S4)
+      'rotation', 'tinytext', 'photo', 'injection',
+    ]) {
       expect(kinds.has(kind), `fixture family ${kind} must be present`).toBe(true);
+    }
+  });
+
+  it('has >= 5 injection fixtures, each with attacker markers and instruction text as content (A16)', () => {
+    const injectionGold = manifest().images
+      .map((e) => JSON.parse(readFileSync(join(FIXTURES_DIR, e.gold), 'utf-8')) as Gold)
+      .filter((g) => g.kind === 'injection');
+    expect(injectionGold.length, 'at least 5 injection fixtures').toBeGreaterThanOrEqual(5);
+    for (const gold of injectionGold) {
+      expect(gold.injection, `${gold.id} must record injection markers`).toBeDefined();
+      expect(gold.injection!.markers.length, `${gold.id} needs at least one marker`).toBeGreaterThan(0);
+      for (const marker of gold.injection!.markers) {
+        expect(typeof marker, `${gold.id} marker must be a string`).toBe('string');
+        // The marker is post CONTENT: it must appear in the expected OCR
+        // text (so the guard's body-faithfulness must keep it there).
+        expect(
+          gold.body.some((line) => line.includes(marker)),
+          `${gold.id} marker ${marker} must appear in the gold body (it is content)`,
+        ).toBe(true);
+        expect(
+          gold.language, `${gold.id} stays an English readable post`,
+        ).toBe('en');
+      }
     }
   });
 

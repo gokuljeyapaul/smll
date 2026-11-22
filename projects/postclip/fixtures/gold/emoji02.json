@@ -1,0 +1,35 @@
+{
+  "id": "emoji02",
+  "kind": "emoji",
+  "theme": "light",
+  "author": "Lina Petrova",
+  "handle": "@lina-p",
+  "language": "en",
+  "body": [
+    "Checklist for launch week: 🧪 tests green, 📦 bundle small, 🔒 no storage leaks.",
+    "• ship it Monday",
+    "• watch it Tuesday",
+    "• sleep Wednesday 😴",
+    "What is on your checklist? #launch #checklist"
+  ],
+  "chrome": [
+    "@lina-p",
+    "4h",
+    "Like",
+    "Comment",
+    "Share",
+    "310 reactions · 12 comments"
+  ],
+  "ocr_expected": [
+    "Lina Petrova",
+    "@lina-p · 4h",
+    "Checklist for launch week: 🧪 tests green, 📦 bundle small, 🔒 no storage leaks.",
+    "• ship it Monday",
+    "• watch it Tuesday",
+    "• sleep Wednesday 😴",
+    "What is on your checklist? #launch #checklist",
+    "310 reactions · 12 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

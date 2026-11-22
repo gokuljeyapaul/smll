@@ -1,0 +1,29 @@
+{
+  "id": "rotate01",
+  "kind": "rotation",
+  "theme": "light",
+  "author": "Nia Robinson",
+  "handle": "@nia-r",
+  "language": "en",
+  "body": [
+    "This screenshot is tilted by two degrees and the reader still got every word.",
+    "A robust pipeline forgives the camera, not the content. #ocr"
+  ],
+  "chrome": [
+    "@nia-r",
+    "6h",
+    "Like",
+    "Comment",
+    "Share",
+    "23 reactions · 1 comment"
+  ],
+  "ocr_expected": [
+    "Nia Robinson",
+    "@nia-r · 6h",
+    "This screenshot is tilted by two degrees and the reader still got every word.",
+    "A robust pipeline forgives the camera, not the content. #ocr",
+    "23 reactions · 1 comment",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

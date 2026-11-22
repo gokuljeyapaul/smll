@@ -1,0 +1,37 @@
+{
+  "id": "heavychrome02",
+  "kind": "heavychrome",
+  "theme": "light",
+  "author": "Sofia Marchetti",
+  "handle": "@sofia-m",
+  "language": "en",
+  "body": [
+    "Harborlight Systems is hiring a privacy engineer for our data platform.",
+    "You will design the local-first storage layer and own its threat model.",
+    "Four-day weeks, no tracking, real ownership. Apply through the careers page."
+  ],
+  "chrome": [
+    "Promoted",
+    "@sofia-m",
+    "45m",
+    "Like",
+    "Comment",
+    "Share",
+    "902 reactions · 47 comments",
+    "Follow",
+    "Connect",
+    "···"
+  ],
+  "ocr_expected": [
+    "Promoted",
+    "···",
+    "Sofia Marchetti",
+    "@sofia-m · 45m",
+    "Harborlight Systems is hiring a privacy engineer for our data platform.",
+    "You will design the local-first storage layer and own its threat model.",
+    "Four-day weeks, no tracking, real ownership. Apply through the careers page.",
+    "902 reactions · 47 comments",
+    "Like Comment Share Follow Connect"
+  ],
+  "synthetic": true
+}

@@ -1,0 +1,29 @@
+{
+  "id": "tinytext01",
+  "kind": "tinytext",
+  "theme": "light",
+  "author": "Bo Lindgren",
+  "handle": "@bo-l",
+  "language": "en",
+  "body": [
+    "Small print is still print: we read the fine lines so you do not have to.",
+    "Twelve pixels of body text, zero excuses. #typography"
+  ],
+  "chrome": [
+    "@bo-l",
+    "30m",
+    "Like",
+    "Comment",
+    "Share",
+    "9 reactions"
+  ],
+  "ocr_expected": [
+    "Bo Lindgren",
+    "@bo-l · 30m",
+    "Small print is still print: we read the fine lines so you do not have to.",
+    "Twelve pixels of body text, zero excuses. #typography",
+    "9 reactions",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

@@ -1,0 +1,13 @@
+{
+  "id": "photo01",
+  "kind": "photo",
+  "theme": "light",
+  "author": "",
+  "handle": "",
+  "language": "none",
+  "body": [],
+  "chrome": [],
+  "ocr_expected": [],
+  "synthetic": true,
+  "expected_error": "no-text"
+}

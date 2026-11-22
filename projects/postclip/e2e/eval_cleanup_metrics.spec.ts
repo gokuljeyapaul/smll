@@ -62,7 +62,7 @@ test('eval_cleanup_body_f1_standard_set', async ({ page }) => {
     }))
     .filter((e) => STANDARD_KINDS.has(e.gold.kind));
 
-  expect(entries.length, 'standard fixture set size').toBe(12);
+  expect(entries.length, 'standard fixture set size (S4: clean01-08, dark01-03, chrome01-02, heavychrome01-02, longpost01-02)').toBe(17);
 
   const results: { id: string; f1: number; leakage: number; fabricated: number }[] = [];
   for (const entry of entries) {

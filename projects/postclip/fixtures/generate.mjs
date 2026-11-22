@@ -31,6 +31,7 @@ import {
   ocrExpected,
   goldLanguage,
   expectedError,
+  injectionMarkers,
   isBadInputFixture,
   localeOf,
 } from './fixture-data.mjs';
@@ -81,6 +82,12 @@ function renderCard(f) {
   const connect = f.heavy ? '<span class="follow">Connect</span>' : '';
   const dots = f.heavy ? '<div class="dots">···</div>' : '';
   const blurStyle = f.blur ? ' style="filter: blur(0.7px);"' : '';
+  // S4 variants: slight rotation (-2°, the plan's "slight rotation" variant)
+  // and a tiny-text card (11-12 px body text, the "tiny text" variant).
+  const rotateStyle = f.rotate ? ' transform: rotate(-2deg);' : '';
+  const tiny = f.tinytext
+    ? '.body { font-size: 11.5px; line-height: 1.4; } .name { font-size: 11.5px; } .meta { font-size: 9.5px; } .reactions, .actions .action { font-size: 9.5px; } .avatar { width: 30px; height: 30px; font-size: 11px; }'
+    : '';
   return `<!doctype html>
 <html><head><meta charset="utf-8"><style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,7 +95,7 @@ function renderCard(f) {
   .wrap { padding: 24px; width: ${wrapWidth}px; }
   .card {
     width: ${cardWidth}px; background: ${colors.card}; border: 1px solid ${colors.border};
-    border-radius: 12px; padding: 20px 22px; color: ${colors.text};
+    border-radius: 12px; padding: 20px 22px; color: ${colors.text};${rotateStyle}
   }
   .promoted { display:inline-block; color:${colors.muted}; font-size:13px; margin-bottom:10px; }
   .dots { color:${colors.muted}; font-size:16px; font-weight:700; text-align:right; margin-bottom:6px; }
@@ -105,6 +112,7 @@ function renderCard(f) {
   .action { color:${colors.muted}; font-size:14px; font-weight:600; }
   .follow { background:${colors.chip}; border-radius:9999px; padding:4px 14px;
     font-weight:700; font-size:14px; }
+  ${tiny}
 </style></head>
 <body><div class="wrap"><div class="card" id="post-card"${blurStyle}>
   ${f.promoted ? `<span class="promoted">${escapeHtml(locale.promoted)}</span><br>` : ''}${dots}
@@ -158,6 +166,41 @@ function renderTinyCard() {
   <div class="avatar"></div>
   <div>A tiny synthetic post card far too small to read.</div>
   <div class="muted">mini · 2h</div>
+</div></body></html>`;
+}
+
+/** photo01: a synthetic photograph with NO text anywhere — a gradient dusk
+ *  sky over rounded hills with a sun disc and stars, generated purely in CSS.
+ *  A realistic "non-text photo" input: OCR finds nothing readable, so the
+ *  app must land in its no-text error state (the plan's photo variant). */
+function renderPhotoScene() {
+  return `<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * { margin: 0; padding: 0; }
+  .scene { width: 592px; height: 420px; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, #0b1d3a 0%, #274b7a 45%, #b06a3f 72%, #e8a45c 88%, #f4c98a 100%);
+    border-radius: 12px; }
+  .sun { position: absolute; left: 420px; top: 250px; width: 64px; height: 64px; border-radius: 50%;
+    background: radial-gradient(circle, #ffe9b8 0%, #f5b45c 60%, rgba(245,180,92,0) 100%); }
+  .hill { position: absolute; left: -40px; right: -40px; bottom: -60px; height: 220px;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+  .hill1 { background: #1d2b23; }
+  .hill2 { background: #16211b; height: 180px; bottom: -80px; left: -140px; right: -60px; }
+  .star { position: absolute; width: 2px; height: 2px; background: #e8ecf4; border-radius: 50%; }
+  .cloud { position: absolute; width: 180px; height: 26px; border-radius: 20px;
+    background: rgba(240, 230, 214, 0.35); filter: blur(1px); }
+</style></head>
+<body><div class="scene" id="post-card">
+  <div class="star" style="left:60px;top:40px"></div>
+  <div class="star" style="left:150px;top:90px"></div>
+  <div class="star" style="left:260px;top:30px"></div>
+  <div class="star" style="left:420px;top:70px"></div>
+  <div class="star" style="left:520px;top:120px"></div>
+  <div class="cloud" style="left:80px;top:150px"></div>
+  <div class="cloud" style="left:300px;top:200px;opacity:0.7"></div>
+  <div class="sun"></div>
+  <div class="hill hill1"></div>
+  <div class="hill hill2"></div>
 </div></body></html>`;
 }
 
@@ -250,6 +293,10 @@ async function main() {
       filePath = `images/${f.id}.png`;
       await page.setContent(renderBlankCard(), { waitUntil: 'networkidle' });
       await page.locator('#post-card').screenshot({ path: join(HERE, filePath) });
+    } else if (f.kind === 'photo') {
+      filePath = `images/${f.id}.png`;
+      await page.setContent(renderPhotoScene(), { waitUntil: 'networkidle' });
+      await page.locator('#post-card').screenshot({ path: join(HERE, filePath) });
     } else if (f.kind === 'huge') {
       await hugePage.setContent(renderCard(f), { waitUntil: 'networkidle' });
       const pngPath = join(HERE, `images/${f.id}.png`);
@@ -288,13 +335,20 @@ async function main() {
     };
     const err = expectedError(f);
     if (err) gold.expected_error = err;
+    // S4: injection fixtures record the attacker markers their post text
+    // tries to plant in the model's metadata (A16 judge data; the marker
+    // strings are synthetic attack payloads, not real content).
+    const markers = injectionMarkers(f);
+    if (markers.length > 0) gold.injection = { markers };
     writeFileSync(join(GOLD_DIR, `${f.id}.json`), JSON.stringify(gold, null, 2) + '\n');
 
     const bytes = statSync(join(HERE, filePath)).size;
     const sha = createHash('sha256').update(readFileSync(join(HERE, filePath))).digest('hex');
     const note = isBadInputFixture(f)
       ? 'Synthetic bad-input fixture: generated bytes, no real content, no readable text.'
-      : 'Synthetic content: fictional author and company, generated from fixture-data.mjs.';
+      : markers.length > 0
+        ? 'Synthetic prompt-injection fixture: fictional author, fictional attack payload; the instruction text is post content that cleanup must preserve (A16).'
+        : 'Synthetic content: fictional author and company, generated from fixture-data.mjs.';
     manifest.images.push({
       id: f.id,
       file: filePath,
