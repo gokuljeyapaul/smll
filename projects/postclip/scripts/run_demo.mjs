@@ -298,7 +298,11 @@ async function demoIn(engineName, browserType) {
     await sleep(1500); // let the (already active) worker control this page
     await context.setOffline(true);
     await page.reload();
-    const offlineHome = await page.getByRole('heading', { name: 'PostClip' }).isVisible().catch(() => false);
+    const offlineHome = await page
+      .getByRole('heading', { name: 'PostClip' })
+      .waitFor({ timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false);
     step('offline reload renders the app shell', offlineHome);
     let offlineText = '';
     if (offlineHome) {
@@ -328,10 +332,23 @@ async function demoIn(engineName, browserType) {
         ]);
       }, clipBytes).catch(() => {});
       await deniedPage.locator('#paste-btn').click();
+      // waitFor (not isVisible): the explanation renders asynchronously after
+      // the real refused read — a bare isVisible() racy-lost this on CI's
+      // slower runner (attempt 2) while the retrying e2e assert passes.
       const explained = await deniedPage
         .getByText('blocked for this site')
-        .isVisible()
+        .waitFor({ timeout: 10_000 })
+        .then(() => true)
         .catch(() => false);
+      // Diagnostics in the step detail: if the runner's clipboard ever
+      // behaves differently, the log must say what actually happened.
+      const deniedDiag = await deniedPage
+        .evaluate(() => ({
+          banner: document.querySelector('.error-banner')?.textContent?.slice(0, 120) ?? null,
+          reviewVisible: !!document.querySelector('#review-text'),
+          homeHeading: document.querySelector('h1')?.textContent ?? null,
+        }))
+        .catch(() => null);
       await deniedPage.setInputFiles('#file-input', fixturePath('clean01'));
       let pickerText = '';
       for (let i = 0; i < 150; i++) {
@@ -342,7 +359,7 @@ async function demoIn(engineName, browserType) {
       step(
         'denied clipboard explains and the file picker still works',
         explained && pickerText.length > 40,
-        `explained=${explained}`,
+        `explained=${explained} diag=${JSON.stringify(deniedDiag)}`,
       );
       await deniedContext.close();
     }
