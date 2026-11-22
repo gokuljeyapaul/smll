@@ -1,16 +1,31 @@
 import { useEffect, useState } from 'react';
-import { buildSharePayload, copyReviewText } from '../output/payload';
+import {
+  buildSharePayload,
+  copyReviewText,
+  downloadExport,
+  type ExportFormat,
+} from '../output/payload';
 import type { OcrStatus } from '../App';
 
 export interface ReviewProps {
   text: string;
+  /** The pre-cleanup OCR text, shown in the transparency view. */
+  rawText: string;
   status: OcrStatus;
+  /** Informational note (e.g. the huge-image downscale notice). */
+  note: string | null;
   imageFile: File | null;
   onTextChange: (text: string) => void;
   onStartOver: () => void;
 }
 
-export function Review({ text, status, imageFile, onTextChange, onStartOver }: ReviewProps) {
+const EXPORT_ITEMS: { format: ExportFormat; id: string; label: string }[] = [
+  { format: 'md', id: 'export-md', label: 'Export as Markdown (.md)' },
+  { format: 'txt', id: 'export-txt', label: 'Export as Text (.txt)' },
+  { format: 'json', id: 'export-json', label: 'Export as JSON (.json)' },
+];
+
+export function Review({ text, rawText, status, note, imageFile, onTextChange, onStartOver }: ReviewProps) {
   const [copied, setCopied] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
@@ -41,6 +56,15 @@ export function Review({ text, status, imageFile, onTextChange, onStartOver }: R
     }
   };
 
+  const onExport = (format: ExportFormat) => {
+    setActionError(null);
+    try {
+      downloadExport(text, format);
+    } catch (err) {
+      setActionError(`Export failed: ${String(err)}`);
+    }
+  };
+
   return (
     <main className="app" aria-labelledby="review-title">
       <div className="review-header">
@@ -53,8 +77,13 @@ export function Review({ text, status, imageFile, onTextChange, onStartOver }: R
       </div>
       {imageFile ? <p className="status">Read from: {imageFile.name}</p> : null}
       {status === 'reading' ? <p className="status">Reading the screenshot…</p> : null}
+      {note ? (
+        <p className="status" id="downscale-note">
+          {note}
+        </p>
+      ) : null}
       <label className="review-label" htmlFor="review-text">
-        Extracted text
+        Cleaned text — edit anything you like
       </label>
       <textarea
         id="review-text"
@@ -72,8 +101,33 @@ export function Review({ text, status, imageFile, onTextChange, onStartOver }: R
         <button type="button" className="btn btn-secondary" id="copy-btn" onClick={onCopy}>
           Copy
         </button>
+        <details className="export-menu" id="export-menu">
+          <summary className="btn btn-secondary">Export</summary>
+          <div className="export-items" role="menu">
+            {EXPORT_ITEMS.map((item) => (
+              <button
+                key={item.format}
+                type="button"
+                role="menuitem"
+                className="export-item"
+                id={item.id}
+                onClick={() => onExport(item.format)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </details>
         {copied ? <span className="copied-note">Copied ✓</span> : null}
       </div>
+      {rawText ? (
+        <details className="raw-ocr">
+          <summary>Show original OCR text (before cleanup)</summary>
+          <pre id="raw-ocr-text" className="raw-ocr-text">
+            {rawText}
+          </pre>
+        </details>
+      ) : null}
       {actionError ? (
         <div className="error-banner" role="alert">
           {actionError}

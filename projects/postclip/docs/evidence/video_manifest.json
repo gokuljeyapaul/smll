@@ -1,6 +1,26 @@
 {
   "videos": [
     {
+      "id": "a01_built_app_loads_home_screen_no_console_errors_chromium",
+      "path": "artifacts/video/a01_built_app_loads_home_screen_no_console_errors_chromium.webm",
+      "sha256": "b88a4fc9398ee805fff45398176ddfc7c62c1726a276c44ab4d4e069b075eb99",
+      "size_bytes": 18568,
+      "duration_s": 1.1,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::a01_built_app_loads_home_screen_no_console_errors",
+      "junit_verified": true
+    },
+    {
+      "id": "a01_built_app_loads_home_screen_no_console_errors_webkit",
+      "path": "artifacts/video/a01_built_app_loads_home_screen_no_console_errors_webkit.webm",
+      "sha256": "e4093b02d925697c0387e908a72174dc89365f34fad0b60e39106822bb91f2c3",
+      "size_bytes": 1457,
+      "duration_s": 1,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::a01_built_app_loads_home_screen_no_console_errors",
+      "junit_verified": true
+    },
+    {
       "id": "a01_smoke_chromium",
       "path": "artifacts/video/a01_smoke_chromium.webm",
       "sha256": "2f0718cd88b5133cffa16b1ee45086967f0cfccd4f447b2422b20b5890e691b1",
@@ -21,6 +41,66 @@
       "junit_verified": true
     },
     {
+      "id": "a15_audit_negative_control_detects_seeded_leak_chromium",
+      "path": "artifacts/video/a15_audit_negative_control_detects_seeded_leak_chromium.webm",
+      "sha256": "790dde6464647a2d0dc54f04befd0ed49446526df9b8877a18b26ef7d8704100",
+      "size_bytes": 19673,
+      "duration_s": 1.2,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::a15_audit_negative_control_detects_seeded_leak",
+      "junit_verified": true
+    },
+    {
+      "id": "a15_audit_negative_control_detects_seeded_leak_webkit",
+      "path": "artifacts/video/a15_audit_negative_control_detects_seeded_leak_webkit.webm",
+      "sha256": "1fb0c21e27f68b1dccf7e53ef439799434d2ba56d5475a9639760e2dd5ede29f",
+      "size_bytes": 1459,
+      "duration_s": 1,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::a15_audit_negative_control_detects_seeded_leak",
+      "junit_verified": true
+    },
+    {
+      "id": "a15_no_storage_log_request_leaks_after_flows_chromium",
+      "path": "artifacts/video/a15_no_storage_log_request_leaks_after_flows_chromium.webm",
+      "sha256": "97957e59dffe38f1c78c18fb6653086ba6fbe2694587375cd4103d8c367c64b6",
+      "size_bytes": 85388,
+      "duration_s": 3.4,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::a15_no_storage_log_request_leaks_after_flows",
+      "junit_verified": true
+    },
+    {
+      "id": "a15_no_storage_log_request_leaks_after_flows_webkit",
+      "path": "artifacts/video/a15_no_storage_log_request_leaks_after_flows_webkit.webm",
+      "sha256": "9ababed904fc7748ececacf79bd3b6be71ef4e86650d958b52ae711ed31cfdbd",
+      "size_bytes": 100207,
+      "duration_s": 3.9,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::a15_no_storage_log_request_leaks_after_flows",
+      "junit_verified": true
+    },
+    {
+      "id": "eval_cleanup_body_f1_standard_set_chromium",
+      "path": "artifacts/video/eval_cleanup_body_f1_standard_set_chromium.webm",
+      "sha256": "08a9c546061e72733f1d014eca7d8d924c8da38163b5fc376da0ce554f284eba",
+      "size_bytes": 651191,
+      "duration_s": 22.2,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::eval_cleanup_body_f1_standard_set",
+      "junit_verified": true
+    },
+    {
+      "id": "eval_cleanup_body_f1_standard_set_webkit",
+      "path": "artifacts/video/eval_cleanup_body_f1_standard_set_webkit.webm",
+      "sha256": "20e6ef41b3085378317171d29e8cf1bbbe200c0b96f8b1c1e60086d100431ef6",
+      "size_bytes": 729084,
+      "duration_s": 19.3,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::eval_cleanup_body_f1_standard_set",
+      "junit_verified": true
+    },
+    {
       "id": "eval_ocr_cer_chromium",
       "path": "artifacts/video/eval_ocr_cer_chromium.webm",
       "sha256": "7711ae39ecdeb37b6a51d400f524267f2130cd91493cd62fee47ed191bc121d7",
@@ -28,6 +108,26 @@
       "duration_s": 13,
       "engine": "chromium",
       "junit": "junit:docs/evidence/S0/junit/chromium-e2e.xml::eval_ocr_cer_clean_set",
+      "junit_verified": true
+    },
+    {
+      "id": "eval_ocr_cer_clean_set_chromium",
+      "path": "artifacts/video/eval_ocr_cer_clean_set_chromium.webm",
+      "sha256": "b64fa267d72240c24fdb758b6c7ebe2b5f04021277d2f2a5b313ae9344cc41ec",
+      "size_bytes": 283288,
+      "duration_s": 9.6,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::eval_ocr_cer_clean_set",
+      "junit_verified": true
+    },
+    {
+      "id": "eval_ocr_cer_clean_set_webkit",
+      "path": "artifacts/video/eval_ocr_cer_clean_set_webkit.webm",
+      "sha256": "08be2981124b0abe7c147bb38b3e607ea1aa0bfd80f9895f5d62800f2c830af5",
+      "size_bytes": 324354,
+      "duration_s": 9.1,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::eval_ocr_cer_clean_set",
       "junit_verified": true
     },
     {
@@ -61,23 +161,143 @@
       "junit_verified": true
     },
     {
+      "id": "s0_negative_corrupt_input_fails_closed_chromium",
+      "path": "artifacts/video/s0_negative_corrupt_input_fails_closed_chromium.webm",
+      "sha256": "14bb87d0786be03ced3893ffee072d8aa0140169e7ff1fe77d47f340cfaa0cab",
+      "size_bytes": 54189,
+      "duration_s": 1.2,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::s0_negative_corrupt_input_fails_closed",
+      "junit_verified": true
+    },
+    {
+      "id": "s0_negative_corrupt_input_fails_closed_webkit",
+      "path": "artifacts/video/s0_negative_corrupt_input_fails_closed_webkit.webm",
+      "sha256": "2b5c9e279437635385e7ec2a601784af72193680c09b307db725abc510432e01",
+      "size_bytes": 1459,
+      "duration_s": 1,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::s0_negative_corrupt_input_fails_closed",
+      "junit_verified": true
+    },
+    {
       "id": "uc01_pick_ocr_review_share_chromium",
       "path": "artifacts/video/uc01_pick_ocr_review_share_chromium.webm",
-      "sha256": "a0f77284de29f123990376e0c1c6ed84f1bf616a70726b63a75068bbb2e31cf5",
-      "size_bytes": 58982,
-      "duration_s": 3.4,
+      "sha256": "82b231b849cb692d330ae0f38ef666c66169954a5ce344d1a15a2ddb701d2a49",
+      "size_bytes": 64630,
+      "duration_s": 3.3,
       "engine": "chromium",
-      "junit": "junit:docs/evidence/S0/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
       "junit_verified": true
     },
     {
       "id": "uc01_pick_ocr_review_share_webkit",
       "path": "artifacts/video/uc01_pick_ocr_review_share_webkit.webm",
-      "sha256": "529355738c66aed463de3dc3d194ceaf10c276ecb954c3f870f3046f273275be",
-      "size_bytes": 68511,
-      "duration_s": 2.8,
+      "sha256": "6094e0f41ee4bdd1ec77cb11fc677a297b85bc8e30931d9292d1e0142a9450d2",
+      "size_bytes": 61871,
+      "duration_s": 2.5,
       "engine": "webkit",
-      "junit": "junit:docs/evidence/S0/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+      "junit_verified": true
+    },
+    {
+      "id": "uc05_edit_reflects_in_payloads_chromium",
+      "path": "artifacts/video/uc05_edit_reflects_in_payloads_chromium.webm",
+      "sha256": "1b215454f096857d8e160636bb2376b3c471cd89cea6e7554b1b5fb8765e8f81",
+      "size_bytes": 89806,
+      "duration_s": 3.4,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::uc05_edit_reflects_in_payloads",
+      "junit_verified": true
+    },
+    {
+      "id": "uc05_edit_reflects_in_payloads_webkit",
+      "path": "artifacts/video/uc05_edit_reflects_in_payloads_webkit.webm",
+      "sha256": "40ac80269284317a03a1f92e1d5433de57c6ac7e1f06912b54b7c864baf5b3c5",
+      "size_bytes": 86945,
+      "duration_s": 2.7,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::uc05_edit_reflects_in_payloads",
+      "junit_verified": true
+    },
+    {
+      "id": "uc07_export_downloads_md_txt_json_chromium",
+      "path": "artifacts/video/uc07_export_downloads_md_txt_json_chromium.webm",
+      "sha256": "654e6c589dc4a755d1561f36046e484f7ae0b563d1cf83aedc2e28870ca2c0ca",
+      "size_bytes": 70210,
+      "duration_s": 3.5,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::uc07_export_downloads_md_txt_json",
+      "junit_verified": true
+    },
+    {
+      "id": "uc07_export_downloads_md_txt_json_webkit",
+      "path": "artifacts/video/uc07_export_downloads_md_txt_json_webkit.webm",
+      "sha256": "263fa39171772d59c2e05526abb3bd2d6db86b223157b6f1aa741ed43e7a987c",
+      "size_bytes": 70884,
+      "duration_s": 2.7,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::uc07_export_downloads_md_txt_json",
+      "junit_verified": true
+    },
+    {
+      "id": "uc10_non_english_rejected_no_cleanup_chromium",
+      "path": "artifacts/video/uc10_non_english_rejected_no_cleanup_chromium.webm",
+      "sha256": "e528ec65e39d57efccde1f6bfc3ca7b4af4c8ecb42811674d4aea25e156cfe09",
+      "size_bytes": 209198,
+      "duration_s": 5.8,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::uc10_non_english_rejected_no_cleanup",
+      "junit_verified": true
+    },
+    {
+      "id": "uc10_non_english_rejected_no_cleanup_webkit",
+      "path": "artifacts/video/uc10_non_english_rejected_no_cleanup_webkit.webm",
+      "sha256": "201a6c6526d43ba6e6a0fc88581e42b1a269fdecccbb5e4ec462bddd3c74e686",
+      "size_bytes": 204542,
+      "duration_s": 5.4,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::uc10_non_english_rejected_no_cleanup",
+      "junit_verified": true
+    },
+    {
+      "id": "uc11_bad_input_error_states_chromium",
+      "path": "artifacts/video/uc11_bad_input_error_states_chromium.webm",
+      "sha256": "7bf8807084a6e8d553b832ea21f776ccba5b919e5a3de70840f636921a58cc4b",
+      "size_bytes": 94931,
+      "duration_s": 2.9,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::uc11_bad_input_error_states",
+      "junit_verified": true
+    },
+    {
+      "id": "uc11_bad_input_error_states_webkit",
+      "path": "artifacts/video/uc11_bad_input_error_states_webkit.webm",
+      "sha256": "b5a0483d8f3a571666ba57f812ee24de6e7da310f5d1e2c5fc02779815a38602",
+      "size_bytes": 96291,
+      "duration_s": 2.7,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::uc11_bad_input_error_states",
+      "junit_verified": true
+    },
+    {
+      "id": "uc11_huge_downscaled_before_ocr_chromium",
+      "path": "artifacts/video/uc11_huge_downscaled_before_ocr_chromium.webm",
+      "sha256": "ab06dca4c68dd310dc92d719aadf6abe2dbf60032a19615c738b75e95680726c",
+      "size_bytes": 66118,
+      "duration_s": 3.4,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S1/junit/chromium-e2e.xml::uc11_huge_downscaled_before_ocr",
+      "junit_verified": true
+    },
+    {
+      "id": "uc11_huge_downscaled_before_ocr_webkit",
+      "path": "artifacts/video/uc11_huge_downscaled_before_ocr_webkit.webm",
+      "sha256": "0e683ead0156d2723a8e419a0117b55355052778b773ab2f685f27155f993c6c",
+      "size_bytes": 73506,
+      "duration_s": 3.5,
+      "engine": "webkit",
+      "junit": "junit:docs/evidence/S1/junit/webkit-e2e.xml::uc11_huge_downscaled_before_ocr",
       "junit_verified": true
     }
   ]

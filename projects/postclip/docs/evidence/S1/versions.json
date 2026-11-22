@@ -1,0 +1,49 @@
+{
+  "slice": "S1",
+  "recorded_at": "2026-11-22T02:41:33Z",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1 (.nvmrc)",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1 build chromium-1255)",
+    "webkit": "Version/27.2 (Playwright 1.65.1 build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM, 38 GB free disk at slice end (headless-Linux numbers only; real-device behavior is NOT_RUN)"
+  },
+  "toolchain": {
+    "npm": "12.0.2",
+    "typescript": "5.9.3",
+    "vite": "8.3.8",
+    "vitest": "5.1.1",
+    "playwright": "1.65.1",
+    "react": "19.3.1",
+    "react_dom": "19.3.1",
+    "eslint": "9.39.5",
+    "typescript-eslint": "8.73.0",
+    "jsdom": "31.0.1",
+    "python3": "3.14.9",
+    "git": "2.47.3",
+    "ffmpeg": "n9.0.1-11-ge47273f4d9-20260831"
+  },
+  "new_dependencies": "none — S1 adds zero npm dependencies (export uses native Blob/anchor downloads, downscale uses createImageBitmap/OffscreenCanvas, the language gate, cleanup, validator and audit are pure TypeScript). package.json and package-lock.json are unchanged from S0.",
+  "fixtures": {
+    "count": 25,
+    "total_bytes": 1557715,
+    "largest": "fixtures/images/clean02.png 109990 bytes",
+    "huge": "fixtures/images/huge01.png 4008x684 px, 94884 bytes (PNG; the generator's JPEG fallback was not needed)",
+    "bad_input": [
+      "fixtures/images/corrupt01.png (valid PNG magic + IHDR, truncated stream)",
+      "fixtures/files/nonimage01.txt (plain text, not an image)",
+      "fixtures/images/tiny01.png (64x64)",
+      "fixtures/images/blank01.png (no text)"
+    ]
+  },
+  "ocr_engine": {
+    "chosen": "tesseract.js 7.0.0 (unchanged from S0)",
+    "language_data": {
+      "file": "eng.traineddata.gz",
+      "source": "https://tessdata.projectnaptha.com/4.0.0_fast/eng.traineddata.gz",
+      "sha256": "18c1ac52b75e35d44735fb6c2a60acfaf23033524653200738e98f0243edb75b",
+      "size_bytes": 1984273
+    },
+    "s1_change": "cacheMethod: 'none' — the engine no longer persists traineddata into an IndexedDB ('keyval-store'); the A15 storage audit caught the default behavior (see docs/evidence/S1/metrics.md). The pinned data is re-fetched same-origin; the S2 service-worker app shell will precache /ocr-assets/ for offline use."
+  }
+}

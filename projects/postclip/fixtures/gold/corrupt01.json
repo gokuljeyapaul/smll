@@ -1,0 +1,13 @@
+{
+  "id": "corrupt01",
+  "kind": "corrupt",
+  "theme": "light",
+  "author": "",
+  "handle": "",
+  "language": "none",
+  "body": [],
+  "chrome": [],
+  "ocr_expected": [],
+  "synthetic": true,
+  "expected_error": "corrupt"
+}

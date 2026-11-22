@@ -17,6 +17,10 @@ const NODE_SCRIPT_GLOBALS = {
   performance: 'readonly',
   location: 'readonly',
   Image: 'readonly',
+  localStorage: 'readonly',
+  sessionStorage: 'readonly',
+  caches: 'readonly',
+  indexedDB: 'readonly',
 };
 
 export default tseslint.config(

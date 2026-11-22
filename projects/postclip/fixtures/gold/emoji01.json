@@ -1,0 +1,31 @@
+{
+  "id": "emoji01",
+  "kind": "emoji",
+  "theme": "light",
+  "author": "Priya Nandan",
+  "handle": "@priya-n",
+  "language": "en",
+  "body": [
+    "Shipped the redesign today 🚀 Small team, big release.",
+    "We cut load time in half and deleted three modals. ✨",
+    "What should we open-source next? #buildinpublic #design"
+  ],
+  "chrome": [
+    "@priya-n",
+    "1h",
+    "Like",
+    "Comment",
+    "Share",
+    "220 reactions · 31 comments"
+  ],
+  "ocr_expected": [
+    "Priya Nandan",
+    "@priya-n · 1h",
+    "Shipped the redesign today 🚀 Small team, big release.",
+    "We cut load time in half and deleted three modals. ✨",
+    "What should we open-source next? #buildinpublic #design",
+    "220 reactions · 31 comments",
+    "Like Comment Share"
+  ],
+  "synthetic": true
+}

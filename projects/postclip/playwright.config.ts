@@ -12,6 +12,8 @@ export default defineConfig({
     baseURL: 'http://localhost:4173',
     video: 'on',
     trace: 'retain-on-failure',
+    // S1 (A05): the export flows assert real browser downloads.
+    acceptDownloads: true,
   },
   webServer: {
     command: 'npm run preview',

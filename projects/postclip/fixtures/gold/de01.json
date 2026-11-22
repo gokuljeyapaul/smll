@@ -1,0 +1,32 @@
+{
+  "id": "de01",
+  "kind": "lang-de",
+  "theme": "light",
+  "author": "Lukas Berger",
+  "handle": "@lukas-berger",
+  "language": "de",
+  "body": [
+    "Heute haben wir unsere erste offline-first Version veröffentlicht.",
+    "Kein Cloud-Zugriff, keine Konten, nur ein lokaler Cache, der nie lügt.",
+    "Welche App habt ihr zuletzt in einem Tunnel benutzt? #buildinpublic"
+  ],
+  "chrome": [
+    "@lukas-berger",
+    "3 Std.",
+    "Gefällt",
+    "mir",
+    "Kommentieren",
+    "Teilen",
+    "42 Reaktionen · 9 Kommentare"
+  ],
+  "ocr_expected": [
+    "Lukas Berger",
+    "@lukas-berger · 3 Std.",
+    "Heute haben wir unsere erste offline-first Version veröffentlicht.",
+    "Kein Cloud-Zugriff, keine Konten, nur ein lokaler Cache, der nie lügt.",
+    "Welche App habt ihr zuletzt in einem Tunnel benutzt? #buildinpublic",
+    "42 Reaktionen · 9 Kommentare",
+    "Gefällt mir Kommentieren Teilen"
+  ],
+  "synthetic": true
+}

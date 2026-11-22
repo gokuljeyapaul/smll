@@ -1,0 +1,13 @@
+{
+  "id": "tiny01",
+  "kind": "tiny",
+  "theme": "light",
+  "author": "",
+  "handle": "",
+  "language": "none",
+  "body": [],
+  "chrome": [],
+  "ocr_expected": [],
+  "synthetic": true,
+  "expected_error": "tiny"
+}

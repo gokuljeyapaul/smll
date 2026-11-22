@@ -1,0 +1,32 @@
+{
+  "id": "es01",
+  "kind": "lang-es",
+  "theme": "light",
+  "author": "Elena Ruiz",
+  "handle": "@elena-ruiz",
+  "language": "es",
+  "body": [
+    "Hoy publicamos nuestra primera versión offline-first.",
+    "Sin nube, sin cuentas, solo una memoria local que nunca miente.",
+    "¿Cuál fue la última app que usaste en un túnel? #buildinpublic"
+  ],
+  "chrome": [
+    "@elena-ruiz",
+    "2 h",
+    "Me",
+    "gusta",
+    "Comentar",
+    "Compartir",
+    "51 reacciones · 3 comentarios"
+  ],
+  "ocr_expected": [
+    "Elena Ruiz",
+    "@elena-ruiz · 2 h",
+    "Hoy publicamos nuestra primera versión offline-first.",
+    "Sin nube, sin cuentas, solo una memoria local que nunca miente.",
+    "¿Cuál fue la última app que usaste en un túnel? #buildinpublic",
+    "51 reacciones · 3 comentarios",
+    "Me gusta Comentar Compartir"
+  ],
+  "synthetic": true
+}

@@ -3,11 +3,16 @@ import { readFileSync } from 'node:fs';
 
 /**
  * A20 (web): browser eval run — real in-browser OCR over the "clean" fixture
- * set through the app itself, computing character error rate (CER) against the
- * gold `ocr_expected` text, in Chromium and WebKit. The plan's initial bar:
- * clean-set CER ≤ 5% for the chosen engine. Per-fixture numbers are printed in
- * the test output (captured in the JUnit evidence) and in
+ * set through the app itself, computing character error rate (CER) against
+ * the gold `ocr_expected` text, in Chromium and WebKit. The plan's initial
+ * bar: clean-set CER ≤ 5% for the chosen engine. Per-fixture numbers are
+ * printed in the test output (captured in the JUnit evidence) and in
  * docs/evidence/S0/ocr_engine_comparison.md.
+ *
+ * S1: the review textarea now shows the CLEANED text, so this eval reads
+ * the raw pre-cleanup OCR text from the review screen's "original OCR"
+ * view (#raw-ocr-text) — the measurement itself is unchanged: raw OCR CER
+ * against gold ocr_expected.
  */
 
 interface Gold {
@@ -53,12 +58,14 @@ async function ocrFixture(page: Page, pngPath: string, id: string): Promise<stri
   await page.goto('/');
   await page.setInputFiles('#file-input', pngPath);
   await expect
-    .poll(async () => (await page.locator('#review-text').inputValue()).length, {
+    .poll(async () => (await page.locator('#raw-ocr-text').textContent())?.length ?? 0, {
       timeout: 120_000,
       message: `OCR of ${id}`,
     })
     .toBeGreaterThan(0);
-  return page.locator('#review-text').inputValue();
+  const raw = await page.locator('#raw-ocr-text').textContent();
+  if (raw === null) throw new Error(`raw OCR text missing for ${id}`);
+  return raw;
 }
 
 test('eval_ocr_cer_clean_set', async ({ page }) => {

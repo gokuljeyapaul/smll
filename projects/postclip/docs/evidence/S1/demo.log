@@ -1,0 +1,30 @@
+npm notice run postclip@0.1.0 demo
+npm notice run node scripts/run_demo.mjs
+[preview-out] ➜  Local:   http://127.0.0.1:4197/
+demo: serving built app at http://127.0.0.1:4197/
+  [chromium] PASS — home screen renders
+  [chromium] PASS — real OCR + cleanup produce review text (184 chars)
+  [chromium] PASS — review text is the cleaned body (first gold body line present) ('Shipped our first offline-first release today.')
+  [chromium] PASS — UI chrome is removed from the review text
+  [chromium] PASS — Web Share payload equals the edited text
+  [chromium] PASS — Copy shows feedback
+  [chromium] PASS — clipboard paste round-trip delivers the edited text (241 chars)
+  [chromium] PASS — export .txt downloads the edited text exactly (byte-identical)
+  [chromium] PASS — non-English screenshot is rejected with a clear message
+  [chromium] PASS — no cleanup ran for the rejected screenshot
+  [chromium] PASS — tiny image is rejected before OCR with the too-small message
+  [chromium] PASS — no-storage audit: nothing persisted anywhere
+  [webkit] PASS — home screen renders
+  [webkit] PASS — real OCR + cleanup produce review text (184 chars)
+  [webkit] PASS — review text is the cleaned body (first gold body line present) ('Shipped our first offline-first release today.')
+  [webkit] PASS — UI chrome is removed from the review text
+  [webkit] PASS — Web Share payload equals the edited text
+  [webkit] PASS — Copy shows feedback
+  [webkit] PASS — clipboard paste round-trip delivers the edited text (241 chars)
+  [webkit] PASS — export .txt downloads the edited text exactly (byte-identical)
+  [webkit] PASS — non-English screenshot is rejected with a clear message
+  [webkit] PASS — no cleanup ran for the rejected screenshot
+  [webkit] PASS — tiny image is rejected before OCR with the too-small message
+  [webkit] PASS — no-storage audit: nothing persisted anywhere
+demo: chromium=PASS webkit=PASS
+[preview] exited code=143 sig=null
