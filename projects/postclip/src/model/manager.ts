@@ -246,10 +246,22 @@ export class ModelManager {
     const INACTIVITY_MS = this.inactivityTimeoutMs;
 
     for (let attempt = 1; ; attempt++) {
+      let watchdog: ReturnType<typeof setTimeout> | null = null;
+      const controller = new AbortController();
+      /** Reset the no-progress watchdog (any observable event counts). */
+      const pokeWatchdog = () => {
+        if (watchdog !== null) clearTimeout(watchdog);
+        watchdog = setTimeout(() => controller.abort(), INACTIVITY_MS);
+      };
       try {
         const headers = new Headers();
         if (received > 0) headers.set('range', `bytes=${received}-`);
-        const controller = new AbortController();
+        // The watchdog spans the FETCH HANDSHAKE too: on loaded CI runners the
+        // observed stall is the fetch promise itself never settling after the
+        // server has handed the full body to the browser's network stack (CI
+        // wire log: full 397 MB responses served, then NO retry of any kind
+        // — the read-loop-only watchdog of the first fix never got control).
+        pokeWatchdog();
         const res = await this.fetchImpl(url, {
           headers,
           cache: 'no-store',
@@ -257,6 +269,7 @@ export class ModelManager {
           redirect: 'follow',
           signal: controller.signal,
         });
+        pokeWatchdog();
         if (!res.ok) {
           await store.discardTemp();
           await store.clear();
@@ -278,14 +291,10 @@ export class ModelManager {
           throw new ModelFlowError('network-error'); // no body to verify — fail closed
         }
         for (;;) {
-          // No chunk within 20 s → abort → resume/restart via the catch path.
-          const timer = setTimeout(() => controller.abort(), INACTIVITY_MS);
-          let read;
-          try {
-            read = await reader.read();
-          } finally {
-            clearTimeout(timer);
-          }
+          // No event (fetch settled, chunk delivered) within the window →
+          // abort → resume/restart via the catch path.
+          pokeWatchdog();
+          const read = await reader.read();
           const { done, value } = read;
           if (done) break;
           hasher.update(value);
@@ -319,6 +328,7 @@ export class ModelManager {
         this.apply({ type: 'VERIFY_OK' }, { receivedBytes: received });
         return;
       } catch (err) {
+        if (watchdog !== null) clearTimeout(watchdog);
         if (err instanceof ModelFlowError) {
           await store.discardTemp();
           await store.clear();

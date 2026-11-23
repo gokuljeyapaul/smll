@@ -416,6 +416,48 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     }
   });
 
+  it('a fetch that never settles is aborted and retried (CI stall fix 2)', async () => {
+    // The wire log of the failed PR-head run showed the sharper stall: the
+    // server handed the full body to the browser, and the fetch promise
+    // ITSELF never settled — no read, no error, no retry. The watchdog must
+    // cover the handshake, not only the read loop.
+    let delivered = 0;
+    const hangingFetch = (init?: RequestInit): Promise<Response> => {
+      if (delivered === 0) {
+        delivered += 1;
+        return new Promise<Response>((_resolve, reject) => {
+          const signal = init?.signal ?? null;
+          if (signal?.aborted) {
+            reject(new DOMException('Aborted', 'AbortError'));
+            return;
+          }
+          signal?.addEventListener(
+            'abort',
+            () => reject(new DOMException('Aborted', 'AbortError')),
+            { once: true },
+          );
+          // never resolves otherwise — the exact CI signature
+        });
+      }
+      return Promise.resolve(chunked(model.chunks));
+    };
+    const model = makeFakeManifest();
+    const calls: FetchCall[] = [];
+    const impl = (url: string | RequestInfo, init?: RequestInit): Promise<Response> => {
+      const range = init?.headers instanceof Headers ? init.headers.get('range') : null;
+      calls.push({ url: String(url), range });
+      return hangingFetch(init);
+    };
+    const { manager } = freshManager(model, {
+      fetchImpl: impl as typeof fetch,
+      inactivityTimeoutMs: 50,
+    });
+
+    await manager.download();
+    expect(manager.getStatus().state).toBe('ready');
+    expect(calls).toHaveLength(2); // hung handshake aborted once, then completed
+  });
+
   it('a stalled download body is aborted and range-resumed (CI stall fix)', async () => {
     // Attempt 1 delivers 2 chunks (2000 bytes) then the read HANGS with no
     // error — the exact CI signature. The inactivity watchdog aborts, and
