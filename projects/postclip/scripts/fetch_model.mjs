@@ -14,7 +14,7 @@
  * Usage: node scripts/fetch_model.mjs   (called by scripts/setup.sh in CI)
  */
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -93,40 +93,79 @@ if (existsSync(target)) {
   unlinkSync(target);
 }
 
-// 2. Download the pinned URL with retries, hashing while the bytes stream.
+// 2. Download the pinned URL with retries + RANGE RESUME. CI runners are
+//    progressively rate-limited by the model host (observed 2026-11-23: all
+//    fresh 397 MB downloads cut ~100 s in, then quick-rejected), so each retry
+//    resumes from the bytes already on disk instead of restarting from byte 0.
+//    The sha256 hash object lives across attempts (the byte stream is hashed
+//    incrementally in order, so resumed bytes continue the same digest).
 console.log(`fetch_model: downloading ${MANIFEST.url}`);
 console.log(`fetch_model: expecting size=${MANIFEST.sizeBytes} sha256=${MANIFEST.sha256}`);
 const tmp = `${target}.part`;
+const MAX_ATTEMPTS = 6;
+const BACKOFF_S = [5, 15, 45, 90, 180];
 let lastErr = null;
-for (let attempt = 1; attempt <= 3; attempt++) {
+let hash = createHash('sha256');
+let bytesSoFar = 0;
+let tmpSize = existsSync(tmp) ? statSync(tmp).size : 0;
+if (tmpSize > 0) {
+  // A .part from a killed earlier run exists: hash it, then resume from there.
+  const existing = readFileSync(tmp);
+  hash.update(existing);
+  bytesSoFar = existing.length;
+  console.log(`fetch_model: resuming from existing .part (${bytesSoFar} bytes)`);
+}
+for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
   try {
-    const res = await fetch(MANIFEST.url, { redirect: 'follow' });
+    const headers = {};
+    if (bytesSoFar > 0) headers.range = `bytes=${bytesSoFar}-`;
+    const res = await fetch(MANIFEST.url, { redirect: 'follow', headers });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     if (res.body === null) throw new Error('empty body');
-    const h = createHash('sha256');
-    const chunks = [];
-    for await (const chunk of res.body) {
-      h.update(chunk);
-      chunks.push(Buffer.from(chunk));
+    if (bytesSoFar > 0 && res.status === 200) {
+      // The host ignored the range: restart cleanly from byte 0.
+      unlinkSync(tmp);
+      hash = createHash('sha256');
+      bytesSoFar = 0;
     }
-    const buf = Buffer.concat(chunks);
-    writeFileSync(tmp, buf);
-    const sha256 = h.digest('hex');
-    if (sha256 !== MANIFEST.sha256 || buf.length !== MANIFEST.sizeBytes) {
-      throw new Error(
-        `download integrity mismatch: got size=${buf.length} sha256=${sha256}`,
-      );
+    const fd = openSync(tmp, bytesSoFar > 0 && res.status === 206 ? 'a' : 'w');
+    for await (const chunk of res.body) {
+      const buf = Buffer.from(chunk);
+      hash.update(buf);
+      writeSync(fd, buf);
+      bytesSoFar += buf.length;
+    }
+    closeSync(fd);
+    if (bytesSoFar !== MANIFEST.sizeBytes) {
+      throw new Error(`truncated stream: got ${bytesSoFar}/${MANIFEST.sizeBytes} bytes`);
+    }
+    const sha256 = hash.digest('hex');
+    if (sha256 !== MANIFEST.sha256) {
+      throw new Error(`download integrity mismatch: sha256=${sha256}`);
     }
     renameSync(tmp, target);
-    console.log(`fetch_model: downloaded ${buf.length} bytes`);
+    console.log(`fetch_model: downloaded ${bytesSoFar} bytes (across ${attempt} attempt(s))`);
     console.log(`fetch_model: sha256 VERIFIED: ${sha256} (matches src/model/manifest.ts)`);
-    writeMeta({ sha256, size: buf.length }, true);
+    writeMeta({ sha256, size: bytesSoFar }, true);
     lastErr = null;
     break;
   } catch (err) {
     lastErr = err;
-    console.error(`fetch_model: attempt ${attempt} failed: ${String(err)}`);
-    if (existsSync(tmp)) unlinkSync(tmp);
+    console.error(`fetch_model: attempt ${attempt} failed at byte ${bytesSoFar}: ${String(err)}`);
+    if (String(err).includes('integrity mismatch') || String(err).includes('truncated')) {
+      // Unusable bytes: start over cleanly on the next attempt.
+      if (existsSync(tmp)) unlinkSync(tmp);
+      hash = createHash('sha256');
+      bytesSoFar = 0;
+    } else {
+      // Transport cut: KEEP the partial + hash state and resume.
+      console.log(`fetch_model: keeping .part (${bytesSoFar} bytes) for range-resume`);
+    }
+    if (attempt < MAX_ATTEMPTS) {
+      const wait = BACKOFF_S[Math.min(attempt - 1, BACKOFF_S.length - 1)];
+      console.log(`fetch_model: retrying in ${wait}s`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+    }
   }
 }
 if (lastErr !== null || !existsSync(target)) {
