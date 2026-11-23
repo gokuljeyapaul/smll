@@ -10,7 +10,7 @@
  * without any network.
  */
 import { createHash, randomBytes } from 'node:crypto';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModelManager, type ModelProgress } from './manager';
 import type { ModelStore } from './store';
 import type { PinnedModel } from './manifest';
@@ -94,12 +94,12 @@ function killingStream(chunks: Uint8Array[]): Response {
   return new Response(stream);
 }
 
-function fakeFetch(script: { make: () => Response }[]) {
+function fakeFetch(script: { make: (init?: RequestInit) => Response }[]) {
   const calls: FetchCall[] = [];
   const impl = (url: string | RequestInfo, init?: RequestInit): Promise<Response> => {
     const range = init?.headers instanceof Headers ? init.headers.get('range') : null;
     calls.push({ url: String(url), range });
-    return Promise.resolve(script[Math.min(calls.length - 1, script.length - 1)].make());
+    return Promise.resolve(script[Math.min(calls.length - 1, script.length - 1)].make(init));
   };
   return { impl, calls };
 }
@@ -397,5 +397,66 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
     await manager.download(); // retry
     expect(manager.getStatus().state).toBe('ready');
     expect(store.promotes).toHaveLength(1);
+  });
+
+  it('a starved requestAnimationFrame never freezes the download (CI stall fix)', async () => {
+    // Observed on CI 2026-11-23: headless contexts can starve rAF for minutes
+    // on loaded runners; the read loop used to block on the frame callback
+    // and the whole download hung with the server having sent everything.
+    // rAF defined but never firing must NOT stop the download.
+    const model = makeFakeManifest();
+    const fetcher = fakeFetch([{ make: () => chunked(model.chunks) }]);
+    const { manager } = freshManager(model, { fetchImpl: fetcher.impl as typeof fetch });
+    vi.stubGlobal('requestAnimationFrame', (() => 0) as typeof requestAnimationFrame);
+    try {
+      await manager.download();
+      expect(manager.getStatus().state).toBe('ready'); // via the 50 ms paint-fallback
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('a stalled download body is aborted and range-resumed (CI stall fix)', async () => {
+    // Attempt 1 delivers 2 chunks (2000 bytes) then the read HANGS with no
+    // error — the exact CI signature. The inactivity watchdog aborts, and
+    // attempt 2 resumes with a Range from the received offset.
+    const model = makeFakeManifest();
+    let delivered = 0;
+    const stalling = (init?: RequestInit): Response => {
+      const signal = init?.signal ?? null;
+      const stream = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          if (delivered < 2) {
+            controller.enqueue(model.chunks[delivered++]!);
+            return;
+          }
+          // Hang until aborted; real fetch bodies reject on abort.
+          if (signal?.aborted) {
+            controller.error(new TypeError('simulated stall aborted'));
+            return;
+          }
+          signal?.addEventListener(
+            'abort',
+            () => controller.error(new TypeError('simulated stall aborted')),
+            { once: true },
+          );
+        },
+      });
+      return new Response(stream);
+    };
+    const fetcher = fakeFetch([
+      { make: stalling },
+      { make: () => chunked([model.chunks[2]!, model.chunks[3]!], { status: 206 }) },
+    ]);
+    const { manager } = freshManager(model, {
+      fetchImpl: fetcher.impl as typeof fetch,
+      inactivityTimeoutMs: 50,
+    });
+
+    await manager.download();
+    expect(manager.getStatus().state).toBe('ready');
+    expect(fetcher.calls).toHaveLength(2);
+    expect(fetcher.calls[0]?.range).toBeNull();
+    expect(fetcher.calls[1]?.range).toBe('bytes=2000-'); // resumed from the stall offset
   });
 });

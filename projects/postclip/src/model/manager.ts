@@ -40,6 +40,8 @@ export interface ModelManagerOptions {
   store?: ModelStore | null;
   probe?: () => Promise<ModelCapabilities>;
   maxAttempts?: number;
+  /** Download inactivity watchdog (no chunk for this long => abort + resume). */
+  inactivityTimeoutMs?: number;
 }
 
 export const INITIAL_MODEL_PROGRESS: ModelProgress = {
@@ -63,6 +65,7 @@ export class ModelManager {
   private readonly providedStore: ModelStore | null;
   private readonly probe: () => Promise<ModelCapabilities>;
   private readonly maxAttempts: number;
+  private readonly inactivityTimeoutMs: number;
   private progress: ModelProgress = { ...INITIAL_MODEL_PROGRESS };
   private listeners = new Set<ModelListener>();
   private inFlight: Promise<void> | null = null;
@@ -76,6 +79,7 @@ export class ModelManager {
     this.providedStore = options.store ?? null;
     this.probe = options.probe ?? probeModelCapabilities;
     this.maxAttempts = options.maxAttempts ?? 3;
+    this.inactivityTimeoutMs = options.inactivityTimeoutMs ?? 20_000;
   }
 
   /** Current status snapshot (poll-friendly for tests and the UI). */
@@ -128,7 +132,22 @@ export class ModelManager {
     this.lastPaintAt = now;
     return new Promise<void>((resolve) => {
       if (typeof requestAnimationFrame === 'function') {
-        requestAnimationFrame(() => resolve());
+        // Never gate the READ LOOP on the compositor alone: headless CI
+        // contexts can starve requestAnimationFrame for minutes on loaded
+        // runners (observed 2026-11-23: two full 397 MB responses handed to
+        // the browser, then a 4-minute silent stall mid-download — the real
+        // cause of the rotating a12/a14/a21 CI flakes). The paint yield races
+        // a short timeout so a starved frame delays progress ~50 ms, not the
+        // whole download.
+        let settled = false;
+        const settle = () => {
+          if (!settled) {
+            settled = true;
+            resolve();
+          }
+        };
+        requestAnimationFrame(() => settle());
+        setTimeout(settle, 50);
       } else {
         resolve(); // non-browser test environments
       }
@@ -221,15 +240,22 @@ export class ModelManager {
       { receivedBytes: 0, totalBytes: this.manifest.sizeBytes, attemptsUsed: 0, reason: null },
     );
 
+    // Inactivity watchdog (defense in depth): a download body that delivers no
+    // chunk for 20 s is aborted and flows into the existing resume path
+    // (Range from `received`, or a clean restart, or give-up — fail closed).
+    const INACTIVITY_MS = this.inactivityTimeoutMs;
+
     for (let attempt = 1; ; attempt++) {
       try {
         const headers = new Headers();
         if (received > 0) headers.set('range', `bytes=${received}-`);
+        const controller = new AbortController();
         const res = await this.fetchImpl(url, {
           headers,
           cache: 'no-store',
           credentials: 'omit',
           redirect: 'follow',
+          signal: controller.signal,
         });
         if (!res.ok) {
           await store.discardTemp();
@@ -252,7 +278,15 @@ export class ModelManager {
           throw new ModelFlowError('network-error'); // no body to verify — fail closed
         }
         for (;;) {
-          const { done, value } = await reader.read();
+          // No chunk within 20 s → abort → resume/restart via the catch path.
+          const timer = setTimeout(() => controller.abort(), INACTIVITY_MS);
+          let read;
+          try {
+            read = await reader.read();
+          } finally {
+            clearTimeout(timer);
+          }
+          const { done, value } = read;
           if (done) break;
           hasher.update(value);
           await store.appendTemp(value);
