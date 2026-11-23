@@ -6,6 +6,14 @@ export default defineConfig({
   workers: 1,
   timeout: 180_000,
   expect: { timeout: 30_000 },
+  // Environment roulette, documented in issue #58: some CI browser contexts
+  // never deliver the 397 MB localhost model body (Chromium network-stack
+  // stall; per-context persistent — every watchdog abort in such a context
+  // also stalls). The app itself handles those contexts correctly (loud
+  // abort, fail-closed give-up). This retry re-runs the SAME test fully in a
+  // FRESH context whose network stack works: nothing is skipped or loosened,
+  // and locally (no CI env) the count is 0.
+  retries: process.env.CI ? 1 : 0,
   reporter: process.env.PW_JUNIT ? process.env.PW_JUNIT : 'list',
   outputDir: 'test-results',
   // S5 (A29): e2e/prod/ specs assert PRODUCTION-build properties (the strict
