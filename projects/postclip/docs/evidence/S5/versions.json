@@ -1,0 +1,42 @@
+{
+  "slice": "S5",
+  "toolchain": {
+    "node": "v26.12.1",
+    "npm": "12.0.2 (package-lock.json, npm ci)",
+    "vite": "8.3.8",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1",
+    "eslint": "9 (typescript-eslint 8.73.0)",
+    "react": "19.3.1",
+    "playwright": "1.65.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright build webkit-2388)",
+    "ffmpeg": "ffprobe n9.0.1 (video durations in video_manifest.json)",
+    "axe_core": "@axe-core/playwright 4.14.0 (axe-core 4.10.3 bundled) — the A23 automated accessibility checks, run in BOTH color schemes on every screen, both engines"
+  },
+  "llm_runtime": {
+    "status": "UNCHANGED from S4 — wllama 3.13 + the pinned Qwen3-0.6B-Q4_K_M; the LLM cleanup stays DISABLED BY DEFAULT (A19), so S5's latency/memory budgets bind the DEFAULT (deterministic rules) pipeline; the opt-in LLM path's real numbers are re-measured on this tree by the S4 eval spec and recorded in the slice summary as limitations",
+    "model": "Qwen3-0.6B-Q4_K_M.gguf from unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b (Apache-2.0), 396,705,472 bytes, sha256 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a"
+  },
+  "dependency_changes": "S5 adds ONE devDependency: @axe-core/playwright@4.14.0 (the plan's A23 verification column names it). No runtime dependency changes; the production bundle carries no axe code (devDependency, test-side only — verified by bundle inspection).",
+  "large_image_eval_fixture": {
+    "what": "the ~20 MB A28 stress input, generated at run time by scripts/gen_large_fixture.mjs (deterministic: seeded Park-Miller LCG noise + a 5x7 bitmap-font banner), NEVER committed — committed fixtures stay under the plan's caps",
+    "dimensions": "3200x1900, 19,935,456 bytes on the RED run (recorded in red.log), downscaled by the app to the 2600 px OCR cap before OCR",
+    "note": "the 4000 px case is the committed huge01 fixture (94,884 bytes, 4000 px class — the committed-size caps are why the ~20 MB case is generated, not committed)"
+  },
+  "measured_machine_numbers": {
+    "host": "same container as S0-S4 (Debian 13, kernel 6.8.0-147-generic, 16 vCPU, 62 GiB RAM); headless-Linux numbers, single-threaded WASM path; real-device behavior is NOT_RUN",
+    "a22_red_run_chromium": {
+      "clean_set_ocr_stage_ms": "clean01=2380 (cold, incl. worker boot) then 898/545/286/404/381/499/318 warm — all <= 2380 ms, budget 5000 ms",
+      "clean_set_cleanup_ms_in_browser": "0-4 ms per fixture (default deterministic rules); host suite over all 40 fixtures' gold inputs: mean ~0.5 ms, max recorded in host junit",
+      "huge01_4000px": "ocr 1928 ms cold / ~600-650 ms warm — within the 5 s budget",
+      "peak_usedJSHeapSize": "10 MiB across the whole clean-set eval (headless Chromium; performance.memory)",
+      "opt_in_llm_path": "NOT re-asserted against the 60 s budget: measured 65-236 s per cleanup on this runtime (S4 evidence + the S5 re-run of eval_llm_vs_baseline); ships disabled by default (A19)"
+    },
+    "a28_stress_input_chromium": {
+      "wall": "31,995 ms pick->review (RED run)",
+      "stages": "decode 1132 ms, downscale 697 ms, OCR 29,756 ms, cleanup 2 ms",
+      "verdict": "processed end to end, no crash/hang/tab failure, page alive, follow-up pick fine; the OCR stage EXCEEDS the 5 s per-fixture budget and is recorded as a measured limitation (adversarial noise is pathological for the LSTM recognition pass; mitigation attempts measured and rejected — see the slice summary)"
+    }
+  }
+}

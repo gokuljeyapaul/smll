@@ -12,5 +12,10 @@ if [ "$PHASE" != "PLAN_ONLY" ]; then
   npm run lint
   npm test
   npm run test:e2e
+  # S5 (A29): the PRODUCTION build must pass its own e2e pass (strict CSP
+  # shipped + enforced, test hooks absent, dist/ smoke) and the bundle
+  # inspection must come back clean on the dist/ that pass just built.
+  npm run test:e2e:prod
+  node scripts/inspect_bundle.mjs dist prod
 fi
 echo "test: OK"

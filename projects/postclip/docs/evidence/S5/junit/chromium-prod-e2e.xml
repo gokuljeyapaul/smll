@@ -1,0 +1,25 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="12.886942">
+<testsuite name="prod/a29_production.spec.ts" timestamp="2026-11-22T23:15:30.231Z" hostname="chromium" tests="3" failures="0" skipped="0" time="10.442" errors="0">
+<testcase name="a29_production_smoke_pick_review_share_copy_from_dist" classname="prod/a29_production.spec.ts" time="3.723">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/prod-a29_production-a29-pr-74109-review-share-copy-from-dist-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a29_production_strict_csp_shipped_and_enforced" classname="prod/a29_production.spec.ts" time="3.662">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/prod-a29_production-a29-pr-f02c3-ct-csp-shipped-and-enforced-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a29_production_test_hooks_absent_and_inert" classname="prod/a29_production.spec.ts" time="3.057">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/prod-a29_production-a29-pr-7e32b-test-hooks-absent-and-inert-chromium/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

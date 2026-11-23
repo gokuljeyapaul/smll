@@ -12,7 +12,7 @@
  * Usage: node scripts/run_demo.mjs   (part of `npm run demo` / demo.sh)
  */
 import { chromium, webkit } from 'playwright';
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -600,9 +600,17 @@ async function demoIn(engineName, browserType) {
 }
 
 async function main() {
+  // The demo drives the model-manager steps through the test-only
+  // ?testModelUrl / ?testProbe overrides, which are ABSENT from the production
+  // build by design (A29). The demo therefore rebuilds the TEST build itself
+  // before serving, whatever dist/ currently contains — CI's test.sh ends with
+  // the production build, so the demo must be self-contained (this is the CI
+  // failure root-cause of the first S5 PR head, fixed at the source).
+  console.log('demo: building the test app (the demo needs the test-only model-server overrides)');
+  execFileSync('npm', ['run', '--silent', 'build:test'], { cwd: ROOT, stdio: 'inherit' });
   // S3: the local model server serves the REAL pinned model file plus the
   // failure variants, so the demo exercises the real download path (the
-  // built dist must be the test build: npm run build:test).
+  // built dist must be the test build — built above).
   const modelServer = spawn(
     process.execPath,
     [

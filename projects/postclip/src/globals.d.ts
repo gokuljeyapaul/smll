@@ -12,3 +12,12 @@ declare module '*?url' {
   const url: string;
   export default url;
 }
+
+/** The shipped CSP constants (scripts/csp-policy.mjs — one source of truth
+ *  shared by vite.config.ts, the bundle inspection and the e2e specs). */
+declare module '*/csp-policy.mjs' {
+  export const PINNED_MODEL_HOST: string;
+  export const PROD_CSP: string;
+  export const TEST_MODEL_SERVER: string;
+  export const TEST_CSP: string;
+}

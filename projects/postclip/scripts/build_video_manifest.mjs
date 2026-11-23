@@ -70,6 +70,15 @@ const TESTCASES = [
   'a21_without_a_ready_model_the_toggle_explains_and_falls_back',
   'uc13_injection_posts_are_content_never_obeyed',
   'eval_llm_vs_baseline_standard_and_injection_sets',
+  // S5 (hardening + production build): test-build flows plus the
+  // production-build pass (e2e/prod — junit in the *-prod-e2e.xml files).
+  'a23_axe_no_serious_or_critical_violations_every_screen',
+  'a23_keyboard_only_main_flow_pick_review_copy_share_export',
+  'eval_latency_budgets_clean_set',
+  'eval_large_images_4000px_and_20mb_processed_safely',
+  'a29_production_smoke_pick_review_share_copy_from_dist',
+  'a29_production_strict_csp_shipped_and_enforced',
+  'a29_production_test_hooks_absent_and_inert',
 ];
 
 /** Match a video directory name to its testcase. Playwright names video dirs
@@ -102,16 +111,20 @@ function durationSeconds(path) {
 }
 
 function junitRef(engine, testcase) {
-  const file = `${engine}-e2e.xml`;
-  const path = join(junitDir, file);
-  if (!existsSync(path)) return null;
-  const xml = readFileSync(path, 'utf-8');
-  // Parse testcase blocks and confirm the named one passed (no failure/skip child).
-  const blocks = xml.match(/<testcase\b[\s\S]*?<\/testcase>/g) ?? [];
-  for (const block of blocks) {
-    const nameMatch = block.match(/\bname="([^"]*)"/);
-    if (nameMatch && nameMatch[1] === testcase && !block.includes('<failure') && !block.includes('<skipped')) {
-      return `junit:docs/evidence/${slice}/junit/${file}::${testcase}`;
+  // S5: the production-build testcases live in ${engine}-prod-e2e.xml; try
+  // the test-build file first, then the prod file.
+  const files = [`${engine}-e2e.xml`, `${engine}-prod-e2e.xml`];
+  for (const file of files) {
+    const path = join(junitDir, file);
+    if (!existsSync(path)) continue;
+    const xml = readFileSync(path, 'utf-8');
+    // Parse testcase blocks and confirm the named one passed (no failure/skip child).
+    const blocks = xml.match(/<testcase\b[\s\S]*?<\/testcase>/g) ?? [];
+    for (const block of blocks) {
+      const nameMatch = block.match(/\bname="([^"]*)"/);
+      if (nameMatch && nameMatch[1] === testcase && !block.includes('<failure') && !block.includes('<skipped')) {
+        return `junit:docs/evidence/${slice}/junit/${file}::${testcase}`;
+      }
     }
   }
   return null;

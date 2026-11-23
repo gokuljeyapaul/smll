@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Turn a screenshot of a post into clean, shareable text — privately, on your own device." />
     <meta name="theme-color" content="#101418" />
+    <!-- S5 (A29): the strict CSP, verbatim from scripts/csp-policy.mjs (the
+         single source of truth). The test build appends exactly one
+         connect-src origin — the local model server — via vite.config.ts. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://huggingface.co; base-uri 'none'; form-action 'none'; object-src 'none'" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>PostClip</title>
   </head>
