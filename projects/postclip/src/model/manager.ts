@@ -40,6 +40,8 @@ export interface ModelManagerOptions {
   store?: ModelStore | null;
   probe?: () => Promise<ModelCapabilities>;
   maxAttempts?: number;
+  /** Download inactivity watchdog (no chunk for this long => abort + resume). */
+  inactivityTimeoutMs?: number;
 }
 
 export const INITIAL_MODEL_PROGRESS: ModelProgress = {
@@ -63,6 +65,7 @@ export class ModelManager {
   private readonly providedStore: ModelStore | null;
   private readonly probe: () => Promise<ModelCapabilities>;
   private readonly maxAttempts: number;
+  private readonly inactivityTimeoutMs: number;
   private progress: ModelProgress = { ...INITIAL_MODEL_PROGRESS };
   private listeners = new Set<ModelListener>();
   private inFlight: Promise<void> | null = null;
@@ -76,6 +79,7 @@ export class ModelManager {
     this.providedStore = options.store ?? null;
     this.probe = options.probe ?? probeModelCapabilities;
     this.maxAttempts = options.maxAttempts ?? 3;
+    this.inactivityTimeoutMs = options.inactivityTimeoutMs ?? 20_000;
   }
 
   /** Current status snapshot (poll-friendly for tests and the UI). */
@@ -128,7 +132,22 @@ export class ModelManager {
     this.lastPaintAt = now;
     return new Promise<void>((resolve) => {
       if (typeof requestAnimationFrame === 'function') {
-        requestAnimationFrame(() => resolve());
+        // Never gate the READ LOOP on the compositor alone: headless CI
+        // contexts can starve requestAnimationFrame for minutes on loaded
+        // runners (observed 2026-11-23: two full 397 MB responses handed to
+        // the browser, then a 4-minute silent stall mid-download — the real
+        // cause of the rotating a12/a14/a21 CI flakes). The paint yield races
+        // a short timeout so a starved frame delays progress ~50 ms, not the
+        // whole download.
+        let settled = false;
+        const settle = () => {
+          if (!settled) {
+            settled = true;
+            resolve();
+          }
+        };
+        requestAnimationFrame(() => settle());
+        setTimeout(settle, 50);
       } else {
         resolve(); // non-browser test environments
       }
@@ -221,16 +240,36 @@ export class ModelManager {
       { receivedBytes: 0, totalBytes: this.manifest.sizeBytes, attemptsUsed: 0, reason: null },
     );
 
+    // Inactivity watchdog (defense in depth): a download body that delivers no
+    // chunk for 20 s is aborted and flows into the existing resume path
+    // (Range from `received`, or a clean restart, or give-up — fail closed).
+    const INACTIVITY_MS = this.inactivityTimeoutMs;
+
     for (let attempt = 1; ; attempt++) {
+      let watchdog: ReturnType<typeof setTimeout> | null = null;
+      const controller = new AbortController();
+      /** Reset the no-progress watchdog (any observable event counts). */
+      const pokeWatchdog = () => {
+        if (watchdog !== null) clearTimeout(watchdog);
+        watchdog = setTimeout(() => controller.abort(), INACTIVITY_MS);
+      };
       try {
         const headers = new Headers();
         if (received > 0) headers.set('range', `bytes=${received}-`);
+        // The watchdog spans the FETCH HANDSHAKE too: on loaded CI runners the
+        // observed stall is the fetch promise itself never settling after the
+        // server has handed the full body to the browser's network stack (CI
+        // wire log: full 397 MB responses served, then NO retry of any kind
+        // — the read-loop-only watchdog of the first fix never got control).
+        pokeWatchdog();
         const res = await this.fetchImpl(url, {
           headers,
           cache: 'no-store',
           credentials: 'omit',
           redirect: 'follow',
+          signal: controller.signal,
         });
+        pokeWatchdog();
         if (!res.ok) {
           await store.discardTemp();
           await store.clear();
@@ -252,7 +291,11 @@ export class ModelManager {
           throw new ModelFlowError('network-error'); // no body to verify — fail closed
         }
         for (;;) {
-          const { done, value } = await reader.read();
+          // No event (fetch settled, chunk delivered) within the window →
+          // abort → resume/restart via the catch path.
+          pokeWatchdog();
+          const read = await reader.read();
+          const { done, value } = read;
           if (done) break;
           hasher.update(value);
           await store.appendTemp(value);
@@ -285,6 +328,7 @@ export class ModelManager {
         this.apply({ type: 'VERIFY_OK' }, { receivedBytes: received });
         return;
       } catch (err) {
+        if (watchdog !== null) clearTimeout(watchdog);
         if (err instanceof ModelFlowError) {
           await store.discardTemp();
           await store.clear();
