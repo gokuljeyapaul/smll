@@ -1,0 +1,24 @@
+=== TYPECHECK ===
+npm notice run postclip@0.1.0 typecheck
+npm notice run tsc --noEmit
+TYPECHECK_EXIT=0
+=== LINT ===
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+LINT_EXIT=0
+=== VITEST ===
+npm notice run postclip@0.1.0 test
+npm notice run vitest run
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+
+ Test Files  28 passed (28)
+      Tests  259 passed (259)
+   Start at  21:03:27
+   Duration  5.32s (setup 45%, environment 22%, tests 22%, transform 4%, import 4%, worker 2%)
+
+    Isolate  28 workers spawned · ~267ms startup each (spawn + environment, per file)
+             at least ~2.22s faster with isolate: false — reuses workers across files instead of one per file
+
+VITEST_EXIT=0

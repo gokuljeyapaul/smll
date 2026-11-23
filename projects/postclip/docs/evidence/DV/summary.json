@@ -1,0 +1,49 @@
+{
+  "slice": "DV",
+  "issue": 73,
+  "source_digest": "0d42efe2a96ca533eda50e5c5eaf631b96abf8445ac7a1e35371414b939bd227",
+  "tested_on": {
+    "os": "Linux 6.8.0-147-generic",
+    "ram": "62.8 GiB",
+    "node": "v26.12.1",
+    "chromium": "159.0.8154.6",
+    "ffmpeg": "n9.0.1-11-ge47273f4d9-20260831",
+    "host": "Hermes subagent container (postclip DV capture host)"
+  },
+  "acceptance": {
+    "A24": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a12_model_downloads_verifies_caches",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a21_model_cleanup_flow_verified_result_or_visible_fallback"
+      ],
+      "videos": ["video:postclip_full_demo"],
+      "notes": "DV (#73) restates A24 on the unchanged tree and adds the second committed demo asset. The per-flow video coverage backing A24 is the committed S6 junit above (both engines; the full UC01-UC14 accounting lives in docs/evidence/S6/summary.json and is unchanged). The NEW artifact is the natural-pace FULL-WORKING capture docs/demo/postclip-full-demo.mp4: one continuous real run driven by scripts/make_full_demo_video.mjs (real clipboard paste, real in-browser OCR, deliberate edit, real copy + share-spy payload assertion + three real .md/.txt/.json downloads, real 377 MiB pinned-model download with visible progress served from the local cache by scripts/serve_model.mjs with the wire log committed, opt-in model cleanup, real 238.8 s single-threaded WASM inference to the guard-verified output identical to the debug modelText, exit 0 — docs/evidence/DV/capture.log). The capture is a driver-script recording, not a Playwright testcase, so its manifest junit field points at the committed passing testcase of the primary constituent flow (uc01), the same convention the S6 compilation entry uses; every stage of the run is asserted in the driver and its logs are committed here. Only the model-inference wait is time-compressed (239 s real shown at 11x over 21.7 s), with the factor disclosed in a persistent on-screen caption during the segment; all other stages are natural pace."
+    }
+  },
+  "commands": {
+    "build": { "command": "npm run build:test", "exit_code": 0, "evidence": "docs/evidence/DV/build-test.log" },
+    "capture": { "command": "node scripts/make_full_demo_video.mjs", "exit_code": 0, "evidence": "docs/evidence/DV/capture.log" },
+    "compress": { "command": "node scripts/compress_full_demo.mjs", "exit_code": 0, "evidence": "docs/evidence/DV/compress.log" },
+    "typecheck": { "command": "npm run typecheck", "exit_code": 0, "evidence": "docs/evidence/DV/local-gates.log" },
+    "lint": { "command": "npm run lint", "exit_code": 0, "evidence": "docs/evidence/DV/local-gates.log" },
+    "host_suite": { "command": "npm test (Vitest host suite: unit + evidence-integrity, S0-S6)", "exit_code": 0, "evidence": "docs/evidence/DV/local-gates.log" },
+    "verify": { "command": "bash scripts/verify.sh (plan lint + evidence integrity)", "exit_code": 0, "evidence": "docs/evidence/DV/verify.log" }
+  },
+  "artifacts": {
+    "committed_video": "docs/demo/postclip-full-demo.mp4 (453847 bytes, 94.1 s, 720p, H.264 CRF 30, NO audio track, sha256 08d0f224a617ed6cbc41a37dec92adaae2d8034586e76440b0aba3e35d1929ca)",
+    "measured_gif_same_run": "artifacts/dv/postclip-full-demo.gif (630133 bytes, 0.63 MB, 640px/8fps/128-color palette, not committed: larger than the mp4 — see docs/evidence/DV/size-comparison.json)",
+    "raw_capture": "artifacts/dv/postclip-full-run.webm (10961100 bytes, 304.3 s, sha256 4195fe984c0952dc973b9107737d2e70f13464a152447dbd97f742d37209b0f — never committed, per the per-flow-video rule)",
+    "manifest_entry": "postclip_full_demo in docs/evidence/video_manifest.json"
+  },
+  "limitations": [
+    "The capture is Chromium-only: real model inference does not run on Playwright's WebKit on this Linux host (documented S4/S6 engine limitation); the WebKit side of A24's per-flow coverage remains the committed S6 evidence.",
+    "The model download in the video is served from the LOCAL cache by scripts/serve_model.mjs via the test-build-only ?testModelUrl flag (the same harness every e2e model flow uses) — the bytes, progress bar, streamed sha256 verification and cache promote are all real, but the remote Hugging Face fetch itself is not shown; no network re-download happened, per the pinned-model rule.",
+    "The OS share sheet cannot open in a headless browser: the Share click hands the exact payload to a spy (sanctioned by AGENTS.md), asserted to equal the edited review text; the sheet itself is a documented KNOWN_LIMITS item (A27 NOT_RUN).",
+    "Only the LLM-inference wait is time-compressed (239 s at 11x); the model download (26.8 s), OCR, editing, exports and the result are all natural pace. The factor is disclosed on screen during the segment and in size-comparison.json.",
+    "The browser e2e suite (Playwright Chromium + WebKit + production pass) was NOT re-run locally for this docs/demo-only slice: no digested path (src, public, e2e, fixtures, lockfile, package.json) changed — the source_digest is byte-identical to the S6-verified tree (0d42efe2…) — so the S6 full-suite evidence remains the proof for the app code; the required 'monorepo / verify' check runs that full suite on this PR's head in CI and must be green before the merge (per the merge policy).",
+    "The video was verified structurally (per-stage frame luminance stats, caption-band presence at the expected windows, segment durations against the wall-clock markers, plus the driver's in-run assertions); no human watched it on this runner."
+  ]
+}

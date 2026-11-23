@@ -17,6 +17,8 @@ android/app/build/
 *.pyc
 __pycache__/
 test-results/
-# S6 exception (plan D7 / O06): the ONE committed video — the compilation
-# tour in docs/demo/; every per-flow video stays in artifacts/ (ignored).
+# Committed demo videos (plan D7 / O06 + issue #73): the S6 compilation
+# tour and the natural-pace full-working demo in docs/demo/; every
+# per-flow video stays in artifacts/ (ignored).
 !docs/demo/postclip-demo.mp4
+!docs/demo/postclip-full-demo.mp4

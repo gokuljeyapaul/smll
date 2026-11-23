@@ -1,0 +1,63 @@
+[full-demo] verifying cached model sha256 (396705472 bytes)...
+[full-demo] model sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+[full-demo] starting model server (serves the CACHED pinned file; /model-slow paces the download)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/dv/model-server.log
+[full-demo] starting vite preview on the TEST dist/
+npm notice run postclip@0.1.0 preview
+npm notice run vite preview
+  ➜  Local:   http://localhost:4173/
+  ➜  Network: use --host to expose
+[full-demo] app origin: http://[::1]:4173/
+[full-demo] launching chromium (headless, 1280x720, video on)
+[full-demo] home screen loaded (test build; model URL -> local cached file)
+[full-demo] marker home_loaded @ 0.7s
+[full-demo] real PNG written to the real clipboard
+[full-demo] marker paste_click @ 3.9s
+[full-demo] marker ocr_review_visible @ 4.0s
+[full-demo] marker ocr_done @ 4.9s
+[full-demo] real OCR done: 184 chars cleaned text
+[full-demo] marker raw_ocr_shown @ 6.7s
+[full-demo] marker edit_start @ 10.2s
+[full-demo] marker edit_done @ 13.2s
+[full-demo] edited review text: 226 chars
+[full-demo] marker copy_click @ 15.0s
+[full-demo] marker copied_confirmed @ 15.0s
+[full-demo] copy confirmed by the UI (real clipboard write)
+[full-demo] marker share_click @ 16.5s
+[full-demo] marker export-md_click @ 18.7s
+[full-demo] export export-md -> postclip-export.md (226 bytes, real browser download)
+[full-demo] marker export-txt_click @ 19.5s
+[full-demo] export export-txt -> postclip-export.txt (226 bytes, real browser download)
+[full-demo] marker export-json_click @ 20.2s
+[full-demo] export export-json -> postclip-export.json (283 bytes, real browser download)
+[full-demo] marker exports_done @ 20.9s
+[full-demo] marker start_over_click @ 22.2s
+[full-demo] marker back_home @ 22.3s
+[full-demo] marker model_download_click @ 24.4s
+serve_model: GET /model-slow range=- status=200 sent=396705472
+(node:267268) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 drain listeners added to [ServerResponse]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+[full-demo] marker model_ready @ 51.2s
+[full-demo] model downloaded (real bytes over HTTP), sha256-verified and cached — #model-ready visible
+[full-demo] marker llm_toggle_click @ 53.1s
+[full-demo] marker pick_click @ 54.7s
+[full-demo] same screenshot picked again, model cleanup now ON
+[full-demo] marker ocr2_deterministic_visible @ 55.4s
+[full-demo] marker llm_running @ 55.4s
+[full-demo] model cleanup running (real wllama WASM inference started)
+[full-demo] marker llm_applied @ 294.2s
+[full-demo] model cleanup applied after a real inference of 238.8s
+[full-demo] final review text = validated model output (262 chars)
+[full-demo] marker suggestions_visible @ 294.3s
+[full-demo] marker removed_chrome_open @ 296.5s
+[full-demo] marker final_hold_start @ 298.2s
+[full-demo] marker final_hold_end @ 302.4s
+[full-demo] share payload = the edited review text (spy-asserted)
+[full-demo] teardown error: TypeError [ERR_INVALID_ARG_TYPE]: The "src" argument must be of type string or an instance of Buffer or URL. Received an instance of Promise
+[full-demo] CAPTURE OK
+DRIVER_EXIT=0

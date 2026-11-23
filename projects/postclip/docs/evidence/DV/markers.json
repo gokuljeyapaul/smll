@@ -1,0 +1,125 @@
+{
+  "video": "artifacts/dv/postclip-full-run.webm",
+  "size_bytes": 10961100,
+  "sha256": "4195fe984c0952dcd973b9107737d2e70f13464a152447dbd97f742d37209b0f",
+  "markers": [
+    {
+      "name": "home_loaded",
+      "t": 0.7
+    },
+    {
+      "name": "paste_click",
+      "t": 3.9
+    },
+    {
+      "name": "ocr_review_visible",
+      "t": 4.0
+    },
+    {
+      "name": "ocr_done",
+      "t": 4.9
+    },
+    {
+      "name": "raw_ocr_shown",
+      "t": 6.7
+    },
+    {
+      "name": "edit_start",
+      "t": 10.2
+    },
+    {
+      "name": "edit_done",
+      "t": 13.2
+    },
+    {
+      "name": "copy_click",
+      "t": 15.0
+    },
+    {
+      "name": "copied_confirmed",
+      "t": 15.0
+    },
+    {
+      "name": "share_click",
+      "t": 16.5
+    },
+    {
+      "name": "export-md_click",
+      "t": 18.7
+    },
+    {
+      "name": "export-txt_click",
+      "t": 19.5
+    },
+    {
+      "name": "export-json_click",
+      "t": 20.2
+    },
+    {
+      "name": "exports_done",
+      "t": 20.9
+    },
+    {
+      "name": "start_over_click",
+      "t": 22.2
+    },
+    {
+      "name": "back_home",
+      "t": 22.3
+    },
+    {
+      "name": "model_download_click",
+      "t": 24.4
+    },
+    {
+      "name": "model_ready",
+      "t": 51.2
+    },
+    {
+      "name": "llm_toggle_click",
+      "t": 53.1
+    },
+    {
+      "name": "pick_click",
+      "t": 54.7
+    },
+    {
+      "name": "ocr2_deterministic_visible",
+      "t": 55.4
+    },
+    {
+      "name": "llm_running",
+      "t": 55.4
+    },
+    {
+      "name": "llm_applied",
+      "t": 294.2,
+      "real_inference_s": 238.8
+    },
+    {
+      "name": "suggestions_visible",
+      "t": 294.3
+    },
+    {
+      "name": "removed_chrome_open",
+      "t": 296.5
+    },
+    {
+      "name": "final_hold_start",
+      "t": 298.2
+    },
+    {
+      "name": "final_hold_end",
+      "t": 302.4
+    }
+  ],
+  "captured_at": "2026-11-23T20:51:42Z (log-reconstructed: the Playwright video.path() Promise teardown bug, fixed in the committed script)",
+  "fixture": "fixtures/images/clean01.png",
+  "model": {
+    "file": ".cache/models/Qwen3-0.6B-Q4_K_M.gguf",
+    "sha256": "ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a",
+    "bytes": 396705472,
+    "served_from": "local cache via scripts/serve_model.mjs /model-slow"
+  },
+  "real_inference_s": 238.8
+}
