@@ -1,0 +1,519 @@
+{
+  "slice": "S6",
+  "source_digest": "0d42efe2a96ca533eda50e5c5eaf631b96abf8445ac7a1e35371414b939bd227",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright 1.65.1, build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM; headless-Linux numbers, single-threaded WASM path; real-device behavior is NOT_RUN"
+  },
+  "acceptance": {
+    "A01": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a01_built_app_loads_home_screen_no_console_errors",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a01_built_app_loads_home_screen_no_console_errors"
+      ],
+      "videos": [
+        "video:a01_built_app_loads_home_screen_no_console_errors_chromium",
+        "video:a01_built_app_loads_home_screen_no_console_errors_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S0 ID re-verified on the S5 tree (the app now ships the strict CSP; clean load in both engines)."
+    },
+    "A02": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc01_pick_ocr_review_share"
+      ],
+      "videos": [
+        "video:uc01_pick_ocr_review_share_chromium",
+        "video:uc01_pick_ocr_review_share_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S0 ID re-verified on the S5 tree."
+    },
+    "A03": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::payload builders with suggestion toggles (S4, A03/A04 default-off) > WITHOUT extras every payload is exactly the review text (A03 invariant)"
+      ],
+      "videos": [
+        "video:uc01_pick_ocr_review_share_chromium",
+        "video:uc01_pick_ocr_review_share_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S0 ID re-verified on the S5 tree."
+    },
+    "A04": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc05_edit_reflects_in_payloads",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc05_edit_reflects_in_payloads",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::payload builders with suggestion toggles (S4, A03/A04 default-off) > .txt and .md carry the same labelled block; .json carries structured fields"
+      ],
+      "videos": [
+        "video:uc05_edit_reflects_in_payloads_chromium",
+        "video:uc05_edit_reflects_in_payloads_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S1 ID re-verified on the S5 tree (also covered keyboard-only in a23)."
+    },
+    "A05": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc07_export_downloads_md_txt_json",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc07_export_downloads_md_txt_json",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::payload builders with suggestion toggles (S4, A03/A04 default-off) > .txt and .md carry the same labelled block; .json carries structured fields"
+      ],
+      "videos": [
+        "video:uc07_export_downloads_md_txt_json_chromium",
+        "video:uc07_export_downloads_md_txt_json_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S1 ID re-verified on the S5 tree (also covered keyboard-only in a23, and on the production build in a29)."
+    },
+    "A06": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc10_non_english_rejected_no_cleanup",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc10_non_english_rejected_no_cleanup",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::language gate confusion matrix over fixtures (A06) > covers the 30 English and 5 German/Spanish fixtures"
+      ],
+      "videos": [
+        "video:uc10_non_english_rejected_no_cleanup_chromium",
+        "video:uc10_non_english_rejected_no_cleanup_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S1 ID re-verified on the S5 tree."
+    },
+    "A07": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc11_bad_input_error_states",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc11_bad_input_error_states",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc11_huge_downscaled_before_ocr",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc11_huge_downscaled_before_ocr"
+      ],
+      "videos": [
+        "video:uc11_bad_input_error_states_chromium",
+        "video:uc11_bad_input_error_states_webkit",
+        "video:uc11_huge_downscaled_before_ocr_chromium",
+        "video:uc11_huge_downscaled_before_ocr_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S1 ID re-verified on the S5 tree."
+    },
+    "A08": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a08_share_target_receives_image",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a08_share_target_ignores_posts_without_an_image"
+      ],
+      "videos": [
+        "video:a08_share_target_receives_image_chromium",
+        "video:a08_share_target_ignores_posts_without_an_image_chromium"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S2 ID re-verified on the S5 tree (chromium-only platform ID per the plan)."
+    },
+    "A09": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc03_paste_button_processes_clipboard_image",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc03_paste_event_processes_pasted_file"
+      ],
+      "videos": [
+        "video:uc03_paste_button_processes_clipboard_image_chromium",
+        "video:uc03_paste_event_processes_pasted_file_chromium"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S2 ID re-verified on the S5 tree (chromium-only platform ID per the plan)."
+    },
+    "A10": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a10_denied_paste_explains_and_picker_works"
+      ],
+      "videos": [
+        "video:a10_denied_paste_explains_and_picker_works_chromium"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S2 ID re-verified on the S5 tree (chromium-only platform ID per the plan)."
+    },
+    "A11": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a11_installable_manifest_and_sw_registered",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a11_installable_manifest_and_sw_registered",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a11_offline_reload_app_shell_loads",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a11_offline_reload_app_shell_loads",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a11_offline_ocr_after_first_load",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a11_offline_ocr_after_first_load"
+      ],
+      "videos": [
+        "video:a11_installable_manifest_and_sw_registered_chromium",
+        "video:a11_installable_manifest_and_sw_registered_webkit",
+        "video:a11_offline_reload_app_shell_loads_chromium",
+        "video:a11_offline_reload_app_shell_loads_webkit",
+        "video:a11_offline_ocr_after_first_load_chromium",
+        "video:a11_offline_ocr_after_first_load_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S2 ID re-verified on the S5 tree — the offline shell loads UNDER the shipped strict CSP (worker-src 'self' covers the SW)."
+    },
+    "A12": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a12_model_downloads_verifies_caches",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a12_model_downloads_verifies_caches",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a12_interrupted_download_resumes",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a12_interrupted_download_resumes"
+      ],
+      "videos": [
+        "video:a12_model_downloads_verifies_caches_chromium",
+        "video:a12_model_downloads_verifies_caches_webkit",
+        "video:a12_interrupted_download_resumes_chromium",
+        "video:a12_interrupted_download_resumes_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S3 ID re-verified on the S5 tree — the model download runs UNDER the test-build CSP (its one extra connect-src origin is the local model server)."
+    },
+    "A13": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a13_wrong_hash_falls_back_with_banner_and_purges",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a13_wrong_hash_falls_back_with_banner_and_purges",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a13_truncated_file_falls_back_and_purges",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a13_truncated_file_falls_back_and_purges",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a13_unsupported_browser_banner_and_picker_works",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a13_unsupported_browser_banner_and_picker_works",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a13_model_404_falls_back_and_purges",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a13_model_404_falls_back_and_purges"
+      ],
+      "videos": [
+        "video:a13_wrong_hash_falls_back_with_banner_and_purges_chromium",
+        "video:a13_wrong_hash_falls_back_with_banner_and_purges_webkit",
+        "video:a13_unsupported_browser_banner_and_picker_works_chromium",
+        "video:a13_unsupported_browser_banner_and_picker_works_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S3 ID re-verified on the S5 tree."
+    },
+    "A14": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a14_offline_processing_zero_network_requests",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a14_offline_processing_zero_network_requests"
+      ],
+      "videos": [
+        "video:a14_offline_processing_zero_network_requests_chromium",
+        "video:a14_offline_processing_zero_network_requests_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S3 ID re-verified on the S5 tree."
+    },
+    "A15": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a15_no_storage_log_request_leaks_after_flows",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a15_no_storage_log_request_leaks_after_flows",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a15_audit_negative_control_detects_seeded_leak",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a15_audit_negative_control_detects_seeded_leak"
+      ],
+      "videos": [
+        "video:a15_no_storage_log_request_leaks_after_flows_chromium",
+        "video:a15_no_storage_log_request_leaks_after_flows_webkit"
+      ],
+      "notes": "S6 re-verified the no-storage audit on the FINAL tree: after every flow the allow-listed storage (app-shell cache + model cache only) is asserted and no post text appears in localStorage/sessionStorage/IndexedDB/Cache Storage/OPFS/cookies, URLs, history, console output or any network request — and the seeded-leak negative control still TRIPS (the detector is not vacuous). The strict CSP structurally enforces the no-third-party rule (connect-src: same-origin + the pinned model host only)."
+    },
+    "A16": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — injection defense (A16, deterministic demotion) > looksLikeInjectionAttempt detects the injection fixtures instruction shapes",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — injection defense (A16, deterministic demotion) > does NOT flag ordinary post text (no false demotion)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — injection defense (A16, deterministic demotion) > DEMOTES every metadata suggestion when the OCR input contains an injection attempt",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — injection defense (A16, deterministic demotion) > REJECTS an obeyed body replacement (the post content vanished)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — injection defense (A16, deterministic demotion) > REJECTS a model that removed the instruction line from the body (even \"accounted\")",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc13_injection_posts_are_content_never_obeyed",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc13_injection_posts_are_content_never_obeyed",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_llm_vs_baseline_standard_and_injection_sets"
+      ],
+      "videos": [
+        "video:uc13_injection_posts_are_content_never_obeyed_chromium",
+        "video:uc13_injection_posts_are_content_never_obeyed_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S4 ID re-verified on the S5 tree (host adversarial suite + the real-model injection fixtures in Chromium + the designed fallback in WebKit)."
+    },
+    "A17": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/host-vitest.xml::strictParseJson (A17) > the retry budget is exactly one re-generation (2 attempts total)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::runModelCleanup — orchestration + fail-closed fallback (A17) > retries EXACTLY ONCE on a parse failure, then falls back if it fails again",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::runModelCleanup — orchestration + fail-closed fallback (A17) > does NOT retry when the output parses but fails validation (fallback at once)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::runModelCleanup — orchestration + fail-closed fallback (A17) > never surfaces unvalidated model text on any fallback path",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — the deterministic guard (A17/A18) > REJECTS extra fields outside the schema (A17: schema-validated, nothing extra)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — the deterministic guard (A17/A18) > REJECTS a missing required field",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — the deterministic guard (A17/A18) > REJECTS wrong types (body not a string)",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a21_model_cleanup_flow_verified_result_or_visible_fallback",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a21_model_cleanup_flow_verified_result_or_visible_fallback"
+      ],
+      "videos": [
+        "video:a21_model_cleanup_flow_verified_result_or_visible_fallback_chromium",
+        "video:a21_model_cleanup_flow_verified_result_or_visible_fallback_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S4 ID re-verified on the S5 tree."
+    },
+    "A18": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — the deterministic guard (A17/A18) > REJECTS invented body text the OCR does not contain (fabricated tokens)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — the deterministic guard (A17/A18) > REJECTS dropped body content that is not accounted for as chrome",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — the deterministic guard (A17/A18) > accepts dropped content only when removed_chrome quotes it exactly (accounted, nothing silent)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — the deterministic guard (A17/A18) > DROPS an author that does not literally appear in the OCR text (fabricated metadata)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — faithfulness math (A18, property-style) > body tokens are matched fuzzily across OCR line-wrap variants",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::validateLlmCleanup — faithfulness math (A18, property-style) > chrome tokens missing from the body are explained by known chrome lines alone",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_llm_vs_baseline_standard_and_injection_sets"
+      ],
+      "videos": [
+        "video:eval_llm_vs_baseline_standard_and_injection_sets_chromium"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S4 ID re-verified on the S5 tree."
+    },
+    "A19": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_llm_vs_baseline_standard_and_injection_sets",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_cleanup_body_f1_standard_set",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::eval_cleanup_body_f1_standard_set",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::cleanup quality on gold input — every English fixture (S1 + S4) > covers all 30 English fixtures"
+      ],
+      "videos": [
+        "video:eval_llm_vs_baseline_standard_and_injection_sets_chromium",
+        "video:eval_cleanup_body_f1_standard_set_chromium",
+        "video:eval_cleanup_body_f1_standard_set_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S4 ID re-verified on the S5 tree: the LLM still ships DISABLED BY DEFAULT with its measured numbers (the eval re-runs both modes on real OCR output; the deterministic baseline keeps meeting the bars)."
+    },
+    "A20": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_ocr_cer_clean_set",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::eval_ocr_cer_clean_set"
+      ],
+      "videos": [
+        "video:eval_ocr_cer_clean_set_chromium",
+        "video:eval_ocr_cer_clean_set_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S0 ID re-verified on the S5 tree (raw-OCR CER within the 5% bar in both engines)."
+    },
+    "A21": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a21_model_cleanup_flow_verified_result_or_visible_fallback",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a21_model_cleanup_flow_verified_result_or_visible_fallback",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a21_model_cleanup_off_by_default_payload_has_no_suggestions",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a21_model_cleanup_off_by_default_payload_has_no_suggestions",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a21_without_a_ready_model_the_toggle_explains_and_falls_back",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a21_without_a_ready_model_the_toggle_explains_and_falls_back",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc13_injection_posts_are_content_never_obeyed",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc13_injection_posts_are_content_never_obeyed",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::payload builders with suggestion toggles (S4, A03/A04 default-off) > WITHOUT extras every payload is exactly the review text (A03 invariant)"
+      ],
+      "videos": [
+        "video:a21_model_cleanup_flow_verified_result_or_visible_fallback_chromium",
+        "video:a21_model_cleanup_flow_verified_result_or_visible_fallback_webkit",
+        "video:a21_model_cleanup_off_by_default_payload_has_no_suggestions_chromium",
+        "video:a21_model_cleanup_off_by_default_payload_has_no_suggestions_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S4 ID re-verified on the S5 tree; the production build's copy of this behavior is covered by a29 (hooks inert, model card in its real state)."
+    },
+    "A22": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_latency_budgets_clean_set",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::eval_latency_budgets_clean_set",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_large_images_4000px_and_20mb_processed_safely",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::eval_large_images_4000px_and_20mb_processed_safely",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::deterministic cleanup latency (A22 budget) > cleanupOcrText on every fixture gold input completes within 60 s per call"
+      ],
+      "videos": [
+        "video:eval_latency_budgets_clean_set_chromium",
+        "video:eval_latency_budgets_clean_set_webkit",
+        "video:eval_large_images_4000px_and_20mb_processed_safely_chromium",
+        "video:eval_large_images_4000px_and_20mb_processed_safely_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. Headless-Linux numbers only. The DEFAULT pipeline (deterministic rules cleanup) meets every budget: OCR stage <= 5 s per fixture on the whole clean set in BOTH engines (RED-run chromium numbers: 2380 ms cold incl. worker boot, 286-898 ms warm; the green run's numbers are in e2e.log) and on the 4000 px huge01 fixture (~0.6-2 s); the default cleanup is 0-4 ms in-browser (postclip:cleanup measure) and mean ~0.5 ms / max far under 60 s over ALL 40 fixtures' gold inputs host-side. Memory: peak usedJSHeapSize 10 MiB across the clean-set eval in headless Chromium (performance.memory); this WebKit build exposes no performance.memory, so WebKit memory numbers are NOT_RUN (an engine limitation, recorded — not skipped silently). The OPT-IN LLM cleanup path is NOT asserted against the 60 s budget and never was: it ships DISABLED BY DEFAULT (the S4/A19 measured decision) and its real numbers on this tree are re-measured by eval_llm_vs_baseline (65-236 s single-threaded WASM, fail-closed cap 240 s) and recorded in the S5 e2e.log + limitations — exceeding the budget by design of that decision, disclosed, not hidden."
+    },
+    "A23": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a23_axe_no_serious_or_critical_violations_every_screen",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a23_axe_no_serious_or_critical_violations_every_screen",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a23_keyboard_only_main_flow_pick_review_copy_share_export",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a23_keyboard_only_main_flow_pick_review_copy_share_export"
+      ],
+      "videos": [
+        "video:a23_axe_no_serious_or_critical_violations_every_screen_chromium",
+        "video:a23_axe_no_serious_or_critical_violations_every_screen_webkit",
+        "video:a23_keyboard_only_main_flow_pick_review_copy_share_export_chromium",
+        "video:a23_keyboard_only_main_flow_pick_review_copy_share_export_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. @axe-core/playwright 4.14.0 scans EVERY screen (home, home+error, review, review+export-menu-open) in BOTH color schemes (the app ships prefers-color-scheme) in BOTH engines: zero serious/critical violations (all findings printed in e2e.log). The RED run found two real shipped violations, both fixed in src/styles.css: the dark primary-button label (white on #60a5fa, measured 2.55:1 — fixed with dedicated --btn-bg/--btn-bg-hover tokens, >= 5:1 in both schemes) and the hovered secondary button (accent text on the inherited filled hover, measured 2.63:1 dark / 1.29:1 light — secondary buttons now keep their outline style on hover). The keyboard-only main flow passes in both engines: Tab/Enter from the home screen through pick (the OS file dialog is browser chrome per the plan's testability map — the spec proves Enter on the focused Choose button OPENS the picker, then substitutes the file), review edit via the keyboard, Share (spy payload = edited text), Copy (real clipboard verification per engine) and Export (real download read back). A visible focus indicator is asserted programmatically at every stop."
+    },
+    "A24": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a08_share_target_receives_image",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc03_paste_button_processes_clipboard_image",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a11_installable_manifest_and_sw_registered",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a11_installable_manifest_and_sw_registered",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc05_edit_reflects_in_payloads",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc05_edit_reflects_in_payloads",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc07_export_downloads_md_txt_json",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc07_export_downloads_md_txt_json",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a12_model_downloads_verifies_caches",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a12_model_downloads_verifies_caches",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a13_wrong_hash_falls_back_with_banner_and_purges",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a13_wrong_hash_falls_back_with_banner_and_purges",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc10_non_english_rejected_no_cleanup",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc10_non_english_rejected_no_cleanup",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc11_bad_input_error_states",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc11_bad_input_error_states",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc11_huge_downscaled_before_ocr",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc11_huge_downscaled_before_ocr",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a10_denied_paste_explains_and_picker_works",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc13_injection_posts_are_content_never_obeyed",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc13_injection_posts_are_content_never_obeyed",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::a14_offline_processing_zero_network_requests",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::a14_offline_processing_zero_network_requests"
+      ],
+      "videos": [
+        "video:uc01_pick_ocr_review_share_chromium",
+        "video:uc01_pick_ocr_review_share_webkit",
+        "video:a08_share_target_receives_image_chromium",
+        "video:uc03_paste_button_processes_clipboard_image_chromium",
+        "video:a11_installable_manifest_and_sw_registered_chromium",
+        "video:a11_installable_manifest_and_sw_registered_webkit",
+        "video:uc05_edit_reflects_in_payloads_chromium",
+        "video:uc05_edit_reflects_in_payloads_webkit",
+        "video:uc07_export_downloads_md_txt_json_chromium",
+        "video:uc07_export_downloads_md_txt_json_webkit",
+        "video:a12_model_downloads_verifies_caches_chromium",
+        "video:a12_model_downloads_verifies_caches_webkit",
+        "video:a13_wrong_hash_falls_back_with_banner_and_purges_chromium",
+        "video:a13_wrong_hash_falls_back_with_banner_and_purges_webkit",
+        "video:uc10_non_english_rejected_no_cleanup_chromium",
+        "video:uc10_non_english_rejected_no_cleanup_webkit",
+        "video:uc11_bad_input_error_states_chromium",
+        "video:uc11_bad_input_error_states_webkit",
+        "video:uc11_huge_downscaled_before_ocr_chromium",
+        "video:uc11_huge_downscaled_before_ocr_webkit",
+        "video:a10_denied_paste_explains_and_picker_works_chromium",
+        "video:uc13_injection_posts_are_content_never_obeyed_chromium",
+        "video:uc13_injection_posts_are_content_never_obeyed_webkit",
+        "video:a14_offline_processing_zero_network_requests_chromium",
+        "video:a14_offline_processing_zero_network_requests_webkit",
+        "video:postclip_demo_compilation"
+      ],
+      "notes": "Every use case UC01-UC14 has a PASSING Playwright flow recorded to video on this final tree, in the engines the use case applies to (UC02/UC03/UC12 are Chromium-only per the plan's testability map; everything else runs in BOTH Chromium and WebKit). Per-flow videos are snapshotted to artifacts/video/ and listed in docs/evidence/video_manifest.json with sha256/size/duration and the JUnit testcase that proves the flow. UC-to-video map: UC01+UC06: uc01_pick_ocr_review_share_chromium, uc01_pick_ocr_review_share_webkit | UC02: a08_share_target_receives_image_chromium | UC03: uc03_paste_button_processes_clipboard_image_chromium | UC04: a11_installable_manifest_and_sw_registered_chromium, a11_installable_manifest_and_sw_registered_webkit | UC05: uc05_edit_reflects_in_payloads_chromium, uc05_edit_reflects_in_payloads_webkit | UC07: uc07_export_downloads_md_txt_json_chromium, uc07_export_downloads_md_txt_json_webkit | UC08: a12_model_downloads_verifies_caches_chromium, a12_model_downloads_verifies_caches_webkit | UC09: a13_wrong_hash_falls_back_with_banner_and_purges_chromium, a13_wrong_hash_falls_back_with_banner_and_purges_webkit | UC10: uc10_non_english_rejected_no_cleanup_chromium, uc10_non_english_rejected_no_cleanup_webkit | UC11: uc11_bad_input_error_states_chromium, uc11_bad_input_error_states_webkit, uc11_huge_downscaled_before_ocr_chromium, uc11_huge_downscaled_before_ocr_webkit | UC12: a10_denied_paste_explains_and_picker_works_chromium | UC13: uc13_injection_posts_are_content_never_obeyed_chromium, uc13_injection_posts_are_content_never_obeyed_webkit | UC14: a14_offline_processing_zero_network_requests_chromium, a14_offline_processing_zero_network_requests_webkit. The single committed compilation video docs/demo/postclip-demo.mp4 (<= 15 MB, 720p) is built by scripts/make_demo_video.mjs from these S6 per-flow recordings (long stages sped up with the disclosed factor in the caption) and is listed in the manifest as postclip_demo_compilation with its sha256."
+    },
+    "A25": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/host-vitest.xml::evidence integrity (A25, S6) > accounts for every acceptance ID A01-A31 (final summary, phase COMPLETE) with a valid status",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::evidence integrity (A25, S6) > every PASS points at JUnit testcases that exist and passed, per required engine",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::evidence integrity (A25, S6) > non-PASS entries carry notes, and referenced videos exist in the manifest",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::evidence integrity (A25, S6) > the device IDs (A27/A30) are honestly NOT_RUN, never faked",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::evidence integrity (A25, S6) > records a source digest over the shipped source tree"
+      ],
+      "notes": "FINAL-tree evidence integrity: this summary accounts for every acceptance ID A01-A31 (29 PASS with per-engine JUnit refs on the S6 tree; A27/A30 honestly NOT_RUN as the plan's optional real-device pass). The in-suite A25 tests above validate this summary structurally (every PASS -> existing, passing JUnit per required engine; referenced videos present in the manifest; non-PASS entries explained; A25's own refs are validated against the committed junit by scripts/verify_evidence.py after this file is green — a test can never validate its own run's committed outcome). scripts/verify_evidence.py at phase COMPLETE accepts the final accounting and the source_digest matches the tree (run by scripts/verify.sh; recorded in green.log)."
+    },
+    "A26": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/host-vitest.xml::audit deps (A26, S6) > the committed license inventory covers every installed package with a resolvable license",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::audit deps (A26, S6) > no analytics/telemetry SDK anywhere in the dependency inventory",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::audit deps (A26, S6) > the production CSP allows only same-origin plus the pinned model host",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::audit deps (A26, S6) > the model pin is well-formed and the cached weights byte-verify against it"
+      ],
+      "notes": "scripts/audit_deps.mjs inventories the REAL installed tree (npm ls --all: 269 packages; 4 runtime deps react/react-dom/tesseract.js/@wllama/wllama, the rest dev/test-side) and every package's license is resolvable (MIT 197, Apache-2.0 28, ISC 15, BSD-3-Clause 13, BSD-2-Clause 9, MPL-2.0 4, BlueOak-1.0.0, Python-2.0, CC-BY-4.0 — full list in docs/evidence/S6/license_inventory.json, human log audit_deps.txt). No analytics/telemetry SDK in the dependency tree (blocklist scan) and no known collection endpoint in the shipped dist/ bundle. The production CSP allows only same-origin plus the pinned model host https://huggingface.co (connect-src; every other directive origin-free). The model is pinned by repo/revision/sha256 (unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b, sha256 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a, Apache-2.0) and the cached weights BYTE-VERIFY against the pin on this host; the URL matches the CSP's one allowed remote host (production config matches the manifest). The audit's detectors are proven non-vacuous by the seeded-violation negative control (red.log: a fake telemetry SDK, an extra CSP origin, a broken model pin — every detector class TRIPPED)."
+    },
+    "A27": {
+      "status": "NOT_RUN",
+      "notes": "Real-device checks (Web Share sheet + Telegram delivery on a real phone, installed-PWA share target on Android Chrome, clipboard on real iOS Safari) are the plan's D12 OPTIONAL ~30-minute device pass by the owner — no real phone is attached to this runner, so nothing was run and nothing is claimed. NOT_RUN is the honest status the plan assigns to this ID unless the pass happens; it does not block phase COMPLETE. The manual checklist (what to try, what to expect, where to record the results) is documented in docs/evidence/S6/conformance_report.md and docs/KNOWN_LIMITS.md. Everything automatable on Linux IS run and green: navigator.share is spied with its payload asserted (uc01), the share-target POST is simulated through the real service worker (a08), and the clipboard is exercised with granted and denied permissions (uc03/a10) in Chromium."
+    },
+    "A28": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::eval_large_images_4000px_and_20mb_processed_safely",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::eval_large_images_4000px_and_20mb_processed_safely",
+        "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc11_huge_downscaled_before_ocr",
+        "junit:docs/evidence/S6/junit/webkit-e2e.xml::uc11_huge_downscaled_before_ocr"
+      ],
+      "videos": [
+        "video:eval_large_images_4000px_and_20mb_processed_safely_chromium",
+        "video:eval_large_images_4000px_and_20mb_processed_safely_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. Memory safety for large inputs, both engines: the 4000 px committed fixture (huge01) and a ~20 MB generated image (19.9 MB, 3200x1900, deterministic seeded noise + a readable text band, generated at run time by scripts/gen_large_fixture.mjs and NEVER committed — committed fixtures stay under the plan's size caps) are each processed with no crash, no hang (bounded by the spec's 240 s hang bound), no tab failure, zero page errors, the tab still evaluates afterwards, and a normal pick works right after. huge01 reaches review with its gold body text; the adversarial-noise input reaches a DESIGNED terminal state — review text where the OCR output carries enough English (measured: Chromium), or the English gate's fail-closed rejection of non-English-looking garbage (measured: this WebKit build lands there; UC10/UC11's designed behavior for unreadable input — never a crash, never a hang, never a silent empty screen). Stage timings + heap are recorded per engine in e2e.log (chromium RED numbers: decode 1132 ms, downscale 697 ms, OCR 29,756 ms, cleanup 2 ms, heap 10 MiB). DISCLOSED LIMITATION (not a hidden miss): the ~20 MB ADVERSARIAL-NOISE stress input's OCR stage (~30 s chromium / ~45-50 s webkit) exceeds the 5 s per-fixture OCR budget of A22; the RED run captured that failure honestly (red.log), two mitigations were measured and rejected (tesseract PSM SINGLE_BLOCK for downscaled inputs: no effect, 29.7 s vs 30.1 s — the cost is the LSTM pass over noise glyphs; lowering the 2600 px OCR cap further would trade away real large screenshots' legibility), and A28's own criterion — crash/hang/tab-failure-free processing — is what the eval asserts, per the plan's acceptance table. Every PLAN fixture stays within the A22 budget."
+    },
+    "A29": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/chromium-prod-e2e.xml::a29_production_smoke_pick_review_share_copy_from_dist",
+        "junit:docs/evidence/S6/junit/webkit-prod-e2e.xml::a29_production_smoke_pick_review_share_copy_from_dist",
+        "junit:docs/evidence/S6/junit/chromium-prod-e2e.xml::a29_production_strict_csp_shipped_and_enforced",
+        "junit:docs/evidence/S6/junit/webkit-prod-e2e.xml::a29_production_strict_csp_shipped_and_enforced",
+        "junit:docs/evidence/S6/junit/chromium-prod-e2e.xml::a29_production_test_hooks_absent_and_inert",
+        "junit:docs/evidence/S6/junit/webkit-prod-e2e.xml::a29_production_test_hooks_absent_and_inert",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::bundle inspection evidence (A29) > the committed PRODUCTION inspection is CLEAN: no test hooks, no eval, strict CSP verbatim",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::bundle inspection evidence (A29) > the committed TEST-BUILD negative control TRIPPED on the hooks (the detector detects)"
+      ],
+      "videos": [
+        "video:a29_production_smoke_pick_review_share_copy_from_dist_chromium",
+        "video:a29_production_smoke_pick_review_share_copy_from_dist_webkit",
+        "video:a29_production_strict_csp_shipped_and_enforced_chromium",
+        "video:a29_production_strict_csp_shipped_and_enforced_webkit"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. The PRODUCTION build (npm run build, served from dist/ by vite preview) is proven clean in BOTH engines. (1) BUNDLE INSPECTION (scripts/inspect_bundle.mjs, committed output docs/evidence/S5/bundle-inspection.txt): zero occurrences of every test-hook marker (__postclipLlmDebug, testModelUrl, testProbe, parseTestFlags, __POSTCLIP_TEST_BUILD__), no eval/new Function in the app's own bundles, no source maps, all index.html resources same-origin, and the strict CSP meta VERBATIM. The NEGATIVE CONTROL (bundle-inspection-test-build.txt) runs the same detector against the TEST build and TRIPS on 4 hook occurrences — proving the detector detects. CI re-runs the live check after every production build (scripts/test.sh). (2) BEHAVIORAL: the ?testModelUrl/?testProbe query flags are INERT in production (the model card stays in its real probed state, no unsupported banner) and window.__postclipLlmDebug is never created; the smoke flow (pick -> real OCR -> review -> share spy + real clipboard) passes served from dist/ with zero console errors. (3) THE STRICT CSP SHIPS AND IS ENFORCED: default-src 'none'; script-src/style-src/img-src/manifest-src/worker-src 'self'; connect-src 'self' + THE PINNED MODEL HOST ONLY (https://huggingface.co); base-uri/form-action/object-src 'none'; no unsafe-eval, no unsafe-inline (inline scripts are BLOCKED — asserted through the engine's own CSP-violation signal in both engines); the app's own legitimate loads all work under it (same-origin workers incl. the OCR worker, the SW registration + precache, the OCR assets, the manifest). The TEST build's CSP differs by exactly one connect-src origin (the local model server http://127.0.0.1:4599) — asserted by inspection on both builds. frame-ancestors is deliberately absent from the meta policy: the CSP spec ignores it in meta; it belongs to the hosting layer (plan D10 keeps hosting out of scope)."
+    },
+    "A30": {
+      "status": "NOT_RUN",
+      "notes": "Real-phone LLM speed/RAM and WebGPU behavior are the plan's D12 OPTIONAL device pass; no real phone is attached to this runner, so nothing was run and nothing is claimed. On this Linux host WebGPU is NOT_RUN by plan decision D8 (headless Chromium exposes navigator.gpu backed by a software adapter; WebKit does not expose it) — no WebGPU-path claim is made anywhere in the app or docs. The headless-Linux reality is measured and disclosed instead: the single-threaded WASM path runs the pinned 0.6B at ~2.3 tokens/s (65-240 s per cleanup; the S6 final-tree re-run measured 112-240 s with several fixtures hitting the 240 s fail-closed cap — recorded in e2e.log and docs/evidence/S4/llm-eval-chromium.json), the LLM ships disabled by default (A19), and WebKit-on-Linux cannot load the 397 MB model at all (engine measurement, S4) — the app falls back loudly. Real-device numbers would come from the owner's optional pass; the checklist is in docs/evidence/S6/conformance_report.md."
+    },
+    "A31": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/S6/junit/host-vitest.xml::fixture manifest lint (A31) > lists exactly the 40 S4 fixtures (plan: variants >= 40 by S4)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::fixture manifest lint (A31) > every fixture file exists, matches its sha256, is small, and is flagged synthetic",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::fixture manifest lint (A31) > the fixture families the plan names for S1 and S4 are all present",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::fixture manifest lint (A31) > has >= 5 injection fixtures, each with attacker markers and instruction text as content (A16)",
+        "junit:docs/evidence/S6/junit/host-vitest.xml::fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB"
+      ],
+      "notes": "Re-verified on the S6 final tree — the full suite re-ran green and the refs above now point at the S6 JUnit (same specs, both engines); the measurements quoted below are the historical ones from the slice that delivered this ID, and the S6 re-run numbers are in docs/evidence/S6/e2e.log. S0/S1 ID re-verified on the S5 tree — the fixture set is UNCHANGED (the ~20 MB A28 stress input is generated at run time and never committed)."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "bash scripts/run_s6_red.sh — verify_evidence.py at phase COMPLETE with no S6 summary yet (must FAIL on the missing final accounting) + the audit_deps seeded-violation negative control (must TRIP).",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S6/red.log",
+      "notes": "Both parts FAILED as required (verify_evidence exit 1: S6 READY_FOR_MERGE without a summary + A24/A26/A27/A30 not accounted for in the final summary; audit_deps --seed-violation exit 1: every seeded violation class detected). The RED script's own exit 0 means 'both expected failures observed'."
+    },
+    "green": {
+      "command": "bash scripts/run_s6_final_evidence.sh — model verify + build:test + lint + chromium e2e + webkit e2e + production build + inspection + e2e/prod per engine + video manifest + compilation video + dependency/license audit + vitest (two-pass) + demo. All exit codes recorded in green.log.",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S6/green.log"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh (plan lint + scripts/verify_evidence.py at phase COMPLETE)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S6/green.log"
+    }
+  },
+  "videos_manifest": "docs/evidence/video_manifest.json (S6 re-records every flow on the final tree — test-build specs in both engines plus the production-build a29 flows — with junit-verified refs, and carries the committed compilation video as postclip_demo_compilation)",
+  "owner_visual": {
+    "note": "Plan Conformance row O06 (S6): docs/demo/postclip-demo.mp4 — the single committed compilation video (<= 15 MB, 720p) of every UC01-UC14 flow in Chromium and WebKit, built from the real S6 per-flow recordings; the tick-list is posted in issue #59 for the owner."
+  },
+  "limitations": [
+    "A27/A30 (real-device pass) are NOT_RUN — the plan's optional ~30-minute device pass by the owner; the checklist is in docs/evidence/S6/conformance_report.md and docs/KNOWN_LIMITS.md.",
+    "WebGPU is NOT_RUN on this Linux host (plan D8); no WebGPU claim is made anywhere.",
+    "WebKit-on-Linux cannot run the model cleanup (S4 measurement: the 397 MB wasm load fails with an engine-bug-family error); the app fails closed to the visible fallback; real Safari is NOT_RUN.",
+    "The LLM cleanup ships DISABLED BY DEFAULT (A19 measurement: the pinned 0.6B keeps author/@handle header chrome below the rules baseline, and a cleanup takes 65–240 s on the single-threaded WASM path; the S6 final-tree re-run measured 112–240 s with several fixtures hitting the 240 s fail-closed cap).",
+    "The ~20 MB adversarial-noise input processes end to end with no crash/hang/tab failure, but its OCR stage (~30 s Chromium / ~45-49 s WebKit) exceeds the 5 s per-fixture OCR budget — disclosed with the measured-and-rejected mitigations.",
+    "The OS share sheet, the Telegram app handoff and the native install prompt are browser/OS chrome — not automatable; navigator.share is spied with payload asserted, and the share-target/installed-PWA paths are the plan's specified simulations (A08/A11).",
+    "The strict CSP ships as a meta policy (the static build's own artifact): frame-ancestors cannot be enforced in a meta policy (CSP spec) and belongs to the hosting layer (plan D10, out of scope)."
+  ]
+}

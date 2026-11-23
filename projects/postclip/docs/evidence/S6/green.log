@@ -1,0 +1,651 @@
+== model fetch/verify == 
+fetch_model: Qwen3-0.6B-Q4_K_M.gguf already present and VERIFIED
+fetch_model: sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a size=396705472 (matches src/model/manifest.ts)
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 59 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.15 kB │ gzip:     0.63 kB
+dist/assets/worker-CN7yFvEc.js       224.97 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-Cfms-yxM.css         6.29 kB │ gzip:     1.78 kB
+dist/assets/index-BYGwmUrQ.js        277.77 kB │ gzip:    89.43 kB
+
+✓ built in 1.37s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+== bundle inspection: TEST build (negative control — must TRIP) ==
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+== video manifest (S6) ==
+a01_built_app_loads_home_screen_no_console_errors_chromium: 0.05 MB, 2s, junit_verified=true
+a08_share_target_ignores_posts_without_an_image_chromium: 0.07 MB, 3.2s, junit_verified=true
+a08_share_target_receives_image_chromium: 0.18 MB, 7.3s, junit_verified=true
+a10_denied_paste_explains_and_picker_works_chromium: 0.16 MB, 5.3s, junit_verified=true
+a11_installable_manifest_and_sw_registered_chromium: 0.07 MB, 3s, junit_verified=true
+a11_offline_ocr_after_first_load_chromium: 0.17 MB, 6.2s, junit_verified=true
+a11_offline_reload_app_shell_loads_chromium: 0.13 MB, 5.2s, junit_verified=true
+a12_interrupted_download_resumes_chromium: 0.62 MB, 34.4s, junit_verified=true
+a12_model_downloads_verifies_caches_chromium: 0.55 MB, 29.8s, junit_verified=true
+a13_wrong_hash_falls_back_with_banner_and_purges_chromium: 0.58 MB, 29s, junit_verified=true
+a13_unsupported_browser_banner_and_picker_works_chromium: 0.11 MB, 4.5s, junit_verified=true
+a13_truncated_file_falls_back_and_purges_chromium: 0.38 MB, 18.5s, junit_verified=true
+a13_model_404_falls_back_and_purges_chromium: 0.16 MB, 5.5s, junit_verified=true
+a14_offline_processing_zero_network_requests_chromium: 0.75 MB, 36.7s, junit_verified=true
+a15_audit_negative_control_detects_seeded_leak_chromium: 0.04 MB, 1.2s, junit_verified=true
+a15_no_storage_log_request_leaks_after_flows_chromium: 0.13 MB, 3.9s, junit_verified=true
+a21_model_cleanup_flow_verified_result_or_visible_fallback_chromium: 4.17 MB, 273.2s, junit_verified=true
+a21_without_a_ready_model_the_toggle_explains_and_falls_back_chromium: 0.12 MB, 4.4s, junit_verified=true
+a21_model_cleanup_off_by_default_payload_has_no_suggestions_chromium: 0.72 MB, 39.1s, junit_verified=true
+a23_axe_no_serious_or_critical_violations_every_screen_chromium: 0.48 MB, 13s, junit_verified=true
+a23_keyboard_only_main_flow_pick_review_copy_share_export_chromium: 0.18 MB, 5.3s, junit_verified=true
+eval_cleanup_body_f1_standard_set_chromium: 1.69 MB, 39.9s, junit_verified=true
+eval_large_images_4000px_and_20mb_processed_safely_chromium: 0.75 MB, 37.4s, junit_verified=true
+eval_latency_budgets_clean_set_chromium: 0.52 MB, 8.2s, junit_verified=true
+eval_llm_vs_baseline_standard_and_injection_sets_chromium: 70.01 MB, 4338.9s, junit_verified=true
+eval_ocr_cer_clean_set_chromium: 0.72 MB, 16s, junit_verified=true
+s0_negative_corrupt_input_fails_closed_chromium: 0.07 MB, 1.6s, junit_verified=true
+a29_production_smoke_pick_review_share_copy_from_dist_chromium: 0.11 MB, 4.1s, junit_verified=true
+a29_production_test_hooks_absent_and_inert_chromium: 0.11 MB, 4.4s, junit_verified=true
+a29_production_strict_csp_shipped_and_enforced_chromium: 0.08 MB, 3.3s, junit_verified=true
+uc01_pick_ocr_review_share_chromium: 0.11 MB, 3.5s, junit_verified=true
+uc03_paste_button_processes_clipboard_image_chromium: 0.10 MB, 4s, junit_verified=true
+uc03_paste_event_processes_pasted_file_chromium: 0.13 MB, 4.4s, junit_verified=true
+uc05_edit_reflects_in_payloads_chromium: 0.14 MB, 4.6s, junit_verified=true
+uc07_export_downloads_md_txt_json_chromium: 0.12 MB, 4.4s, junit_verified=true
+uc10_non_english_rejected_no_cleanup_chromium: 0.34 MB, 8.6s, junit_verified=true
+uc11_bad_input_error_states_chromium: 0.22 MB, 4.8s, junit_verified=true
+uc11_huge_downscaled_before_ocr_chromium: 0.11 MB, 4.3s, junit_verified=true
+uc13_injection_posts_are_content_never_obeyed_chromium: 14.75 MB, 964.6s, junit_verified=true
+a01_built_app_loads_home_screen_no_console_errors_webkit: 0.01 MB, 1.2s, junit_verified=true
+a11_installable_manifest_and_sw_registered_webkit: 0.05 MB, 1.8s, junit_verified=true
+a11_offline_ocr_after_first_load_webkit: 0.13 MB, 4.4s, junit_verified=true
+a11_offline_reload_app_shell_loads_webkit: 0.09 MB, 3.4s, junit_verified=true
+a12_interrupted_download_resumes_webkit: 0.68 MB, 41.8s, junit_verified=true
+a12_model_downloads_verifies_caches_webkit: 0.76 MB, 47.3s, junit_verified=true
+a13_wrong_hash_falls_back_with_banner_and_purges_webkit: 0.53 MB, 29.9s, junit_verified=true
+a13_unsupported_browser_banner_and_picker_works_webkit: 0.10 MB, 4s, junit_verified=true
+a13_truncated_file_falls_back_and_purges_webkit: 0.35 MB, 16.9s, junit_verified=true
+a13_model_404_falls_back_and_purges_webkit: 0.13 MB, 4.4s, junit_verified=true
+a14_offline_processing_zero_network_requests_webkit: 0.86 MB, 48.6s, junit_verified=true
+a15_audit_negative_control_detects_seeded_leak_webkit: 0.05 MB, 1.6s, junit_verified=true
+a15_no_storage_log_request_leaks_after_flows_webkit: 0.14 MB, 3.7s, junit_verified=true
+a21_model_cleanup_flow_verified_result_or_visible_fallback_webkit: 0.74 MB, 42.1s, junit_verified=true
+a21_without_a_ready_model_the_toggle_explains_and_falls_back_webkit: 0.10 MB, 4.1s, junit_verified=true
+a21_model_cleanup_off_by_default_payload_has_no_suggestions_webkit: 0.68 MB, 39.7s, junit_verified=true
+a23_axe_no_serious_or_critical_violations_every_screen_webkit: 0.48 MB, 11.2s, junit_verified=true
+a23_keyboard_only_main_flow_pick_review_copy_share_export_webkit: 0.22 MB, 5.2s, junit_verified=true
+eval_cleanup_body_f1_standard_set_webkit: 1.59 MB, 30.7s, junit_verified=true
+eval_large_images_4000px_and_20mb_processed_safely_webkit: 0.99 MB, 46.6s, junit_verified=true
+eval_latency_budgets_clean_set_webkit: 0.50 MB, 7.6s, junit_verified=true
+eval_ocr_cer_clean_set_webkit: 0.69 MB, 15.2s, junit_verified=true
+s0_negative_corrupt_input_fails_closed_webkit: 0.12 MB, 2.4s, junit_verified=true
+a29_production_smoke_pick_review_share_copy_from_dist_webkit: 0.13 MB, 4.4s, junit_verified=true
+a29_production_test_hooks_absent_and_inert_webkit: 0.11 MB, 4s, junit_verified=true
+a29_production_strict_csp_shipped_and_enforced_webkit: 0.08 MB, 3.5s, junit_verified=true
+uc01_pick_ocr_review_share_webkit: 0.13 MB, 4.4s, junit_verified=true
+uc05_edit_reflects_in_payloads_webkit: 0.16 MB, 4.8s, junit_verified=true
+uc07_export_downloads_md_txt_json_webkit: 0.14 MB, 4.2s, junit_verified=true
+uc10_non_english_rejected_no_cleanup_webkit: 0.34 MB, 5.8s, junit_verified=true
+uc11_bad_input_error_states_webkit: 0.23 MB, 3.4s, junit_verified=true
+uc11_huge_downscaled_before_ocr_webkit: 0.13 MB, 4.2s, junit_verified=true
+uc13_injection_posts_are_content_never_obeyed_webkit: 1.44 MB, 68.1s, junit_verified=true
+video_manifest.json updated: 79 videos
+== compilation video (O06/A24) ==
+  segment: UC01 — Pick a screenshot → on-device OCR → review (Chromium) (from uc01_pick_ocr_review_share_chromium, 1×)
+  segment: UC01 — Pick → OCR → review (WebKit); share/copy = UC06 (from uc01_pick_ocr_review_share_webkit, 1×)
+  segment: UC02 — Share-target: image POST through the service worker (Chromium) (from a08_share_target_receives_image_chromium, 1×)
+  segment: UC03 — Paste a screenshot from the clipboard (Chromium) (from uc03_paste_button_processes_clipboard_image_chromium, 1×)
+  segment: UC04 — Installable PWA: manifest + service worker (Chromium) (from a11_installable_manifest_and_sw_registered_chromium, 1×)
+  segment: UC04 — Network cut, reload: the shell still loads (WebKit) (from a11_offline_reload_app_shell_loads_webkit, 1×)
+  segment: UC05 — Edit the text; every payload follows (Chromium) (from uc05_edit_reflects_in_payloads_chromium, 1×)
+  segment: UC05 — Edit (WebKit) (from uc05_edit_reflects_in_payloads_webkit, 1×)
+  segment: UC07 — Export .md / .txt / .json (Chromium) (from uc07_export_downloads_md_txt_json_chromium, 1×)
+  segment: UC07 — Export (WebKit) (from uc07_export_downloads_md_txt_json_webkit, 1×)
+  segment: UC08 — First use: download the pinned model, verify sha256 (Chromium, 4×) (from a12_model_downloads_verifies_caches_chromium, 4×)
+  segment: UC08 — (WebKit, 6×) (from a12_model_downloads_verifies_caches_webkit, 6×)
+  segment: UC09 — Bad model file: fail closed, banner + purge (Chromium, 4×) (from a13_wrong_hash_falls_back_with_banner_and_purges_chromium, 4×)
+  segment: UC09 — Unsupported browser: banner + OCR still works (WebKit) (from a13_unsupported_browser_banner_and_picker_works_webkit, 1×)
+  segment: UC10 — Non-English screenshot: rejected, no cleanup (Chromium) (from uc10_non_english_rejected_no_cleanup_chromium, 1×)
+  segment: UC10 — (WebKit) (from uc10_non_english_rejected_no_cleanup_webkit, 1×)
+  segment: UC11 — Bad inputs: specific errors, never a crash (Chromium) (from uc11_bad_input_error_states_chromium, 1×)
+  segment: UC11 — (WebKit) (from uc11_bad_input_error_states_webkit, 1×)
+  segment: UC12 — Clipboard denied: explanation + picker still works (Chromium) (from a10_denied_paste_explains_and_picker_works_chromium, 1×)
+  segment: UC13 — Injection posts are content, never obeyed (WebKit, designed fallback, 6×) (from uc13_injection_posts_are_content_never_obeyed_webkit, 6×)
+  segment: UC14 — Offline: model cached → zero network requests (Chromium, 4×) (from a14_offline_processing_zero_network_requests_chromium, 4×)
+  segment: UC14 — (WebKit, 6×) (from a14_offline_processing_zero_network_requests_webkit, 6×)
+compilation: 22 flows, 2.7 min → two-pass 588 kbps
+docs/demo/postclip-demo.mp4: 7.10 MB, 164.9 s, 720p
+video_manifest.json: entry postclip_demo_compilation (7.10 MB, sha256 40fcc06ecc66e9b4…)
+== dependency/license audit (A26; dist/ is the production build from stage 4) ==
+audit_deps (S6 — A26) — real tree
+node v26.12.1; root /opt/data/workspace/smll/projects/postclip
+
+D1+D2 dependency/license inventory: 269 installed packages (npm ls --all)
+    197  MIT
+     28  Apache-2.0
+     15  ISC
+     13  BSD-3-Clause
+      9  BSD-2-Clause
+      4  MPL-2.0
+      1  BlueOak-1.0.0
+      1  Python-2.0
+      1  CC-BY-4.0
+D3a telemetry deps: 0 hits (none)
+D3b production-bundle telemetry endpoints: 13 files scanned, 0 hits
+D4 CSP remote origins: connect-src = [https://huggingface.co] (pinned host https://huggingface.co); problems: 0
+D5 model pin: unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b (Qwen3-0.6B-Q4_K_M.gguf, 396705472 bytes, Apache-2.0)
+    cached weights: present, sha256 ac2d97712095a558…, byte-verified
+wrote docs/evidence/S6/license_inventory.json
+
+audit_deps: CLEAN — D1 tree clean, D2 all licenses resolvable, D3 no telemetry, D4 CSP exact, D5 pin well-formed (+ cached weights byte-verified).
+audit_deps (real tree) exit code: 0
+audit_deps --seed-violation exit code: 1 (expected 1 = every seeded violation detected)
+  - npm ls reports: seeded extraneous package
+seeded negative control: every detector class tripped.
+== vitest (unit + evidence integrity; two-pass so the A25 in-run validation ==
+   can see its own run's final-named junit — the committed junit IS the green re-run) ==
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run --reporter=default --reporter=junit --outputFile.junit=docs/evidence/S6/junit/host-vitest.staging.xml
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ src/evidence/evidence-integrity-s6.test.ts (5 tests | 1 failed) 37ms
+   ❯ evidence integrity (A25, S6) (5)
+     ✓ accounts for every acceptance ID A01-A31 (final summary, phase COMPLETE) with a valid status 5ms
+     × every PASS points at JUnit testcases that exist and passed, per required engine 17ms
+     ✓ non-PASS entries carry notes, and referenced videos exist in the manifest 12ms
+     ✓ the device IDs (A27/A30) are honestly NOT_RUN, never faked 1ms
+     ✓ records a source digest over the shipped source tree 1ms
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: verifying -> failed received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: downloading -> verifying received=3500/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: verifying -> failed received=3500/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an HTTP error (404) fails closed without caching (A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an HTTP error (404) fails closed without caching (A13)
+postclip-model: downloading -> failed received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > gives up after the attempt budget and fails closed with a purge (A12/A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > gives up after the attempt budget and fails closed with a purge (A12/A13)
+postclip-model: downloading -> failed received=0/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a cached model is ready without any network (A14)
+postclip-model: absent -> ready received=4000/396705472 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an unsupported browser ends unsupported without any fetch (A13)
+postclip-model: absent -> unsupported received=0/396705472 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a missing model store (no OPFS, no Cache Storage) ends unsupported (A13)
+postclip-model: absent -> unsupported received=0/396705472 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: downloading -> failed received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: failed -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+ ✓ src/cleanup/cleanup.test.ts (45 tests) 142ms
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+ ✓ src/model/manager.test.ts (18 tests) 285ms
+ ✓ src/model/sha256.test.ts (5 tests) 95ms
+ ✓ src/evidence/evidence-integrity-s3.test.ts (4 tests) 127ms
+ ✓ src/evidence/evidence-integrity-s4.test.ts (4 tests) 74ms
+ ✓ src/evidence/evidence-integrity-s5.test.ts (4 tests) 77ms
+stdout | fixtures/manifest.test.ts > fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB
+fixture bytes total: 2589802
+
+ ✓ fixtures/manifest.test.ts (11 tests) 70ms
+ ✓ src/cleanup/llm/validate.test.ts (31 tests) 59ms
+ ✓ src/evidence/evidence-integrity-s2.test.ts (4 tests) 66ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > accepts every English fixture (>= 95% required)
+language gate: English accepted 30/30 = 100.0%
+  en blur01: ratio=0.333 words=33 accepted=true
+  en chrome01: ratio=0.255 words=47 accepted=true
+  en chrome02: ratio=0.273 words=33 accepted=true
+  en clean01: ratio=0.405 words=42 accepted=true
+  en clean02: ratio=0.400 words=75 accepted=true
+  en clean03: ratio=0.175 words=40 accepted=true
+  en clean04: ratio=0.346 words=26 accepted=true
+  en clean05: ratio=0.350 words=40 accepted=true
+  en clean06: ratio=0.342 words=38 accepted=true
+  en clean07: ratio=0.360 words=50 accepted=true
+  en clean08: ratio=0.488 words=41 accepted=true
+  en dark01: ratio=0.306 words=36 accepted=true
+  en dark02: ratio=0.341 words=44 accepted=true
+  en dark03: ratio=0.262 words=42 accepted=true
+  en emoji01: ratio=0.306 words=36 accepted=true
+  en emoji02: ratio=0.297 words=37 accepted=true
+  en heavychrome01: ratio=0.250 words=48 accepted=true
+  en heavychrome02: ratio=0.292 words=48 accepted=true
+  en huge01: ratio=0.441 words=34 accepted=true
+  en inj01: ratio=0.319 words=47 accepted=true
+  en inj02: ratio=0.279 words=43 accepted=true
+  en inj03: ratio=0.270 words=37 accepted=true
+  en inj04: ratio=0.366 words=41 accepted=true
+  en inj05: ratio=0.273 words=44 accepted=true
+  en longpost01: ratio=0.457 words=151 accepted=true
+  en longpost02: ratio=0.393 words=163 accepted=true
+  en lowcontrast01: ratio=0.463 words=41 accepted=true
+  en lowcontrast02: ratio=0.316 words=38 accepted=true
+  en rotate01: ratio=0.371 words=35 accepted=true
+  en tinytext01: ratio=0.394 words=33 accepted=true
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+language gate: non-English accepted 0/5
+  de de01: ratio=0.024 words=42 reason=stopwords
+  de de02: ratio=0.022 words=46 reason=stopwords
+  de de03: ratio=0.033 words=61 reason=stopwords
+  es es01: ratio=0.024 words=41 reason=stopwords
+  es es02: ratio=0.019 words=53 reason=stopwords
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+language gate margins: threshold=0.12 min(en)=0.175 max(non-en)=0.033
+
+ ✓ src/language/gate.test.ts (10 tests) 60ms
+ ✓ src/cleanup/llm/pipeline.test.ts (7 tests) 61ms
+ ✓ src/evidence/evidence-integrity-s1.test.ts (4 tests) 42ms
+ ✓ src/evidence/evidence-integrity.test.ts (4 tests) 17ms
+ ✓ src/model/download.test.ts (10 tests) 12ms
+stdout | src/cleanup/cleanup-latency.test.ts > deterministic cleanup latency (A22 budget) > cleanupOcrText on every fixture gold input completes within 60 s per call
+cleanup latency: 35 fixtures, mean 0.288 ms, max 3.263 ms (budget 60000 ms per call)
+
+ ✓ src/cleanup/cleanup-latency.test.ts (1 test) 22ms
+ ✓ src/model/manifest.test.ts (7 tests) 18ms
+ ✓ src/privacy/audit.test.ts (15 tests) 17ms
+ ✓ src/evidence/audit-deps.test.ts (4 tests) 795ms
+   ✓ audit deps (A26, S6) (4)
+     ✓ the model pin is well-formed and the cached weights byte-verify against it 783ms
+ ✓ src/model/state.test.ts (2 tests) 10ms
+ ✓ src/ingest/route.test.ts (16 tests) 16ms
+ ✓ src/image/validate.test.ts (10 tests) 16ms
+ ✓ src/output/payload-suggestions.test.ts (7 tests) 13ms
+ ✓ src/cleanup/llm/parse.test.ts (8 tests) 13ms
+ ✓ src/cleanup/llm/prompt.test.ts (4 tests) 15ms
+ ✓ src/evidence/bundle-inspection-evidence.test.ts (2 tests) 7ms
+ ✓ src/output/payload.test.ts (11 tests) 13ms
+ ✓ src/ocr/normalize.test.ts (6 tests) 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/evidence/evidence-integrity-s6.test.ts > evidence integrity (A25, S6) > every PASS points at JUnit testcases that exist and passed, per required engine
+AssertionError: A03: missing junit file docs/evidence/S6/junit/host-vitest.xml: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/evidence/evidence-integrity-s6.test.ts:111:37
+    109|       for (const ref of entry.tests ?? []) {
+    110|         const { ok, why } = junitPassed(ref);
+    111|         expect(ok, `${id}: ${why}`).toBe(true);
+       |                                     ^
+    112|       }
+    113|       if (WEB_IDS.has(id)) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 27 passed (28)
+      Tests  1 failed | 258 passed (259)
+   Start at  17:51:26
+   Duration  5.92s (setup 44%, environment 24%, tests 20%, transform 6%, import 4%, worker 2%)
+
+    Isolate  28 workers spawned · ~297ms startup each (spawn + environment, per file)
+             at least ~2.47s faster with isolate: false — reuses workers across files instead of one per file
+
+JUNIT report written to /opt/data/workspace/smll/projects/postclip/docs/evidence/S6/junit/host-vitest.staging.xml
+unit pass 1 FAILED (exit 1) — not moving the junit; fix and re-run.
+bootstrap: fresh evidence dir — seeded final junit from pass 1 (259 testcases, 1 expected A25 missing-file failure); running pass 2
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run --reporter=default --reporter=junit --outputFile.junit=docs/evidence/S6/junit/host-vitest.staging.xml
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ✓ src/evidence/evidence-integrity-s6.test.ts (5 tests) 90ms
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: verifying -> failed received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: downloading -> verifying received=3500/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: verifying -> failed received=3500/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an HTTP error (404) fails closed without caching (A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an HTTP error (404) fails closed without caching (A13)
+postclip-model: downloading -> failed received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > gives up after the attempt budget and fails closed with a purge (A12/A13)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > gives up after the attempt budget and fails closed with a purge (A12/A13)
+postclip-model: downloading -> failed received=0/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a cached model is ready without any network (A14)
+postclip-model: absent -> ready received=4000/396705472 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an unsupported browser ends unsupported without any fetch (A13)
+postclip-model: absent -> unsupported received=0/396705472 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a missing model store (no OPFS, no Cache Storage) ends unsupported (A13)
+postclip-model: absent -> unsupported received=0/396705472 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: downloading -> failed received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: failed -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: downloading -> verifying received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: verifying -> ready received=4000/4000 attempt=1
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: absent -> downloading received=0/4000 attempt=0
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: downloading -> verifying received=4000/4000 attempt=2
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: verifying -> ready received=4000/4000 attempt=2
+
+ ✓ src/model/manager.test.ts (18 tests) 282ms
+ ✓ src/cleanup/cleanup.test.ts (45 tests) 136ms
+ ✓ src/evidence/audit-deps.test.ts (4 tests) 912ms
+   ✓ audit deps (A26, S6) (4)
+     ✓ the model pin is well-formed and the cached weights byte-verify against it 900ms
+ ✓ src/evidence/evidence-integrity-s3.test.ts (4 tests) 134ms
+ ✓ src/model/sha256.test.ts (5 tests) 95ms
+ ✓ src/evidence/evidence-integrity-s5.test.ts (4 tests) 72ms
+ ✓ src/evidence/evidence-integrity-s4.test.ts (4 tests) 119ms
+stdout | fixtures/manifest.test.ts > fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB
+fixture bytes total: 2589802
+
+ ✓ fixtures/manifest.test.ts (11 tests) 106ms
+ ✓ src/cleanup/llm/pipeline.test.ts (7 tests) 62ms
+ ✓ src/evidence/evidence-integrity-s2.test.ts (4 tests) 111ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > accepts every English fixture (>= 95% required)
+language gate: English accepted 30/30 = 100.0%
+  en blur01: ratio=0.333 words=33 accepted=true
+  en chrome01: ratio=0.255 words=47 accepted=true
+  en chrome02: ratio=0.273 words=33 accepted=true
+  en clean01: ratio=0.405 words=42 accepted=true
+  en clean02: ratio=0.400 words=75 accepted=true
+  en clean03: ratio=0.175 words=40 accepted=true
+  en clean04: ratio=0.346 words=26 accepted=true
+  en clean05: ratio=0.350 words=40 accepted=true
+  en clean06: ratio=0.342 words=38 accepted=true
+  en clean07: ratio=0.360 words=50 accepted=true
+  en clean08: ratio=0.488 words=41 accepted=true
+  en dark01: ratio=0.306 words=36 accepted=true
+  en dark02: ratio=0.341 words=44 accepted=true
+  en dark03: ratio=0.262 words=42 accepted=true
+  en emoji01: ratio=0.306 words=36 accepted=true
+  en emoji02: ratio=0.297 words=37 accepted=true
+  en heavychrome01: ratio=0.250 words=48 accepted=true
+  en heavychrome02: ratio=0.292 words=48 accepted=true
+  en huge01: ratio=0.441 words=34 accepted=true
+  en inj01: ratio=0.319 words=47 accepted=true
+  en inj02: ratio=0.279 words=43 accepted=true
+  en inj03: ratio=0.270 words=37 accepted=true
+  en inj04: ratio=0.366 words=41 accepted=true
+  en inj05: ratio=0.273 words=44 accepted=true
+  en longpost01: ratio=0.457 words=151 accepted=true
+  en longpost02: ratio=0.393 words=163 accepted=true
+  en lowcontrast01: ratio=0.463 words=41 accepted=true
+  en lowcontrast02: ratio=0.316 words=38 accepted=true
+  en rotate01: ratio=0.371 words=35 accepted=true
+  en tinytext01: ratio=0.394 words=33 accepted=true
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+language gate: non-English accepted 0/5
+  de de01: ratio=0.024 words=42 reason=stopwords
+  de de02: ratio=0.022 words=46 reason=stopwords
+  de de03: ratio=0.033 words=61 reason=stopwords
+  es es01: ratio=0.024 words=41 reason=stopwords
+  es es02: ratio=0.019 words=53 reason=stopwords
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+language gate margins: threshold=0.12 min(en)=0.175 max(non-en)=0.033
+
+ ✓ src/language/gate.test.ts (10 tests) 61ms
+ ✓ src/evidence/evidence-integrity-s1.test.ts (4 tests) 48ms
+ ✓ src/cleanup/llm/validate.test.ts (31 tests) 93ms
+stdout | src/cleanup/cleanup-latency.test.ts > deterministic cleanup latency (A22 budget) > cleanupOcrText on every fixture gold input completes within 60 s per call
+cleanup latency: 35 fixtures, mean 0.390 ms, max 5.494 ms (budget 60000 ms per call)
+
+ ✓ src/cleanup/cleanup-latency.test.ts (1 test) 31ms
+ ✓ src/model/manifest.test.ts (7 tests) 12ms
+ ✓ src/privacy/audit.test.ts (15 tests) 18ms
+ ✓ src/evidence/evidence-integrity.test.ts (4 tests) 31ms
+ ✓ src/ingest/route.test.ts (16 tests) 17ms
+ ✓ src/image/validate.test.ts (10 tests) 15ms
+ ✓ src/cleanup/llm/prompt.test.ts (4 tests) 8ms
+ ✓ src/cleanup/llm/parse.test.ts (8 tests) 14ms
+ ✓ src/output/payload-suggestions.test.ts (7 tests) 18ms
+ ✓ src/model/download.test.ts (10 tests) 10ms
+ ✓ src/model/state.test.ts (2 tests) 13ms
+ ✓ src/output/payload.test.ts (11 tests) 15ms
+ ✓ src/evidence/bundle-inspection-evidence.test.ts (2 tests) 7ms
+ ✓ src/ocr/normalize.test.ts (6 tests) 10ms
+
+ Test Files  28 passed (28)
+      Tests  259 passed (259)
+   Start at  17:51:33
+   Duration  6.17s (setup 47%, tests 23%, environment 19%, import 4%, transform 4%, worker 2%)
+
+    Isolate  28 workers spawned · ~305ms startup each (spawn + environment, per file)
+             at least ~2.54s faster with isolate: false — reuses workers across files instead of one per file
+
+JUNIT report written to /opt/data/workspace/smll/projects/postclip/docs/evidence/S6/junit/host-vitest.staging.xml
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' --version
+== scripts/verify.sh (plan lint + evidence integrity at phase COMPLETE) ==
+verify: phase=COMPLETE
+plan_lint: OK (31 acceptance IDs, use cases checked, plan is internally consistent)
+verify_evidence: OK (phase COMPLETE, 31 acceptance IDs defined)
+verify: OK
+EXIT CODES: model=0 build_test=0 inspect_test_control=0 lint=0 chromium=0 webkit=0 prod_build=0 inspect_prod=0 prod_chromium=0 prod_webkit=0 video_manifest=0 demo_video=0 audit_deps=0 audit_seed_control=1 unit=0 demo_build_test=0 demo=0 versions=0 verify=0
+S6 FINAL EVIDENCE RUN: FAILURES PRESENT — see the exit codes above.
+== all stages already done — re-evaluating the RECORDED exit codes ==
+EXIT CODES: model=0 build_test=0 inspect_test_control=0 lint=0 chromium=0 webkit=0 prod_build=0 inspect_prod=0 prod_chromium=0 prod_webkit=0 video_manifest=0 demo_video=0 audit_deps=0 audit_seed_control=1 unit=0 demo_build_test=0 demo=0 versions=0 verify=0
+S6 FINAL EVIDENCE RUN: ALL STAGES GREEN (negative controls tripped as expected).

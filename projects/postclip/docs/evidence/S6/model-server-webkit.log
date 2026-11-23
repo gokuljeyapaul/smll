@@ -1,0 +1,10 @@
+2026-11-23T17:41:48.294Z GET /model-slow range=- status=200 sent=396705472
+2026-11-23T17:42:30.434Z GET /model-kill-fresh range=- status=200-kill sent=99176368
+2026-11-23T17:42:31.233Z GET /model-kill-fresh range=bytes=7974595- status=206 sent=388730877
+2026-11-23T17:43:11.076Z GET /model-wrong-hash range=- status=200 sent=396705472
+2026-11-23T17:43:39.904Z GET /model-truncated range=- status=200 sent=198352736
+2026-11-23T17:43:58.955Z GET /model-404 range=- status=404 sent=0
+2026-11-23T17:44:03.267Z GET /model range=- status=200 sent=396705472
+2026-11-23T17:44:55.506Z GET /model range=- status=200 sent=396705472
+2026-11-23T17:45:36.622Z GET /model range=- status=200 sent=396705472
+2026-11-23T17:48:37.464Z GET /model range=- status=200 sent=396705472

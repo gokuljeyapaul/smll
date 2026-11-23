@@ -1,0 +1,21 @@
+audit_deps (S6 — A26) — real tree
+node v26.12.1; root /opt/data/workspace/smll/projects/postclip
+
+D1+D2 dependency/license inventory: 269 installed packages (npm ls --all)
+    197  MIT
+     28  Apache-2.0
+     15  ISC
+     13  BSD-3-Clause
+      9  BSD-2-Clause
+      4  MPL-2.0
+      1  BlueOak-1.0.0
+      1  Python-2.0
+      1  CC-BY-4.0
+D3a telemetry deps: 0 hits (none)
+D3b production-bundle telemetry endpoints: 13 files scanned, 0 hits
+D4 CSP remote origins: connect-src = [https://huggingface.co] (pinned host https://huggingface.co); problems: 0
+D5 model pin: unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b (Qwen3-0.6B-Q4_K_M.gguf, 396705472 bytes, Apache-2.0)
+    cached weights: present, sha256 ac2d97712095a558…, byte-verified
+wrote docs/evidence/S6/license_inventory.json
+
+audit_deps: CLEAN — D1 tree clean, D2 all licenses resolvable, D3 no telemetry, D4 CSP exact, D5 pin well-formed (+ cached weights byte-verified).
