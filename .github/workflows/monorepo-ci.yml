@@ -23,3 +23,15 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y espeak-ng
       - name: Detect changed projects and run their setup/test/demo/verify
         run: python3 .github/scripts/verify_changed_projects.py
+      - name: Upload failure diagnostics (test traces, error snapshots, logs)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-failure-diagnostics
+          path: |
+            projects/*/test-results/**
+            projects/*/playwright-report/**
+            projects/*/artifacts/**
+            !projects/*/artifacts/video/**
+          if-no-files-found: ignore
+          retention-days: 7
