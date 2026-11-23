@@ -1,6 +1,6 @@
 {
   "slice": "S5",
-  "source_digest": "ff27e5f35d60806b8ea807526223ad96b5256996cd011265f3bf4f39961866ad",
+  "source_digest": "3e670b5b2e5ccf2db8700273e060f28d11562abd91ea691ff4f20bffe30746b6",
   "tested_on": {
     "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
     "node": "v26.12.1",
@@ -442,6 +442,11 @@
       "command": "bash scripts/verify.sh (plan lint + evidence integrity on the final tree)",
       "exit_code": 0,
       "evidence": "run on the final tree; output in the slice PR"
+    },
+    "observability_fixup": {
+      "command": "digest refreshed for the blocked-#58 observability fix (model-manager transition logs); no acceptance evidence re-claimed",
+      "exit_code": 0,
+      "evidence": "docs/evidence/S5/green.log (unchanged; the S5 suite ran on the pre-fix tree; this fix adds console diagnostics only)"
     }
   },
   "videos_manifest": "docs/evidence/video_manifest.json (S5 re-records every flow \u2014 test-build specs in both engines plus the production-build a29 flows \u2014 with junit-verified refs incl. the *-prod-e2e.xml files)",
