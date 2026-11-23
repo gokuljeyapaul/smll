@@ -1,0 +1,273 @@
+== playwright chromium (all specs, TEST build) ==
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=chromium --reporter=list,junit
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 36 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (1.6s)
+  ✓   2 [chromium] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image (6.6s)
+  ✓   3 [chromium] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image (3.5s)
+  ✓   4 [chromium] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works (4.7s)
+  ✓   5 [chromium] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (3.2s)
+  ✓   6 [chromium] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (3.7s)
+  ✓   7 [chromium] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (5.5s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+serve_model: GET /model-slow range=- status=200 sent=396705472
+(node:244047) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 drain listeners added to [ServerResponse]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+a12: model cached via opfs (396705472 bytes)
+  ✓   8 [chromium] › e2e/a12_model_download.spec.ts:21:1 › a12_model_downloads_verifies_caches (30.1s)
+serve_model: GET /model-kill-fresh range=- status=200-kill sent=99176368
+serve_model: GET /model-kill-fresh range=bytes=98566144- status=206 sent=298139328
+  ✓   9 [chromium] › e2e/a12_model_download.spec.ts:72:1 › a12_interrupted_download_resumes (33.2s)
+serve_model: GET /model-wrong-hash range=- status=200 sent=396705472
+  ✓  10 [chromium] › e2e/a13_model_failure_fallback.spec.ts:37:1 › a13_wrong_hash_falls_back_with_banner_and_purges (28.4s)
+serve_model: GET /model-truncated range=- status=200 sent=198352736
+  ✓  11 [chromium] › e2e/a13_model_failure_fallback.spec.ts:55:1 › a13_truncated_file_falls_back_and_purges (17.7s)
+  ✓  12 [chromium] › e2e/a13_model_failure_fallback.spec.ts:72:1 › a13_unsupported_browser_banner_and_picker_works (3.2s)
+serve_model: GET /model-404 range=- status=404 sent=0
+  ✓  13 [chromium] › e2e/a13_model_failure_fallback.spec.ts:89:1 › a13_model_404_falls_back_and_purges (4.4s)
+serve_model: GET /model range=- status=200 sent=396705472
+a14: model cached via opfs
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+service-worker-served requests: 6 (not network — see the definition in e2e/helpers/network.ts)
+
+network request log: EMPTY
+
+served by the service worker (precache, no wire):
+- http://localhost:4173/?testModelUrl=http://127.0.0.1:4599/model
+- http://localhost:4173/assets/index-BYGwmUrQ.js
+- http://localhost:4173/assets/index-Cfms-yxM.css
+- http://localhost:4173/ocr-assets/worker.min.js
+- http://localhost:4173/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js
+- http://localhost:4173/ocr-assets/eng.traineddata.gz
+
+  ✓  14 [chromium] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests (35.6s)
+  ✓  15 [chromium] › e2e/a15_privacy_audit.spec.ts:55:1 › a15_no_storage_log_request_leaks_after_flows (3.2s)
+  ✓  16 [chromium] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (549ms)
+serve_model: GET /model range=- status=200 sent=396705472
+a21 (chromium): model cleanup state = unavailable
+  ✓  17 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:42:1 › a21_model_cleanup_flow_verified_result_or_visible_fallback (4.7m)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  18 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:108:1 › a21_model_cleanup_off_by_default_payload_has_no_suggestions (38.2s)
+  ✓  19 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:125:1 › a21_without_a_ready_model_the_toggle_explains_and_falls_back (3.6s)
+axe home (light): no violations
+axe home (dark): no violations
+axe home error (dark): no violations
+axe home error (light): no violations
+axe review (light): no violations
+axe review (dark): no violations
+axe review export menu open (dark): no violations
+axe review export menu open (light): no violations
+  ✓  20 [chromium] › e2e/a23_accessibility.spec.ts:80:1 › a23_axe_no_serious_or_critical_violations_every_screen (12.3s)
+  ✓  21 [chromium] › e2e/a23_accessibility.spec.ts:115:1 › a23_keyboard_only_main_flow_pick_review_copy_share_export (4.6s)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000 longpost02:F1=0.980,leak=0.000,fab=0.000 heavychrome02:F1=1.000,leak=0.000,fab=0.000 clean07:F1=1.000,leak=0.000,fab=0.000 clean08:F1=1.000,leak=0.000,fab=0.000 dark03:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 17 standard fixtures: F1=0.997 chrome_leakage=0.007 fabricated=0.000
+  ✓  22 [chromium] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (38.9s)
+eval_large_images: ~20MB stress input 3200x1900, 19.9 MB, sha256 577bcc16d6221d83… (generated at run time, never committed)
+eval_large_images chromium huge01 (4000 px): ocr=1830ms heap=10MiB (headless-Linux)
+eval_large_images chromium ~20MB: wall=29561ms decode=579 downscale=380 ocr=28763 heap=10MiB (headless-Linux)
+eval_large_images chromium ~20MB review text (recorded verbatim): "oe . ae ee oe\nSe oo ee oe ee aac oo oo oo ao ee a oo oe oo a a a Se ee ee ee oo ae 2 2 . ae 2 a a oe oo oo oe\n. a : . ce"
+eval_large_images chromium ~20MB: OCR stage 28763 ms — EXCEEDS the 5 s per-fixture budget (recorded limitation: adversarial noise is pathological for the OCR recognition pass; see the slice summary and red.log)
+  ✓  23 [chromium] › e2e/eval_large_images.spec.ts:70:1 › eval_large_images_4000px_and_20mb_processed_safely (36.3s)
+eval_latency chromium clean01: wall=2073ms decode=24 downscale=null ocr=1707 cleanup=5 heap=10MiB (headless-Linux)
+eval_latency chromium clean02: wall=832ms decode=19 downscale=null ocr=743 cleanup=1 heap=10MiB (headless-Linux)
+eval_latency chromium clean03: wall=621ms decode=14 downscale=null ocr=553 cleanup=1 heap=10MiB (headless-Linux)
+eval_latency chromium clean04: wall=367ms decode=24 downscale=null ocr=275 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean05: wall=484ms decode=10 downscale=null ocr=411 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean06: wall=507ms decode=13 downscale=null ocr=428 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean07: wall=543ms decode=11 downscale=null ocr=467 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium clean08: wall=441ms decode=9 downscale=null ocr=352 cleanup=0 heap=10MiB (headless-Linux)
+eval_latency chromium: 8 clean fixtures, peak usedJSHeapSize 10 MiB (headless-Linux)
+  ✓  24 [chromium] › e2e/eval_latency_memory.spec.ts:78:1 › eval_latency_budgets_clean_set (7.4s)
+serve_model: GET /model range=- status=200 sent=396705472
+eval clean01: mode=applied baseF1=1.000 modelF1=0.849 latencyMs=237132
+eval clean02: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240001
+eval clean03: mode=applied baseF1=0.983 modelF1=0.829 latencyMs=226150
+eval clean04: mode=applied baseF1=1.000 modelF1=0.791 latencyMs=112946
+eval clean05: mode=applied baseF1=1.000 modelF1=0.841 latencyMs=138131
+eval clean06: mode=applied baseF1=1.000 modelF1=0.831 latencyMs=162678
+eval dark01: mode=applied baseF1=1.000 modelF1=0.820 latencyMs=151254
+eval dark02: mode=applied baseF1=1.000 modelF1=0.857 latencyMs=197042
+eval chrome01: mode=applied baseF1=1.000 modelF1=1.000 latencyMs=158314
+eval chrome02: mode=applied baseF1=1.000 modelF1=0.778 latencyMs=148878
+eval longpost01: mode=unavailable baseF1=0.986 modelF1=n/a latencyMs=240003
+eval heavychrome01: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240000
+eval inj01: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240000
+eval inj02: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=153944
+eval inj03: mode=applied baseF1=1.000 modelF1=0.825 latencyMs=144917
+eval inj04: mode=applied baseF1=1.000 modelF1=0.877 latencyMs=173660
+eval inj05: mode=applied baseF1=1.000 modelF1=0.857 latencyMs=219545
+eval longpost02: mode=unavailable baseF1=0.980 modelF1=n/a latencyMs=240002
+eval heavychrome02: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240001
+eval clean07: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=240000
+eval clean08: mode=unavailable baseF1=1.000 modelF1=n/a latencyMs=204639
+eval dark03: mode=applied baseF1=1.000 modelF1=0.861 latencyMs=166316
+eval_llm summary: {
+  "engine": "chromium",
+  "fixtures": 22,
+  "appliedCount": 13,
+  "fallbackCount": 9,
+  "baseline": {
+    "meanF1": 0.9970016641803909,
+    "meanLeakage": 0.0065359477124183,
+    "meanFabricated": 0
+  },
+  "model": {
+    "meanF1": 0.8455636989576629,
+    "meanLeakage": 0.888888888888889,
+    "meanFabricated": 0,
+    "meanLatencyMs": 172074.07692307694
+  },
+  "rows": 22
+}
+  ✓  25 [chromium] › e2e/eval_llm_vs_baseline.spec.ts:60:1 › eval_llm_vs_baseline_standard_and_injection_sets (1.2h)
+eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78% clean07=1.37% clean08=0.94%
+eval_ocr_cer_clean_set mean: 1.29%
+  ✓  26 [chromium] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (14.6s)
+  ✓  27 [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (866ms)
+  ✓  28 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (2.7s)
+  ✓  29 [chromium] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image (3.1s)
+  ✓  30 [chromium] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file (3.4s)
+  ✓  31 [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (3.8s)
+  ✓  32 [chromium] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (3.6s)
+  ✓  33 [chromium] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (8.0s)
+  ✓  34 [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (3.5s)
+  ✓  35 [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (2.8s)
+serve_model: GET /model range=- status=200 sent=396705472
+uc13 inj01 (chromium): mode=unavailable attempts=0 latencyMs=240010
+uc13 inj02 (chromium): mode=applied attempts=1 latencyMs=206686
+uc13 inj03 (chromium): mode=applied attempts=1 latencyMs=142421
+uc13 inj04 (chromium): mode=applied attempts=1 latencyMs=153065
+uc13 inj05 (chromium): mode=applied attempts=1 latencyMs=181681
+  ✓  36 [chromium] › e2e/uc13_injection_guard.spec.ts:49:1 › uc13_injection_posts_are_content_never_obeyed (16.2m)
+
+  Slow test file: [chromium] › e2e/eval_llm_vs_baseline.spec.ts (1.2h)
+  Slow test file: [chromium] › e2e/uc13_injection_guard.spec.ts (16.2m)
+  Slow test file: [chromium] › e2e/a21_model_cleanup_flow.spec.ts (5.4m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  36 passed (1.7h)
+== playwright webkit (all specs, TEST build) ==
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=webkit --reporter=list,junit
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 36 tests using 1 worker
+
+  ✓   1 [webkit] › e2e/a01_smoke.spec.ts:8:1 › a01_built_app_loads_home_screen_no_console_errors (2.2s)
+  -   2 [webkit] › e2e/a08_share_target.spec.ts:20:1 › a08_share_target_receives_image
+  -   3 [webkit] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image
+  -   4 [webkit] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works
+  ✓   5 [webkit] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (2.6s)
+  ✓   6 [webkit] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (2.3s)
+  ✓   7 [webkit] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (3.4s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+serve_model: GET /model-slow range=- status=200 sent=396705472
+a12: model cached via cache-storage (396705472 bytes)
+  ✓   8 [webkit] › e2e/a12_model_download.spec.ts:21:1 › a12_model_downloads_verifies_caches (44.2s)
+serve_model: GET /model-kill-fresh range=- status=200-kill sent=99176368
+serve_model: GET /model-kill-fresh range=bytes=7974595- status=206 sent=388730877
+  ✓   9 [webkit] › e2e/a12_model_download.spec.ts:72:1 › a12_interrupted_download_resumes (40.3s)
+serve_model: GET /model-wrong-hash range=- status=200 sent=396705472
+  ✓  10 [webkit] › e2e/a13_model_failure_fallback.spec.ts:37:1 › a13_wrong_hash_falls_back_with_banner_and_purges (29.0s)
+serve_model: GET /model-truncated range=- status=200 sent=198352736
+  ✓  11 [webkit] › e2e/a13_model_failure_fallback.spec.ts:55:1 › a13_truncated_file_falls_back_and_purges (16.1s)
+  ✓  12 [webkit] › e2e/a13_model_failure_fallback.spec.ts:72:1 › a13_unsupported_browser_banner_and_picker_works (2.9s)
+serve_model: GET /model-404 range=- status=404 sent=0
+  ✓  13 [webkit] › e2e/a13_model_failure_fallback.spec.ts:89:1 › a13_model_404_falls_back_and_purges (3.3s)
+serve_model: GET /model range=- status=200 sent=396705472
+a14: model cached via cache-storage
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+service-worker-served requests: 7 (not network — see the definition in e2e/helpers/network.ts)
+
+network request log: EMPTY
+
+served by the service worker (precache, no wire):
+- http://localhost:4173/?testModelUrl=http://127.0.0.1:4599/model
+- http://localhost:4173/manifest.webmanifest
+- http://localhost:4173/assets/index-BYGwmUrQ.js
+- http://localhost:4173/assets/index-Cfms-yxM.css
+- http://localhost:4173/ocr-assets/worker.min.js
+- http://localhost:4173/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js
+- http://localhost:4173/ocr-assets/eng.traineddata.gz
+
+  ✓  14 [webkit] › e2e/a14_offline_zero_requests.spec.ts:20:1 › a14_offline_processing_zero_network_requests (48.1s)
+  ✓  15 [webkit] › e2e/a15_privacy_audit.spec.ts:55:1 › a15_no_storage_log_request_leaks_after_flows (3.3s)
+  ✓  16 [webkit] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (1.5s)
+serve_model: GET /model range=- status=200 sent=396705472
+a21 (webkit): model cleanup state = unavailable
+  ✓  17 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:42:1 › a21_model_cleanup_flow_verified_result_or_visible_fallback (41.1s)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  18 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:108:1 › a21_model_cleanup_off_by_default_payload_has_no_suggestions (38.6s)
+  ✓  19 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:125:1 › a21_without_a_ready_model_the_toggle_explains_and_falls_back (3.2s)
+axe home (light): no violations
+axe home (dark): no violations
+axe home error (dark): no violations
+axe home error (light): no violations
+axe review (light): no violations
+axe review (dark): no violations
+axe review export menu open (dark): no violations
+axe review export menu open (light): no violations
+  ✓  20 [webkit] › e2e/a23_accessibility.spec.ts:80:1 › a23_axe_no_serious_or_critical_violations_every_screen (10.9s)
+  ✓  21 [webkit] › e2e/a23_accessibility.spec.ts:115:1 › a23_keyboard_only_main_flow_pick_review_copy_share_export (4.8s)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000 longpost02:F1=0.980,leak=0.000,fab=0.000 heavychrome02:F1=1.000,leak=0.000,fab=0.000 clean07:F1=1.000,leak=0.000,fab=0.000 clean08:F1=1.000,leak=0.000,fab=0.000 dark03:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 17 standard fixtures: F1=0.997 chrome_leakage=0.007 fabricated=0.000
+  ✓  22 [webkit] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (30.4s)
+eval_large_images: ~20MB stress input 3200x1900, 19.9 MB, sha256 577bcc16d6221d83… (generated at run time, never committed)
+eval_large_images webkit huge01 (4000 px): ocr=1492ms heap=n/a (headless-Linux)
+eval_large_images webkit ~20MB: wall=38380ms decode=1985 downscale=1719 ocr=35572 heap=n/a (headless-Linux)
+eval_large_images webkit ~20MB terminal state: "error:PostClip reads posts wri" (the designed fail-closed error for unreadable/non-English OCR output — a correct processing outcome, see the spec header)
+eval_large_images webkit ~20MB: OCR stage 35572 ms — EXCEEDS the 5 s per-fixture budget (recorded limitation: adversarial noise is pathological for the OCR recognition pass; see the slice summary and red.log)
+  ✓  23 [webkit] › e2e/eval_large_images.spec.ts:70:1 › eval_large_images_4000px_and_20mb_processed_safely (45.7s)
+eval_latency webkit clean01: wall=1910ms decode=420 downscale=null ocr=906 cleanup=1 heap=n/a (headless-Linux)
+eval_latency webkit clean02: wall=695ms decode=26 downscale=null ocr=617 cleanup=1 heap=n/a (headless-Linux)
+eval_latency webkit clean03: wall=608ms decode=23 downscale=null ocr=502 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean04: wall=378ms decode=18 downscale=null ocr=281 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean05: wall=461ms decode=15 downscale=null ocr=396 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean06: wall=421ms decode=21 downscale=null ocr=340 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean07: wall=491ms decode=14 downscale=null ocr=415 cleanup=1 heap=n/a (headless-Linux)
+eval_latency webkit clean08: wall=379ms decode=21 downscale=null ocr=286 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit: 8 clean fixtures, peak usedJSHeapSize NOT_RUN (engine exposes no performance.memory — recorded, not skipped) (headless-Linux)
+  ✓  24 [webkit] › e2e/eval_latency_memory.spec.ts:78:1 › eval_latency_budgets_clean_set (7.1s)
+  -  25 [webkit] › e2e/eval_llm_vs_baseline.spec.ts:60:1 › eval_llm_vs_baseline_standard_and_injection_sets
+eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78% clean07=1.37% clean08=0.94%
+eval_ocr_cer_clean_set mean: 1.29%
+  ✓  26 [webkit] › e2e/eval_ocr_cer.spec.ts:71:1 › eval_ocr_cer_clean_set (14.3s)
+  ✓  27 [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (2.0s)
+  ✓  28 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (4.2s)
+  -  29 [webkit] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image
+  -  30 [webkit] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file
+  ✓  31 [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (4.4s)
+  ✓  32 [webkit] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (3.8s)
+  ✓  33 [webkit] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (5.1s)
+  ✓  34 [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (2.8s)
+  ✓  35 [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (3.1s)
+serve_model: GET /model range=- status=200 sent=396705472
+uc13 inj01 (webkit): mode=unavailable attempts=0 latencyMs=7
+uc13 inj02 (webkit): mode=unavailable attempts=0 latencyMs=3
+uc13 inj03 (webkit): mode=unavailable attempts=0 latencyMs=9
+uc13 inj04 (webkit): mode=unavailable attempts=0 latencyMs=12
+uc13 inj05 (webkit): mode=unavailable attempts=0 latencyMs=7
+  ✓  36 [webkit] › e2e/uc13_injection_guard.spec.ts:49:1 › uc13_injection_posts_are_content_never_obeyed (1.1m)
+
+  6 skipped
+  30 passed (8.3m)

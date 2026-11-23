@@ -1,0 +1,172 @@
+# S6 negative-path output — extracted from the same green runs as e2e.log
+# (plus the bundle-inspection and audit seeded-violation negative controls)
+
+  ✓   3 [chromium] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image (3.5s)
+  ✓   4 [chromium] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works (4.7s)
+  ✓   5 [chromium] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (3.2s)
+  ✓   6 [chromium] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (3.7s)
+  ✓   7 [chromium] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (5.5s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+  ✓  10 [chromium] › e2e/a13_model_failure_fallback.spec.ts:37:1 › a13_wrong_hash_falls_back_with_banner_and_purges (28.4s)
+serve_model: GET /model-truncated range=- status=200 sent=198352736
+  ✓  11 [chromium] › e2e/a13_model_failure_fallback.spec.ts:55:1 › a13_truncated_file_falls_back_and_purges (17.7s)
+  ✓  12 [chromium] › e2e/a13_model_failure_fallback.spec.ts:72:1 › a13_unsupported_browser_banner_and_picker_works (3.2s)
+serve_model: GET /model-404 range=- status=404 sent=0
+  ✓  13 [chromium] › e2e/a13_model_failure_fallback.spec.ts:89:1 › a13_model_404_falls_back_and_purges (4.4s)
+serve_model: GET /model range=- status=200 sent=396705472
+a14: model cached via opfs
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+  ✓  16 [chromium] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (549ms)
+serve_model: GET /model range=- status=200 sent=396705472
+a21 (chromium): model cleanup state = unavailable
+  ✓  17 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:42:1 › a21_model_cleanup_flow_verified_result_or_visible_fallback (4.7m)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  18 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:108:1 › a21_model_cleanup_off_by_default_payload_has_no_suggestions (38.2s)
+  ✓  19 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:125:1 › a21_without_a_ready_model_the_toggle_explains_and_falls_back (3.6s)
+axe home (light): no violations
+axe home (dark): no violations
+axe home error (dark): no violations
+axe home error (light): no violations
+axe review (light): no violations
+axe review (dark): no violations
+  ✓  27 [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (866ms)
+  ✓  28 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (2.7s)
+  ✓  29 [chromium] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image (3.1s)
+  ✓  30 [chromium] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file (3.4s)
+  ✓  31 [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (3.8s)
+  ✓  32 [chromium] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (3.6s)
+  ✓  33 [chromium] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (8.0s)
+  ✓  34 [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (3.5s)
+  ✓  35 [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (2.8s)
+serve_model: GET /model range=- status=200 sent=396705472
+uc13 inj01 (chromium): mode=unavailable attempts=0 latencyMs=240010
+uc13 inj02 (chromium): mode=applied attempts=1 latencyMs=206686
+uc13 inj03 (chromium): mode=applied attempts=1 latencyMs=142421
+uc13 inj04 (chromium): mode=applied attempts=1 latencyMs=153065
+uc13 inj05 (chromium): mode=applied attempts=1 latencyMs=181681
+  ✓  36 [chromium] › e2e/uc13_injection_guard.spec.ts:49:1 › uc13_injection_posts_are_content_never_obeyed (16.2m)
+
+  Slow test file: [chromium] › e2e/eval_llm_vs_baseline.spec.ts (1.2h)
+  Slow test file: [chromium] › e2e/uc13_injection_guard.spec.ts (16.2m)
+  Slow test file: [chromium] › e2e/a21_model_cleanup_flow.spec.ts (5.4m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  36 passed (1.7h)
+  -   3 [webkit] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image
+  -   4 [webkit] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works
+  ✓   5 [webkit] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (2.6s)
+  ✓   6 [webkit] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (2.3s)
+  ✓   7 [webkit] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (3.4s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+  ✓  10 [webkit] › e2e/a13_model_failure_fallback.spec.ts:37:1 › a13_wrong_hash_falls_back_with_banner_and_purges (29.0s)
+serve_model: GET /model-truncated range=- status=200 sent=198352736
+  ✓  11 [webkit] › e2e/a13_model_failure_fallback.spec.ts:55:1 › a13_truncated_file_falls_back_and_purges (16.1s)
+  ✓  12 [webkit] › e2e/a13_model_failure_fallback.spec.ts:72:1 › a13_unsupported_browser_banner_and_picker_works (2.9s)
+serve_model: GET /model-404 range=- status=404 sent=0
+  ✓  13 [webkit] › e2e/a13_model_failure_fallback.spec.ts:89:1 › a13_model_404_falls_back_and_purges (3.3s)
+serve_model: GET /model range=- status=200 sent=396705472
+a14: model cached via cache-storage
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+  ✓  16 [webkit] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (1.5s)
+serve_model: GET /model range=- status=200 sent=396705472
+a21 (webkit): model cleanup state = unavailable
+  ✓  17 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:42:1 › a21_model_cleanup_flow_verified_result_or_visible_fallback (41.1s)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  18 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:108:1 › a21_model_cleanup_off_by_default_payload_has_no_suggestions (38.6s)
+  ✓  19 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:125:1 › a21_without_a_ready_model_the_toggle_explains_and_falls_back (3.2s)
+axe home (light): no violations
+axe home (dark): no violations
+axe home error (dark): no violations
+axe home error (light): no violations
+axe review (light): no violations
+axe review (dark): no violations
+  ✓  27 [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (2.0s)
+  ✓  28 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (4.2s)
+  -  29 [webkit] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image
+  -  30 [webkit] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file
+  ✓  31 [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (4.4s)
+  ✓  32 [webkit] › e2e/uc07_export_download.spec.ts:20:1 › uc07_export_downloads_md_txt_json (3.8s)
+  ✓  33 [webkit] › e2e/uc10_non_english_rejected.spec.ts:36:1 › uc10_non_english_rejected_no_cleanup (5.1s)
+  ✓  34 [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (2.8s)
+  ✓  35 [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (3.1s)
+serve_model: GET /model range=- status=200 sent=396705472
+uc13 inj01 (webkit): mode=unavailable attempts=0 latencyMs=7
+uc13 inj02 (webkit): mode=unavailable attempts=0 latencyMs=3
+uc13 inj03 (webkit): mode=unavailable attempts=0 latencyMs=9
+uc13 inj04 (webkit): mode=unavailable attempts=0 latencyMs=12
+uc13 inj05 (webkit): mode=unavailable attempts=0 latencyMs=7
+  ✓  36 [webkit] › e2e/uc13_injection_guard.spec.ts:49:1 › uc13_injection_posts_are_content_never_obeyed (1.1m)
+
+  6 skipped
+  30 passed (8.3m)
+
+== bundle inspection negative control (TEST build must trip on the hooks) ==
+# bundle inspection (test mode) — dist
+CSP meta: matches the expected policy verbatim
+CSP policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self' http://127.0.0.1:4599 https://huggingface.co; base-uri 'none'; form-action 'none'; object-src 'none'
+index.html resource URLs: 3, all same-origin
+no source maps shipped
+scanned 10 .js files (21713400 bytes)
+TRIPPED (expected in a test build): dist/assets/index-BYGwmUrQ.js: "__postclipLlmDebug" at byte 275557 (context: "),x(`applied`)):x(`unavailable`),window.__postclipLlmDebug={mode:e.kind===`model`?`applied`:`unava")
+TRIPPED (expected in a test build): dist/assets/index-BYGwmUrQ.js: "__postclipLlmDebug" at byte 276123 (context: "0,deterministicText:m.text}}else window.__postclipLlmDebug={mode:`off`,modelText:null,rawModelText")
+TRIPPED (expected in a test build): dist/assets/index-BYGwmUrQ.js: "testModelUrl" at byte 220925 (context: "){let t=new URLSearchParams(e),n=t.get(`testModelUrl`),r=null;if(n)try{let e=new URL(n);(e.p")
+TRIPPED (expected in a test build): dist/assets/index-BYGwmUrQ.js: "testProbe" at byte 221092 (context: "turn{modelUrl:r,forceUnsupported:t.get(`testProbe`)===`unsupported`}}function C(){try{ret")
+TEST-BUILD CONTROL: detector works — found 4 hook occurrence(s) in the test build that must be absent from production.
+
+== audit seeded-violation negative control (every detector class must TRIP) ==
+audit_deps (S6 — A26) — SEEDED-VIOLATION NEGATIVE CONTROL
+node v26.12.1; root /opt/data/workspace/smll/projects/postclip
+
+D1+D2 dependency/license inventory: 270 installed packages (npm ls --all)
+    197  MIT
+     28  Apache-2.0
+     15  ISC
+     13  BSD-3-Clause
+      9  BSD-2-Clause
+      4  MPL-2.0
+      1  BlueOak-1.0.0
+      1  Python-2.0
+      1  CC-BY-4.0
+      1  UNKNOWN
+D3a telemetry deps: 1 hits  << VIOLATIONS
+    - postclip-analytics@1.2.3 matches /posthog/i — SEEDED
+D3b production-bundle telemetry endpoints: 0 files scanned, 1 hits  << VIOLATIONS
+    - SEEDED dist marker
+D4 CSP remote origins: connect-src = [https://evil.example.com] (pinned host https://huggingface.co); problems: 4
+    - CSP connect-src allows a non-pinned origin: https://evil.example.com
+    - CSP img-src allows a remote origin: https://cdn.example.net
+    - CSP connect-src does not allow the pinned model host https://huggingface.co
+    - SEEDED: connect-src carries a non-pinned origin
+D5 model pin: unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b (Qwen3-0.6B-Q4_K_M.gguf, 396705472 bytes, Apache-2.0)
+    cached weights: present, sha256 ac2d97712095a558…, DOES NOT MATCH THE PIN
+    - model revision is not a 40-hex commit SHA
+    - model sha256 is not 64-hex
+    - model url origin https://evil.example.com is not the pinned host https://huggingface.co
+    - model url does not match repo/revision/filename pin (expected https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf)
+    - cached model does NOT byte-hash to the pinned sha256
+    - SEEDED: broken model pin
+
+VIOLATIONS FOUND (13):
+  - postclip-analytics@1.2.3 matches /posthog/i — SEEDED
+  - CSP connect-src allows a non-pinned origin: https://evil.example.com
+  - CSP img-src allows a remote origin: https://cdn.example.net
+  - CSP connect-src does not allow the pinned model host https://huggingface.co
+  - SEEDED: connect-src carries a non-pinned origin
+  - model revision is not a 40-hex commit SHA
+  - model sha256 is not 64-hex
+  - model url origin https://evil.example.com is not the pinned host https://huggingface.co
+  - model url does not match repo/revision/filename pin (expected https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf)
+  - cached model does NOT byte-hash to the pinned sha256
+  - SEEDED: broken model pin
+  - SEEDED dist marker
+  - npm ls reports: seeded extraneous package
+seeded negative control: every detector class tripped.

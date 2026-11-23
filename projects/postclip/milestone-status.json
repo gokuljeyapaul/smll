@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "project": "postclip",
-  "phase": "BUILDING",
-  "current_slice": "S5",
+  "phase": "COMPLETE",
+  "current_slice": "S6",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model; S5 adds the production-build e2e pass + bundle inspection to test.sh); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -31,7 +31,7 @@
       "status": "MERGED",
       "pr": "https://github.com/gokuljeyapaul/smll/pull/65",
       "merge_sha": "ae333a508d784dc5b09878c931be90d24cfb0149",
-      "note": "merged under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; recorded here by the S4 slice per the next-slice-updates-the-merge-SHA convention"
+      "note": "merged under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; merge SHA recorded here by the S4 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S4": {
       "status": "MERGED",
@@ -40,17 +40,20 @@
       "note": "merged under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; merge SHA recorded here by the S5 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S5": {
-      "status": "READY_FOR_MERGE",
-      "note": "Hardening and production build delivered: headless-Linux latency/memory budgets on the default pipeline (OCR <= 5 s per fixture met with wide margin; deterministic cleanup ms-level; the opt-in LLM path's 65-236 s recorded as disclosed limitations behind its disabled-by-default state), axe (@axe-core/playwright 4.14.0) in BOTH color schemes on every screen + a keyboard-only main flow (the RED run found and S5 fixed two real shipped contrast violations: the dark primary-button label 2.55:1 and the hovered secondary button 2.63:1/1.29:1), large-image memory safety (the 4000 px fixture + a generated ~20 MB input processed end to end with no crash/hang/tab failure; the noise input's ~30 s OCR stage recorded honestly as exceeding the per-fixture budget, with the measured-and-rejected mitigations documented), and a clean production build: bundle inspection proves zero test hooks/eval in dist/ (scripts/inspect_bundle.mjs; the negative control trips on the test build's hooks), the strict CSP ships verbatim and is ENFORCED (connect-src same-origin + the pinned model host only; inline scripts blocked via the engine's own violation signal), and the dist/ smoke passes in both engines through the new e2e/prod pass (npm run test:e2e:prod). PR opened by the building agent (branch feature/postclip/S5-hardening-production-build, closes issue #58); the merge SHA is recorded in the next slice's update per convention"
+      "status": "MERGED",
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/67",
+      "merge_sha": "70d64678c532d3032f2a3af127a37fd0f8af70bd",
+      "note": "merged by the agent under the autonomous merge policy after monorepo / verify PASSED on the PR head; the FRESH main run at the merge commit then hit the CI model-download stall (Chromium network-stack environment roulette, documented in issue #58): root-caused and resolved through the owner-approved recovery chain #68 (observability), #69 (root-cause fix), #70 (failure-diagnostics upload) and #71 (retry budget 3->6); main's monorepo / verify is green at 43c7da8 (the #71 merge), closing S5 out; merge SHA recorded here by the S6 slice per the next-slice-updates-the-merge-SHA convention"
     },
     "S6": {
-      "status": "NOT_STARTED"
+      "status": "READY_FOR_MERGE",
+      "note": "Conformance and completion packaging delivered: the final conformance report accounts for every acceptance ID A01-A31 (the proven IDs re-verified on the S6 final tree by re-run committed JUnit in both engines; A27/A30 honestly NOT_RUN as the plan's optional real-device pass, with the checklist documented), every UC01-UC14 flow re-recorded to video in Chromium and WebKit where it applies (S6 manifest entries with sha256/size/duration/junit), the single committed compilation video docs/demo/postclip-demo.mp4 (<= 15 MB, 720p, built by scripts/make_demo_video.mjs from the S6 per-flow recordings), the dependency/license audit scripts/audit_deps.mjs (full npm-ls inventory, all licenses resolvable, zero telemetry SDKs, production CSP exact, model pin byte-verified — with its seeded-violation negative control), docs/KNOWN_LIMITS.md written honestly, phase COMPLETE. PR opened by the building agent (branch feature/postclip/S6-conformance-and-packaging, closes issue #59); S6 is the final slice, so its merge SHA and the post-merge main verification are reported in the issue's done-comment rather than a next-slice update"
     }
   },
   "last_verified_merged_pr": {
-    "slice": "S4",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/66",
-    "merge_sha": "97a082c03867dc72c077dcbfe3ef6054262532c2",
-    "main_check_after_merge": "success"
+    "slice": "S5 (with the owner-approved #58 CI-stall recovery chain #68-#71)",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/67",
+    "merge_sha": "70d64678c532d3032f2a3af127a37fd0f8af70bd",
+    "main_check_after_merge": "success at 43c7da8 (the #71 merge) after the recovery chain; the immediate fresh run at 70d6467 itself failed (model-download CI stall — root-caused in issue #58, not an app defect)"
   }
 }
