@@ -275,14 +275,16 @@ describe('ModelManager — download, verify, cache, fallback (S3)', () => {
   });
 
   it('gives up after the attempt budget and fails closed with a purge (A12/A13)', async () => {
+    // Explicit small budget: this test pins the give-up behavior, not the
+    // default budget (raised 3 -> 6 for CI-stall recovery; see manager.ts).
     const fetcher = fakeFetch([{ make: () => killingStream([u8(randomBytes(10))]) }]);
-    const { manager, store } = freshManager(undefined, { fetchImpl: fetcher.impl as typeof fetch });
+    const { manager, store } = freshManager(undefined, { fetchImpl: fetcher.impl as typeof fetch, maxAttempts: 2 });
 
     await manager.download();
 
     expect(manager.getStatus().state).toBe('failed');
     expect(manager.getStatus().reason).toBe('network-error');
-    expect(fetcher.calls).toHaveLength(3); // maxAttempts = 3
+    expect(fetcher.calls).toHaveLength(2); // the explicit maxAttempts
     expect(store.promotes).toEqual([]);
     expect(store.discards).toBeGreaterThan(0);
     expect(store.clears).toBeGreaterThan(0);

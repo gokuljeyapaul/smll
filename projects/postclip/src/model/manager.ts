@@ -78,7 +78,12 @@ export class ModelManager {
     this.fetchImpl = options.fetchImpl ?? globalThis.fetch.bind(globalThis);
     this.providedStore = options.store ?? null;
     this.probe = options.probe ?? probeModelCapabilities;
-    this.maxAttempts = options.maxAttempts ?? 3;
+    // 6 (was 3): CI runners intermittently stall the fetch handshake in some
+    // browser contexts (Chromium's network stack never hands the body to the
+    // renderer); the 20 s inactivity watchdog bounds each stalled attempt, and
+    // wire logs show retries DO recover in most such contexts — the budget is
+    // raised so one unlucky context stops killing a whole CI run.
+    this.maxAttempts = options.maxAttempts ?? 6;
     this.inactivityTimeoutMs = options.inactivityTimeoutMs ?? 20_000;
   }
 

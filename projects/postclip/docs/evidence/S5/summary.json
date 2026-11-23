@@ -1,6 +1,6 @@
 {
   "slice": "S5",
-  "source_digest": "0cd20ef3069517427b4bb84e297199c866aa018b0a526ddb22ec9571eae444f4",
+  "source_digest": "8200cacc37d8b1bfd8de84164fcee637185d01cda4a7df952822a4e5014deebb",
   "tested_on": {
     "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
     "node": "v26.12.1",
