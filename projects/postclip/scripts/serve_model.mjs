@@ -64,9 +64,14 @@ console.log(`serve_model: truncated size=${truncated.length} (half of ${real.len
 mkdirSync(dirname(LOG), { recursive: true });
 // appendFileSync per line: the evidence flow moves the log between engine
 // runs, and re-opening per write keeps writing to the file at the path.
+// ALSO mirrored to stdout: this server is spawned with stdio: 'inherit' by the
+// e2e helper, so every request line lands in the CI console — the runner-side
+// request log is otherwise lost when the ephemeral CI machine dies (the a12/
+// a14 stall diagnosis of the S5 blocker needed exactly this).
 function logLine(text) {
-  const line = `${new Date().toISOString()} ${text}\n`;
-  appendFileSync(LOG, line);
+  const line = `${new Date().toISOString()} ${text}`;
+  appendFileSync(LOG, `${line}\n`);
+  console.log(`serve_model: ${text}`);
 }
 
 const CORS = {
