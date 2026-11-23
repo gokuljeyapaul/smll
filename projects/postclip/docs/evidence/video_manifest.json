@@ -636,6 +636,24 @@
       ]
     },
     {
+      "id": "postclip_full_demo",
+      "path": "docs/demo/postclip-full-demo.mp4",
+      "sha256": "08d0f224a617ed6cbc41a37dec92adaae2d8034586e76440b0aba3e35d1929ca",
+      "size_bytes": 453847,
+      "duration_s": 94.1,
+      "engine": "chromium",
+      "junit": "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+      "junit_verified": true,
+      "note": "DV (#73): natural-pace FULL-WORKING capture of ONE continuous real run (real clipboard paste, real in-browser OCR, deliberate edit, real copy/share-spy/export downloads, real pinned-model download with visible progress served from the local cache by scripts/serve_model.mjs, opt-in model cleanup, real WASM inference to the guarded verified output). Driver: scripts/make_full_demo_video.mjs (logs: docs/evidence/DV/capture.log); post-production: scripts/compress_full_demo.mjs. The LLM-inference wait is the ONLY time-compressed segment, factor disclosed in a persistent on-screen caption and in artifacts/dv/size-comparison.json; every other stage is natural pace. The junit field points at the committed passing testcase of the primary constituent flow (uc01 pick->OCR->review->share), the same convention the S6 compilation entry uses; the capture run itself is logged, not a junit testcase.",
+      "compressed_segment": {
+        "stage": "llm inference",
+        "real_duration_s": 239,
+        "shown_duration_s": 21.7,
+        "factor": 11
+      },
+      "built_from": "artifacts/dv/postclip-full-run.webm (sha256 4195fe984c0952dcd973b9107737d2e70f13464a152447dbd97f742d37209b0f)"
+    },
+    {
       "id": "s0_negative_corrupt_input_fails_closed_chromium",
       "path": "artifacts/video/s0_negative_corrupt_input_fails_closed_chromium.webm",
       "sha256": "ad61979cdfecfe4abaa7b838a200199c9fd8b5a8e5946fd44a9cd524759b926d",

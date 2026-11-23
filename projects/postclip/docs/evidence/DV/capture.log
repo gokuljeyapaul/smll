@@ -1,0 +1,50 @@
+full-demo capture — 2026-11-23T20:51:38.796Z
+2026-11-23T20:51:38.797Z verifying cached model sha256 (396705472 bytes)...
+2026-11-23T20:51:39.618Z model sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+2026-11-23T20:51:39.656Z starting model server (serves the CACHED pinned file; /model-slow paces the download)
+2026-11-23T20:51:41.516Z starting vite preview on the TEST dist/
+2026-11-23T20:51:42.600Z app origin: http://[::1]:4173/
+2026-11-23T20:51:42.601Z launching chromium (headless, 1280x720, video on)
+2026-11-23T20:51:43.921Z home screen loaded (test build; model URL -> local cached file)
+2026-11-23T20:51:43.922Z marker home_loaded @ 0.7s
+2026-11-23T20:51:46.196Z real PNG written to the real clipboard
+2026-11-23T20:51:47.167Z marker paste_click @ 3.9s
+2026-11-23T20:51:47.265Z marker ocr_review_visible @ 4.0s
+2026-11-23T20:51:48.189Z marker ocr_done @ 4.9s
+2026-11-23T20:51:48.190Z real OCR done: 184 chars cleaned text
+2026-11-23T20:51:49.963Z marker raw_ocr_shown @ 6.7s
+2026-11-23T20:51:53.468Z marker edit_start @ 10.2s
+2026-11-23T20:51:56.476Z marker edit_done @ 13.2s
+2026-11-23T20:51:57.580Z edited review text: 226 chars
+2026-11-23T20:51:58.216Z marker copy_click @ 15.0s
+2026-11-23T20:51:58.274Z marker copied_confirmed @ 15.0s
+2026-11-23T20:51:58.275Z copy confirmed by the UI (real clipboard write)
+2026-11-23T20:51:59.712Z marker share_click @ 16.5s
+2026-11-23T20:52:01.930Z marker export-md_click @ 18.7s
+2026-11-23T20:52:02.006Z export export-md -> postclip-export.md (226 bytes, real browser download)
+2026-11-23T20:52:02.708Z marker export-txt_click @ 19.5s
+2026-11-23T20:52:02.745Z export export-txt -> postclip-export.txt (226 bytes, real browser download)
+2026-11-23T20:52:03.446Z marker export-json_click @ 20.2s
+2026-11-23T20:52:03.498Z export export-json -> postclip-export.json (283 bytes, real browser download)
+2026-11-23T20:52:04.199Z marker exports_done @ 20.9s
+2026-11-23T20:52:05.447Z marker start_over_click @ 22.2s
+2026-11-23T20:52:05.502Z marker back_home @ 22.3s
+2026-11-23T20:52:07.645Z marker model_download_click @ 24.4s
+2026-11-23T20:52:34.415Z marker model_ready @ 51.2s
+2026-11-23T20:52:34.415Z model downloaded (real bytes over HTTP), sha256-verified and cached — #model-ready visible
+2026-11-23T20:52:36.360Z marker llm_toggle_click @ 53.1s
+2026-11-23T20:52:37.943Z marker pick_click @ 54.7s
+2026-11-23T20:52:38.003Z same screenshot picked again, model cleanup now ON
+2026-11-23T20:52:38.625Z marker ocr2_deterministic_visible @ 55.4s
+2026-11-23T20:52:38.629Z marker llm_running @ 55.4s
+2026-11-23T20:52:38.629Z model cleanup running (real wllama WASM inference started)
+2026-11-23T20:56:37.451Z marker llm_applied @ 294.2s
+2026-11-23T20:56:37.451Z model cleanup applied after a real inference of 238.8s
+2026-11-23T20:56:37.475Z final review text = validated model output (262 chars)
+2026-11-23T20:56:37.537Z marker suggestions_visible @ 294.3s
+2026-11-23T20:56:39.776Z marker removed_chrome_open @ 296.5s
+2026-11-23T20:56:41.417Z marker final_hold_start @ 298.2s
+2026-11-23T20:56:45.618Z marker final_hold_end @ 302.4s
+2026-11-23T20:56:45.622Z share payload = the edited review text (spy-asserted)
+2026-11-23T20:57:03.072Z teardown error: TypeError [ERR_INVALID_ARG_TYPE]: The "src" argument must be of type string or an instance of Buffer or URL. Received an instance of Promise
+2026-11-23T20:57:03.358Z CAPTURE OK

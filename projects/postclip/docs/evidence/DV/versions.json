@@ -1,0 +1,9 @@
+{
+  "os": "Linux 6.8.0-147-generic",
+  "ram": "62.794 GiB",
+  "node": "v26.12.1",
+  "npm": "12.0.2",
+  "playwright_chromium": "159.0.8154.6",
+  "ffmpeg": "ffmpeg version n9.0.1-11-ge47273f4d9-20260831 Copyright (c) 2000-2026 the FFmpeg developers",
+  "note": "real versions from the DV capture host; browsers at PLAYWRIGHT_BROWSERS_PATH=/opt/data/home/.cache/ms-playwright"
+}

@@ -27,7 +27,7 @@ Build **postclip**: an installable single-page web app (React + TypeScript + Vit
 - **Fail closed.** Bad/corrupt/unsupported input, a bad model file, invalid LLM output, or a failed guard degrades to the previous safe stage with a visible flag; nothing is silently dropped or invented.
 - **Resolve versions at build time** (latest mutually compatible library versions), pin them in the lockfile, and record them in `docs/evidence/<slice>/versions.json`. Do not copy versions from this repo's docs or from web search snippets. Hashes and measurements must come from real downloads/runs and be recorded with the command that produced them.
 - Test hooks and the eval runner exist only in dev/test builds and must be absent from the production build (A29).
-- Never commit secrets, per-flow videos, model weights, `node_modules`, build output or machine-specific paths. The only committed video is the single ≤ 15 MB compilation from S6.
+- Never commit secrets, per-flow videos, model weights, `node_modules`, build output or machine-specific paths. The only committed videos are the ≤ 15 MB demo assets in `docs/demo/` (the S6 compilation and the natural-pace full-working demo, owner-authorized in issue #73).
 
 ## Delivery loop (one slice = one PR)
 

@@ -1,0 +1,32 @@
+{
+  "measured_at": "2026-11-23T21:00:56.819Z",
+  "mp4": {
+    "path": "docs/demo/postclip-full-demo.mp4",
+    "size_bytes": 453847,
+    "sha256": "08d0f224a617ed6cbc41a37dec92adaae2d8034586e76440b0aba3e35d1929ca",
+    "duration_s": 94.1,
+    "height": 720,
+    "crf": 30,
+    "audio": "none (silent by construction)"
+  },
+  "gif_full": {
+    "path": "artifacts/dv/postclip-full-demo.gif",
+    "size_bytes": 630133,
+    "sha256": "668d85f22fb2a3fc51c0b006c89d2f62ee14778c0bca8cf594207eb95c2ccd7d",
+    "note": "same run, 640px wide, 8 fps, 128-color palette"
+  },
+  "committed": "mp4",
+  "reason": "the H.264 mp4 is far smaller than the GIF of the same run; both sizes recorded above",
+  "time_compression": {
+    "stage": "LLM cleanup inference (single-threaded WASM)",
+    "real_duration_s": 239,
+    "shown_duration_s": 21.7,
+    "factor": 11,
+    "disclosure": "persistent on-screen caption during the segment: \"Real on-device model inference — one continuous run, shown 11x faster (239s of real time)\""
+  },
+  "source_capture": {
+    "path": "artifacts/dv/postclip-full-run.webm",
+    "sha256": "4195fe984c0952dcd973b9107737d2e70f13464a152447dbd97f742d37209b0f",
+    "size_bytes": 10961100
+  }
+}
