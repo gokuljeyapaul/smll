@@ -4,9 +4,10 @@ One GitHub repository (`.git/` only at this root) for multiple independent proje
 
 ## Project index
 
-| Project | Description | Delivery plan |
-|---|---|---|
-| [`coaching-privacy-pipeline`](projects/coaching-privacy-pipeline/) | Fully offline, non-generative transcript and audio privacy PoC | [`BUILD_PLAN.md`](projects/coaching-privacy-pipeline/docs/BUILD_PLAN.md) |
+| Project | Description | Delivery plan | Status |
+|---|---|---|---|
+| [`postclip`](projects/postclip/) | Screenshot of a post in, clean shareable text out — real in-browser OCR, deterministic cleanup, and an opt-in pinned local LLM tidy-up; installable, offline, zero-upload | [`BUILD_PLAN.md`](projects/postclip/docs/BUILD_PLAN.md) | **COMPLETE** — all slices S0–S6 merged and verified (see the project [README](projects/postclip/README.md), the [conformance report](projects/postclip/docs/evidence/S6/conformance_report.md), and the demo videos: [full natural-pace run](projects/postclip/docs/demo/postclip-full-demo.mp4) · [every-flow compilation](projects/postclip/docs/demo/postclip-demo.mp4)) |
+| [`coaching-privacy-pipeline`](projects/coaching-privacy-pipeline/) | Fully offline, non-generative transcript and audio privacy PoC | [`BUILD_PLAN.md`](projects/coaching-privacy-pipeline/docs/BUILD_PLAN.md) | planned — not yet started |
 
 ## Initial GitHub repository bootstrap (owner/operator)
 
@@ -14,7 +15,7 @@ One GitHub repository (`.git/` only at this root) for multiple independent proje
 2. Ensure the repository contains root `AGENTS.md`, `.github/workflows/monorepo-ci.yml`, `.github/scripts/verify_changed_projects.py`, and `.github/pull_request_template.md`.
 3. Enable pull-request-based branch rules on `main` (or the designated integration branch); configure stable required status check **`monorepo / verify`**, required reviews if desired, and auto-merge if desired. The GitHub UI/organization settings cannot be declared by the build plan itself.
 4. Grant the autonomous agent (Atina) scoped GitHub access to this **one** repository. Use its workspace instructions to tell it where this clone is and to read this root `AGENTS.md`.
-5. Have the agent start Slice S0 in `projects/coaching-privacy-pipeline/`, implementing its required scripts and real TDD functionality in the first feature PR. Until that implementation exists, missing scripts should cause CI to fail rather than show false success.
+5. Have the agent start Slice S0 in `projects/<name>/`, implementing its required scripts and real TDD functionality in the first feature PR. Until that implementation exists, missing scripts should cause CI to fail rather than show false success. (postclip's S0–S6 campaign is the worked example of this loop.)
 
 See `AGENTS.md` for monorepo-wide PR policy. For a new project, add a directory under `projects/` with its own instructions, test scripts and evidence ledger; do not create another Git repository.
 
