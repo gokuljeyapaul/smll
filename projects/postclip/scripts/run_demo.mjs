@@ -340,6 +340,7 @@ async function demoIn(engineName, browserType) {
     // verifies sha256 and ends ready — the local server serves the REAL file,
     // paced so the progress bar is observable.
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-slow`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     // Record every REAL progress-bar DOM state with a MutationObserver
     // (timer sampling starves while the streamed hash runs on the main
@@ -407,6 +408,7 @@ async function demoIn(engineName, browserType) {
     // (the progress step cached the same content-addressed key).
     await clearModelCache(page);
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-kill-fresh`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     const resumed = await page
       .locator('#model-ready')
@@ -459,6 +461,7 @@ async function demoIn(engineName, browserType) {
     // model from the resume step would otherwise short-circuit to ready.)
     await clearModelCache(page);
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-wrong-hash`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     const badModelBanner = await page
       .locator('#model-banner')
@@ -498,6 +501,7 @@ async function demoIn(engineName, browserType) {
     // never shows either way.
     await clearModelCache(page);
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     const modelReadyAgain = await page
       .locator('#model-ready')

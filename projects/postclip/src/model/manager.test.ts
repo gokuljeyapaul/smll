@@ -60,6 +60,13 @@ class FakeModelStore implements ModelStore {
     this.entries.clear();
     this.temp = [];
   }
+  async putText(key: string, text: string): Promise<void> {
+    this.entries.set(key, u8(new TextEncoder().encode(text)));
+  }
+  async readText(key: string): Promise<string | null> {
+    const bytes = this.entries.get(key);
+    return bytes ? new TextDecoder().decode(bytes) : null;
+  }
 }
 
 interface FetchCall {

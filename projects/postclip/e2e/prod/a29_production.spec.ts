@@ -193,6 +193,11 @@ test('a29_production_test_hooks_absent_and_inert', async ({ page }) => {
   // download affordance is still offered; no forced 'unsupported' banner),
   // and the debug record is never created.
   await page.goto(`/${TEST_HOOK_QUERY}`);
+  // R2-3: the download stays opt-in behind the collapsed Advanced section —
+  // present and reachable, never pushed; the hooks stay inert.
+  await expect(page.locator('#advanced-model')).toBeVisible({ timeout: 30_000 });
+  expect(await page.locator('#advanced-model').getAttribute('open')).toBeNull();
+  await page.locator('#advanced-model summary').click();
   await expect(page.locator('#model-download-btn')).toBeVisible({ timeout: 30_000 });
   await expect(page.locator('#model-banner')).toHaveCount(0);
 

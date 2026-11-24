@@ -14,6 +14,10 @@ export interface ModelCacheState {
   cacheStorageEntryBytes: number | null;
   /** Every entry the model cache holds, in either backend. */
   totalEntries: number;
+  /** R2-3: entries that are MODEL weights (the .gguf) — the marker records
+   * (model-<sha>.verified.json, written after a verified download) are
+   * sanctioned model-cache metadata and are counted separately. */
+  modelEntries: number;
   backend: 'opfs' | 'cache-storage' | 'none';
 }
 
@@ -23,6 +27,7 @@ export async function readModelCacheState(page: Page): Promise<ModelCacheState> 
   return page.evaluate(async (key) => {
     let opfsEntryBytes: number | null = null;
     let opfsEntries = 0;
+    let opfsModelEntries = 0;
     try {
       const root = await navigator.storage.getDirectory();
       const dir = await root.getDirectoryHandle('postclip-model');
@@ -33,8 +38,9 @@ export async function readModelCacheState(page: Page): Promise<ModelCacheState> 
           entries?: () => AsyncIterableIterator<[string, FileSystemHandle]>;
         };
         if (typeof iterable.entries === 'function') {
-          for await (const [, handle] of iterable.entries()) {
+          for await (const [name, handle] of iterable.entries()) {
             opfsEntries += 1;
+            if (String(name).endsWith('.gguf')) opfsModelEntries += 1;
             void handle;
           }
         }
@@ -53,6 +59,7 @@ export async function readModelCacheState(page: Page): Promise<ModelCacheState> 
 
     let cacheStorageEntryBytes: number | null = null;
     let cacheEntries = 0;
+    let cacheModelEntries = 0;
     try {
       const names = await caches.keys();
       const modelName = names.find((n) => n.startsWith('postclip-model'));
@@ -60,6 +67,7 @@ export async function readModelCacheState(page: Page): Promise<ModelCacheState> 
         const cache = await caches.open(modelName);
         const keys = await cache.keys();
         cacheEntries = keys.length;
+        cacheModelEntries = keys.filter((k) => String(k.url ?? k).endsWith('.gguf')).length;
         const hit = await cache.match(key);
         cacheStorageEntryBytes = hit ? (await hit.blob()).size : null;
       }
@@ -77,12 +85,16 @@ export async function readModelCacheState(page: Page): Promise<ModelCacheState> 
       opfsEntryBytes,
       cacheStorageEntryBytes,
       totalEntries: opfsEntries + cacheEntries,
+      modelEntries: opfsModelEntries + cacheModelEntries,
       backend,
     };
   }, MODEL_CACHE_KEY);
 }
 
-/** Uniform assertion: exactly one model entry, and it is the pinned size. */
+/** Uniform assertion: exactly one MODEL entry (the pinned .gguf with the
+ * pinned bytes). R2-3 adds the sanctioned verified-marker records to the
+ * same model cache; the no-duplicate-model invariant is about the weights
+ * (A12's intent), so it counts .gguf entries — not the marker metadata. */
 export async function expectModelCachedExactly(page: Page): Promise<ModelCacheState> {
   const state = await readModelCacheState(page);
   const stored = state.opfsEntryBytes ?? state.cacheStorageEntryBytes;
@@ -91,8 +103,8 @@ export async function expectModelCachedExactly(page: Page): Promise<ModelCacheSt
       `model cache must hold exactly the pinned ${PINNED_MODEL.sizeBytes} bytes, saw ${JSON.stringify(state)}`,
     );
   }
-  if (state.totalEntries !== 1) {
-    throw new Error(`model cache must hold exactly one entry, saw ${JSON.stringify(state)}`);
+  if (state.modelEntries !== 1) {
+    throw new Error(`model cache must hold exactly one MODEL entry, saw ${JSON.stringify(state)}`);
   }
   return state;
 }

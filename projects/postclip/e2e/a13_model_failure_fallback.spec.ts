@@ -40,6 +40,7 @@ test('a13_wrong_hash_falls_back_with_banner_and_purges', async ({ page }) => {
   const capture = startCapture(page);
 
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-wrong-hash`);
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
   await expect(page.locator('#model-banner')).toContainText('integrity check');
@@ -58,6 +59,7 @@ test('a13_truncated_file_falls_back_and_purges', async ({ page }) => {
   const capture = startCapture(page);
 
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-truncated`);
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
   await expect(page.locator('#model-banner')).toContainText("didn't finish");
@@ -91,6 +93,7 @@ test('a13_model_404_falls_back_and_purges', async ({ page }) => {
   await startModelServer();
 
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-404`);
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-banner')).toBeVisible({ timeout: 120_000 });
   await expect(page.locator('#model-banner')).toContainText('could not be reached');

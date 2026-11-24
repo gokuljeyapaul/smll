@@ -20,6 +20,7 @@ export type ModelFailReason =
   | 'http-error'
   | 'network-error'
   | 'storage-error'
+  | 'no-room'
   | 'unsupported';
 
 export type ModelEvent =

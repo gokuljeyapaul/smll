@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import { modelManager, type ModelProgress } from '../model/manager';
 import { PINNED_MODEL } from '../model/manifest';
 import type { ModelFailReason } from '../model/state';
+import { STORAGE_REFUSAL_MESSAGES, storageVolatileSignal } from '../model/storage-policy';
 
 export interface ModelStatusCardProps {
   onDownload: () => void;
@@ -26,7 +27,8 @@ export interface ModelStatusCardProps {
 const MIB = 1024 * 1024;
 const SIZE_LABEL = `${(PINNED_MODEL.sizeBytes / MIB).toFixed(1)} MiB`;
 
-/** Non-technical, kind, and explicit about what still works (UC09). */
+/** Non-technical, kind, and explicit about what still works (UC09). The
+ * R2-3 refusals (no-room) come from the storage policy's exact messages. */
 const BANNERS: Record<ModelFailReason, string> = {
   'checksum-mismatch':
     "The tidy-up model didn't pass its integrity check, so it wasn't kept. Everything else still works — pick your screenshot and PostClip cleans it up with the standard rules.",
@@ -38,6 +40,7 @@ const BANNERS: Record<ModelFailReason, string> = {
     "The tidy-up model couldn't finish downloading on this network, so it wasn't kept. Everything else still works — pick your screenshot and PostClip cleans it up with the standard rules.",
   'storage-error':
     "The tidy-up model couldn't be saved on this device, so it wasn't kept. Everything else still works — pick your screenshot and PostClip cleans it up with the standard rules.",
+  'no-room': STORAGE_REFUSAL_MESSAGES['no-room'],
   unsupported:
     "This browser can't run the tidy-up model, so PostClip uses the standard cleanup. Everything else works — pick your screenshot as usual.",
 };
@@ -73,13 +76,8 @@ export function ModelStatusCard({ onDownload }: ModelStatusCardProps) {
   const { state, receivedBytes, totalBytes, reason } = progress;
   const pct = totalBytes > 0 ? Math.min(100, Math.round((receivedBytes / totalBytes) * 100)) : 0;
 
-  if (state === 'ready') {
-    return (
-      <p className="model-ready" id="model-ready">
-        Tidy-up model ready — tidier cleanup, and it works offline.
-      </p>
-    );
-  }
+  // R2-3 (A40): the READY state is owned by the Home screen (the small
+  // "ready (cached)" line); this card handles everything else.
 
   if (state === 'downloading' || state === 'verifying') {
     return (
@@ -130,7 +128,18 @@ export function ModelStatusCard({ onDownload }: ModelStatusCardProps) {
     );
   }
 
-  // state === 'absent': the one-time download affordance (UC08).
+  // state === 'absent': the one-time download affordance (UC08) — OPT-IN
+  // since R2-3, reached only inside the Advanced section. When the storage
+  // reports it cannot keep the model (the volatile signal), the kind
+  // explanation replaces the offer: no 397 MB download that will be lost.
+  if (storageVolatileSignal()) {
+    return (
+      <div className="model-banner" id="model-banner" role="alert">
+        <p>{STORAGE_REFUSAL_MESSAGES.volatile}</p>
+      </div>
+    );
+  }
+
   return (
     <section className="model-card" aria-labelledby="model-card-title">
       <h2 className="model-card-title" id="model-card-title">

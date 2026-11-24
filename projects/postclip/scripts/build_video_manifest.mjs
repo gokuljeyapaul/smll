@@ -85,6 +85,12 @@ const TESTCASES = [
   'a36_share_post_without_an_image_stays_ignored',
   'a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit',
   'eval_nested_text_recall_on_fixtures',
+  // R2-3 (model downloaded once): every testcase that may own a video.
+  'a37_model_downloads_once_survives_reload_and_same_profile_restart',
+  'a39_volatile_storage_shows_kind_explanation_and_no_download',
+  'a39_no_room_refuses_the_download_before_any_byte_is_fetched',
+  'a40_download_is_opt_in_behind_the_advanced_section',
+  'a40_fresh_profile_records_the_model_absent_honestly',
 ];
 
 /** Match a video directory name to its testcase. Playwright names video dirs

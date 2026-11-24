@@ -61,6 +61,7 @@ test('eval_llm_vs_baseline_standard_and_injection_sets', async ({ page, browserN
   test.setTimeout(7_200_000); // 22 fixtures x (OCR + real wasm inference); single-threaded (scheduling budget; each settle is bounded by the pipeline's 240 s cap, so the all-fallback worst case ~100 min fits)
   await startModelServer();
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model`);
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 240_000 });
   // Bounded wait (fails fast and clear when the model-cleanup UI is absent).
