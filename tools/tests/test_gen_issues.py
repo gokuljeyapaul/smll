@@ -1,6 +1,7 @@
 """tools/gen_issues.py: slice issues generated from any project's BUILD_PLAN.md (dry run by default)."""
 import os
 import pathlib
+import re
 import stat
 import subprocess
 import sys
@@ -40,10 +41,15 @@ class GenIssuesTests(unittest.TestCase):
 
     def test_epic_plus_one_issue_per_slice(self):
         titles = [i["title"] for i in self.issues]
-        self.assertEqual(len(self.issues), 8)
+        # One issue per plan slice, by construction: the slice list is read
+        # from the plan itself (postclip grew from S0-S6 to S7+ in round 2;
+        # the count follows the plan instead of a hardcoded 8).
+        slices = re.findall(r"(?m)^### (S\d+) ", self.text)
+        self.assertGreater(len(slices), 0)
+        self.assertEqual(len(self.issues), len(slices) + 1)
         self.assertTrue(titles[0].startswith("postclip: deliver all slices"))
-        for n in range(7):
-            self.assertTrue(any(t.startswith("postclip S%d" % n) for t in titles), n)
+        for sid in slices:
+            self.assertTrue(any(t.startswith("postclip %s" % sid) for t in titles), sid)
 
     def test_slice_issue_carries_acceptance_ids_plan_link_and_done_checklist(self):
         s0 = next(i for i in self.issues if i["title"].startswith("postclip S0"))
@@ -116,12 +122,14 @@ class GenIssuesTests(unittest.TestCase):
             kinds = ["label" if c.split()[1].endswith("/labels") else "issue" for c in calls]
             first_issue = kinds.index("issue")
             self.assertTrue(all(k == "label" for k in kinds[:first_issue]), kinds)
-            self.assertEqual(kinds.count("issue"), 8)
+            n_slices = len(re.findall(r"(?m)^### (S\d+) ", self.text))
+            self.assertGreater(n_slices, 0)
+            self.assertEqual(kinds.count("issue"), n_slices + 1)
             # S1's body links S0's real number (101), and the epic is created last and links all slices.
             s1 = next(c for c in calls if "title=postclip S1" in c)
             self.assertIn("Blocked by: #101 (postclip S0)", s1)
             self.assertIn("title=postclip: deliver all slices", calls[-1])
-            for n in range(101, 108):
+            for n in range(101, 101 + n_slices):
                 self.assertIn("#%d postclip S" % n, calls[-1])
             self.assertIn("labels[]=ready", next(c for c in calls if "title=postclip S0" in c))
             self.assertNotIn("labels[]=ready", s1)
