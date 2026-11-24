@@ -76,7 +76,7 @@ async function main() {
   const preview = spawn(
     process.execPath,
     ['node_modules/vite/bin/vite.js', 'preview', '--port', String(PORT), '--host', '127.0.0.1', '--strictPort'],
-    { cwd: ROOT, stdio: ['ignore', 'ignore', 'inherit'] },
+    { cwd: ROOT, stdio: ['ignore', 'ignore', 'inherit'], detached: true },
   );
   const browser = await chromium.launch();
   const shots = [];
@@ -94,6 +94,10 @@ async function main() {
         deviceScaleFactor: 2,
         isMobile: true,
         hasTouch: true,
+        // The e2e suite's chromium project grants these; the Copy step needs
+        // clipboard-write or the copy fails (fail closed) and no confirmation
+        // is shown.
+        permissions: ['clipboard-read', 'clipboard-write'],
       });
       const page = await context.newPage();
       await page.goto(base);
@@ -147,10 +151,19 @@ async function main() {
     }
   } finally {
     await browser.close().catch(() => undefined);
+    // The preview was spawned detached (its own process group) so the group
+    // kill below actually lands; the direct kill is the belt-and-braces
+    // fallback, and the explicit exit stops the child handle from keeping
+    // this script's event loop alive after the work is done.
     try {
       process.kill(-preview.pid, 'SIGKILL');
     } catch {
-      // the preview server already exited
+      // not a group leader (or already gone)
+    }
+    try {
+      preview.kill('SIGKILL');
+    } catch {
+      // already exited
     }
   }
 
@@ -168,7 +181,9 @@ async function main() {
   console.log(`owner gallery written: ${shots.length} shots under ${OUT}`);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

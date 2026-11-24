@@ -45,9 +45,11 @@ function readJunitCaseNames(relPath: string): { name: string; failed: boolean }[
     const name = attrs
       .match(/\bname="((?:[^"\\]|\\.)*)"/)?.[1]
       ?.replaceAll('\\"', '"')
-      ?.replaceAll('&quot;', '"')
-      ?.replaceAll('&amp;', '&')
-      ?.replaceAll('&#39;', "'");
+      .replaceAll('&gt;', '>')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&apos;', "'")
+      .replaceAll('&amp;', '&');
     if (!name) continue;
     out.push({ name, failed: /<(failure|error|skipped)\b/.test(body) });
   }

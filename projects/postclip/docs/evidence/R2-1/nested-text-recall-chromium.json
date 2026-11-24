@@ -1,0 +1,19 @@
+{
+  "engine": "chromium",
+  "bar": 0.75,
+  "mean": 1,
+  "rows": [
+    {
+      "id": "nested01",
+      "recall": 1
+    },
+    {
+      "id": "nested02",
+      "recall": 1
+    },
+    {
+      "id": "nested03",
+      "recall": 1
+    }
+  ]
+}

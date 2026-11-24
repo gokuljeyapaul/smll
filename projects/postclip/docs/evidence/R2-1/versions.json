@@ -1,0 +1,30 @@
+{
+  "slice": "R2-1",
+  "toolchain": {
+    "node": "v26.12.1",
+    "npm": "12.0.2 (package-lock.json, npm ci)",
+    "vite": "8.3.8",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1",
+    "eslint": "9 (typescript-eslint 8.73.0)",
+    "react": "19.3.1",
+    "playwright": "1.65.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright build webkit-2388)",
+    "ffmpeg": "ffprobe version n9.0.1-11-ge47273f4d9-20260831 Copyright (c) 2007-2026 the FFmpeg developers",
+    "axe_core": "@axe-core/playwright 4.14.0 (axe-core 4.10.3 bundled)"
+  },
+  "r2_1_additions": {
+    "arrival_state_machine": "src/flow/arrival.ts — the pure arrival screen-state machine (A34), unit-tested, driving the App",
+    "nested_fixtures": "fixtures nested01-03 — quoted card / launch banner / event poster rasterized as real pictures with text inside (A35), ground truth in gold .nested_image_text",
+    "result_screen": "the review screen is the result screen (\"Your text\"): Copy first/primary/above-the-fold at 390x844, then Share, then file-save, then Edit; the model opt-in collapsed inside #advanced-cleanup (A33)",
+    "owner_gallery": "scripts/capture_owner_gallery_r2_1.mjs — docs/evidence/R2-1/owner/ (O07: 390x844 + 360x800, share arrives → progress → result)",
+    "digest": "the summary source_digest covers src/public/e2e/fixtures/lockfile/config on the R2-1 final tree"
+  },
+  "llm_runtime": {
+    "status": "UNCHANGED from S4-S6 — wllama 3.13 + the pinned Qwen3-0.6B-Q4_K_M; the LLM cleanup stays DISABLED BY DEFAULT (A19)",
+    "model": "Qwen3-0.6B-Q4_K_M.gguf from unsloth/Qwen3-0.6B-GGUF @ 50968a4468ef4233ed78cd7c3de230dd1d61a56b (Apache-2.0), 396,705,472 bytes, sha256 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a"
+  },
+  "dependency_changes": "R2-1 adds ZERO npm dependencies (source + fixtures + scripts + docs only).",
+  "measured_machine": "same container as S0-S6 (Debian 13, kernel 6.8.0-147-generic, 16 vCPU, 62 GiB RAM); headless-Linux numbers, single-threaded WASM path; real-device behavior is NOT_RUN (A27/A30)"
+}

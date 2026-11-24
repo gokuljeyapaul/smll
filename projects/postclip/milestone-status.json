@@ -59,10 +59,11 @@
       "note": "Post-completion, owner-requested demo slice (issue #73): the natural-pace full-working demo video docs/demo/postclip-full-demo.mp4, the mp4-vs-GIF size comparison, the README Demo section + staleness fixes, the video_manifest.json entry, the .gitignore second-video exception, and the capture/post-production scripts. Merged by the agent under the autonomous merge policy; monorepo / verify green on main at the merge commit (run 45289832013; reported in the issue #73 done-comment). Merge SHA + post-merge main result recorded here by the R2-1 slice per the next-slice-updates-the-merge-SHA convention."
     },
     "R2-1": {
-      "status": "IN_PROGRESS",
+      "status": "READY_FOR_MERGE",
       "issue": 77,
       "branch": "feature/postclip/R2-1-share-first",
-      "note": "Round 2 slice 1 (issue #77, plan section 'Round 2' / slice S7): the share-first result screen — auto-OCR on arrival, one progress state, text with a large Copy button first (visible without scrolling at 390×844), then Share/Save, then Edit; nested-image text fixtures with measured recall; the arrival state machine; kind errors with one obvious next step; docs/INTEGRATION.md for the iPhone host-app hand-off. The plan additions (UC15/UC16, A32-A36, S7, O07) and the phase reset to BUILDING are the first commit of this slice, per epic #80."
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/83",
+      "note": "Round 2 slice 1 (issue #77, plan section 'Round 2' / slice S7, IDs A32-A36): the share-first result screen — auto-OCR on arrival, one progress state, text with a large Copy button first (visible without scrolling at 390x844), then Share/Save, then Edit; the model opt-in collapsed out of the way; three synthetic nested-text fixtures (real rasterized pictures) at 100% nested-token recall in both engines (bar >= 75%); the pure arrival state machine (A34); kind errors with one obvious next step (A36); docs/INTEGRATION.md for the iPhone host-app hand-off. Full local suite green on the final tree (chromium 41/41, webkit 32 passed + 9 platform-skips, prod e2e both engines, vitest 281/281, demo both engines, verify.sh exit 0) with digest-matched committed evidence under docs/evidence/R2-1/ (source_digest 43e8ea06c5d7…). READY_FOR_MERGE under the autonomous merge policy once 'monorepo / verify' is green on the PR head; its merge SHA and the post-merge main verification go to the R2-2 slice's update per the next-slice-updates-the-merge-SHA convention."
     }
   },
   "last_verified_merged_pr": {

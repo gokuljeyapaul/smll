@@ -106,43 +106,45 @@ if ! stage 5 "owner-gallery+video-manifest"; then
   if [ "$GALLERY_EXIT" = 0 ]; then mark 5; fi
 fi
 
-# ---------------- stage 6: summary generation (needs junit + manifest) -------
-if ! stage 6 "summary"; then
+# ---------------- stage 6: vitest bootstrap + summary + vitest final -------
+# Chicken-and-egg, resolved explicitly (the S6 final run had the mirror image):
+# the A25 evidence test needs summary.json, the summary's A34 host refs need
+# host-vitest.xml, and host-vitest.xml is what vitest produces. Order:
+#   pass 1 — every unit test except evidence-integrity-r2-1 must pass; the 4
+#            summary-missing blocks of that one test file are the expected
+#            failures; their (otherwise green) run seeds host-vitest.xml;
+#   summary — gen_r2_1_summary.py verifies every ref against the seeded JUnit
+#            (it refuses to write an unbacked PASS);
+#   pass 2 — everything green; its output becomes the committed host-vitest.xml.
+if ! stage 6 "vitest+summary"; then
+  echo "== vitest (two-pass, A25 in-run validation; the summary's host refs need the pass-1 junit) ==" >> "$EV/green.log"
+  if [ ! -f "$EV/junit/host-vitest.xml" ]; then
+    npx vitest run --reporter=default --reporter=junit \
+      --outputFile.junit="$EV/junit/host-vitest.staging.xml" >> "$EV/green.log" 2>&1
+    P1_EXIT=$?
+    P1_FAILS=$(grep -c "<failure\|<error" "$EV/junit/host-vitest.staging.xml" || true)
+    P1_A25=$(grep -c "evidence integrity (A25, R2-1)" "$EV/junit/host-vitest.staging.xml" || true)
+    if [ "$P1_EXIT" = 1 ] && [ "$P1_FAILS" = 4 ] && [ "$P1_A25" -ge 4 ] && [ ! -f "$EV/summary.json" ]; then
+      mv "$EV/junit/host-vitest.staging.xml" "$EV/junit/host-vitest.xml"
+      echo "bootstrap: seeded host-vitest.xml from pass 1 (4 expected failures, all the summary-missing A25 blocks)" | tee -a "$EV/green.log"
+    else
+      echo "vitest pass 1 UNEXPECTED (exit $P1_EXIT, $P1_FAILS failing testcases, $P1_A25 A25 blocks) — not seeding; fix and re-run." | tee -a "$EV/green.log"
+      exit 1
+    fi
+  fi
   echo "== summary.json generation (every junit ref verified against the committed JUnit) ==" >> "$EV/green.log"
-  python3 scripts/gen_r2_1_summary.py >> "$EV/green.log" 2>&1; EXITCODES+=("summary=$?")
-  if [ "${EXITCODES[${#EXITCODES[@]}-1]}" = "summary=0" ]; then mark 6; fi
-fi
-
-# ---------------- stage 7: vitest (two-pass, A25 in-run validation) -----------
-if ! stage 7 "vitest"; then
-  echo "== vitest (unit + evidence integrity; two-pass so the A25 in-run validation ==" >> "$EV/green.log"
-  echo "   can see its own run's final-named junit — the committed junit IS the green re-run) ==" >> "$EV/green.log"
+  python3 scripts/gen_r2_1_summary.py >> "$EV/green.log" 2>&1; SUMMARY_EXIT=$?
+  EXITCODES+=("summary=$SUMMARY_EXIT")
+  if [ "$SUMMARY_EXIT" != 0 ]; then
+    echo "summary generation REFUSED — not running pass 2; see green.log." | tee -a "$EV/green.log"
+    exit 1
+  fi
   npx vitest run --reporter=default --reporter=junit \
     --outputFile.junit="$EV/junit/host-vitest.staging.xml" >> "$EV/green.log" 2>&1
   UNIT_EXIT=$?
-  if [ "$UNIT_EXIT" != 0 ]; then
-    STAGE_FAILS=$(grep -c "<failure\|<error" "$EV/junit/host-vitest.staging.xml" || true)
-    STAGE_TOTAL=$(grep -c "<testcase " "$EV/junit/host-vitest.staging.xml" || true)
-    if [ ! -f "$EV/junit/host-vitest.xml" ] && [ "$UNIT_EXIT" = 1 ] \
-       && [ "$STAGE_FAILS" = 1 ] && grep -q "evidence integrity (A25, R2-1)" "$EV/junit/host-vitest.staging.xml"; then
-      mv "$EV/junit/host-vitest.staging.xml" "$EV/junit/host-vitest.xml"
-      echo "bootstrap: seeded final junit from pass 1 ($STAGE_TOTAL testcases, 1 expected A25 host-junit-missing failure); running pass 2" | tee -a "$EV/green.log"
-      npx vitest run --reporter=default --reporter=junit \
-        --outputFile.junit="$EV/junit/host-vitest.staging.xml" >> "$EV/green.log" 2>&1
-      UNIT_EXIT=$?
-      if [ "$UNIT_EXIT" = 0 ]; then mv "$EV/junit/host-vitest.staging.xml" "$EV/junit/host-vitest.xml"; fi
-    else
-      echo "unit pass 1 FAILED (exit $UNIT_EXIT, $STAGE_FAILS failing testcases) — not moving the junit; fix and re-run." | tee -a "$EV/green.log"
-    fi
-  else
-    mv "$EV/junit/host-vitest.staging.xml" "$EV/junit/host-vitest.xml"
-    npx vitest run --reporter=default --reporter=junit \
-      --outputFile.junit="$EV/junit/host-vitest.staging.xml" >> "$EV/green.log" 2>&1
-    UNIT_EXIT=$?
-    if [ "$UNIT_EXIT" = 0 ]; then mv "$EV/junit/host-vitest.staging.xml" "$EV/junit/host-vitest.xml"; fi
-  fi
+  if [ "$UNIT_EXIT" = 0 ]; then mv "$EV/junit/host-vitest.staging.xml" "$EV/junit/host-vitest.xml"; fi
   EXITCODES+=("unit=$UNIT_EXIT")
-  if [ "$UNIT_EXIT" = 0 ]; then mark 7; fi
+  if [ "$UNIT_EXIT" = 0 ]; then mark 6; fi
 fi
 
 # ---------------- stage 8: demo ------------------------------------------------
