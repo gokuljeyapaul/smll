@@ -1,0 +1,40 @@
+{
+  "id": "nested03",
+  "kind": "nested",
+  "theme": "dark",
+  "author": "Alba Reyes",
+  "handle": "@alba-reyes",
+  "language": "en",
+  "body": [
+    "Poster from the meetup board, photographed and posted as-is.",
+    "Every word lives inside the picture.",
+    "Community meetup on Thursday at six.",
+    "Registration opens at noon.",
+    "Bring a screenshot you want to read."
+  ],
+  "chrome": [
+    "@alba-reyes",
+    "45m",
+    "Like",
+    "Comment",
+    "Share",
+    "12 reactions · 1 comment"
+  ],
+  "ocr_expected": [
+    "Alba Reyes",
+    "@alba-reyes · 45m",
+    "Poster from the meetup board, photographed and posted as-is.",
+    "Every word lives inside the picture.",
+    "Community meetup on Thursday at six.",
+    "Registration opens at noon.",
+    "Bring a screenshot you want to read.",
+    "12 reactions · 1 comment",
+    "Like Comment Share"
+  ],
+  "synthetic": true,
+  "nested_image_text": [
+    "Community meetup on Thursday at six.",
+    "Registration opens at noon.",
+    "Bring a screenshot you want to read."
+  ]
+}

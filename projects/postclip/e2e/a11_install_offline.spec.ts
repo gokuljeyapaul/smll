@@ -109,7 +109,7 @@ test('a11_offline_ocr_after_first_load', async ({ page }) => {
   // With the shell (including /ocr-assets/) precached, a pick runs the FULL
   // pipeline offline: no network request fails, real OCR produces the review.
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,

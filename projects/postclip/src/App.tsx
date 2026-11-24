@@ -2,12 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Home } from './ui/Home';
 import { Review } from './ui/Review';
 import { createTesseractEngine } from './ocr/tesseract';
-import { normalizeOcrLines, NO_TEXT_MESSAGE } from './ocr/normalize';
+import { normalizeOcrLines } from './ocr/normalize';
 import { cleanupOcrText } from './cleanup/cleanup';
-import { detectEnglish, NON_ENGLISH_MESSAGE } from './language/gate';
+import { detectEnglish } from './language/gate';
 import {
   DOWNSCALE_NOTE,
-  ERROR_MESSAGES,
   MIN_IMAGE_DIM,
   downscaleToPngBlob,
   planDownscale,
@@ -24,6 +23,15 @@ import type { OcrEngine, OcrResult } from './ocr/types';
 import { llmCleanupClient } from './cleanup/llm/client';
 import type { LlmCleanupOutput } from './cleanup/llm/schema';
 import { LLM_CLEANUP_ENABLED_BY_DEFAULT } from './cleanup/llm/config';
+import {
+  INITIAL_ARRIVAL_STATE,
+  KIND_ERROR_NEXT_STEPS,
+  kindErrorMessage,
+  nextArrivalState,
+  type ArrivalEvent,
+  type ArrivalState,
+  type KindErrorReason,
+} from './flow/arrival';
 
 export type OcrStatus = 'idle' | 'reading' | 'ready' | 'error';
 
@@ -39,26 +47,25 @@ export interface LlmSuggestions {
 }
 
 /**
- * The S2 pipeline (plan "Architecture"):
- *   paste / share-target / pick → sniff → decode → downscale →
+ * The pipeline (plan "Architecture"), R2-1 share-first:
+ *   share-target / paste / pick → sniff → decode → downscale →
  *   real in-browser OCR → no-text check → English-only gate →
- *   deterministic cleanup → review (editable) → share / copy / export.
+ *   deterministic cleanup → RESULT (text with Copy first, then
+ *   Share/Save, then Edit) → share / copy / export.
  *
- * S2 adds two input channels on top of S1's picker/drop (both fail closed
- * exactly like a pick — every error degrades to the previous safe stage
- * with a specific visible message):
- *   - UC03: a paste event carrying an image file (Ctrl/Cmd+V), at document
- *     level so it works on every screen; text-only pastes are never
- *     hijacked (the review textarea keeps working normally);
- *   - UC02: an image shared into the installed app, delivered by the
- *     service worker as a message (the worker never stores it).
+ * R2-1 (A34): the screen flow is driven by the arrival state machine —
+ * arrived → reading → result | kind error — pure logic in src/flow/arrival
+ * (unit-tested there). An image that ARRIVES starts reading by itself, with
+ * one clear progress state, and the screen ends on the text with a large
+ * Copy button first; a failure lands on its specific kind error plus one
+ * obvious next step (A36).
  */
 export function App() {
-  const [status, setStatus] = useState<OcrStatus>('idle');
+  const [arrival, setArrival] = useState<ArrivalState>(INITIAL_ARRIVAL_STATE);
+  const [clipboardNotice, setClipboardNotice] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [text, setText] = useState(''); // the CLEANED, editable review text
+  const [text, setText] = useState(''); // the CLEANED, editable result text
   const [rawText, setRawText] = useState(''); // pre-cleanup OCR (transparency view)
-  const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const engineRef = useRef<OcrEngine | null>(null);
   const runIdRef = useRef(0);
@@ -68,9 +75,15 @@ export function App() {
   const [llmStatus, setLlmStatus] = useState<LlmStatus>('off');
   const [llmSuggestions, setLlmSuggestions] = useState<LlmSuggestions | null>(null);
 
-  const fail = useCallback((message: string, secrets: string[] = []) => {
-    setStatus('error');
-    setError(redactText(message, secrets));
+  // A34: every screen change goes through the pure machine.
+  const dispatch = useCallback((event: ArrivalEvent) => {
+    setArrival((state) => nextArrivalState(state, event));
+  }, []);
+
+  /** A36: the kind-error surface — the specific message for the reason,
+   * plus its ONE obvious next step. */
+  const fail = useCallback((reason: KindErrorReason, detail?: string) => {
+    setArrival((state) => nextArrivalState(state, { type: 'read-failed', reason, detail }));
   }, []);
 
   // S3 (UC08/UC09/UC14): the model manager runs beside the pipeline —
@@ -104,13 +117,16 @@ export function App() {
     (file: File) => {
       const runId = ++runIdRef.current;
       setImageFile(file);
-      setStatus('reading');
-      setError(null);
       setNote(null);
       setRawText('');
       setText('');
+      setClipboardNotice(null);
       setLlmStatus('off');
       setLlmSuggestions(null);
+      // R2-1 (A32/A34): the arrival starts reading BY ITSELF — the machine
+      // moves to the reading phase (one clear progress state) with no
+      // extra tap, from any channel (share, paste, pick).
+      dispatch({ type: 'image-arrived' });
 
       void (async () => {
         try {
@@ -119,11 +135,11 @@ export function App() {
           const head = new Uint8Array(await file.slice(0, 65536).arrayBuffer());
           const header = sniffImageHeader(head);
           if (!header) {
-            fail(ERROR_MESSAGES['non-image']);
+            fail('non-image');
             return;
           }
           if (Math.min(header.width, header.height) < MIN_IMAGE_DIM) {
-            fail(ERROR_MESSAGES.tiny);
+            fail('tiny');
             return;
           }
 
@@ -134,7 +150,7 @@ export function App() {
           try {
             bitmap = await createImageBitmap(file);
           } catch {
-            fail(ERROR_MESSAGES.corrupt);
+            fail('corrupt');
             return;
           }
 
@@ -166,8 +182,8 @@ export function App() {
           const normalized = normalizeOcrLines(result.lines.map((line) => line.text));
           if (normalized.text.length === 0) {
             // Fail closed: an image with no readable text is a specific
-            // error state, never a silently empty review (A07).
-            fail(NO_TEXT_MESSAGE);
+            // error state, never a silently empty screen (A07).
+            fail('no-text');
             return;
           }
 
@@ -175,29 +191,27 @@ export function App() {
           //    is rejected with a clear message and nothing further runs (A06).
           const verdict = detectEnglish(normalized.text);
           if (!verdict.isEnglish) {
-            fail(NON_ENGLISH_MESSAGE);
+            fail('non-english');
             return;
           }
 
-          // 6. Deterministic cleanup → editable review text (always shown
-          //    first: the model path is a progressive upgrade, never a
-          //    dependency — D8). The mark is the A22 measurement surface for
-          //    the DEFAULT cleanup path (the opt-in LLM path's numbers are
-          //    recorded by the S4 eval; it ships disabled by default).
+          // 6. Deterministic cleanup → the RESULT text (R2-1: the screen
+          //    shows the answer first — Copy, Share/Save, then Edit). The
+          //    model path is a progressive upgrade, never a dependency (D8).
           performance.mark('postclip:cleanup-start');
           const deterministic = cleanupOcrText(normalized.lines);
           performance.mark('postclip:cleanup-end');
           performance.measure('postclip:cleanup', 'postclip:cleanup-start', 'postclip:cleanup-end');
           setRawText(normalized.text);
           setText(deterministic.text);
-          setStatus('ready');
+          dispatch({ type: 'read-ok' });
           setLlmSuggestions(null);
           setLlmStatus('off');
 
           // 7. S4 model cleanup (A19: OFF by default; the user opted in):
           //    runs in the Worker on the cached weights, goes through the
           //    deterministic validator + faithfulness guard, and REPLACES
-          //    the review text only when it passed. Any failure leaves
+          //    the result text only when it passed. Any failure leaves
           //    the deterministic result with an explicit visible flag —
           //    unvalidated model text is never shown (plan point 4).
           if (llmEnabledRef.current && modelManager.getStatus().state === 'ready') {
@@ -249,11 +263,11 @@ export function App() {
         } catch (err) {
           if (runId !== runIdRef.current) return;
           // Fail closed: degrade to the safe previous stage with a visible flag.
-          fail(`Could not read that image: ${String(err)}`);
+          fail('unreadable', String(err));
         }
       })();
     },
-    [fail],
+    [dispatch, fail],
   );
 
   // UC03 (S2): Ctrl/Cmd+V with an image on the clipboard routes it into the
@@ -288,22 +302,40 @@ export function App() {
   // UC12 (S2): the clipboard explanations live on the Home screen; a failed
   // clipboard read shows the specific message without touching the pipeline.
   const onClipboardError = useCallback((message: string) => {
-    setError(message);
+    setClipboardNotice(message);
   }, []);
 
   const onStartOver = useCallback(() => {
     runIdRef.current++;
-    setStatus('idle');
+    dispatch({ type: 'reset' });
     setImageFile(null);
     setText('');
     setRawText('');
-    setError(null);
     setNote(null);
     setLlmStatus('off');
     setLlmSuggestions(null);
-  }, []);
+  }, [dispatch]);
 
   const modelState: ModelState = modelProgress.state;
+
+  // A34: the machine's phases map onto the screen states the UI renders.
+  const status: OcrStatus =
+    arrival.phase === 'reading'
+      ? 'reading'
+      : arrival.phase === 'result'
+        ? 'ready'
+        : arrival.phase === 'kind-error'
+          ? 'error'
+          : 'idle';
+
+  // A34/A36: the kind-error surface — the specific message for the reason,
+  // redacted, plus the ONE obvious next step.
+  const error =
+    arrival.phase === 'kind-error' && arrival.error
+      ? redactText(kindErrorMessage(arrival.error), [])
+      : null;
+  const errorNextStep =
+    arrival.phase === 'kind-error' && arrival.error ? KIND_ERROR_NEXT_STEPS[arrival.error.reason] : null;
 
   if (status === 'ready' || status === 'reading') {
     return (
@@ -328,6 +360,8 @@ export function App() {
     <Home
       status={status}
       error={error}
+      errorNextStep={errorNextStep}
+      clipboardNotice={clipboardNotice}
       onModelDownload={onModelDownload}
       onImageSelected={onImageSelected}
       onClipboardError={onClipboardError}

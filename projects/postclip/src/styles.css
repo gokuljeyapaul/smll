@@ -195,6 +195,41 @@ body {
   flex-wrap: wrap;
 }
 
+/* R2-1 (A33): the result screen's action row — the answer comes first.
+   Copy is the LARGE primary action (fully above the fold at 390×844);
+   Share and the file-save menu follow; Edit comes after the row. */
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-copy-primary {
+  /* Visibly the primary: ~1.4× the secondary action's box. */
+  padding: 14px 26px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+/* The model opt-in stays reachable but collapsed out of the way (A33). */
+.advanced-cleanup {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-cleanup summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-cleanup[open] {
+  margin-bottom: 4px;
+}
+
+
 .copied-note {
   color: var(--muted);
   margin-left: 8px;

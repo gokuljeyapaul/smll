@@ -75,7 +75,7 @@ test('a14_offline_processing_zero_network_requests', async ({ page }) => {
   // (incl. /ocr-assets/), the model comes from the cache, cleanup is the
   // deterministic path — the review appears with real OCR text.
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,

@@ -17,7 +17,7 @@ export interface ReviewProps {
   /** Informational note (e.g. the huge-image downscale notice). */
   note: string | null;
   imageFile: File | null;
-  /** S3 (UC09): which cleanup mode the review used — the visible "says so". */
+  /** S3 (UC09): which cleanup mode the result used — the visible "says so". */
   modelState: ModelState;
   /** S4 (A21): the model-cleanup opt-in (default off, A19). */
   llmEnabled: boolean;
@@ -31,9 +31,9 @@ export interface ReviewProps {
 }
 
 const EXPORT_ITEMS: { format: ExportFormat; id: string; label: string }[] = [
-  { format: 'md', id: 'export-md', label: 'Export as Markdown (.md)' },
-  { format: 'txt', id: 'export-txt', label: 'Export as Text (.txt)' },
-  { format: 'json', id: 'export-json', label: 'Export as JSON (.json)' },
+  { format: 'md', id: 'export-md', label: 'Markdown (.md)' },
+  { format: 'txt', id: 'export-txt', label: 'Text (.txt)' },
+  { format: 'json', id: 'export-json', label: 'JSON (.json)' },
 ];
 
 /** The model-cleanup status line (A21's visible "says so"). */
@@ -51,6 +51,15 @@ function llmStatusMessage(status: LlmStatus): string {
   }
 }
 
+/**
+ * R2-1 (A33): the RESULT screen — the answer comes first. An image that
+ * arrived (shared, pasted, picked) reads by itself (status "reading" is
+ * announced politely), and the screen ends on the text with a LARGE Copy
+ * button first, fully above the fold at 390×844, then Share and the
+ * file-save menu, and only THEN the editable text. The model-cleanup opt-in
+ * stays reachable but collapsed out of the way (#advanced-cleanup); the
+ * cleanup-mode line stays visible (A13/A14's explicit fallback "says so").
+ */
 export function Review({
   text,
   rawText,
@@ -133,14 +142,18 @@ export function Review({
     <main className="app" aria-labelledby="review-title">
       <div className="review-header">
         <h1 className="app-title" id="review-title">
-          Review
+          Your text
         </h1>
         <button type="button" className="link-button" onClick={onStartOver}>
           Start over
         </button>
       </div>
       {imageFile ? <p className="status">Read from: {imageFile.name}</p> : null}
-      {status === 'reading' ? <p className="status">Reading the screenshot…</p> : null}
+      {status === 'reading' ? (
+        <p className="status" role="status" data-testid="reading-progress" aria-live="polite">
+          Reading the screenshot…
+        </p>
+      ) : null}
       {note ? (
         <p className="status" id="downscale-note">
           {note}
@@ -151,43 +164,19 @@ export function Review({
           ? 'Tidy-up model ready — tidier cleanup, works offline.'
           : "Standard cleanup — the tidy-up model isn't set up on this device."}
       </p>
-      {modelState === 'ready' ? (
-        <p className="llm-toggle-row">
-          <label className="llm-toggle" htmlFor="llm-cleanup-toggle">
-            <input
-              type="checkbox"
-              id="llm-cleanup-toggle"
-              checked={llmEnabled}
-              onChange={(e) => onLlmToggle(e.target.checked)}
-            />{' '}
-            Use the model to tidy this screenshot (experimental, slower)
-          </label>
-        </p>
-      ) : null}
-      <p className="llm-status" id="llm-status" data-state={llmStatus}>
-        {llmStatusMessage(llmStatus)}
-      </p>
-      <label className="review-label" htmlFor="review-text">
-        Cleaned text — edit anything you like
-      </label>
-      <textarea
-        id="review-text"
-        className="review-text"
-        value={text}
-        onChange={(e) => onTextChange(e.target.value)}
-        spellCheck={false}
-      />
-      <div className="actions">
+      {/* R2-1 (A33): the answer's actions come FIRST — a large primary Copy,
+          then Share, then the file-save menu. Edit comes after the actions. */}
+      <div className="result-actions" id="result-actions">
+        <button type="button" className="btn btn-copy-primary" id="copy-btn" onClick={onCopy}>
+          Copy text
+        </button>
         {canShare ? (
           <button type="button" className="btn" id="share-btn" onClick={onShare}>
             Share
           </button>
         ) : null}
-        <button type="button" className="btn btn-secondary" id="copy-btn" onClick={onCopy}>
-          Copy
-        </button>
         <details className="export-menu" id="export-menu">
-          <summary className="btn btn-secondary">Export</summary>
+          <summary className="btn btn-secondary">Save as file (.txt / .md / .json)</summary>
           <div className="export-items" role="menu">
             {EXPORT_ITEMS.map((item) => (
               <button
@@ -205,6 +194,38 @@ export function Review({
         </details>
         {copied ? <span className="copied-note">Copied ✓</span> : null}
       </div>
+      <label className="review-label" htmlFor="review-text">
+        Text — edit anything you like
+      </label>
+      <textarea
+        id="review-text"
+        className="review-text"
+        value={text}
+        onChange={(e) => onTextChange(e.target.value)}
+        spellCheck={false}
+      />
+      {/* R2-1 (A33): the model opt-in stays REACHABLE but not in the way —
+          collapsed inside the advanced disclosure, never on the answer's
+          path (the mock's "no model card, no toggles"). */}
+      {modelState === 'ready' ? (
+        <details className="advanced-cleanup" id="advanced-cleanup">
+          <summary>Advanced: tidy up further with the on-device model</summary>
+          <p className="llm-toggle-row">
+            <label className="llm-toggle" htmlFor="llm-cleanup-toggle">
+              <input
+                type="checkbox"
+                id="llm-cleanup-toggle"
+                checked={llmEnabled}
+                onChange={(e) => onLlmToggle(e.target.checked)}
+              />{' '}
+              Use the model to tidy this screenshot (experimental, slower)
+            </label>
+          </p>
+        </details>
+      ) : null}
+      <p className="llm-status" id="llm-status" data-state={llmStatus}>
+        {llmStatusMessage(llmStatus)}
+      </p>
       {suggestions ? (
         <section className="llm-suggestions" id="llm-suggestions" aria-label="Model suggestions">
           <h2 className="llm-suggestions-title">From the model — checked against the screenshot</h2>

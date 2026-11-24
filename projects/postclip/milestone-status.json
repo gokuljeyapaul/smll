@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "project": "postclip",
-  "phase": "COMPLETE",
-  "current_slice": "S6",
+  "phase": "BUILDING",
+  "current_slice": "R2-1",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model; S5 adds the production-build e2e pass + bundle inspection to test.sh); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -52,15 +52,24 @@
       "note": "merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit; merge SHA and the post-merge main verification recorded here by the DV slice (issue #73) per the next-slice-updates-the-merge-SHA convention"
     },
     "DV": {
-      "status": "READY_FOR_MERGE",
+      "status": "MERGED",
       "issue": 73,
-      "note": "Post-completion, owner-requested demo slice (issue #73): the natural-pace full-working demo video docs/demo/postclip-full-demo.mp4 (one continuous real run — real paste, real in-browser OCR, deliberate edit, real copy/share/export, real pinned-model download with visible progress served from the local cache, opt-in model cleanup, real 239s WASM inference to the guarded verified output; 94s / 0.45MB / 720p / silent; only the inference wait time-lapsed at 11x with the factor disclosed in an on-screen caption), the mp4-vs-GIF size comparison (same-run GIF 0.63MB — larger, mp4 committed), the README Demo section linking both committed videos plus the README/ledger staleness fixes (S6 merge SHA recorded), the video_manifest.json entry postclip_full_demo, the .gitignore second-video exception, and the capture/post-production scripts (scripts/make_full_demo_video.mjs, scripts/compress_full_demo.mjs). Docs/demo/scripts-only slice: no digested paths (src, public, e2e, fixtures, lockfile, package.json) touched, so the S6 source_digest remains current. PR opened on branch feature/postclip/demo-video-readme; as the latest slice, its merge SHA and post-merge main verification are reported in the issue #73 done-comment rather than a next-slice update"
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/74",
+      "merge_sha": "6d1fa76a65795bea2ce52760144a65a2cfc72a67",
+      "note": "Post-completion, owner-requested demo slice (issue #73): the natural-pace full-working demo video docs/demo/postclip-full-demo.mp4, the mp4-vs-GIF size comparison, the README Demo section + staleness fixes, the video_manifest.json entry, the .gitignore second-video exception, and the capture/post-production scripts. Merged by the agent under the autonomous merge policy; monorepo / verify green on main at the merge commit (run 45289832013; reported in the issue #73 done-comment). Merge SHA + post-merge main result recorded here by the R2-1 slice per the next-slice-updates-the-merge-SHA convention."
+    },
+    "R2-1": {
+      "status": "READY_FOR_MERGE",
+      "issue": 77,
+      "branch": "feature/postclip/R2-1-share-first",
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/83",
+      "note": "Round 2 slice 1 (issue #77, plan section 'Round 2' / slice S7, IDs A32-A36): the share-first result screen — auto-OCR on arrival, one progress state, text with a large Copy button first (visible without scrolling at 390x844), then Share/Save, then Edit; the model opt-in collapsed out of the way; three synthetic nested-text fixtures (real rasterized pictures) at 100% nested-token recall in both engines (bar >= 75%); the pure arrival state machine (A34); kind errors with one obvious next step (A36); docs/INTEGRATION.md for the iPhone host-app hand-off. Full local suite green on the final tree (chromium 41/41, webkit 32 passed + 9 platform-skips, prod e2e both engines, vitest 281/281, demo both engines, verify.sh exit 0) with digest-matched committed evidence under docs/evidence/R2-1/ (source_digest 43e8ea06c5d7…). READY_FOR_MERGE under the autonomous merge policy once 'monorepo / verify' is green on the PR head; its merge SHA and the post-merge main verification go to the R2-2 slice's update per the next-slice-updates-the-merge-SHA convention."
     }
   },
   "last_verified_merged_pr": {
-    "slice": "S6 (conformance and completion)",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/72",
-    "merge_sha": "8f1ac473ed74cb7af8c69395e26242e76fca500d",
-    "main_check_after_merge": "monorepo / verify green on main at 8f1ac47 (re-checked by the DV slice before it started)"
+    "slice": "DV (post-completion demo video, issue #73)",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/74",
+    "merge_sha": "6d1fa76a65795bea2ce52760144a65a2cfc72a67",
+    "main_check_after_merge": "monorepo / verify green on main at 6d1fa76 (reported in the issue #73 done-comment; re-checked before R2-1 started)"
   }
 }

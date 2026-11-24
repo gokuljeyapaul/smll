@@ -70,8 +70,8 @@ describe('detectEnglish — gate behavior (S1)', () => {
 });
 
 describe('language gate confusion matrix over fixtures (A06)', () => {
-  it('covers the 30 English and 5 German/Spanish fixtures', () => {
-    expect(english().length).toBe(30);
+  it('covers the 33 English and 5 German/Spanish fixtures (30 + R2-1 nested 3)', () => {
+    expect(english().length).toBe(33);
     expect(nonEnglish().length).toBe(5);
   });
 

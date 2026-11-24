@@ -58,7 +58,7 @@ test('uc01_pick_ocr_review_share', async ({ page }, testInfo: TestInfo) => {
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
 
   // Real OCR runs in the browser; the review screen appears with the text.
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,

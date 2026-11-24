@@ -1,0 +1,108 @@
+{
+  "slice": "R2-1",
+  "source_digest": "43e8ea06c5d7b0d786d6bf4db7c9970af4e2be3791b2ca0d3225c1a9b7b98519",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright 1.65.1, build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+  },
+  "acceptance": {
+    "A32": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-1/junit/chromium-e2e.xml::a32_share_target_lands_result_first_with_copy_visible_and_exact"
+      ],
+      "videos": [
+        "video:a32_share_target_lands_result_first_with_copy_visible_and_exact_chromium"
+      ],
+      "notes": "Chromium-only platform ID (the share-target POST route, as A08). A real multipart POST through the service worker (the same handler Android's share sheet hits) starts OCR automatically, shows the one progress state (role=status), and lands on the result screen with the large Copy button fully above the fold at 390x844; clicking Copy puts exactly the result text on the real clipboard. The share POST body is never cached or logged (the A15 audit re-ran on this flow). Real installed-PWA sharing stays A27 NOT_RUN."
+    },
+    "A33": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-1/junit/chromium-e2e.xml::a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit",
+        "junit:docs/evidence/R2-1/junit/webkit-e2e.xml::a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit"
+      ],
+      "videos": [
+        "video:a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit_chromium",
+        "video:a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit_webkit"
+      ],
+      "notes": "Both engines: every arrival channel lands on the result-first screen — the pick path is the engine-neutral channel (the share path is A32's, the host-message path is R2-2's). Copy is the first, primary action (1.2x+ the Share button in both dimensions) and fully above the fold at 390x844; Share and the file-save menu follow; the editable text comes after the actions; no drop zone, paste button, model card or model toggle sits on the reading/result path (the model opt-in is collapsed inside #advanced-cleanup — asserted on the real ready model in the a21 spec). Heading renamed 'Review' -> 'Your text' per the R2-1 mockups; the 17 existing heading assertions changed with it in the same PR (plan rule G2)."
+    },
+    "A34": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-1/junit/host-vitest.xml::arrival screen-state machine (R2-1, A34) > idle + image-arrived → reading (the arrival starts reading by itself)",
+        "junit:docs/evidence/R2-1/junit/host-vitest.xml::arrival screen-state machine (R2-1, A34) > every kind error maps to one non-empty obvious next step (A36)",
+        "junit:docs/evidence/R2-1/junit/host-vitest.xml::arrival screen-state machine (R2-1, A34) > every kind error maps to its ONE specific, kind message — the exact A07 strings (A34)"
+      ],
+      "notes": "The pure arrival state machine (src/flow/arrival.ts) drives the App: arrived -> reading -> result | kind error, with a validated reason set and the kind-message mapping to the exact A07 strings plus ONE obvious next step per reason. RED: the scaffolded (unwired) transition table failed all 12 behavioural assertions (docs/evidence/R2-1/red.log)."
+    },
+    "A35": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-1/junit/chromium-e2e.xml::eval_nested_text_recall_on_fixtures",
+        "junit:docs/evidence/R2-1/junit/webkit-e2e.xml::eval_nested_text_recall_on_fixtures"
+      ],
+      "videos": [
+        "video:eval_nested_text_recall_on_fixtures_chromium",
+        "video:eval_nested_text_recall_on_fixtures_webkit"
+      ],
+      "notes": "Nested-image text recall (A35, raw pre-cleanup OCR vs the committed ground truth, nested_image_text, multiset token recall): bar 75% — chromium per-fixture {'nested01': 100, 'nested02': 100, 'nested03': 100} (mean 100%), webkit per-fixture {'nested01': 100, 'nested02': 100, 'nested03': 100} (mean 100%). Per-engine JSON: docs/evidence/R2-1/nested-text-recall-*.json. Labelling which words came from inside pictures is NOT implemented (no segmentation model — disclosed in KNOWN_LIMITS.md)."
+    },
+    "A36": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-1/junit/chromium-e2e.xml::a36_shared_image_with_no_text_shows_kind_error_and_one_next_step",
+        "junit:docs/evidence/R2-1/junit/chromium-e2e.xml::a36_share_post_without_an_image_stays_ignored"
+      ],
+      "videos": [
+        "video:a36_shared_image_with_no_text_shows_kind_error_and_one_next_step_chromium",
+        "video:a36_share_post_without_an_image_stays_ignored_chromium"
+      ],
+      "notes": "Chromium-only platform ID (the share-target POST route, as A32). A shared blank image lands on the specific no-text kind error (A07's exact string) plus the ONE obvious next step (#error-next-step) with the still-working file picker; a share POST without an image stays ignored fail-closed (A08's negative, unchanged)."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "bash scripts/run_r2_1_red.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-1/red.log",
+      "note": "the RED script exits 0 when the new tests FAIL as required (real assertion failures on the missing behaviour)"
+    },
+    "green": {
+      "command": "bash scripts/run_r2_1_final_evidence.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-1/green.log"
+    },
+    "e2e": {
+      "command": "npx playwright test --project=chromium / --project=webkit (all specs, test build)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-1/e2e.log"
+    },
+    "negative": {
+      "command": "extracted from the green e2e runs + the seeded controls",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-1/negative.log"
+    },
+    "demo": {
+      "command": "npm run build:test && npm run demo",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-1/demo.log"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-1/green.log"
+    }
+  },
+  "limitations": [
+    "Nested-image text recall (A35, raw pre-cleanup OCR vs the committed ground truth, nested_image_text, multiset token recall): bar 75% — chromium per-fixture {'nested01': 100, 'nested02': 100, 'nested03': 100} (mean 100%), webkit per-fixture {'nested01': 100, 'nested02': 100, 'nested03': 100} (mean 100%). Per-engine JSON: docs/evidence/R2-1/nested-text-recall-*.json. Labelling which words came from inside pictures is NOT implemented (no segmentation model — disclosed in KNOWN_LIMITS.md).",
+    "Labelling which extracted words came from INSIDE pictures is not implemented: OCR returns text, not image-region segmentation, and no segmentation model ships — the nested text is included in the single text flow, and the limit is disclosed in KNOWN_LIMITS.md rather than faked.",
+    "The share-target POST route (A32/A36) is Chromium-only (as A08): WebKit-on-Linux does not serve the service-worker share route; the WebKit coverage of the result-first screen is A33's pick path.",
+    "Real installed-PWA sharing (Android) and the real iOS share sheet stay NOT_RUN (A27, the plan's optional real-device pass; checklist in docs/KNOWN_LIMITS.md).",
+    "iPhone cannot receive shares in a plain web app — the supported route is the host mobile app (R2-2), documented honestly in docs/INTEGRATION.md."
+  ]
+}

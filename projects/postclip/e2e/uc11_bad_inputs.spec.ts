@@ -32,7 +32,7 @@ async function expectErrorState(page: Page, message: string) {
   await expect(banner).toBeVisible({ timeout: 120_000 });
   await expect(banner).toHaveText(message);
   // No review screen for bad inputs, and the app stays usable.
-  await expect(page.getByRole('heading', { name: 'Review' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Your text' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Choose screenshot' })).toBeVisible();
 }
 
@@ -80,7 +80,7 @@ test('uc11_huge_downscaled_before_ocr', async ({ page }) => {
   await expect(page.locator('#downscale-note')).toBeVisible({ timeout: 60_000 });
   await expect(page.locator('#downscale-note')).toHaveText(DOWNSCALE_NOTE);
   // The image is processed to the review screen with the body text.
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 180_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 180_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, { timeout: 180_000 })
     .toBeGreaterThan(40);

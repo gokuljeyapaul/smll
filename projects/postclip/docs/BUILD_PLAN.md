@@ -49,6 +49,8 @@ This plan is executed autonomously by a building agent on a Linux machine. Suppo
 | UC12 | Clipboard permission denied | If clipboard read is denied or unsupported, the app explains and the file picker still works. |
 | UC13 | Hostile screenshot | A screenshot containing instructions ("ignore previous instructions…") is treated as content, never obeyed. |
 | UC14 | Offline processing and no storage | After the model is cached, processing needs no network; no post content is stored, logged or transmitted anywhere. |
+| UC15 | Share arrives: the answer screen | An image that arrives — shared into the installed app, pasted, picked, or handed over by a host app (R2-2) — starts reading automatically with one clear progress state and ends on the text with a large Copy button first, then Share/Save, then Edit; the home screen's input furniture (drop zone, paste button, model card, model toggle) is not on this path. |
+| UC16 | Text inside pictures | Text embedded in images within the screenshot (quoted/reshared posts, cards, banner overlays) is included in the extracted text; the recall is measured on synthetic nested-text fixtures and reported honestly. |
 
 ## Architecture
 
@@ -126,6 +128,11 @@ Library choices are **candidates, resolved at build time**, not promises. Candid
 | A29 | P0 | web | - | The production build contains no test hooks or eval runner (bundle inspection), passes the smoke flow served from `dist/`, and ships the strict CSP. | Bundle inspection + Playwright on the built app |
 | A30 | P1 | device | - | Real-phone LLM speed/RAM and WebGPU behavior. `NOT_RUN` unless the optional device pass is done. | Documented manual pass |
 | A31 | P0 | host | - | Fixtures and evidence are synthetic only: the fixture manifest flags every image synthetic; the generator uses fictional names and no real brand assets; no real screenshots anywhere. | Fixture manifest lint |
+| A32 | P0 | chromium | UC15 | A share-target POST through the service worker (as A08) starts OCR automatically, shows the progress state, and lands on the result screen with the Copy button visible without scrolling at 390×844; clicking Copy puts exactly the result text on the clipboard; the share POST body is never cached or logged. | Playwright (share-target multipart POST + real clipboard read) |
+| A33 | P0 | web | UC15 | Every arrival channel lands on the result-first screen: Copy is the first, primary action and visible without scrolling at 390×844; Share and file-save come next and Edit after; no drop zone, paste button, model card or model toggle sits on the reading/result path (the model opt-in stays reachable but collapsed out of the way). | Playwright both engines |
+| A34 | P0 | host | UC15 | The arrival screen-state machine (arrived → reading → result, or a kind error) is pure, unit-tested logic, and every kind error maps to its specific message plus one obvious next step. | Vitest |
+| A35 | P0 | web | UC16 | Nested-text fixtures (≥ 3 synthetic screenshots with text inside pictures, ground truth committed): the OCR pass extracts the nested-image text at or above the stated recall bar; per-fixture numbers are recorded in evidence and `KNOWN_LIMITS.md` states the honest limit. | Playwright browser eval |
+| A36 | P0 | chromium | UC15 | A shared image that cannot be read shows its specific kind error and one obvious next step; a share POST without an image stays ignored (A08's fail-closed negative unchanged). | Playwright |
 
 ## Testability map
 
@@ -147,6 +154,8 @@ Every use case is automated on Linux with real browsers. What cannot be automate
 | UC12 | Chromium: deny `clipboard-read`, press Paste | - |
 | UC13 | Injection fixtures through the picker flow | Judged by the validator + marker checks, not by eye |
 | UC14 | `context.setOffline(true)`, request-log assertions, storage/console/URL audits | Radio-level offline on real phones is `NOT_RUN` (A27) |
+| UC15 | Chromium: multipart POST through the service worker (A08's route) at a 390×844 viewport; both engines: the same result-first screen via the pick path | The real Android/iOS share sheets are `NOT_RUN` (A27); the share-target POST route is a Chromium-only platform ID (as A08) |
+| UC16 | Both engines: the nested-text fixtures through the app's real OCR, recall vs the committed ground truth | Nested-text recall is a measured number on synthetic fixtures, not a promise about arbitrary photos |
 
 ## Conformance
 
@@ -164,6 +173,7 @@ The agent produces each artifact from a *passing* run in a form the owner can op
 | O04 | S4 | UC05, UC13 | `docs/evidence/S4/owner/` before/after gallery on six fixtures (raw OCR, rules only, model cleanup) incl. the hostile one, with flagged items visible | Model cleanup is faithful, drops only UI chrome, and the hostile text was not obeyed |
 | O05 | S5 | UC01, UC04 | `docs/evidence/S5/owner/` mobile-viewport (390x844) screenshots, offline reload, keyboard focus | Usable one-handed on a phone-sized screen; works offline; focus is visible |
 | O06 | S6 | UC01, UC14 | `docs/demo/` single compilation video (at most 15 MB, 720p) of all use-case flows in Chromium and WebKit | The whole product tour looks like something you would actually use |
+| O07 | S7 | UC15, A32, A33 | `docs/evidence/R2-1/owner/` mobile-viewport gallery (390×844 and 360×800): a share arrives, the progress state, the result screen with Copy first | A shared screenshot goes straight to its text with Copy as the obvious first action; nothing is in the way |
 
 ### Planner-review
 
@@ -290,6 +300,32 @@ Observable result: a verification report proving every acceptance ID has an hone
 - **RED**: `verify_evidence.py` fails on missing IDs/videos/stale digest until everything is recorded; audits fail on a seeded violation (negative control).
 - **GREEN**: all accounted for; remaining `NOT_RUN`/`PARTIAL` items listed with reasons.
 - **Evidence**: `docs/evidence/S6/conformance_report.md` (proven / not proven / how to reproduce), full-suite logs, license inventory, final manifest and video list with paths and hashes, the committed compilation video.
+
+### S7 — R2-1: Share-first result screen (round 2, issue #77)
+
+**Acceptance IDs:** A32, A33, A34, A35, A36
+
+Observable result: an image that arrives — shared into the installed app through the service worker, or pasted/picked — starts reading by itself, shows one clear progress state, and ends on the text with a large Copy button first, then Share/Save, then Edit; text inside pictures within the screenshot is included (recall measured on ≥ 3 synthetic nested-text fixtures); failures are kind and specific with one obvious next step; the iPhone hand-off (the host mobile app, R2-2) is documented honestly in `docs/INTEGRATION.md`.
+
+- **RED**: the new share-arrival Playwright flows fail on the current app (no result-first screen: the Copy action is not the first, above-the-fold action at 390×844; the reading state has no dedicated progress surface; the nested-text fixture set does not exist), and the Vitest state-machine suite fails on the scaffolded, unwired transition table.
+- **GREEN**: all pass in the required engines; the previous suite (A01–A31) still passes; the review screen becomes the result screen (heading "Your text"), and the tests that name the old heading change with it in the same PR.
+- **Evidence**: standard set under `docs/evidence/R2-1/`; the nested-text recall table; the O07 owner gallery.
+
+## Round 2 (improvements from the owner's hands-on review)
+
+Round 2 re-opens delivery after the owner's review of the finished build (epic #80). The plan stays the single source of truth; each round-2 slice is one issue, one PR, with the same evidence rules as S0–S6. Phase goes back to `BUILDING` until the round is done. Round-2 rules (from the epic, binding for every slice in this round):
+
+- Keep every previous acceptance ID passing. Do not weaken or delete an existing test; if a requirement truly changes, change the test **and** the plan row in the same PR and say so in the PR body.
+- Anything real-device or real-OS-share-sheet stays `NOT_RUN` unless actually run. Say so plainly; never claim it.
+
+Round-2 slices (added to their issues' plans as they start):
+
+- **S7 — R2-1, issue #77 (this section above):** the share-first result screen — a shared screenshot goes straight to the answer: auto-OCR, one progress state, text with a large Copy button first, then Share/Save, then Edit; nested-image text included and measured; kind errors with one obvious next step; the iPhone/hand-off story documented in `docs/INTEGRATION.md`.
+- **R2-2, issue #79:** embeddable and responsive — mobile-first layout, iframe/WebView behaviour, the host messaging contract in `docs/INTEGRATION.md`.
+- **R2-3, issue #78:** model downloaded once — persistence, ephemeral storage handled as a first-class case, the download demoted behind an advanced section.
+- **R2-4, issue #82 (runs last):** round-2 clean-up.
+
+The design mockups in `docs/design/round2/` (PR #81) carry the owner's intent for behaviour and layout, not final pixels; the issues and this plan are the contract, and the owner confirms the real result from the agent's screenshots (O07–O09).
 
 ## Toolchain and preflight
 
