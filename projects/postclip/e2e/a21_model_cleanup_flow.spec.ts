@@ -57,6 +57,12 @@ test('a21_model_cleanup_flow_verified_result_or_visible_fallback', async ({ page
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, { timeout: 150_000 })
     .toBeGreaterThan(0);
+
+  // R2-1 (A33): on the result screen the model opt-in is reachable but
+  // COLLAPSED inside #advanced-cleanup — never on the answer's path.
+  await expect(page.locator('#advanced-cleanup')).toBeVisible();
+  expect(await page.locator('#advanced-cleanup').getAttribute('open'), 'the advanced disclosure must render collapsed').toBeNull();
+
   await expect
     .poll(async () => page.locator('#llm-status').getAttribute('data-state'), {
       timeout: 300_000,

@@ -61,6 +61,11 @@ export const REACTION_LABELS = {
   inj03: '51 reactions · 3 comments',
   inj04: '8 reactions',
   inj05: '29 reactions · 1 comment',
+  // R2-1 nested fixtures (A35): the quoted card / banner / poster text that
+  // lives INSIDE the embedded pictures.
+  nested01: '18 reactions · 2 comments',
+  nested02: '64 reactions · 5 comments',
+  nested03: '12 reactions · 1 comment',
 };
 
 export const FIXTURES = [
@@ -642,6 +647,81 @@ export const FIXTURES = [
     ],
     promoted: false,
   },
+  {
+    // R2-1 (A35, plan UC16): a post quoting a RESHARED CARD that is a real
+    // rasterized image embedded in the card — the text inside that picture
+    // must be extracted too. The generator renders `nested.blocks` to PNGs
+    // first and embeds them as <img> data URIs (text inside an image, not
+    // HTML text).
+    id: 'nested01',
+    kind: 'nested',
+    theme: 'light',
+    author: 'Priya Raman',
+    handle: '@priya-r',
+    time: '5h',
+    body: [
+      'Sharing the card our team pinned in the changelog channel today.',
+      'Read what it says inside the picture — that is the whole update.',
+    ],
+    nested: {
+      blocks: [
+        {
+          style: 'quoted',
+          lines: [
+            'We moved our field notes to a local-first notebook last spring.',
+            'No sync lag, no cloud bill, just files that open instantly.',
+          ],
+        },
+      ],
+    },
+    promoted: false,
+  },
+  {
+    id: 'nested02',
+    kind: 'nested',
+    theme: 'light',
+    author: 'Jonas Weber',
+    handle: '@jonas-w',
+    time: '2h',
+    body: [
+      'The launch banner landed in my feed as a picture, and PostClip read every word of it.',
+      'Text inside images is still text.',
+    ],
+    nested: {
+      blocks: [
+        {
+          style: 'banner',
+          lines: ['Version 1.0 is live.', 'Launch week starts Monday.'],
+        },
+      ],
+    },
+    promoted: false,
+  },
+  {
+    id: 'nested03',
+    kind: 'nested',
+    theme: 'dark',
+    author: 'Alba Reyes',
+    handle: '@alba-reyes',
+    time: '45m',
+    body: [
+      'Poster from the meetup board, photographed and posted as-is.',
+      'Every word lives inside the picture.',
+    ],
+    nested: {
+      blocks: [
+        {
+          style: 'poster',
+          lines: [
+            'Community meetup on Thursday at six.',
+            'Registration opens at noon.',
+            'Bring a screenshot you want to read.',
+          ],
+        },
+      ],
+    },
+    promoted: false,
+  },
 ];
 
 export function localeOf(fixture) {
@@ -685,6 +765,9 @@ export function ocrExpected(fixture) {
   lines.push(fixture.author);
   lines.push(`${fixture.handle} · ${fixture.time}`);
   lines.push(...fixture.body);
+  // R2-1 (UC16): the text INSIDE the embedded pictures is visible text the
+  // OCR pass must read — it appears after the post body, in reading order.
+  lines.push(...nestedImageText(fixture));
   lines.push(reactionLabel(fixture.id));
   if (fixture.kind === 'chrome') {
     lines.push(`${locale.actionRow} Follow`);
@@ -694,6 +777,14 @@ export function ocrExpected(fixture) {
     lines.push(locale.actionRow);
   }
   return lines;
+}
+
+/**
+ * R2-1 (A35): the ground truth for text inside the embedded pictures —
+ * flat, in reading order. Empty for fixtures without nested blocks.
+ */
+export function nestedImageText(fixture) {
+  return (fixture.nested?.blocks ?? []).flatMap((block) => block.lines);
 }
 
 /** The gold `language` for a fixture: en/de/es for readable posts, `none`

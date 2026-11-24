@@ -11,7 +11,12 @@ import {
 
 export interface HomeProps {
   status: OcrStatus;
+  /** A34/A36: the kind-error message for the last failed read (if any). */
   error: string | null;
+  /** A36: the ONE obvious next step shown under a kind error. */
+  errorNextStep: string | null;
+  /** UC12: the clipboard explanation (never touches the pipeline). */
+  clipboardNotice: string | null;
   /** S3 (UC08/UC09): the model download card's trigger. */
   onModelDownload: () => void;
   onImageSelected: (file: File) => void;
@@ -19,7 +24,7 @@ export interface HomeProps {
   onClipboardError: (message: string) => void;
   /** S4 (A21): the model-cleanup opt-in is offered on the HOME screen once
    *  the tidy-up model is ready — the user opts in BEFORE picking (the same
-   *  toggle also lives on the review screen for the next pick). */
+   *  toggle also lives, collapsed, on the result screen for the next pick). */
   modelState: ModelState;
   llmEnabled: boolean;
   onLlmToggle: (enabled: boolean) => void;
@@ -31,6 +36,8 @@ const CLIPBOARD_NO_IMAGE_MESSAGE =
 export function Home({
   status,
   error,
+  errorNextStep,
+  clipboardNotice,
   onModelDownload,
   onImageSelected,
   onClipboardError,
@@ -170,6 +177,16 @@ export function Home({
       {error ? (
         <div className="error-banner" role="alert">
           {error}
+        </div>
+      ) : null}
+      {error && errorNextStep ? (
+        <p className="status" id="error-next-step">
+          {errorNextStep}
+        </p>
+      ) : null}
+      {clipboardNotice ? (
+        <div className="error-banner" role="alert">
+          {clipboardNotice}
         </div>
       ) : null}
       <p className="privacy-note">

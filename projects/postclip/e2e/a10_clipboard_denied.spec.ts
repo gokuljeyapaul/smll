@@ -32,7 +32,7 @@ test('a10_denied_paste_explains_and_picker_works', async ({ page }) => {
 
   // …and the file picker still works: a pick runs the full pipeline.
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,

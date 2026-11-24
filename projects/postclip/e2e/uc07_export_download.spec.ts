@@ -11,7 +11,7 @@ import { runPrivacyAudit, startCapture } from './helpers/privacy';
 
 async function pickAndWaitForReview(page: Page) {
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, { timeout: 120_000 })
     .toBeGreaterThan(40);

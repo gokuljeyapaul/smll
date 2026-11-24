@@ -2,12 +2,12 @@
 
 Screenshot of a post in, clean shareable text out — in your browser, nothing uploaded.
 
-1. Give it a screenshot of a LinkedIn-style post: pick, drop, paste, or (installed on Android) share it in.
-2. OCR reads it in the browser; a small local model tidies it up where your browser can run one (removes buttons/UI, fixes line breaks).
-3. You review and edit.
+1. Give it a screenshot of a LinkedIn-style post: (installed on Android) share it in, paste it, or pick/drop it.
+2. It starts reading by itself — including text inside pictures within the screenshot — and the screen lands on **your text with a large Copy button first**, then Share and file-save, then Edit.
+3. A small local model can tidy it up further where your browser can run one (optional, collapsed out of the way, off by default).
 4. Share it (Telegram or any app via the share sheet), copy it, or export it as `.md` / `.txt` / `.json`.
 
-No cloud, no accounts, nothing stored. English only (v1). An installable web app (PWA).
+No cloud, no accounts, nothing stored. English only (v1). An installable web app (PWA). On iPhone, a plain web app cannot receive shares — the supported route is the host app ([docs/INTEGRATION.md](docs/INTEGRATION.md)).
 
 ## Demo
 

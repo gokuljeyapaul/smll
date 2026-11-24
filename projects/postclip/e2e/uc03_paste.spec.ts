@@ -33,7 +33,7 @@ test('uc03_paste_button_processes_clipboard_image', async ({ page }) => {
   await page.locator('#paste-btn').click();
 
   // The pasted screenshot is processed: real OCR, review screen with text.
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,
@@ -79,7 +79,7 @@ test('uc03_paste_event_processes_pasted_file', async ({ page }) => {
     );
   }, bytes);
 
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,

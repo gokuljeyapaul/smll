@@ -70,7 +70,7 @@ test('a29_production_smoke_pick_review_share_copy_from_dist', async ({ page }) =
   // Real OCR runs in the browser under the production CSP (worker-src 'self'
   // must let the tesseract worker boot, and the OCR assets must load).
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,
@@ -200,7 +200,7 @@ test('a29_production_test_hooks_absent_and_inert', async ({ page }) => {
   // test-only debug record stays undefined (test builds set it on every
   // pick — App.tsx's __POSTCLIP_TEST_BUILD__ branch).
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length)
     .toBeGreaterThan(40);

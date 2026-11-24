@@ -79,6 +79,12 @@ const TESTCASES = [
   'a29_production_smoke_pick_review_share_copy_from_dist',
   'a29_production_strict_csp_shipped_and_enforced',
   'a29_production_test_hooks_absent_and_inert',
+  // R2-1 (share-first result screen): every testcase that may own a video.
+  'a32_share_target_lands_result_first_with_copy_visible_and_exact',
+  'a36_shared_image_with_no_text_shows_kind_error_and_one_next_step',
+  'a36_share_post_without_an_image_stays_ignored',
+  'a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit',
+  'eval_nested_text_recall_on_fixtures',
 ];
 
 /** Match a video directory name to its testcase. Playwright names video dirs

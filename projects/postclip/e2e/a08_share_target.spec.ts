@@ -41,7 +41,7 @@ test('a08_share_target_receives_image', async ({ page }) => {
   expect(res.ok).toBe(true);
 
   // The SW handed the image to the pipeline: review screen with real OCR text.
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 120_000 });
   await expect
     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
       timeout: 120_000,
@@ -94,7 +94,7 @@ test('a08_share_target_ignores_posts_without_an_image', async ({ page }) => {
   // there was nothing valid to process).
   await expect(page.getByRole('heading', { name: 'PostClip' })).toBeVisible();
   await expect(page.locator('.error-banner')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeHidden();
+  await expect(page.getByRole('heading', { name: 'Your text' })).toBeHidden();
   // The app-shell cache still contains only precache entries.
   const shellKeys = await page.evaluate(async () => {
     const names = await caches.keys();

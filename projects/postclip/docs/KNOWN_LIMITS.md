@@ -68,7 +68,41 @@ final tree, 2 `NOT_RUN`).
 - **The strict CSP ships as a `<meta>` policy** (the static build's own
   artifact). `frame-ancestors` cannot be enforced in a meta policy (CSP spec)
   and belongs to the hosting layer (plan D10 keeps hosting out of scope).
-  Everything else ships and is asserted enforced.
+
+## Round 2 (R2-1, share-first result screen) — measured and disclosed
+
+- **Text inside pictures within the screenshot (A35, nested-image text).**
+  Measured on the three synthetic nested-text fixtures (a quoted card, a
+  launch banner and an event poster — each rendered as a REAL rasterized
+  picture embedded in the card, ground truth committed as
+  `nested_image_text`): nested-token recall **100.0% per fixture in both
+  Chromium and WebKit** (multiset token recall, raw pre-cleanup OCR vs the
+  ground truth; bar stated at ≥ 75%; per-engine JSON:
+  `docs/evidence/R2-1/nested-text-recall-*.json`). That number is honest for
+  this fixture set — flat synthetic pictures at screenshot resolution. It is
+  NOT a promise about arbitrary photos: text in photos of physical scenes,
+  heavily stylized logos, extreme perspective or very small print will read
+  worse, exactly like the plan's honesty statement says about arbitrary real
+  screenshots.
+- **Which words came from INSIDE a picture is not labelled.** The R2-1
+  mockup showed the nested text labelled ("Text found inside the pictures:
+  …"); the app includes the text in one flow but does not label its origin,
+  because OCR returns text without image-region segmentation and no
+  segmentation model ships. Disclosed rather than faked.
+- **The share-target POST route (A32/A36) is Chromium-only** (as A08):
+  WebKit-on-Linux does not serve the service-worker share route, so the
+  WebKit proof of the result-first screen is the pick path (A33); the share
+  path itself is proven in Chromium, the platform the plan assigns it to.
+- **Real installed-PWA sharing (Android) and the real iOS share sheet stay
+  `NOT_RUN`** (A27, the plan's optional real-device pass; the automation
+  simulates the exact service-worker POST the Android share sheet makes).
+- **iPhone cannot receive shares in a plain web app** — a platform limit,
+  honestly documented with the supported host-app route in
+  `docs/INTEGRATION.md` (the host messaging contract is R2-2, issue #79).
+
+## Round 1 bullets continue below
+
+- **CSP enforcement: everything else ships and is asserted enforced.**
 - **Suggestion summaries are accepted only when every word is traceable to
   the OCR text** (paraphrases with new words are dropped — fail closed), so
   the summary suggestion is often absent by design.

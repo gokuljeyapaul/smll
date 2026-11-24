@@ -361,6 +361,33 @@
       "synthetic": true,
       "gold": "gold/dark03.json",
       "note": "Synthetic content: fictional author and company, generated from fixture-data.mjs."
+    },
+    {
+      "id": "nested01",
+      "file": "images/nested01.png",
+      "sha256": "ff24159f2174b96ebe73cec194d8c08154a5724b2921de55208360c460ab6351",
+      "size_bytes": 90257,
+      "synthetic": true,
+      "gold": "gold/nested01.json",
+      "note": "Synthetic nested-text fixture: fictional author and content; the quoted card / banner / poster is a real rasterized picture with text inside it (A35 recall ground truth in the gold JSON)."
+    },
+    {
+      "id": "nested02",
+      "file": "images/nested02.png",
+      "sha256": "a110bbdb1a8dd7bb5d49efd5d7e3379f46d7d1fb89926156a40241126f5de2af",
+      "size_bytes": 72560,
+      "synthetic": true,
+      "gold": "gold/nested02.json",
+      "note": "Synthetic nested-text fixture: fictional author and content; the quoted card / banner / poster is a real rasterized picture with text inside it (A35 recall ground truth in the gold JSON)."
+    },
+    {
+      "id": "nested03",
+      "file": "images/nested03.png",
+      "sha256": "fa3a8b0972b32bb24750b731bd241efe9eb0b9fe129e866620292e435b1e2fe9",
+      "size_bytes": 96393,
+      "synthetic": true,
+      "gold": "gold/nested03.json",
+      "note": "Synthetic nested-text fixture: fictional author and content; the quoted card / banner / poster is a real rasterized picture with text inside it (A35 recall ground truth in the gold JSON)."
     }
   ]
 }

@@ -52,6 +52,7 @@ interface Gold {
   ocr_expected: string[];
   expected_error?: string;
   injection?: { markers: string[] };
+  nested_image_text?: string[];
 }
 
 const ALL_IDS = [
@@ -72,6 +73,8 @@ const ALL_IDS = [
   'photo01',
   // S4 injection posts (>= 5, A16)
   'inj01', 'inj02', 'inj03', 'inj04', 'inj05',
+  // R2-1 nested-text fixtures (A35, plan UC16): text inside pictures
+  'nested01', 'nested02', 'nested03',
 ];
 
 const BAD_INPUT_KINDS: Record<string, string> = {
@@ -98,7 +101,7 @@ describe('fixture manifest lint (A31)', () => {
     expect(m.schema).toBe('postclip-fixtures/1');
   });
 
-  it('lists exactly the 40 S4 fixtures (plan: variants >= 40 by S4)', () => {
+  it('lists exactly the 43 fixtures (S4: >= 40; R2-1 adds the 3 nested-text fixtures)', () => {
     const m = manifest();
     expect(m.images.map((e) => e.id).sort()).toEqual([...ALL_IDS].sort());
     expect(m.images.length, 'fixture count').toBeGreaterThanOrEqual(40);
@@ -150,6 +153,19 @@ describe('fixture manifest lint (A31)', () => {
         expect(gold.body.length, `${entry.id} body must be non-empty`).toBeGreaterThan(0);
         expect(gold.ocr_expected.length, `${entry.id} ocr_expected must be non-empty`).toBeGreaterThan(0);
         expect(gold.author.length, `${entry.id} author must be non-empty`).toBeGreaterThan(0);
+        // R2-1 (A35): nested-text fixtures commit the recall ground truth —
+        // every nested line is content (in the body) AND in `nested_image_text`.
+        if (gold.kind === 'nested') {
+          expect(Array.isArray(gold.nested_image_text), `${entry.id} nested_image_text`).toBe(true);
+          const nested = (gold.nested_image_text ?? []) as string[];
+          expect(nested.length, `${entry.id} nested_image_text must be non-empty`).toBeGreaterThan(0);
+          for (const line of nested) {
+            expect(gold.body, `${entry.id} nested line is content`).toContain(line);
+            expect(gold.ocr_expected, `${entry.id} nested line is visible text`).toContain(line);
+          }
+        } else {
+          expect(gold.nested_image_text, `${entry.id} non-nested must not claim nested text`).toBeUndefined();
+        }
       }
       expect(gold.language, `${entry.id} language must match kind family`).toBe(
         gold.kind === 'lang-de' ? 'de' : gold.kind === 'lang-es' ? 'es' : expectedError ? 'none' : 'en',
