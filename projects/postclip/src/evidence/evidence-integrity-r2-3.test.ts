@@ -128,7 +128,24 @@ describe('evidence integrity (A25, R2-3)', () => {
     for (const row of table) {
       expect(row.scenario.length).toBeGreaterThan(0);
       expect(row.engine === 'chromium' || row.engine === 'webkit').toBe(true);
-      expect(typeof row.model_bytes).toBe('number');
+      // model_bytes is the honest measured value: the pinned model's byte
+      // size when the scenario KEEPS the model, or null when nothing was
+      // kept (volatile / no-room / fresh profile — the original
+      // typeof-'number' assertion contradicted the row type above and the
+      // slice's own claims, since typeof null is 'object'; fixed against
+      // the real committed table, not by changing the data).
+      expect(
+        row.model_bytes === null || (typeof row.model_bytes === 'number' && row.model_bytes > 0),
+        `${row.engine} "${row.scenario}": model_bytes must be a kept byte count or null`,
+      ).toBe(true);
+    }
+    // The table must record BOTH truths on every engine: a kept-model row
+    // (A37's persistence) and a not-kept null row (A39's refusals / fresh
+    // profile) — a table that only shows one is not the scenario table.
+    for (const engine of ['chromium', 'webkit'] as const) {
+      const rows = table.filter((r) => r.engine === engine);
+      expect(rows.some((r) => typeof r.model_bytes === 'number'), `${engine} needs a kept-model row`).toBe(true);
+      expect(rows.some((r) => r.model_bytes === null), `${engine} needs a not-kept (null) row`).toBe(true);
     }
   });
 

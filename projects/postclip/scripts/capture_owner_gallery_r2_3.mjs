@@ -27,12 +27,11 @@
  */
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-/* global TextEncoder, Response */
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const PORT = 4297;
@@ -145,7 +144,7 @@ async function main() {
               .locator('#model-ready')
               .waitFor({ state: 'attached', timeout: 180_000 })
               .then(() => true)
-              .catch(() => false);
+              .catch(() => false); // stalled attempt — the fresh context below retries
           }
           await ctx.close(); // the browser is FULLY closed
           if (!downloaded) console.log(`gallery: download attempt ${attempt} stalled — fresh context next`);
@@ -179,13 +178,19 @@ async function main() {
     );
     console.log(`O09 gallery: ${shots.length} screenshots + gallery.md under docs/evidence/R2-3/owner/`);
   } finally {
-    await browser.close().catch(() => {});
+    await browser.close().catch(() => {
+      /* already closed */
+    });
     try {
       process.kill(-preview.pid, 'SIGTERM');
-    } catch {}
+    } catch {
+      /* already gone */
+    }
     try {
       process.kill(-modelServer.pid, 'SIGTERM');
-    } catch {}
+    } catch {
+      /* already gone */
+    }
   }
 }
 
