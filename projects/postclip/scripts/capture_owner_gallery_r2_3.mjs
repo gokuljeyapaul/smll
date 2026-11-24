@@ -36,7 +36,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const PORT = 4297;
-const MODEL_PORT = 4619;
+const MODEL_PORT = 4599; // MUST be the port the shipped CSP pins as the sanctioned local model host (as the e2e suite)
 const OUT = join(ROOT, 'docs/evidence/R2-3/owner');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -90,7 +90,7 @@ async function main() {
     ]) {
       // --- 1+2: a FRESH profile — the model is not offered by default ----
       const freshProfile = mkdtempSync(join(tmpdir(), 'postclip-o09-fresh-'));
-      let ctx = await browser.launchPersistentContext(freshProfile, { viewport: { width, height } });
+      let ctx = await chromium.launchPersistentContext(freshProfile, { viewport: { width, height } });
       let page = ctx.pages()[0] ?? (await ctx.newPage());
       await page.goto(base);
       await page.locator('#app-title').waitFor({ timeout: 30_000 });
@@ -108,7 +108,7 @@ async function main() {
       await ctx.close();
 
       // --- 4: the volatile-storage explanation (kind, no download) ------
-      ctx = await browser.launchPersistentContext(mkdtempSync(join(tmpdir(), 'postclip-o09-volatile-')), {
+      ctx = await chromium.launchPersistentContext(mkdtempSync(join(tmpdir(), 'postclip-o09-volatile-')), {
         viewport: { width, height },
       });
       page = ctx.pages()[0] ?? (await ctx.newPage());
@@ -124,19 +124,42 @@ async function main() {
       // --- 3: download ONCE, close the browser, RESTART: ready (cached) --
       let first = tag === '390x844'; // only the first viewport pays the download
       if (first) {
-        ctx = await browser.launchPersistentContext(readyProfile, { viewport: { width, height } });
-        page = ctx.pages()[0] ?? (await ctx.newPage());
-        await page.goto(`${base}?testModelUrl=${modelUrl}`);
-        await page.locator('#advanced-model summary').click();
-        await page.locator('#model-download-btn').click();
-        await page.locator('#model-ready').waitFor({ timeout: 300_000 });
-        await ctx.close(); // the browser is FULLY closed
+        // The #58 stall roulette (documented in issue #58): some browser
+        // contexts never deliver the localhost model body (the server hands
+        // the full 397 MB to the browser; the renderer sees nothing; in that
+        // context every retry stalls too). A FRESH context's network stack
+        // works — retry the download in a new persistent context on the SAME
+        // profile (the OPFS temp persists, so the manager resumes with a
+        // Range request instead of restarting from zero).
+        let downloaded = false;
+        for (let attempt = 1; attempt <= 3 && !downloaded; attempt++) {
+          ctx = await chromium.launchPersistentContext(readyProfile, { viewport: { width, height } });
+          page = ctx.pages()[0] ?? (await ctx.newPage());
+          await page.goto(`${base}?testModelUrl=${modelUrl}`);
+          await page.locator('#advanced-model summary').click();
+          if (await page.locator('#model-ready').count()) {
+            downloaded = true; // a resumed earlier attempt already landed ready
+          } else {
+            await page.locator('#model-download-btn').click();
+            downloaded = await page
+              .locator('#model-ready')
+              .waitFor({ state: 'attached', timeout: 180_000 })
+              .then(() => true)
+              .catch(() => false);
+          }
+          await ctx.close(); // the browser is FULLY closed
+          if (!downloaded) console.log(`gallery: download attempt ${attempt} stalled — fresh context next`);
+        }
+        if (!downloaded) throw new Error('the model download never completed (3 fresh contexts)');
       }
       // Reopen on the SAME profile dir: the model is remembered.
-      ctx = await browser.launchPersistentContext(readyProfile, { viewport: { width, height } });
+      ctx = await chromium.launchPersistentContext(readyProfile, { viewport: { width, height } });
       page = ctx.pages()[0] ?? (await ctx.newPage());
       await page.goto(base);
-      await page.locator('#model-ready').waitFor({ timeout: 60_000 });
+      // 'attached': the ready state must EXIST after the restart (it can sit
+      // below the 844px fold — the fullPage screenshot shows it either way).
+      await page.locator('#model-ready').waitFor({ state: 'attached', timeout: 60_000 });
+      await page.evaluate(() => document.querySelector('#model-ready')?.scrollIntoView({ block: 'center' }));
       await sleep(400);
       const readyShot = `o09-${tag}-ready-cached-after-restart.png`;
       await page.screenshot({ path: join(OUT, readyShot), fullPage: true });
