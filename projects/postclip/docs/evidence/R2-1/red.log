@@ -1,0 +1,128 @@
+== R2-1 RED: typecheck + lint (proof the failures below are behavioural, not build errors) ==
+$ npm run typecheck
+npm notice run postclip@0.1.0 typecheck
+npm notice run tsc --noEmit
+typecheck exit code: 0
+
+$ npm run lint
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+lint exit code: 0
+
+== R2-1 RED part 1: the arrival screen-state machine (A34) on the unwired scaffold ==
+$ npx vitest run src/flow/arrival.test.ts
+     57|       const next = nextArrivalState(state, { type: 'reset' });
+     58|       expect(next).toEqual({ phase: 'idle', error: null });
+       |                    ^
+     59|     }
+     60|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/flow/arrival.test.ts > arrival screen-state machine (R2-1, A34) > every kind error maps to one non-empty obvious next step (A36)
+AssertionError: expected [] to deeply equal [ 'corrupt', 'no-text', …(4) ]
+
+- Expected
++ Received
+
+- [
+-   "corrupt",
+-   "no-text",
+-   "non-english",
+-   "non-image",
+-   "tiny",
+-   "unreadable",
+- ]
++ []
+
+ ❯ src/flow/arrival.test.ts:76:55
+     74|
+     75|   it('every kind error maps to one non-empty obvious next step (A36)',…
+     76|     expect(Object.keys(KIND_ERROR_NEXT_STEPS).sort()).toEqual([...REAS…
+       |                                                       ^
+     77|     for (const reason of REASONS) {
+     78|       const hint = KIND_ERROR_NEXT_STEPS[reason];
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  12 failed | 2 passed (14)
+   Start at  13:27:06
+   Duration  2.89s (environment 74%, setup 15%, transform 8%, tests 2%, import 1%)
+
+vitest (arrival suite) exit code: 1
+
+== R2-1 RED part 2: the new share-first e2e flows against the CURRENT app (A32/A33/A35/A36) ==
+$ npm run build:test  (the current, unchanged app — the new specs run against it)
+
+✓ built in 1.70s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+build:test exit code: 0
+
+$ npx playwright test e2e/a32_share_first_result.spec.ts e2e/a33_result_first_screen.spec.ts e2e/eval_nested_text_recall.spec.ts --project=chromium --reporter=list
+      39 |   // The result screen ("Your text") with the real OCR text.
+    > 40 |   await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 150_000 });
+         |                                                                  ^
+      41 |   await expect
+      42 |     .poll(async () => (await page.locator('#review-text').inputValue()).length, {
+      43 |       timeout: 150_000,
+        at /opt/data/workspace/smll/projects/postclip/e2e/a33_result_first_screen.spec.ts:40:66
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/a33_result_first_screen-a3-0cee0-y-then-share-save-then-edit-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/a33_result_first_screen-a3-0cee0-y-then-share-save-then-edit-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/a33_result_first_screen-a3-0cee0-y-then-share-save-then-edit-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/a33_result_first_screen-a3-0cee0-y-then-share-save-then-edit-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › e2e/eval_nested_text_recall.spec.ts:68:1 › eval_nested_text_recall_on_fixtures ───
+
+    Error: the nested fixture set (>= 3, ground truth committed)
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 3
+    Received:    0
+
+      76 |
+      77 |   // The plan's fixture set: >= 3 synthetic nested-text screenshots.
+    > 78 |   expect(nested.length, 'the nested fixture set (>= 3, ground truth committed)').toBeGreaterThanOrEqual(3);
+         |                                                                                  ^
+      79 |
+      80 |   const rows: { id: string; recall: number }[] = [];
+      81 |   for (const { img, gold } of nested) {
+        at /opt/data/workspace/smll/projects/postclip/e2e/eval_nested_text_recall.spec.ts:78:82
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/eval_nested_text_recall-eval-nested-text-recall-on-fixtures-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/eval_nested_text_recall-eval-nested-text-recall-on-fixtures-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/eval_nested_text_recall-eval-nested-text-recall-on-fixtures-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/eval_nested_text_recall-eval-nested-text-recall-on-fixtures-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [chromium] › e2e/a32_share_first_result.spec.ts:28:1 › a32_share_target_lands_result_first_with_copy_visible_and_exact 
+    [chromium] › e2e/a32_share_first_result.spec.ts:87:1 › a36_shared_image_with_no_text_shows_kind_error_and_one_next_step 
+    [chromium] › e2e/a33_result_first_screen.spec.ts:28:1 › a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit 
+    [chromium] › e2e/eval_nested_text_recall.spec.ts:68:1 › eval_nested_text_recall_on_fixtures ────
+  1 passed (4.4m)
+playwright (new R2-1 specs, chromium) exit code: 1
+
+R2-1 RED: ALL PARTS FAILED AS REQUIRED (real assertion failures on the missing behaviour).
