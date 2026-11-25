@@ -51,6 +51,7 @@ This plan is executed autonomously by a building agent on a Linux machine. Suppo
 | UC14 | Offline processing and no storage | After the model is cached, processing needs no network; no post content is stored, logged or transmitted anywhere. |
 | UC15 | Share arrives: the answer screen | An image that arrives — shared into the installed app, pasted, picked, or handed over by a host app (R2-2) — starts reading automatically with one clear progress state and ends on the text with a large Copy button first, then Share/Save, then Edit; the home screen's input furniture (drop zone, paste button, model card, model toggle) is not on this path. |
 | UC16 | Text inside pictures | Text embedded in images within the screenshot (quoted/reshared posts, cards, banner overlays) is included in the extracted text; the recall is measured on synthetic nested-text fixtures and reported honestly. |
+| UC17 | Embed as a component | A host app embeds PostClip in an iframe/WebView: the layout fits any frame size from 320 px to desktop with no horizontal scroll, nothing assumes a top-level page, and the host hands screenshots in and receives the text back through the `postMessage` contract (origin allow-list, default none). |
 
 ## Architecture
 
@@ -138,6 +139,11 @@ Library choices are **candidates, resolved at build time**, not promises. Candid
 | A39 | P0 | web | UC09 | Volatile storage is a first-class case: when the app detects the model cache was lost (or the storage reports it cannot keep the model), it says so once, plainly, offers no download, and the standard rules cleanup keeps working end to end. | Playwright both engines |
 | A40 | P0 | web | UC08 | The model download is opt-in behind a clearly labelled "Advanced: optional tidy-up model" section, collapsed on the home screen and absent from the result path; with the model cached the home screen shows the small "Tidy-up model ready (cached)" state and never the download button. | Playwright both engines |
 | A41 | P0 | host | UC05 | The off-by-default / advanced-section decision rests on numbers: the A19 measurement (the LLM cleanup slower and worse than the rules baseline) is repeated on the final tree and re-cited, and the LLM stays disabled by default (the committed constant is unit-pinned). | Vitest + the eval re-run |
+| A42 | P0 | web | UC17 | Mobile-first responsive layout: at 320×568, 390×844, 768×1024 and 1280×800 in both engines there is no horizontal overflow, primary actions are visible and tappable (bounding-box checks, touch targets ≥ 44 px), widths are fluid, the shell uses `100dvh` (never a bare `100vh`), safe-area insets are respected, and the layout does not depend on owning the full window (the host may size the frame to any height); light and dark are both fine. | Playwright both engines (viewport matrix + resize) + Vitest source checks |
+| A43 | P0 | web | UC17 | Embedded behaviour: the app runs correctly inside a cross-origin `<iframe>` / WebView — no `window.top` or popup assumptions (source-scanned), the pick flow works inside the frame, and where the frame blocks a capability (e.g. clipboard-write without permission) the Copy button falls back with a specific, kind message; nothing fails silently. | Playwright both engines (cross-origin iframe) + Vitest source scan |
+| A44 | P0 | host | UC17 | The host messaging contract is pure, unit-tested logic: `postclip:load-image` validation (shape, size cap, MIME allow-list, requestId) and the origin allow-list (query param or build-time config; default: none accepted); replies only to an allow-listed origin (never `"*"`); messages from other origins are ignored and not logged with content; documented in `docs/INTEGRATION.md`. | Vitest |
+| A45 | P0 | web | UC17 | Cross-origin host round trip: a host test page on a *different origin* (two local servers) embeds PostClip in an iframe; `postclip:load-image` → `postclip:result` (real OCR) works; `postclip:ready` is posted on boot; a message from a non-allow-listed origin is ignored; the reply's origin is asserted; nothing carries post text in any URL or storage on either side. | Playwright both engines (two origins) |
+| A46 | P0 | host | UC17 | Hosting documented in `docs/INTEGRATION.md`: the exact `frame-ancestors` HTTP header (a meta CSP cannot set it) with a working example config for the static `dist/` the repo builds, an iframe `allow=` / `sandbox` recommendation that keeps the app working, and the storage-partitioning reality inside frames stated (linked to A39); the no-storage audit honestly covers the new allowed channel (the result `postMessage` to the allow-listed origin is the only thing that leaves). | Vitest docs-honesty + the A15 audit re-check |
 
 ## Testability map
 
@@ -161,6 +167,7 @@ Every use case is automated on Linux with real browsers. What cannot be automate
 | UC14 | `context.setOffline(true)`, request-log assertions, storage/console/URL audits | Radio-level offline on real phones is `NOT_RUN` (A27) |
 | UC15 | Chromium: multipart POST through the service worker (A08's route) at a 390×844 viewport; both engines: the same result-first screen via the pick path | The real Android/iOS share sheets are `NOT_RUN` (A27); the share-target POST route is a Chromium-only platform ID (as A08) |
 | UC16 | Both engines: the nested-text fixtures through the app's real OCR, recall vs the committed ground truth | Nested-text recall is a measured number on synthetic fixtures, not a promise about arbitrary photos |
+| UC17 | Both engines: the cross-origin host page (a second local server) drives the load-image → result round trip; the responsive matrix resizes one page; the clipboard-blocked frame asserts the fallback message | Real WebView (Android/iOS) embedding is `NOT_RUN` (A27); the demo host page is a stand-in for the host app; WebKit's in-frame clipboard behavior is attempted and recorded, never faked |
 
 ## Conformance
 
@@ -179,6 +186,7 @@ The agent produces each artifact from a *passing* run in a form the owner can op
 | O05 | S5 | UC01, UC04 | `docs/evidence/S5/owner/` mobile-viewport (390x844) screenshots, offline reload, keyboard focus | Usable one-handed on a phone-sized screen; works offline; focus is visible |
 | O06 | S6 | UC01, UC14 | `docs/demo/` single compilation video (at most 15 MB, 720p) of all use-case flows in Chromium and WebKit | The whole product tour looks like something you would actually use |
 | O07 | S7 | UC15, A32, A33 | `docs/evidence/R2-1/owner/` mobile-viewport gallery (390×844 and 360×800): a share arrives, the progress state, the result screen with Copy first | A shared screenshot goes straight to its text with Copy as the obvious first action; nothing is in the way |
+| O08 | R2-2 | UC17, A42, A45 | `docs/evidence/R2-2/owner/` screenshot gallery of the app inside the demo host page (a mock "mobile app" frame) at phone sizes, plus the round-trip result | PostClip behaves like a component inside a host app: it fits the frame, the hand-off round trip works, nothing looks broken |
 | O09 | S9 | UC08, A37, A40 | `docs/evidence/R2-3/owner/` mobile-viewport gallery (390×844 and 360×800): the home screen with the model not offered, the Advanced section opened, and the "ready (cached)" state after a restart | The 397 MB download is never pushed at anyone; the model, once downloaded, is remembered across restarts; the ephemeral/lost-cache case is explained kindly |
 
 ### Planner-review
@@ -316,6 +324,16 @@ Observable result: an image that arrives — shared into the installed app throu
 - **RED**: the new share-arrival Playwright flows fail on the current app (no result-first screen: the Copy action is not the first, above-the-fold action at 390×844; the reading state has no dedicated progress surface; the nested-text fixture set does not exist), and the Vitest state-machine suite fails on the scaffolded, unwired transition table.
 - **GREEN**: all pass in the required engines; the previous suite (A01–A31) still passes; the review screen becomes the result screen (heading "Your text"), and the tests that name the old heading change with it in the same PR.
 - **Evidence**: standard set under `docs/evidence/R2-1/`; the nested-text recall table; the O07 owner gallery.
+
+### S8 — R2-2: Embeddable and responsive (round 2, issue #79)
+
+**Acceptance IDs:** A42, A43, A44, A45, A46
+
+Observable result: PostClip behaves as a component inside a host app (iframe or WebView): the layout is mobile-first and fully responsive from 320 px to desktop with no horizontal scroll and no assumptions about owning the window (`100dvh`, safe-area insets, ≥ 44 px touch targets, no hover-only controls); it runs correctly inside a cross-origin iframe with graceful, visible fallbacks where a frame blocks a capability (never silent failure); and a small, safe `postMessage` contract (origin allow-list, default none, replies never `"*"`), documented in `docs/INTEGRATION.md`, lets the host hand a screenshot in and get the text back — with the exact `frame-ancestors` HTTP header, an `allow=`/`sandbox` recommendation and the storage-partitioning reality documented alongside.
+
+- **RED**: the new Vitest contract suite fails on the scaffolded, unwired host-messaging module, the hosting/source checks fail on the pre-change tree (no `100dvh`, no allow-list, no blocked-clipboard message), and the new Playwright flows fail on the pre-implementation app (no host round trip, no in-frame fallback message, tap targets under 44 px where they are).
+- **GREEN**: all pass in the required engines (the cross-origin round trip via a host test page on a second local origin); the previous suite (A01–A41) still passes; the no-storage/CSP audits keep their guarantees and honestly note the one new allowed channel (the result `postMessage` to the allow-listed origin).
+- **Evidence**: standard set under `docs/evidence/R2-2/`; the O08 owner gallery (the app inside the demo host page at phone sizes plus the round-trip result).
 
 ### S9 — R2-3: Model downloaded once (round 2, issue #78)
 
