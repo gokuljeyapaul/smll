@@ -1,0 +1,153 @@
+# R2-3 negative-path output — extracted from the same green runs as e2e.log
+# (plus the bundle-inspection negative control)
+
+  ✓   3 [chromium] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image (3.3s)
+  ✓   4 [chromium] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works (3.8s)
+  ✓   5 [chromium] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (3.7s)
+  ✓   6 [chromium] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (3.0s)
+  ✓   7 [chromium] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (5.1s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+  ✓  10 [chromium] › e2e/a13_model_failure_fallback.spec.ts:37:1 › a13_wrong_hash_falls_back_with_banner_and_purges (23.7s)
+serve_model: GET /model-truncated range=- status=200 sent=198352736
+  ✓  11 [chromium] › e2e/a13_model_failure_fallback.spec.ts:56:1 › a13_truncated_file_falls_back_and_purges (15.6s)
+  ✓  12 [chromium] › e2e/a13_model_failure_fallback.spec.ts:74:1 › a13_unsupported_browser_banner_and_picker_works (4.6s)
+serve_model: GET /model-404 range=- status=404 sent=0
+  ✓  13 [chromium] › e2e/a13_model_failure_fallback.spec.ts:91:1 › a13_model_404_falls_back_and_purges (4.2s)
+serve_model: GET /model range=- status=200 sent=396705472
+a14: model cached via opfs
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+  ✓  16 [chromium] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (609ms)
+serve_model: GET /model range=- status=200 sent=396705472
+a21 (chromium): model cleanup state = applied
+  ✓  17 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:43:1 › a21_model_cleanup_flow_verified_result_or_visible_fallback (4.6m)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  18 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:115:1 › a21_model_cleanup_off_by_default_payload_has_no_suggestions (31.7s)
+  ✓  19 [chromium] › e2e/a21_model_cleanup_flow.spec.ts:132:1 › a21_without_a_ready_model_the_toggle_explains_and_falls_back (3.4s)
+axe home (light): no violations
+axe home (dark): no violations
+axe home error (dark): no violations
+axe home error (light): no violations
+axe review (light): no violations
+axe review (dark): no violations
+  ✓  23 [chromium] › e2e/a32_share_first_result.spec.ts:87:1 › a36_shared_image_with_no_text_shows_kind_error_and_one_next_step (4.1s)
+  ✓  24 [chromium] › e2e/a32_share_first_result.spec.ts:105:1 › a36_share_post_without_an_image_stays_ignored (2.8s)
+  ✓  25 [chromium] › e2e/a33_result_first_screen.spec.ts:28:1 › a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit (3.5s)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000 longpost02:F1=0.980,leak=0.000,fab=0.000 heavychrome02:F1=1.000,leak=0.000,fab=0.000 clean07:F1=1.000,leak=0.000,fab=0.000 clean08:F1=1.000,leak=0.000,fab=0.000 dark03:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 17 standard fixtures: F1=0.997 chrome_leakage=0.007 fabricated=0.000
+  ✓  26 [chromium] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (38.0s)
+eval_large_images: ~20MB stress input 3200x1900, 19.9 MB, sha256 577bcc16d6221d83… (generated at run time, never committed)
+eval_large_images chromium huge01 (4000 px): ocr=1773ms heap=10MiB (headless-Linux)
+  ✓  32 [chromium] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (962ms)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  33 [chromium] › e2e/r2_3_model_once.spec.ts:108:1 › a37_model_downloads_once_survives_reload_and_same_profile_restart (50.0s)
+  ✓  34 [chromium] › e2e/r2_3_model_once.spec.ts:205:1 › a39_volatile_storage_shows_kind_explanation_and_no_download (2.8s)
+  ✓  35 [chromium] › e2e/r2_3_model_once.spec.ts:240:1 › a39_no_room_refuses_the_download_before_any_byte_is_fetched (2.0s)
+  ✓  36 [chromium] › e2e/r2_3_model_once.spec.ts:271:1 › a40_download_is_opt_in_behind_the_advanced_section (809ms)
+  ✓  37 [chromium] › e2e/r2_3_model_once.spec.ts:291:1 › a40_fresh_profile_records_the_model_absent_honestly (2.4s)
+  ✓  38 [chromium] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (2.6s)
+  ✓  39 [chromium] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image (3.6s)
+  ✓  40 [chromium] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file (3.7s)
+  ✓  41 [chromium] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (2.8s)
+  ✓  44 [chromium] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (3.9s)
+  ✓  45 [chromium] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (3.5s)
+serve_model: GET /model range=- status=200 sent=396705472
+uc13 inj01 (chromium): mode=unavailable attempts=0 latencyMs=240001
+uc13 inj02 (chromium): mode=unavailable attempts=0 latencyMs=240001
+uc13 inj03 (chromium): mode=applied attempts=1 latencyMs=141197
+uc13 inj04 (chromium): mode=applied attempts=1 latencyMs=146624
+uc13 inj05 (chromium): mode=applied attempts=1 latencyMs=173404
+  ✓  46 [chromium] › e2e/uc13_injection_guard.spec.ts:49:1 › uc13_injection_posts_are_content_never_obeyed (16.7m)
+
+  Slow test file: [chromium] › e2e/eval_llm_vs_baseline.spec.ts (1.2h)
+  Slow test file: [chromium] › e2e/uc13_injection_guard.spec.ts (16.7m)
+  Slow test file: [chromium] › e2e/a21_model_cleanup_flow.spec.ts (5.2m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  46 passed (1.7h)
+  -   3 [webkit] › e2e/a08_share_target.spec.ts:80:1 › a08_share_target_ignores_posts_without_an_image
+  -   4 [webkit] › e2e/a10_clipboard_denied.spec.ts:19:1 › a10_denied_paste_explains_and_picker_works
+  ✓   5 [webkit] › e2e/a11_install_offline.spec.ts:17:1 › a11_installable_manifest_and_sw_registered (2.4s)
+  ✓   6 [webkit] › e2e/a11_install_offline.spec.ts:76:1 › a11_offline_reload_app_shell_loads (2.3s)
+  ✓   7 [webkit] › e2e/a11_install_offline.spec.ts:98:1 › a11_offline_ocr_after_first_load (4.5s)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+  ✓  10 [webkit] › e2e/a13_model_failure_fallback.spec.ts:37:1 › a13_wrong_hash_falls_back_with_banner_and_purges (29.8s)
+serve_model: GET /model-truncated range=- status=200 sent=198352736
+  ✓  11 [webkit] › e2e/a13_model_failure_fallback.spec.ts:56:1 › a13_truncated_file_falls_back_and_purges (16.4s)
+  ✓  12 [webkit] › e2e/a13_model_failure_fallback.spec.ts:74:1 › a13_unsupported_browser_banner_and_picker_works (2.9s)
+serve_model: GET /model-404 range=- status=404 sent=0
+  ✓  13 [webkit] › e2e/a13_model_failure_fallback.spec.ts:91:1 › a13_model_404_falls_back_and_purges (3.5s)
+serve_model: GET /model range=- status=200 sent=396705472
+a14: model cached via cache-storage
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+  ✓  16 [webkit] › e2e/a15_privacy_audit.spec.ts:114:1 › a15_audit_negative_control_detects_seeded_leak (1.2s)
+serve_model: GET /model range=- status=200 sent=396705472
+a21 (webkit): model cleanup state = unavailable
+  ✓  17 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:43:1 › a21_model_cleanup_flow_verified_result_or_visible_fallback (34.2s)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  18 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:115:1 › a21_model_cleanup_off_by_default_payload_has_no_suggestions (37.8s)
+  ✓  19 [webkit] › e2e/a21_model_cleanup_flow.spec.ts:132:1 › a21_without_a_ready_model_the_toggle_explains_and_falls_back (3.5s)
+axe home (light): no violations
+axe home (dark): no violations
+axe home error (dark): no violations
+axe home error (light): no violations
+axe review (light): no violations
+axe review (dark): no violations
+  -  23 [webkit] › e2e/a32_share_first_result.spec.ts:87:1 › a36_shared_image_with_no_text_shows_kind_error_and_one_next_step
+  -  24 [webkit] › e2e/a32_share_first_result.spec.ts:105:1 › a36_share_post_without_an_image_stays_ignored
+  ✓  25 [webkit] › e2e/a33_result_first_screen.spec.ts:28:1 › a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit (3.4s)
+eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000 longpost02:F1=0.980,leak=0.000,fab=0.000 heavychrome02:F1=1.000,leak=0.000,fab=0.000 clean07:F1=1.000,leak=0.000,fab=0.000 clean08:F1=1.000,leak=0.000,fab=0.000 dark03:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 17 standard fixtures: F1=0.997 chrome_leakage=0.007 fabricated=0.000
+  ✓  26 [webkit] › e2e/eval_cleanup_metrics.spec.ts:51:1 › eval_cleanup_body_f1_standard_set (28.7s)
+eval_large_images: ~20MB stress input 3200x1900, 19.9 MB, sha256 577bcc16d6221d83… (generated at run time, never committed)
+eval_large_images webkit huge01 (4000 px): ocr=989ms heap=n/a (headless-Linux)
+  ✓  32 [webkit] › e2e/negative_s0.spec.ts:12:1 › s0_negative_corrupt_input_fails_closed (1.9s)
+serve_model: GET /model range=- status=200 sent=396705472
+  ✓  33 [webkit] › e2e/r2_3_model_once.spec.ts:108:1 › a37_model_downloads_once_survives_reload_and_same_profile_restart (41.0s)
+  ✓  34 [webkit] › e2e/r2_3_model_once.spec.ts:205:1 › a39_volatile_storage_shows_kind_explanation_and_no_download (3.8s)
+  ✓  35 [webkit] › e2e/r2_3_model_once.spec.ts:240:1 › a39_no_room_refuses_the_download_before_any_byte_is_fetched (2.5s)
+  ✓  36 [webkit] › e2e/r2_3_model_once.spec.ts:271:1 › a40_download_is_opt_in_behind_the_advanced_section (1.5s)
+  ✓  37 [webkit] › e2e/r2_3_model_once.spec.ts:291:1 › a40_fresh_profile_records_the_model_absent_honestly (3.2s)
+  ✓  38 [webkit] › e2e/uc01_pick_ocr_review_share.spec.ts:53:1 › uc01_pick_ocr_review_share (4.1s)
+  -  39 [webkit] › e2e/uc03_paste.spec.ts:20:1 › uc03_paste_button_processes_clipboard_image
+  -  40 [webkit] › e2e/uc03_paste.spec.ts:51:1 › uc03_paste_event_processes_pasted_file
+  ✓  41 [webkit] › e2e/uc05_edit_review_payload.spec.ts:42:1 › uc05_edit_reflects_in_payloads (3.7s)
+  ✓  44 [webkit] › e2e/uc11_bad_inputs.spec.ts:43:1 › uc11_bad_input_error_states (3.4s)
+  ✓  45 [webkit] › e2e/uc11_bad_inputs.spec.ts:71:1 › uc11_huge_downscaled_before_ocr (3.1s)
+serve_model: GET /model range=- status=200 sent=396705472
+uc13 inj01 (webkit): mode=unavailable attempts=0 latencyMs=3
+uc13 inj02 (webkit): mode=unavailable attempts=0 latencyMs=6
+uc13 inj03 (webkit): mode=unavailable attempts=0 latencyMs=7
+uc13 inj04 (webkit): mode=unavailable attempts=0 latencyMs=4
+uc13 inj05 (webkit): mode=unavailable attempts=0 latencyMs=5
+  ✓  46 [webkit] › e2e/uc13_injection_guard.spec.ts:49:1 › uc13_injection_posts_are_content_never_obeyed (1.2m)
+
+  9 skipped
+  37 passed (9.1m)
+
+== bundle inspection negative control (TEST build must trip on the hooks) ==
+# bundle inspection (test mode) — dist
+CSP meta: matches the expected policy verbatim
+CSP policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self' http://127.0.0.1:4599 https://huggingface.co; base-uri 'none'; form-action 'none'; object-src 'none'
+index.html resource URLs: 3, all same-origin
+no source maps shipped
+scanned 10 .js files (21719199 bytes)
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "__postclipLlmDebug" at byte 280574 (context: "),x(`applied`)):x(`unavailable`),window.__postclipLlmDebug={mode:e.kind===`model`?`applied`:`unava")
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "__postclipLlmDebug" at byte 281140 (context: "0,deterministicText:u.text}}else window.__postclipLlmDebug={mode:`off`,modelText:null,rawModelText")
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "testModelUrl" at byte 220896 (context: "){let t=new URLSearchParams(e),n=t.get(`testModelUrl`),r=null;if(n)try{let e=new URL(n);(e.p")
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "testProbe" at byte 221129 (context: "turn{modelUrl:r,forceUnsupported:t.get(`testProbe`)===`unsupported`,storage:a}}function C")
+TEST-BUILD CONTROL: detector works — found 4 hook occurrence(s) in the test build that must be absent from production.
+
+== R2-3 RED evidence: the new tests failing on the pre-implementation app (headline lines) ==
+      Tests  6 failed | 6 passed (12)
+vitest (storage-policy suite) exit code: 1
+playwright (new R2-3 spec, chromium) exit code: 1
+R2-3 RED: ALL PARTS FAILED AS REQUIRED (real assertion failures on the missing behaviour).

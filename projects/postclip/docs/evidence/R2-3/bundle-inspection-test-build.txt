@@ -1,0 +1,11 @@
+# bundle inspection (test mode) — dist
+CSP meta: matches the expected policy verbatim
+CSP policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self' http://127.0.0.1:4599 https://huggingface.co; base-uri 'none'; form-action 'none'; object-src 'none'
+index.html resource URLs: 3, all same-origin
+no source maps shipped
+scanned 10 .js files (21719199 bytes)
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "__postclipLlmDebug" at byte 280574 (context: "),x(`applied`)):x(`unavailable`),window.__postclipLlmDebug={mode:e.kind===`model`?`applied`:`unava")
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "__postclipLlmDebug" at byte 281140 (context: "0,deterministicText:u.text}}else window.__postclipLlmDebug={mode:`off`,modelText:null,rawModelText")
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "testModelUrl" at byte 220896 (context: "){let t=new URLSearchParams(e),n=t.get(`testModelUrl`),r=null;if(n)try{let e=new URL(n);(e.p")
+TRIPPED (expected in a test build): dist/assets/index-aTV1jQxX.js: "testProbe" at byte 221129 (context: "turn{modelUrl:r,forceUnsupported:t.get(`testProbe`)===`unsupported`,storage:a}}function C")
+TEST-BUILD CONTROL: detector works — found 4 hook occurrence(s) in the test build that must be absent from production.

@@ -1,0 +1,468 @@
+<testsuites id="" name="" tests="46" failures="0" skipped="9" errors="0" time="543.354283">
+<testsuite name="a01_smoke.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="2.306" errors="0">
+<testcase name="a01_built_app_loads_home_screen_no_console_errors" classname="a01_smoke.spec.ts" time="2.306">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a01_smoke-a01-built-app-loads-home-screen-no-console-errors-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a08_share_target.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="a08_share_target_receives_image" classname="a08_share_target.spec.ts">
+<properties>
+<property name="skip" value="A08/UC02 is a chromium-only platform ID (plan testability map; real installed-PWA sharing is A27)">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="a08_share_target_ignores_posts_without_an_image" classname="a08_share_target.spec.ts">
+<properties>
+<property name="skip" value="A08/UC02 is a chromium-only platform ID (plan testability map; real installed-PWA sharing is A27)">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="a10_clipboard_denied.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="a10_denied_paste_explains_and_picker_works" classname="a10_clipboard_denied.spec.ts">
+<properties>
+<property name="skip" value="A10/UC12 is a chromium-only platform ID (plan testability map): Playwright WebKit grants no clipboard permissions at all, so denial is its permanent state, recorded in the S1 limitations">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="a11_install_offline.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="3" failures="0" skipped="0" time="9.237" errors="0">
+<testcase name="a11_installable_manifest_and_sw_registered" classname="a11_install_offline.spec.ts" time="2.434">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a11_install_offline-a11-in-f7f73--manifest-and-sw-registered-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a11_offline_reload_app_shell_loads" classname="a11_install_offline.spec.ts" time="2.345">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a11_install_offline-a11-offline-reload-app-shell-loads-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a11_offline_ocr_after_first_load" classname="a11_install_offline.spec.ts" time="4.458">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a11_install_offline-a11-offline-ocr-after-first-load-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a12_model_download.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="2" failures="0" skipped="0" time="83.857" errors="0">
+<testcase name="a12_model_downloads_verifies_caches" classname="a12_model_download.spec.ts" time="44.034">
+<system-out>
+<![CDATA[serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/model-server.log
+serve_model: GET /model-slow range=- status=200 sent=396705472
+a12: model cached via cache-storage (396705472 bytes)
+
+[[ATTACHMENT|../../../../test-results/a12_model_download-a12-model-downloads-verifies-caches-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a12_interrupted_download_resumes" classname="a12_model_download.spec.ts" time="39.823">
+<system-out>
+<![CDATA[serve_model: GET /model-kill-fresh range=- status=200-kill sent=99176368
+serve_model: GET /model-kill-fresh range=bytes=20221635- status=206 sent=376483837
+
+[[ATTACHMENT|../../../../test-results/a12_model_download-a12-interrupted-download-resumes-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a13_model_failure_fallback.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="4" failures="0" skipped="0" time="52.537" errors="0">
+<testcase name="a13_wrong_hash_falls_back_with_banner_and_purges" classname="a13_model_failure_fallback.spec.ts" time="29.762">
+<system-out>
+<![CDATA[serve_model: GET /model-wrong-hash range=- status=200 sent=396705472
+
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-860c8-back-with-banner-and-purges-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a13_truncated_file_falls_back_and_purges" classname="a13_model_failure_fallback.spec.ts" time="16.358">
+<system-out>
+<![CDATA[serve_model: GET /model-truncated range=- status=200 sent=198352736
+
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-d3d18--file-falls-back-and-purges-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a13_unsupported_browser_banner_and_picker_works" classname="a13_model_failure_fallback.spec.ts" time="2.91">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-9f8a9-ser-banner-and-picker-works-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a13_model_404_falls_back_and_purges" classname="a13_model_failure_fallback.spec.ts" time="3.507">
+<system-out>
+<![CDATA[serve_model: GET /model-404 range=- status=404 sent=0
+
+[[ATTACHMENT|../../../../test-results/a13_model_failure_fallback-fa44f-l-404-falls-back-and-purges-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a14_offline_zero_requests.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="44.435" errors="0">
+<testcase name="a14_offline_processing_zero_network_requests" classname="a14_offline_zero_requests.spec.ts" time="44.435">
+<system-out>
+<![CDATA[serve_model: GET /model range=- status=200 sent=396705472
+a14: model cached via cache-storage
+
+# A14 offline request log — processing a fixture with the model cached and the network disabled
+
+network requests: 0 (asserted ZERO for A14)
+service-worker-served requests: 7 (not network — see the definition in e2e/helpers/network.ts)
+
+network request log: EMPTY
+
+served by the service worker (precache, no wire):
+- http://localhost:4173/?testModelUrl=http://127.0.0.1:4599/model
+- http://localhost:4173/manifest.webmanifest
+- http://localhost:4173/assets/index-aTV1jQxX.js
+- http://localhost:4173/assets/index-BWxCpVyf.css
+- http://localhost:4173/ocr-assets/worker.min.js
+- http://localhost:4173/ocr-assets/tesseract-core-relaxedsimd-lstm.wasm.js
+- http://localhost:4173/ocr-assets/eng.traineddata.gz
+
+
+[[ATTACHMENT|../../../../test-results/a14_offline_zero_requests--e9774-ssing-zero-network-requests-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a15_privacy_audit.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="2" failures="0" skipped="0" time="4.877" errors="0">
+<testcase name="a15_no_storage_log_request_leaks_after_flows" classname="a15_privacy_audit.spec.ts" time="3.692">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a15_privacy_audit-a15-no-s-6f603-g-request-leaks-after-flows-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a15_audit_negative_control_detects_seeded_leak" classname="a15_privacy_audit.spec.ts" time="1.185">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a15_privacy_audit-a15-audi-cfc92-control-detects-seeded-leak-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a21_model_cleanup_flow.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="3" failures="0" skipped="0" time="75.527" errors="0">
+<testcase name="a21_model_cleanup_flow_verified_result_or_visible_fallback" classname="a21_model_cleanup_flow.spec.ts" time="34.247">
+<system-out>
+<![CDATA[serve_model: GET /model range=- status=200 sent=396705472
+a21 (webkit): model cleanup state = unavailable
+
+[[ATTACHMENT|../../../../test-results/a21_model_cleanup_flow-a21-ab911--result-or-visible-fallback-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a21_model_cleanup_off_by_default_payload_has_no_suggestions" classname="a21_model_cleanup_flow.spec.ts" time="37.795">
+<system-out>
+<![CDATA[serve_model: GET /model range=- status=200 sent=396705472
+
+[[ATTACHMENT|../../../../test-results/a21_model_cleanup_flow-a21-eea2e--payload-has-no-suggestions-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a21_without_a_ready_model_the_toggle_explains_and_falls_back" classname="a21_model_cleanup_flow.spec.ts" time="3.485">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a21_model_cleanup_flow-a21-aecf6-gle-explains-and-falls-back-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a23_accessibility.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="2" failures="0" skipped="0" time="17.332" errors="0">
+<testcase name="a23_axe_no_serious_or_critical_violations_every_screen" classname="a23_accessibility.spec.ts" time="11.365">
+<system-out>
+<![CDATA[axe home (light): no violations
+axe home (dark): no violations
+axe home error (dark): no violations
+axe home error (light): no violations
+axe review (light): no violations
+axe review (dark): no violations
+axe review export menu open (dark): no violations
+axe review export menu open (light): no violations
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-2.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-3.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-4.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-6.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-5.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-7.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-1.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video-8.webm]]
+
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-axe--d2e32-cal-violations-every-screen-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a23_keyboard_only_main_flow_pick_review_copy_share_export" classname="a23_accessibility.spec.ts" time="5.967">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a23_accessibility-a23-keyb-e8a0f-ck-review-copy-share-export-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="a32_share_first_result.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="3" failures="0" skipped="3" time="0" errors="0">
+<testcase name="a32_share_target_lands_result_first_with_copy_visible_and_exact" classname="a32_share_first_result.spec.ts">
+<properties>
+<property name="skip" value="A32/A36: the share-target POST route is a Chromium-only platform ID (as A08); real Android installed-PWA sharing is A27 NOT_RUN">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="a36_shared_image_with_no_text_shows_kind_error_and_one_next_step" classname="a32_share_first_result.spec.ts">
+<properties>
+<property name="skip" value="A32/A36: the share-target POST route is a Chromium-only platform ID (as A08); real Android installed-PWA sharing is A27 NOT_RUN">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="a36_share_post_without_an_image_stays_ignored" classname="a32_share_first_result.spec.ts">
+<properties>
+<property name="skip" value="A32/A36: the share-target POST route is a Chromium-only platform ID (as A08); real Android installed-PWA sharing is A27 NOT_RUN">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="a33_result_first_screen.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="3.397" errors="0">
+<testcase name="a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit" classname="a33_result_first_screen.spec.ts" time="3.397">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/a33_result_first_screen-a3-0cee0-y-then-share-save-then-edit-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_cleanup_metrics.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="28.657" errors="0">
+<testcase name="eval_cleanup_body_f1_standard_set" classname="eval_cleanup_metrics.spec.ts" time="28.657">
+<system-out>
+<![CDATA[eval_cleanup per-fixture: clean01:F1=1.000,leak=0.000,fab=0.000 clean02:F1=1.000,leak=0.000,fab=0.000 clean03:F1=0.983,leak=0.000,fab=0.000 clean04:F1=1.000,leak=0.000,fab=0.000 clean05:F1=1.000,leak=0.000,fab=0.000 clean06:F1=1.000,leak=0.000,fab=0.000 dark01:F1=1.000,leak=0.000,fab=0.000 dark02:F1=1.000,leak=0.000,fab=0.000 chrome01:F1=1.000,leak=0.000,fab=0.000 chrome02:F1=1.000,leak=0.000,fab=0.000 longpost01:F1=0.986,leak=0.111,fab=0.000 heavychrome01:F1=1.000,leak=0.000,fab=0.000 longpost02:F1=0.980,leak=0.000,fab=0.000 heavychrome02:F1=1.000,leak=0.000,fab=0.000 clean07:F1=1.000,leak=0.000,fab=0.000 clean08:F1=1.000,leak=0.000,fab=0.000 dark03:F1=1.000,leak=0.000,fab=0.000
+eval_cleanup means over 17 standard fixtures: F1=0.997 chrome_leakage=0.007 fabricated=0.000
+
+[[ATTACHMENT|../../../../test-results/eval_cleanup_metrics-eval-cleanup-body-f1-standard-set-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_large_images.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="42.766" errors="0">
+<testcase name="eval_large_images_4000px_and_20mb_processed_safely" classname="eval_large_images.spec.ts" time="42.766">
+<system-out>
+<![CDATA[eval_large_images: ~20MB stress input 3200x1900, 19.9 MB, sha256 577bcc16d6221d83… (generated at run time, never committed)
+eval_large_images webkit huge01 (4000 px): ocr=989ms heap=n/a (headless-Linux)
+eval_large_images webkit ~20MB: wall=36122ms decode=1758 downscale=1515 ocr=34032 heap=n/a (headless-Linux)
+eval_large_images webkit ~20MB terminal state: "error:PostClip reads posts wri" (the designed fail-closed error for unreadable/non-English OCR output — a correct processing outcome, see the spec header)
+eval_large_images webkit ~20MB: OCR stage 34032 ms — EXCEEDS the 5 s per-fixture budget (recorded limitation: adversarial noise is pathological for the OCR recognition pass; see the slice summary and red.log)
+
+[[ATTACHMENT|../../../../test-results/eval_large_images-eval-lar-f76a3-x-and-20mb-processed-safely-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_latency_memory.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="7.539" errors="0">
+<testcase name="eval_latency_budgets_clean_set" classname="eval_latency_memory.spec.ts" time="7.539">
+<system-out>
+<![CDATA[eval_latency webkit clean01: wall=1986ms decode=690 downscale=null ocr=1155 cleanup=1 heap=n/a (headless-Linux)
+eval_latency webkit clean02: wall=699ms decode=33 downscale=null ocr=611 cleanup=2 heap=n/a (headless-Linux)
+eval_latency webkit clean03: wall=629ms decode=40 downscale=null ocr=510 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean04: wall=357ms decode=15 downscale=null ocr=262 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean05: wall=525ms decode=25 downscale=null ocr=433 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean06: wall=475ms decode=26 downscale=null ocr=383 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean07: wall=544ms decode=16 downscale=null ocr=457 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit clean08: wall=418ms decode=22 downscale=null ocr=324 cleanup=0 heap=n/a (headless-Linux)
+eval_latency webkit: 8 clean fixtures, peak usedJSHeapSize NOT_RUN (engine exposes no performance.memory — recorded, not skipped) (headless-Linux)
+
+[[ATTACHMENT|../../../../test-results/eval_latency_memory-eval-latency-budgets-clean-set-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_llm_vs_baseline.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="eval_llm_vs_baseline_standard_and_injection_sets" classname="eval_llm_vs_baseline.spec.ts">
+<properties>
+<property name="skip" value="A19 is a host-platform browser eval on the WASM path in headless Chromium (plan platform table); the web-platform A21 spec covers WebKit">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="eval_nested_text_recall.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="5.653" errors="0">
+<testcase name="eval_nested_text_recall_on_fixtures" classname="eval_nested_text_recall.spec.ts" time="5.653">
+<system-out>
+<![CDATA[eval_nested_text_recall webkit nested01: nested-token recall=100.0%
+eval_nested_text_recall webkit nested02: nested-token recall=100.0%
+eval_nested_text_recall webkit nested03: nested-token recall=100.0%
+eval_nested_text_recall webkit: mean=100.0% bar=75%
+
+[[ATTACHMENT|../../../../test-results/eval_nested_text_recall-eval-nested-text-recall-on-fixtures-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="eval_ocr_cer.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="12.266" errors="0">
+<testcase name="eval_ocr_cer_clean_set" classname="eval_ocr_cer.spec.ts" time="12.266">
+<system-out>
+<![CDATA[eval_ocr_cer_clean_set per-fixture: clean01=1.15% clean02=0.67% clean03=1.57% clean04=1.32% clean05=1.49% clean06=1.78% clean07=1.37% clean08=0.94%
+eval_ocr_cer_clean_set mean: 1.29%
+
+[[ATTACHMENT|../../../../test-results/eval_ocr_cer-eval-ocr-cer-clean-set-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="negative_s0.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="1.909" errors="0">
+<testcase name="s0_negative_corrupt_input_fails_closed" classname="negative_s0.spec.ts" time="1.909">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/negative_s0-s0-negative-corrupt-input-fails-closed-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="r2_3_model_once.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="5" failures="0" skipped="0" time="51.999" errors="0">
+<testcase name="a37_model_downloads_once_survives_reload_and_same_profile_restart" classname="r2_3_model_once.spec.ts" time="40.951">
+<system-out>
+<![CDATA[serve_model: GET /model range=- status=200 sent=396705472
+]]>
+</system-out>
+</testcase>
+<testcase name="a39_volatile_storage_shows_kind_explanation_and_no_download" classname="r2_3_model_once.spec.ts" time="3.826">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/r2_3_model_once-a39-volati-80652-explanation-and-no-download-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a39_no_room_refuses_the_download_before_any_byte_is_fetched" classname="r2_3_model_once.spec.ts" time="2.51">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/r2_3_model_once-a39-no-roo-e666e--before-any-byte-is-fetched-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a40_download_is_opt_in_behind_the_advanced_section" classname="r2_3_model_once.spec.ts" time="1.479">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/r2_3_model_once-a40-downlo-0800c-behind-the-advanced-section-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="a40_fresh_profile_records_the_model_absent_honestly" classname="r2_3_model_once.spec.ts" time="3.233">
+</testcase>
+</testsuite>
+<testsuite name="uc01_pick_ocr_review_share.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="4.132" errors="0">
+<testcase name="uc01_pick_ocr_review_share" classname="uc01_pick_ocr_review_share.spec.ts" time="4.132">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc01_pick_ocr_review_share-uc01-pick-ocr-review-share-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc03_paste.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="uc03_paste_button_processes_clipboard_image" classname="uc03_paste.spec.ts">
+<properties>
+<property name="skip" value="A09/UC03 is a chromium-only platform ID (plan testability map); the WebKit attempt is recorded by scripts/probe_webkit_paste.mjs">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="uc03_paste_event_processes_pasted_file" classname="uc03_paste.spec.ts">
+<properties>
+<property name="skip" value="A09/UC03 is a chromium-only platform ID (plan testability map); the WebKit attempt is recorded by scripts/probe_webkit_paste.mjs">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="uc05_edit_review_payload.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="3.718" errors="0">
+<testcase name="uc05_edit_reflects_in_payloads" classname="uc05_edit_review_payload.spec.ts" time="3.718">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc05_edit_review_payload-uc05-edit-reflects-in-payloads-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc07_export_download.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="3.665" errors="0">
+<testcase name="uc07_export_downloads_md_txt_json" classname="uc07_export_download.spec.ts" time="3.665">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc07_export_download-uc07-export-downloads-md-txt-json-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc10_non_english_rejected.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="5.348" errors="0">
+<testcase name="uc10_non_english_rejected_no_cleanup" classname="uc10_non_english_rejected.spec.ts" time="5.348">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc10_non_english_rejected--aada8-english-rejected-no-cleanup-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc11_bad_inputs.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="2" failures="0" skipped="0" time="6.503" errors="0">
+<testcase name="uc11_bad_input_error_states" classname="uc11_bad_inputs.spec.ts" time="3.441">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc11_bad_inputs-uc11-bad-input-error-states-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+<testcase name="uc11_huge_downscaled_before_ocr" classname="uc11_bad_inputs.spec.ts" time="3.062">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../../../test-results/uc11_bad_inputs-uc11-huge-downscaled-before-ocr-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="uc13_injection_guard.spec.ts" timestamp="2026-11-24T23:23:04.858Z" hostname="webkit" tests="1" failures="0" skipped="0" time="69.269" errors="0">
+<testcase name="uc13_injection_posts_are_content_never_obeyed" classname="uc13_injection_guard.spec.ts" time="69.269">
+<system-out>
+<![CDATA[serve_model: GET /model range=- status=200 sent=396705472
+uc13 inj01 (webkit): mode=unavailable attempts=0 latencyMs=3
+uc13 inj02 (webkit): mode=unavailable attempts=0 latencyMs=6
+uc13 inj03 (webkit): mode=unavailable attempts=0 latencyMs=7
+uc13 inj04 (webkit): mode=unavailable attempts=0 latencyMs=4
+uc13 inj05 (webkit): mode=unavailable attempts=0 latencyMs=5
+
+[[ATTACHMENT|../../../../test-results/uc13_injection_guard-uc13--576c0-ts-are-content-never-obeyed-webkit/video.webm]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
