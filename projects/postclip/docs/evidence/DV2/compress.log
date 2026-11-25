@@ -1,0 +1,18 @@
+[compress] capture: /opt/data/workspace/smll/projects/postclip/artifacts/dv/postclip-full-run.webm — 308.4s, 11.23 MB
+[compress] inference segment: 60.6s → 296.5s (235.8s real) shown 11x faster (21.4s)
+[compress] responsive segment: 22.1s → 27.6s (5.4s real, re-centered, natural pace)
+[compress] rendering title/end cards
+[compress] cutting segments (natural pace everywhere except the inference wait)
+[compress]   segA1: 22.1s (expected ~22.1s)
+[compress]   segR (re-centered 390px phone viewport): 5.5s (expected ~5.4s)
+[compress]   segA2: 33.1s (expected ~33.1s)
+[compress]   segB: 21.5s (expected ~21.4s)
+[compress]   segC: 12.0s (expected ~12.0s)
+[compress] assembling (cards + natural + re-centered responsive + natural + time-lapsed inference + natural)
+[compress] assembled: 101.3s, 1.32 MB (intermediate)
+[compress] CRF 30 -> 0.68 MB
+[compress] docs/demo/postclip-full-demo.mp4: 0.68 MB, 101.3s, 720p, crf=30, no audio track
+[compress] rendering the comparison GIF of the same run
+[compress] GIF (full run): 0.94 MB
+[compress] video_manifest.json: entry postclip_full_demo (0.68 MB, sha256 299b22cc1f9a3bbf…)
+[compress] DONE

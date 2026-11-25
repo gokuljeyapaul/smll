@@ -908,20 +908,20 @@
     {
       "id": "postclip_full_demo",
       "path": "docs/demo/postclip-full-demo.mp4",
-      "sha256": "08d0f224a617ed6cbc41a37dec92adaae2d8034586e76440b0aba3e35d1929ca",
-      "size_bytes": 453847,
-      "duration_s": 94.1,
+      "sha256": "299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb",
+      "size_bytes": 684904,
+      "duration_s": 101.3,
       "engine": "chromium",
-      "junit": "junit:docs/evidence/S6/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+      "junit": "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
       "junit_verified": true,
-      "note": "DV (#73): natural-pace FULL-WORKING capture of ONE continuous real run (real clipboard paste, real in-browser OCR, deliberate edit, real copy/share-spy/export downloads, real pinned-model download with visible progress served from the local cache by scripts/serve_model.mjs, opt-in model cleanup, real WASM inference to the guarded verified output). Driver: scripts/make_full_demo_video.mjs (logs: docs/evidence/DV/capture.log); post-production: scripts/compress_full_demo.mjs. The LLM-inference wait is the ONLY time-compressed segment, factor disclosed in a persistent on-screen caption and in artifacts/dv/size-comparison.json; every other stage is natural pace. The junit field points at the committed passing testcase of the primary constituent flow (uc01 pick->OCR->review->share), the same convention the S6 compilation entry uses; the capture run itself is logged, not a junit testcase.",
+      "note": "DV2 (the owner's post-round-2 re-record instruction, epic #80): the natural-pace FULL-WORKING demo re-recorded on the ROUND-2 app — ONE continuous real run: real clipboard paste -> real in-browser OCR -> the share-first RESULT screen (\"Your text\", Copy primary/first) -> real copy (read back and asserted) / share-spy / Save-as-file (.md/.txt/.json) -> deliberate edit -> the SAME result screen at 390x844 (responsive, re-centered in post; assertions live) -> Start over -> the opt-in tidy-up model opened from the collapsed \"Advanced\" section -> real 377 MiB download with visible progress served from the LOCAL cache by scripts/serve_model.mjs (never re-fetched) -> cleanup switched on -> real WASM inference to the guard-verified output -> then a host app on a SECOND origin (e2e/fixtures/host/host.html) embeds PostClip cross-origin, sends a screenshot through the postMessage contract and receives the real OCR text back (the embedded instance shows the model cached — downloaded once). Driver: scripts/make_full_demo_video.mjs (logs: docs/evidence/DV2/capture.log); post-production: scripts/compress_full_demo.mjs. The LLM-inference wait is the ONLY time-compressed segment, factor disclosed in a persistent on-screen caption and in artifacts/dv/size-comparison.json; every other stage is natural pace. The junit field points at the committed passing testcase of the primary constituent flow (uc01 pick->OCR->review->share) on the final round-2 tree, the same convention the S6 compilation entry uses; the capture run itself is logged, not a junit testcase.",
       "compressed_segment": {
         "stage": "llm inference",
-        "real_duration_s": 239,
-        "shown_duration_s": 21.7,
+        "real_duration_s": 235.8,
+        "shown_duration_s": 21.4,
         "factor": 11
       },
-      "built_from": "artifacts/dv/postclip-full-run.webm (sha256 4195fe984c0952dcd973b9107737d2e70f13464a152447dbd97f742d37209b0f)"
+      "built_from": "artifacts/dv/postclip-full-run.webm (sha256 4a2963fe7aa1cba1dbe3f84fe9b091865152b2056c3d4a7baeaf040e7b230059)"
     },
     {
       "id": "s0_negative_corrupt_input_fails_closed_chromium",

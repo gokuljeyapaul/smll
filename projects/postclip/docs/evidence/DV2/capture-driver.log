@@ -1,0 +1,79 @@
+[full-demo] verifying cached model sha256 (396705472 bytes)...
+[full-demo] model sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+[full-demo] starting model server (serves the CACHED pinned file; /model-slow paces the download)
+serve_model: serving /opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf
+serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+serve_model: truncated size=198352736 (half of 396705472)
+serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+serve_model: logging requests to /opt/data/workspace/smll/projects/postclip/artifacts/dv/model-server.log
+[full-demo] starting vite preview (direct, explicit IPv4 host) on the TEST dist/
+[full-demo] starting the demo host server (second origin; the R2-2 e2e host page)
+[full-demo] app origin: http://127.0.0.1:4173; host origin: http://localhost:4199 (cross-origin by design)
+[full-demo] launching chromium (headless, 1280x720, video on)
+[full-demo] home screen loaded (test build; model URL -> local cached file)
+[full-demo] marker home_loaded @ 0.7s
+[full-demo] real PNG written to the real clipboard
+[full-demo] marker paste_click @ 4.0s
+[full-demo] marker result_screen @ 4.2s
+[full-demo] marker ocr_done @ 5.5s
+[full-demo] real OCR done: 184 chars — landed on "Your text", Copy first
+[full-demo] marker copy_click @ 7.7s
+[full-demo] marker copied_confirmed @ 7.8s
+[full-demo] copy confirmed: the real clipboard holds exactly the result text
+[full-demo] marker share_click @ 9.3s
+[full-demo] marker export_menu_open @ 10.9s
+[full-demo] marker export-md_click @ 11.6s
+[full-demo] export export-md -> postclip-export.md (184 bytes, real browser download)
+[full-demo] marker export-txt_click @ 12.3s
+[full-demo] export export-txt -> postclip-export.txt (184 bytes, real browser download)
+[full-demo] marker export-json_click @ 13.1s
+[full-demo] export export-json -> postclip-export.json (240 bytes, real browser download)
+[full-demo] marker exports_done @ 13.8s
+[full-demo] marker edit_start @ 15.2s
+[full-demo] marker edit_done @ 18.2s
+[full-demo] edited review text: 226 chars
+[full-demo] marker raw_ocr_shown @ 19.9s
+[full-demo] marker resp_start @ 22.1s
+[full-demo] responsive: Copy fully above the fold, >=44px target, no horizontal overflow at 390x844
+[full-demo] marker resp_mid @ 24.8s
+[full-demo] marker resp_end @ 27.6s
+[full-demo] marker start_over_click @ 28.9s
+[full-demo] marker back_home @ 29.0s
+[full-demo] marker advanced_open @ 30.7s
+[full-demo] Advanced section open: the tidy-up model download is opt-in, one click deep
+[full-demo] marker model_download_click @ 32.3s
+serve_model: GET /model-slow range=- status=200 sent=396705472
+[full-demo] marker model_progress_visible @ 32.4s
+(node:500003) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 drain listeners added to [ServerResponse]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+[full-demo] marker model_progress_25 @ 38.0s
+[full-demo] marker model_progress_50 @ 43.3s
+[full-demo] marker model_progress_75 @ 48.2s
+[full-demo] marker model_ready @ 55.4s
+[full-demo] model downloaded (real bytes over HTTP), sha256-verified and cached — #model-ready visible
+[full-demo] marker llm_toggle_click @ 57.4s
+[full-demo] marker pick_click @ 58.9s
+[full-demo] same screenshot picked again, model cleanup now ON
+[full-demo] marker ocr2_deterministic_visible @ 59.6s
+[full-demo] marker llm_running @ 59.6s
+[full-demo] model cleanup running (real wllama WASM inference started)
+[full-demo] marker llm_applied @ 295.3s
+[full-demo] model cleanup applied after a real inference of 235.6s
+[full-demo] final review text = validated model output (262 chars)
+[full-demo] marker suggestions_visible @ 295.3s
+[full-demo] marker removed_chrome_open @ 297.6s
+[full-demo] share payload = the result text on screen at the click (spy-asserted)
+[full-demo] marker host_segment_start @ 299.2s
+[full-demo] marker host_page_loaded @ 299.6s
+[full-demo] demo host page loaded (cross-origin: the host app embeds PostClip below)
+[full-demo] marker host_frame_home @ 299.7s
+[full-demo] the embedded instance shows "Tidy-up model ready (cached)" — downloaded once, no re-download
+[full-demo] marker host_send_click @ 302.3s
+[full-demo] marker host_result @ 303.7s
+[full-demo] cross-origin round trip: host sent the screenshot, got 184 chars back (origin-checked, allow-listed)
+[full-demo] marker final_hold_start @ 303.8s
+[full-demo] marker final_hold_end @ 308.0s
+[full-demo] video saved: /opt/data/workspace/smll/projects/postclip/artifacts/dv/postclip-full-run.webm (11229702 bytes)
+[full-demo] markers.json written
+[full-demo] CAPTURE OK

@@ -1,0 +1,11 @@
+{
+  "captured_for": "DV2 (round-2 full-demo re-record)",
+  "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+  "ram": "62.8 GiB",
+  "node": "v26.12.1",
+  "ffmpeg": "ffmpeg version n9.0.1-11-ge47273f4d9-20260831 Copyright (c) 2000-2026 the FFmpeg developers",
+  "ffprobe": "ffprobe version n9.0.1-11-ge47273f4d9-20260831 Copyright (c) 2007-2026 the FFmpeg developers",
+  "playwright": "1.65.1",
+  "chromium": "Google Chrome for Testing 159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+  "host": "Hermes agent subagent container (postclip DV2 capture host): 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+}

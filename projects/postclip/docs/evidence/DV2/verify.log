@@ -1,0 +1,4 @@
+verify: phase=BUILDING
+plan_lint: OK (46 acceptance IDs, use cases checked, plan is internally consistent)
+verify_evidence: OK (phase BUILDING, 46 acceptance IDs defined)
+verify: OK
