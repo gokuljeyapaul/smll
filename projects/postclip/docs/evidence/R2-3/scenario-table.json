@@ -158,5 +158,85 @@
     "marker_present": false,
     "ui_state": "honestly absent; the opt-in offer inside the Advanced section",
     "model_network_requests": 0
+  },
+  {
+    "scenario": "reload after download (same context)",
+    "engine": "chromium",
+    "model_bytes": 396705472,
+    "marker_present": true,
+    "ui_state": "ready (cached), no download button",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "same-profile browser restart (close + relaunch, same dir)",
+    "engine": "chromium",
+    "model_bytes": 396705472,
+    "marker_present": true,
+    "ui_state": "ready (cached), no download button",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "volatile storage (the storage cannot keep the model)",
+    "engine": "chromium",
+    "model_bytes": null,
+    "marker_present": false,
+    "ui_state": "kind explanation, no download offered; rules cleanup works",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "not enough room (estimate below the bar)",
+    "engine": "chromium",
+    "model_bytes": null,
+    "marker_present": false,
+    "ui_state": "kind no-room refusal, zero model bytes fetched",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "fresh profile (nothing persisted — private-window equivalent)",
+    "engine": "chromium",
+    "model_bytes": null,
+    "marker_present": false,
+    "ui_state": "honestly absent; the opt-in offer inside the Advanced section",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "reload after download (same context)",
+    "engine": "chromium",
+    "model_bytes": 396705472,
+    "marker_present": true,
+    "ui_state": "ready (cached), no download button",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "same-profile browser restart (close + relaunch, same dir)",
+    "engine": "chromium",
+    "model_bytes": 396705472,
+    "marker_present": true,
+    "ui_state": "ready (cached), no download button",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "volatile storage (the storage cannot keep the model)",
+    "engine": "chromium",
+    "model_bytes": null,
+    "marker_present": false,
+    "ui_state": "kind explanation, no download offered; rules cleanup works",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "not enough room (estimate below the bar)",
+    "engine": "chromium",
+    "model_bytes": null,
+    "marker_present": false,
+    "ui_state": "kind no-room refusal, zero model bytes fetched",
+    "model_network_requests": 0
+  },
+  {
+    "scenario": "fresh profile (nothing persisted — private-window equivalent)",
+    "engine": "chromium",
+    "model_bytes": null,
+    "marker_present": false,
+    "ui_state": "honestly absent; the opt-in offer inside the Advanced section",
+    "model_network_requests": 0
   }
 ]

@@ -1,0 +1,21 @@
+== model fetch/verify (no-op when the pinned file is already cached) == 
+fetch_model: Qwen3-0.6B-Q4_K_M.gguf already present and VERIFIED
+fetch_model: sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a size=396705472 (matches src/model/manifest.ts)
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 62 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.39 kB │ gzip:     0.74 kB
+dist/assets/worker-D29jU1ZI.js       225.50 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-d6Yclh7-.css         7.13 kB │ gzip:     1.97 kB
+dist/assets/index-CE4FKA2x.js        285.96 kB │ gzip:    91.88 kB
+
+✓ built in 2.85s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+== bundle inspection: TEST build (negative control — the detector must TRIP; exit 0 = tripped cleanly, exit 1 = control failure) == 
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .

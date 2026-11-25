@@ -90,9 +90,12 @@ summary = {
                 "touch targets >= 44 px; the result screen walks the same matrix by resizing one real-OCR page "
                 "(one real read per engine, then 320/390/768/1280 resize checks on Copy: visible, >= 44 px, "
                 "inside the frame). Unit-pinned CSS facts: 100dvh (with the vh fallback line only ever "
-                "preceding a dvh line), safe-area insets, a 44 px minimum touch target, and the "
-                "interactive-widget=resizes-content viewport meta (keyboard-open friendly). The layout keeps "
-                "no assumption about owning the window: the shell sizes against the frame's dynamic viewport."
+                "preceding a dvh line), safe-area insets, a 44 px minimum touch target (the primary Copy "
+                "at 56 px keeps a33's >1.2x proportion), and the standard mobile viewport meta — measured: "
+                "WebKit logs a console error for the Chromium-only interactive-widget key, so the meta "
+                "carries no engine-specific keys (A01's no-console-errors gate wins; keyboard-open "
+                "friendliness is the 100dvh shell sizing, not a meta key). The layout keeps no assumption "
+                "about owning the window: the shell sizes against the frame's dynamic viewport."
             ),
         },
         "A43": {

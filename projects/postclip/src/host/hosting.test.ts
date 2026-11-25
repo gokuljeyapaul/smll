@@ -86,9 +86,18 @@ describe('mobile-first layout facts (R2-2, A42)', () => {
     expect(styles).toMatch(/min-height:\s*44px/);
   });
 
-  it('keeps the viewport meta keyboard-open friendly (interactive-widget)', () => {
+  it('keeps the viewport meta the standard mobile one (engine-clean, keyboard-open friendly via 100dvh)', () => {
     const html = readFileSync(join(ROOT, 'index.html'), 'utf-8');
-    expect(html).toMatch(/interactive-widget=resizes-content/);
+    const meta = html.match(/<meta name="viewport" content="([^"]*)"/)?.[1] ?? '';
+    expect(meta).toContain('width=device-width');
+    expect(meta).toContain('initial-scale');
+    // MEASURED (the probe run in this slice): WebKit logs a console ERROR
+    // ("Viewport argument key … not recognized and ignored") for the
+    // Chromium-only "interactive-widget" key — that breaks A01's
+    // no-console-errors gate, so the meta carries no engine-specific
+    // keys. The keyboard-open friendliness is the 100dvh shell sizing
+    // (asserted above), not a meta key.
+    expect(meta).not.toContain('interactive-widget');
   });
 });
 
