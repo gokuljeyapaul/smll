@@ -103,22 +103,12 @@ export class ModelManager {
 
   /** Apply one state-machine event (+ progress patch) and notify. */
   private apply(event: ModelEvent, patch: Partial<ModelProgress> = {}): void {
-    const previousState = this.progress.state;
     this.progress = {
       ...this.progress,
       ...patch,
       state: nextModelState(this.progress.state, event),
     };
     this.lastEmittedBytes = this.progress.receivedBytes;
-    // Stage-transition log (diagnostics for the S5 a12/a14 CI stall; content is
-    // state and byte counts only — never post text). Paired with the model
-    // server's mirrored request log, the console now brackets any stall
-    // between the wire and the state machine.
-    if (this.progress.state !== previousState) {
-      console.info(
-        `postclip-model: ${previousState} -> ${this.progress.state} received=${this.progress.receivedBytes}/${this.progress.totalBytes} attempt=${this.progress.attemptsUsed}`,
-      );
-    }
     for (const listener of [...this.listeners]) {
       listener(this.progress);
     }

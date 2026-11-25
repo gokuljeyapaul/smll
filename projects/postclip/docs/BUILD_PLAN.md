@@ -235,6 +235,11 @@ Each slice is one PR with RED-first tests, real evidence and honest statuses, ve
 - **GREEN**: feature implemented; unit, e2e (Chromium + WebKit), eval, negative and all prior regression pass.
 - Evidence per slice in `docs/evidence/<slice>/`: `red.log`, `green.log`, `e2e.log`, `negative.log`, `summary.json` (see AGENTS.md), `junit/*.xml` (named `chromium*.xml`, `webkit*.xml`, `host*.xml`), `versions.json`; plus updates to `docs/evidence/video_manifest.json`.
 
+Standing rules for every slice (the round-2 rules, kept as the norm since epic #80 folded its slices into this plan as S7–S10):
+
+- Keep every previous acceptance ID passing. Do not weaken or delete an existing test; if a requirement truly changes, change the test **and** the plan row in the same PR and say so in the PR body.
+- Anything real-device or real-OS-share-sheet stays `NOT_RUN` unless actually run. Say so plainly; never claim it.
+
 ### S0 — Foundations: pick a screenshot, read it, review, share or copy
 
 **Acceptance IDs:** A01, A02, A03, A20, A25, A31
@@ -315,7 +320,7 @@ Observable result: a verification report proving every acceptance ID has an hone
 - **GREEN**: all accounted for; remaining `NOT_RUN`/`PARTIAL` items listed with reasons.
 - **Evidence**: `docs/evidence/S6/conformance_report.md` (proven / not proven / how to reproduce), full-suite logs, license inventory, final manifest and video list with paths and hashes, the committed compilation video.
 
-### S7 — R2-1: Share-first result screen (round 2, issue #77)
+### S7 — R2-1: Share-first result screen (issue #77)
 
 **Acceptance IDs:** A32, A33, A34, A35, A36
 
@@ -325,7 +330,7 @@ Observable result: an image that arrives — shared into the installed app throu
 - **GREEN**: all pass in the required engines; the previous suite (A01–A31) still passes; the review screen becomes the result screen (heading "Your text"), and the tests that name the old heading change with it in the same PR.
 - **Evidence**: standard set under `docs/evidence/R2-1/`; the nested-text recall table; the O07 owner gallery.
 
-### S8 — R2-2: Embeddable and responsive (round 2, issue #79)
+### S8 — R2-2: Embeddable and responsive (issue #79)
 
 **Acceptance IDs:** A42, A43, A44, A45, A46
 
@@ -335,7 +340,7 @@ Observable result: PostClip behaves as a component inside a host app (iframe or 
 - **GREEN**: all pass in the required engines (the cross-origin round trip via a host test page on a second local origin); the previous suite (A01–A41) still passes; the no-storage/CSP audits keep their guarantees and honestly note the one new allowed channel (the result `postMessage` to the allow-listed origin).
 - **Evidence**: standard set under `docs/evidence/R2-2/`; the O08 owner gallery (the app inside the demo host page at phone sizes plus the round-trip result).
 
-### S9 — R2-3: Model downloaded once (round 2, issue #78)
+### S9 — R2-3: Model downloaded once (issue #78)
 
 **Acceptance IDs:** A37, A38, A39, A40, A41
 
@@ -354,22 +359,6 @@ Observable result: the repo is tidy and truthful after round 2: the planner's lo
 - **RED**: the docs/dead-code consistency gate (`scripts/cleanup_audit.sh`) fails on the pre-clean-up tree (the mockup folder and its plan reference exist; the #58-chase stage-transition log exists in `src/`), and the full suite is recorded green BEFORE the clean-up (both pre- and post-clean-up runs committed; no test removed or weakened).
 - **GREEN**: the audit passes; the full suite passes again on the final tree — every earlier acceptance ID (A01–A31 from rounds S0–S6 and A32–A46 from S7–S9) still green.
 - **Evidence**: standard set under `docs/evidence/R2-4/` (`red.log` with both pre-clean-up runs, `green.log`, `e2e.log`, `prod.log`, `negative.log`, `demo.log`, `junit/`, `versions.json`, `summary.json`).
-
-## Round 2 (improvements from the owner's hands-on review)
-
-Round 2 re-opens delivery after the owner's review of the finished build (epic #80). The plan stays the single source of truth; each round-2 slice is one issue, one PR, with the same evidence rules as S0–S6. Phase goes back to `BUILDING` until the round is done. Round-2 rules (from the epic, binding for every slice in this round):
-
-- Keep every previous acceptance ID passing. Do not weaken or delete an existing test; if a requirement truly changes, change the test **and** the plan row in the same PR and say so in the PR body.
-- Anything real-device or real-OS-share-sheet stays `NOT_RUN` unless actually run. Say so plainly; never claim it.
-
-Round-2 slices (added to their issues' plans as they start):
-
-- **S7 — R2-1, issue #77 (this section above):** the share-first result screen — a shared screenshot goes straight to the answer: auto-OCR, one progress state, text with a large Copy button first, then Share/Save, then Edit; nested-image text included and measured; kind errors with one obvious next step; the iPhone/hand-off story documented in `docs/INTEGRATION.md`.
-- **R2-2, issue #79:** embeddable and responsive — mobile-first layout, iframe/WebView behaviour, the host messaging contract in `docs/INTEGRATION.md`.
-- **R2-3, issue #78:** model downloaded once — persistence, ephemeral storage handled as a first-class case, the download demoted behind an advanced section.
-- **R2-4, issue #82 (runs last):** round-2 clean-up.
-
-The design mockups in `docs/design/round2/` (PR #81) carry the owner's intent for behaviour and layout, not final pixels; the issues and this plan are the contract, and the owner confirms the real result from the agent's screenshots (O07–O09).
 
 ## Toolchain and preflight
 

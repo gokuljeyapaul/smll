@@ -1,11 +1,14 @@
 # postclip — known limits (honestly recorded)
 
-This is the S6 known-limits document the plan asks for: **what was measured,
-what is `NOT_RUN`, and what a browser simply cannot do here.** Every line is
-backed by committed evidence; nothing is hidden behind a green checkmark.
-The full per-ID accounting lives in `docs/evidence/S6/conformance_report.md`
-and `docs/evidence/S6/summary.json` (all 31 acceptance IDs: 29 `PASS` on the
-final tree, 2 `NOT_RUN`).
+This is the project's known-limits document (the S6 deliverable, kept current
+through round 2): **what was measured, what is `NOT_RUN`, and what a browser
+simply cannot do here.** Every line is backed by committed evidence; nothing
+is hidden behind a green checkmark. Round 1's per-ID accounting lives in
+`docs/evidence/S6/conformance_report.md` and `docs/evidence/S6/summary.json`
+(A01–A31: 29 `PASS` on the final tree, 2 `NOT_RUN`); round 2's IDs (A32–A46,
+delivered by R2-1/R2-2/R2-3) are re-affirmed on the cleaned final tree in
+`docs/evidence/R2-4/summary.json`, with the delivery proofs and per-flow
+detail in the R2-1/R2-2/R2-3 summaries.
 
 ## What the product deliberately does NOT do
 
@@ -69,7 +72,7 @@ final tree, 2 `NOT_RUN`).
   artifact). `frame-ancestors` cannot be enforced in a meta policy (CSP spec)
   and belongs to the hosting layer (plan D10 keeps hosting out of scope).
 
-## Round 2 (R2-3, model downloaded once) — measured and disclosed
+## Model persistence and storage (delivered in R2-3) — measured and disclosed
 
 - **In-session, a wiped/private model store is NOT distinguishable from a
   first visit on this engine matrix** (MEASURED before any change:
@@ -102,7 +105,7 @@ final tree, 2 `NOT_RUN`).
   unchanged and unloosened — the download is an opt-in inside a collapsed
   section now (A40).
 
-## Round 2 (R2-1, share-first result screen) — measured and disclosed
+## Nested-image text and the share-first screen (delivered in R2-1) — measured and disclosed
 
 - **Text inside pictures within the screenshot (A35, nested-image text).**
   Measured on the three synthetic nested-text fixtures (a quoted card, a
@@ -117,10 +120,10 @@ final tree, 2 `NOT_RUN`).
   heavily stylized logos, extreme perspective or very small print will read
   worse, exactly like the plan's honesty statement says about arbitrary real
   screenshots.
-- **Which words came from INSIDE a picture is not labelled.** The R2-1
-  mockup showed the nested text labelled ("Text found inside the pictures:
-  …"); the app includes the text in one flow but does not label its origin,
-  because OCR returns text without image-region segmentation and no
+- **Which words came from INSIDE a picture is not labelled.** The R2-1 design
+  intent showed the nested text labelled ("Text found inside the pictures:
+  …"); the shipped app includes the text in one flow but does not label its
+  origin, because OCR returns text without image-region segmentation and no
   segmentation model ships. Disclosed rather than faked.
 - **The share-target POST route (A32/A36) is Chromium-only** (as A08):
   WebKit-on-Linux does not serve the service-worker share route, so the
@@ -133,7 +136,7 @@ final tree, 2 `NOT_RUN`).
   honestly documented with the supported host-app route in
   `docs/INTEGRATION.md` (the host messaging contract is R2-2, issue #79).
 
-## Round 1 bullets continue below
+## LLM and pipeline behavior (S4–S6 measurements) — disclosed
 
 - **CSP enforcement: everything else ships and is asserted enforced.**
 - **Suggestion summaries are accepted only when every word is traceable to
