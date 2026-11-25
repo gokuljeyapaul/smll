@@ -1,0 +1,41 @@
+{
+  "measured_at": "2026-11-25T21:35:23.902Z",
+  "mp4": {
+    "path": "docs/demo/postclip-full-demo.mp4",
+    "size_bytes": 684904,
+    "sha256": "299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb",
+    "duration_s": 101.3,
+    "height": 720,
+    "crf": 30,
+    "audio": "none (silent by construction)"
+  },
+  "gif_full": {
+    "path": "artifacts/dv/postclip-full-demo.gif",
+    "size_bytes": 937165,
+    "sha256": "9f6b05c06190cb203ecf0d9ca3fe1ab877938a168e4c3fa6b3c2f455c3143e6d",
+    "note": "same run, 640px wide, 8 fps, 128-color palette"
+  },
+  "committed": "mp4",
+  "reason": "the smaller of the same-run mp4/GIF pair is committed; both sizes recorded above",
+  "time_compression": {
+    "stage": "LLM cleanup inference (single-threaded WASM)",
+    "real_duration_s": 235.8,
+    "shown_duration_s": 21.4,
+    "factor": 11,
+    "disclosure": "persistent on-screen caption during the segment: \"Real on-device model inference — one continuous run, shown 11x faster (236s of real time)\""
+  },
+  "responsive_segment": {
+    "stage": "the same result screen at 390x844, inside the same continuous run",
+    "real_duration_s": 5.4,
+    "framing": "the screencast holds the 390px phone viewport at native scale in the top-left of the fixed 1280x720 video; the real strip is cropped and re-centered on the card background — a framing change of real frames, disclosed in the on-screen caption; the duration is untouched (natural pace)"
+  },
+  "embedded_host_segment": {
+    "stage": "a host app on a second origin (localhost:4199) embeds PostClip cross-origin and receives the OCR text through the postMessage contract",
+    "note": "real two-origin round trip inside the same continuous run (e2e/fixtures/host/host.html); natural pace"
+  },
+  "source_capture": {
+    "path": "artifacts/dv/postclip-full-run.webm",
+    "sha256": "4a2963fe7aa1cba1dbe3f84fe9b091865152b2056c3d4a7baeaf040e7b230059",
+    "size_bytes": 11229702
+  }
+}

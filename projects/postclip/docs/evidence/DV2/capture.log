@@ -1,0 +1,71 @@
+full-demo (round-2) capture — 2026-11-25T21:28:55.225Z
+2026-11-25T21:28:55.227Z verifying cached model sha256 (396705472 bytes)...
+2026-11-25T21:28:56.000Z model sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+2026-11-25T21:28:56.042Z starting model server (serves the CACHED pinned file; /model-slow paces the download)
+2026-11-25T21:28:58.892Z starting vite preview (direct, explicit IPv4 host) on the TEST dist/
+2026-11-25T21:28:59.978Z starting the demo host server (second origin; the R2-2 e2e host page)
+2026-11-25T21:29:00.024Z app origin: http://127.0.0.1:4173; host origin: http://localhost:4199 (cross-origin by design)
+2026-11-25T21:29:00.024Z launching chromium (headless, 1280x720, video on)
+2026-11-25T21:29:00.855Z home screen loaded (test build; model URL -> local cached file)
+2026-11-25T21:29:00.945Z marker home_loaded @ 0.7s
+2026-11-25T21:29:03.240Z real PNG written to the real clipboard
+2026-11-25T21:29:04.230Z marker paste_click @ 4.0s
+2026-11-25T21:29:04.410Z marker result_screen @ 4.2s
+2026-11-25T21:29:05.670Z marker ocr_done @ 5.5s
+2026-11-25T21:29:05.670Z real OCR done: 184 chars — landed on "Your text", Copy first
+2026-11-25T21:29:07.949Z marker copy_click @ 7.7s
+2026-11-25T21:29:08.020Z marker copied_confirmed @ 7.8s
+2026-11-25T21:29:08.028Z copy confirmed: the real clipboard holds exactly the result text
+2026-11-25T21:29:09.478Z marker share_click @ 9.3s
+2026-11-25T21:29:11.065Z marker export_menu_open @ 10.9s
+2026-11-25T21:29:11.766Z marker export-md_click @ 11.6s
+2026-11-25T21:29:11.842Z export export-md -> postclip-export.md (184 bytes, real browser download)
+2026-11-25T21:29:12.543Z marker export-txt_click @ 12.3s
+2026-11-25T21:29:12.598Z export export-txt -> postclip-export.txt (184 bytes, real browser download)
+2026-11-25T21:29:13.300Z marker export-json_click @ 13.1s
+2026-11-25T21:29:13.352Z export export-json -> postclip-export.json (240 bytes, real browser download)
+2026-11-25T21:29:14.053Z marker exports_done @ 13.8s
+2026-11-25T21:29:15.366Z marker edit_start @ 15.2s
+2026-11-25T21:29:18.399Z marker edit_done @ 18.2s
+2026-11-25T21:29:19.505Z edited review text: 226 chars
+2026-11-25T21:29:20.099Z marker raw_ocr_shown @ 19.9s
+2026-11-25T21:29:22.336Z marker resp_start @ 22.1s
+2026-11-25T21:29:23.775Z responsive: Copy fully above the fold, >=44px target, no horizontal overflow at 390x844
+2026-11-25T21:29:25.025Z marker resp_mid @ 24.8s
+2026-11-25T21:29:27.777Z marker resp_end @ 27.6s
+2026-11-25T21:29:29.128Z marker start_over_click @ 28.9s
+2026-11-25T21:29:29.190Z marker back_home @ 29.0s
+2026-11-25T21:29:30.931Z marker advanced_open @ 30.7s
+2026-11-25T21:29:30.971Z Advanced section open: the tidy-up model download is opt-in, one click deep
+2026-11-25T21:29:32.473Z marker model_download_click @ 32.3s
+2026-11-25T21:29:32.583Z marker model_progress_visible @ 32.4s
+2026-11-25T21:29:38.181Z marker model_progress_25 @ 38.0s
+2026-11-25T21:29:43.474Z marker model_progress_50 @ 43.3s
+2026-11-25T21:29:48.363Z marker model_progress_75 @ 48.2s
+2026-11-25T21:29:55.641Z marker model_ready @ 55.4s
+2026-11-25T21:29:55.642Z model downloaded (real bytes over HTTP), sha256-verified and cached — #model-ready visible
+2026-11-25T21:29:57.574Z marker llm_toggle_click @ 57.4s
+2026-11-25T21:29:59.141Z marker pick_click @ 58.9s
+2026-11-25T21:29:59.213Z same screenshot picked again, model cleanup now ON
+2026-11-25T21:29:59.843Z marker ocr2_deterministic_visible @ 59.6s
+2026-11-25T21:29:59.856Z marker llm_running @ 59.6s
+2026-11-25T21:29:59.856Z model cleanup running (real wllama WASM inference started)
+2026-11-25T21:33:55.470Z marker llm_applied @ 295.3s
+2026-11-25T21:33:55.471Z model cleanup applied after a real inference of 235.6s
+2026-11-25T21:33:55.484Z final review text = validated model output (262 chars)
+2026-11-25T21:33:55.519Z marker suggestions_visible @ 295.3s
+2026-11-25T21:33:57.775Z marker removed_chrome_open @ 297.6s
+2026-11-25T21:33:59.418Z share payload = the result text on screen at the click (spy-asserted)
+2026-11-25T21:33:59.418Z marker host_segment_start @ 299.2s
+2026-11-25T21:33:59.838Z marker host_page_loaded @ 299.6s
+2026-11-25T21:33:59.839Z demo host page loaded (cross-origin: the host app embeds PostClip below)
+2026-11-25T21:33:59.957Z marker host_frame_home @ 299.7s
+2026-11-25T21:33:59.992Z the embedded instance shows "Tidy-up model ready (cached)" — downloaded once, no re-download
+2026-11-25T21:34:02.487Z marker host_send_click @ 302.3s
+2026-11-25T21:34:03.913Z marker host_result @ 303.7s
+2026-11-25T21:34:03.933Z cross-origin round trip: host sent the screenshot, got 184 chars back (origin-checked, allow-listed)
+2026-11-25T21:34:03.969Z marker final_hold_start @ 303.8s
+2026-11-25T21:34:08.171Z marker final_hold_end @ 308.0s
+2026-11-25T21:34:23.662Z video saved: /opt/data/workspace/smll/projects/postclip/artifacts/dv/postclip-full-run.webm (11229702 bytes)
+2026-11-25T21:34:23.691Z markers.json written
+2026-11-25T21:34:23.836Z CAPTURE OK

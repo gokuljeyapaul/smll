@@ -1,0 +1,19 @@
+npm notice run postclip@0.1.0 build:test
+npm notice run POSTCLIP_TEST_BUILD=1 npm run build
+npm notice run postclip@0.1.0 build
+npm notice run tsc --noEmit && vite build && node scripts/fetch_ocr_assets.mjs && node scripts/build_pwa_precache.mjs
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 62 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.47 kB │ gzip:     0.80 kB
+dist/assets/worker-D29jU1ZI.js       225.50 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-d6Yclh7-.css         7.13 kB │ gzip:     1.97 kB
+dist/assets/index-CYEZvBwi.js        285.74 kB │ gzip:    91.82 kB
+
+✓ built in 1.47s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)

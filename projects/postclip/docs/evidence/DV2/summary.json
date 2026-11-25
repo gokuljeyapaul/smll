@@ -1,0 +1,53 @@
+{
+  "slice": "DV2",
+  "issue": null,
+  "source_digest": "dfbfe76623548e18d3faaf998f33bc82c3db94863c21d8d8e8d01029e51fd814",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "ram": "62.8 GiB",
+    "node": "v26.12.1",
+    "chromium": "Google Chrome for Testing 159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "ffmpeg": "n9.0.1-11-ge47273f4d9-20260831",
+    "host": "Hermes agent subagent container (postclip DV2 capture host): 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+  },
+  "why": "The owner's round-2 instruction: once all round-2 issues are merged, re-record the full-working e2e demo video and overwrite docs/demo/postclip-full-demo.mp4 (all round-2 issues merged: main 67f2b10, zero open issues, epic #80 closed). Delivered as one PR: the re-recorded asset, the refreshed video_manifest.json entry, the README Demo section, and this evidence.",
+  "acceptance": {
+    "A24": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a12_model_downloads_verifies_caches",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a21_model_cleanup_flow_verified_result_or_visible_fallback"
+      ],
+      "videos": ["video:postclip_full_demo"],
+      "notes": "DV2 (the owner's post-round-2 re-record instruction) restates A24 on the unchanged final round-2 tree and REPLACES the committed full-working demo asset: docs/demo/postclip-full-demo.mp4 (same path, new sha256 299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb, 684904 bytes, 101.3 s, 720p, silent). The per-flow video coverage backing A24 is the committed R2-4 full-suite junit above (both engines; every UC01-UC14 flow re-verified green on the cleaned final tree by the R2-4 run; the per-ID accounting lives in docs/evidence/R2-4/summary.json). The NEW artifact is the natural-pace full-working capture of the ROUND-2 app: one continuous real run driven by scripts/make_full_demo_video.mjs — real clipboard paste, real in-browser OCR, the share-first result screen ('Your text', Copy primary, asserted visible and first), real copy with clipboard read-back assertion, share-spy payload assertion, three real .md/.txt/.json downloads with content assertions, a deliberate edit, the raw-OCR transparency view, the SAME result screen at 390x844 (Copy above the fold, >=44 px target, no horizontal overflow — asserted live in the video), Start over, the opt-in Advanced section opened (asserted collapsed first), a REAL 396,705,472-byte pinned-model download with visible moving progress (aria-valuenow polled and logged at 25/50/75 %) served from the local cache by scripts/serve_model.mjs /model-slow, model cleanup switched on, a real 235.6 s single-threaded WASM inference to the guard-verified output identical to the debug modelText, and then a REAL cross-origin host round trip: the R2-2 demo host page (e2e/fixtures/host/host.html) on a second origin (localhost:4199) embeds the app, sends a screenshot through the postMessage contract, and receives 184 chars of real OCR text back with every logged origin asserted — while the embedded instance shows 'Tidy-up model ready (cached)' (downloaded once, never re-fetched). Driver exit 0 with every stage asserted: docs/evidence/DV2/capture.log. Only the model-inference wait is time-compressed (235.8 s real shown at 11x over 21.4 s), with the factor disclosed in a persistent on-screen caption during the segment and in size-comparison.json; every other stage is natural pace, including the responsive segment (a pure framing change: the real 390 px phone strip re-centered on the card background, disclosed in the on-screen caption). The capture is a driver-script recording, not a Playwright testcase, so its manifest junit field points at the committed passing testcase of the primary constituent flow (uc01) on the final round-2 tree, the same convention the S6 compilation and the round-1 DV entries use."
+    }
+  },
+  "commands": {
+    "build": { "command": "npm run build:test", "exit_code": 0, "evidence": "docs/evidence/DV2/build-test.log" },
+    "capture": { "command": "node scripts/make_full_demo_video.mjs", "exit_code": 0, "evidence": "docs/evidence/DV2/capture.log (driver stdout: docs/evidence/DV2/capture-driver.log)" },
+    "compress": { "command": "node scripts/compress_full_demo.mjs", "exit_code": 0, "evidence": "docs/evidence/DV2/compress.log" },
+    "video_structural_verify": { "command": "python3 scripts/verify_full_demo_video.py", "exit_code": 0, "evidence": "docs/evidence/DV2/video-structural-verify.log", "note": "26 checks: null decode, one H.264 stream, no audio track, 1280x720@15fps, faststart, frame count 1519 = 15 x 101.3, duration vs the marker math, per-stage luminance, the responsive segment's centered real strip, caption-window presence, the persistent inference caption, and the committed sha256/size vs the manifest and the budget" },
+    "typecheck": { "command": "npm run typecheck", "exit_code": 0, "evidence": "docs/evidence/DV2/local-gates.log" },
+    "lint": { "command": "npm run lint", "exit_code": 0, "evidence": "docs/evidence/DV2/local-gates.log" },
+    "host_suite": { "command": "npm test (Vitest: 37 files / 346 tests, unit + evidence-integrity S0-S6/R2-*)", "exit_code": 0, "evidence": "docs/evidence/DV2/local-gates.log" },
+    "cleanup_audit": { "command": "bash scripts/cleanup_audit.sh (the R2-4 standing docs/dead-code gate)", "exit_code": 0, "evidence": "docs/evidence/DV2/local-gates.log" },
+    "verify": { "command": "bash scripts/verify.sh (plan lint + evidence integrity)", "exit_code": 0, "evidence": "docs/evidence/DV2/verify.log" }
+  },
+  "artifacts": {
+    "committed_video": "docs/demo/postclip-full-demo.mp4 (684904 bytes, 101.3 s, 720p, H.264 CRF 30, NO audio track, +faststart, sha256 299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb) — OVERWRITES the round-1 asset at the same path (old sha256 08d0f224a617ed6cbc41a37dec92adaae2d8034586e76440b0aba3e35d1929ca, 94.1 s / 453847 bytes; its evidence stays at docs/evidence/DV/)",
+    "measured_gif_same_run": "artifacts/dv/postclip-full-demo.gif (937165 bytes, 0.94 MB, 640px/8fps/128-color palette, not committed: larger than the mp4 — see docs/evidence/DV2/size-comparison.json)",
+    "raw_capture": "artifacts/dv/postclip-full-run.webm (11229702 bytes, 308.4 s, one continuous real run, sha256 4a2963fe7aa1cba1dbe3f84fe9b091865152b2056c3d4a7baeaf040e7b230059 — never committed, per the per-flow-video rule)",
+    "manifest_entry": "postclip_full_demo in docs/evidence/video_manifest.json (refreshed: new sha256/size/duration, the disclosed 11x time-compressed segment, and the round-2 content note)",
+    "boundary_frames": "docs/evidence/DV2/boundary-{cutA-before,cutA-after,inference-end,applied,responsive-mid,host-result}.png — committed cut-boundary frames from the final mp4"
+  },
+  "limitations": [
+    "The capture is Chromium-only: real model inference does not run on Playwright's WebKit on this Linux host (documented S4/S6 engine limitation); the WebKit side of A24's per-flow coverage remains the committed R2-4 (and earlier) evidence.",
+    "The model download in the video is served from the LOCAL cache by scripts/serve_model.mjs via the test-build-only ?testModelUrl flag (the same harness every e2e model flow uses) — the bytes, the visible moving progress bar, the streamed sha256 verification and the cache promote are all real, but the remote Hugging Face fetch itself is not shown; no network re-download happened, per the pinned-model rule (model-server.log: one 396,705,472-byte request, sha256 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a).",
+    "The OS share sheet cannot open in a headless browser: the Share click hands the exact payload to a spy (sanctioned by AGENTS.md), asserted to equal the result text shown at the click; the sheet itself is a documented KNOWN_LIMITS item (A27 NOT_RUN).",
+    "Only the LLM-inference wait is time-compressed (235.8 s at 11x); the model download (23 s), the OCR passes, the editing, the responsive segment, the exports, the host round trip and the result are all natural pace. The factor is disclosed on screen during the segment and in size-comparison.json. The responsive segment is re-framed (the real 390 px phone strip, recorded at native scale in the top-left of the fixed 1280x720 screencast, is cropped and centered on the card background) — a framing change of real frames with the duration untouched, disclosed in the segment's on-screen caption.",
+    "No digested path (src, public, e2e, fixtures, lockfile, package.json — scripts/ and docs/ are NOT in verify_evidence.py's DIGEST_PATHS) changed in this PR, so the source_digest is byte-identical to the R2-4-verified tree (dfbfe766…): the R2-4 full-suite evidence remains the proof for the app code, and the required 'monorepo / verify' check runs that full suite on this PR's head in CI and must be green before the merge (per the merge policy).",
+    "The video was verified structurally (26 checks — full null decode, codec/duration/fps/faststart facts, per-stage luminance, the responsive strip's centering, caption-window and persistent-inference-caption presence, committed sha256/size against the manifest — scripts/verify_full_demo_video.py, receipts in docs/evidence/DV2/video-structural-verify.log); no human watched it on this runner."
+  ]
+}

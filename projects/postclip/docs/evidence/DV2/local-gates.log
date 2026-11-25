@@ -1,0 +1,27 @@
+=== npm run typecheck ===
+npm notice run postclip@0.1.0 typecheck
+npm notice run tsc --noEmit
+typecheck exit=0
+=== npm run lint ===
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+lint exit=0
+=== npm test (vitest: unit + evidence-integrity suites) ===
+npm notice run postclip@0.1.0 test
+npm notice run vitest run
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+
+ Test Files  37 passed (37)
+      Tests  346 passed (346)
+   Start at  21:37:08
+   Duration  8.52s (setup 41%, environment 30%, tests 19%, transform 4%, import 4%, worker 2%)
+
+Environment  jsdom was created 37 times · 4.66s total, 30% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+=== bash scripts/cleanup_audit.sh ===
+cleanup_audit: OK (no mockup references, no TODO(round 2), no stall-chase stage logging, every ledger evidence path exists)
+cleanup_audit exit=0

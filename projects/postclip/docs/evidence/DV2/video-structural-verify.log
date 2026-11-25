@@ -1,0 +1,30 @@
+PASS full-file null decode (exit 0)
+PASS duration 101.3s matches the marker math (expected ~101.1s: intro 4 + natural 60.6 + shown inference 21.4 + natural 12.0 + end 3)
+PASS NO audio track (audio streams: 0)
+PASS exactly one H.264 video stream ([{'codec_name': 'h264', 'codec_type': 'video', 'width': 1280, 'height': 720, 'avg_frame_rate': '15/1'}])
+PASS 1280x720 (1280x720)
+PASS frame count 1519 ~= fps(15.0) x duration(101.3) = 1519 (within 50% slack)
+PASS +faststart: moov@36 before mdat@6965
+PASS stage 'intro card' @ 2.0s: YAVG=43.645 (not blank, not blown out)
+PASS stage 'home screen (paste stage)' @ 8.0s: YAVG=226.501 (not blank, not blown out)
+PASS stage 'result screen (copy/share/export)' @ 20.0s: YAVG=221.072 (not blank, not blown out)
+PASS stage 'responsive 390x844 segment' @ 28.8s: YAVG=84.459 (not blank, not blown out)
+PASS stage 'model download progress' @ 47.3s: YAVG=225.996 (not blank, not blown out)
+PASS stage 'model ready' @ 59.9s: YAVG=221.526 (not blank, not blown out)
+PASS stage 'time-lapsed inference (segB mid)' @ 75.4s: YAVG=213.083 (not blank, not blown out)
+PASS stage 'applied result (segC)' @ 88.1s: YAVG=218.514 (not blank, not blown out)
+PASS stage 'host round trip (segC)' @ 93.3s: YAVG=206.835 (not blank, not blown out)
+PASS stage 'end card' @ 100.3s: YAVG=37.8583 (not blank, not blown out)
+PASS responsive: both padding strips are the dark card background (left YAVG=33.9253, right YAVG=34.4835; the intro card measures 43.645)
+PASS responsive: the centered 390px strip carries the bright app content (strip YAVG=198.97 vs pads 33.9253/34.4835)
+PASS lower-third caption present at the paste window, absent on the intro card (191.141 > 33.0+3)
+PASS lower-third caption absent on the end card (191.141 > 33.0+3)
+PASS inference caption present inside the compressed segment (band YAVG 125.465; the same band before it, no caption: 192.203)
+PASS committed sha256 matches size-comparison.json (299b22cc1f9a3bbf…)
+PASS manifest entry matches the file (sha256 299b22cc1f9a3bbf…, 684904 bytes)
+PASS size 684904 bytes <= 15 MB budget
+PASS the mp4 was committed as the smaller render (mp4 684904 vs gif 937165)
+
+duration=101.3s  size=684904  sha256=299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb
+time_compression: LLM cleanup inference (single-threaded WASM): 235.8s real shown 21.4s at 11x (disclosed on screen)
+VERIFY: ALL CHECKS PASSED

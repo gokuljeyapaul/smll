@@ -1,0 +1,186 @@
+{
+  "video": "artifacts/dv/postclip-full-run.webm",
+  "size_bytes": 11229702,
+  "sha256": "4a2963fe7aa1cba1dbe3f84fe9b091865152b2056c3d4a7baeaf040e7b230059",
+  "markers": [
+    {
+      "name": "home_loaded",
+      "t": 0.736
+    },
+    {
+      "name": "paste_click",
+      "t": 4.022
+    },
+    {
+      "name": "result_screen",
+      "t": 4.202
+    },
+    {
+      "name": "ocr_done",
+      "t": 5.461,
+      "chars": 184
+    },
+    {
+      "name": "copy_click",
+      "t": 7.741
+    },
+    {
+      "name": "copied_confirmed",
+      "t": 7.812
+    },
+    {
+      "name": "share_click",
+      "t": 9.27
+    },
+    {
+      "name": "export_menu_open",
+      "t": 10.857
+    },
+    {
+      "name": "export-md_click",
+      "t": 11.558
+    },
+    {
+      "name": "export-txt_click",
+      "t": 12.335
+    },
+    {
+      "name": "export-json_click",
+      "t": 13.092
+    },
+    {
+      "name": "exports_done",
+      "t": 13.845
+    },
+    {
+      "name": "edit_start",
+      "t": 15.158
+    },
+    {
+      "name": "edit_done",
+      "t": 18.191
+    },
+    {
+      "name": "raw_ocr_shown",
+      "t": 19.891
+    },
+    {
+      "name": "resp_start",
+      "t": 22.128
+    },
+    {
+      "name": "resp_mid",
+      "t": 24.817
+    },
+    {
+      "name": "resp_end",
+      "t": 27.569
+    },
+    {
+      "name": "start_over_click",
+      "t": 28.92
+    },
+    {
+      "name": "back_home",
+      "t": 28.982
+    },
+    {
+      "name": "advanced_open",
+      "t": 30.723
+    },
+    {
+      "name": "model_download_click",
+      "t": 32.265
+    },
+    {
+      "name": "model_progress_visible",
+      "t": 32.375
+    },
+    {
+      "name": "model_progress_25",
+      "t": 37.973,
+      "pct": 26
+    },
+    {
+      "name": "model_progress_50",
+      "t": 43.266,
+      "pct": 52
+    },
+    {
+      "name": "model_progress_75",
+      "t": 48.155,
+      "pct": 76
+    },
+    {
+      "name": "model_ready",
+      "t": 55.433
+    },
+    {
+      "name": "llm_toggle_click",
+      "t": 57.366
+    },
+    {
+      "name": "pick_click",
+      "t": 58.933
+    },
+    {
+      "name": "ocr2_deterministic_visible",
+      "t": 59.635
+    },
+    {
+      "name": "llm_running",
+      "t": 59.648
+    },
+    {
+      "name": "llm_applied",
+      "t": 295.262,
+      "real_inference_s": 235.614
+    },
+    {
+      "name": "suggestions_visible",
+      "t": 295.311
+    },
+    {
+      "name": "removed_chrome_open",
+      "t": 297.567
+    },
+    {
+      "name": "host_segment_start",
+      "t": 299.21
+    },
+    {
+      "name": "host_page_loaded",
+      "t": 299.63
+    },
+    {
+      "name": "host_frame_home",
+      "t": 299.749
+    },
+    {
+      "name": "host_send_click",
+      "t": 302.279
+    },
+    {
+      "name": "host_result",
+      "t": 303.705,
+      "chars": 184
+    },
+    {
+      "name": "final_hold_start",
+      "t": 303.761
+    },
+    {
+      "name": "final_hold_end",
+      "t": 307.963
+    }
+  ],
+  "captured_at": "2026-11-25T21:34:23.690Z",
+  "fixture": "fixtures/images/clean01.png",
+  "model": {
+    "file": "/opt/data/workspace/smll/projects/postclip/.cache/models/Qwen3-0.6B-Q4_K_M.gguf",
+    "sha256": "ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a",
+    "bytes": 396705472,
+    "served_from": "local cache via scripts/serve_model.mjs /model-slow"
+  },
+  "run_shape": "round-2: share-first result screen, responsive 390x844 segment, opt-in Advanced model download, model cleanup, cross-origin embedded round trip"
+}
