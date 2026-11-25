@@ -76,46 +76,116 @@ export type HostLoadImageVerdict =
 const MAX_REQUEST_ID = 128;
 
 /** One candidate origin string → its absolute http(s) origin, or null
- *  (anything else is dropped, never coerced or guessed). Lives in the
- *  GREEN implementation; the RED scaffold parses nothing. */
-
-/**
- * SCAFFOLD (RED, R2-2): the typed contract surface exists so the suite
- * fails BEHAVIOURALLY on the real assertions (not import errors); the
- * bodies are fail-closed stubs. The GREEN implementation replaces them.
- */
-export function parseHostOrigins(param: string | null | undefined): string[] {
-  void param;
-  return [];
+ *  (anything else is dropped, never coerced or guessed). */
+function normalizeOrigin(candidate: string): string | null {
+  try {
+    const url = new URL(candidate);
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+    return url.origin;
+  } catch {
+    return null;
+  }
 }
 
+/**
+ * Parse one comma-separated, URL-encoded origin list (the `?host=` query
+ * parameter or the build-time value). Only absolute http(s) origins parse;
+ * anything else is DROPPED (never coerced, never guessed).
+ */
+export function parseHostOrigins(param: string | null | undefined): string[] {
+  if (!param) return [];
+  // The app reads this from URLSearchParams (already %-decoded); accept the
+  // fully-encoded form too by decoding once before splitting (idempotent
+  // for plain origins).
+  let decoded = String(param);
+  try {
+    decoded = decodeURIComponent(decoded);
+  } catch {
+    // leave as-is — a malformed escape is dropped below, never guessed
+  }
+  const out: string[] = [];
+  for (const raw of decoded.split(',')) {
+    const candidate = raw.trim();
+    if (!candidate) continue;
+    const origin = normalizeOrigin(candidate);
+    if (origin && !out.includes(origin)) out.push(origin);
+  }
+  return out;
+}
+
+/**
+ * The effective allow-list: build-time env origins + the query-param
+ * origins, de-duplicated, origin-normalized. Default: empty (NONE
+ * accepted from other origins).
+ */
 export function hostAllowList(
   envValue: string | undefined,
   queryParam: string | null | undefined,
 ): string[] {
-  void envValue;
-  void queryParam;
-  return [];
+  const out = parseHostOrigins(envValue);
+  for (const origin of parseHostOrigins(queryParam)) {
+    if (!out.includes(origin)) out.push(origin);
+  }
+  return out;
 }
 
+function isHostLoadImageMessage(data: unknown): data is HostLoadImageMessage {
+  if (typeof data !== 'object' || data === null) return false;
+  const d = data as Record<string, unknown>;
+  if (d.type !== HOST_MSG_LOAD_IMAGE) return false;
+  if (typeof d.image !== 'object' || d.image === null) return false;
+  if (typeof Blob !== 'undefined' && d.image instanceof Blob) {
+    // fine — the normal case
+  } else if (d.image instanceof ArrayBuffer) {
+    // fine — the ArrayBuffer case
+  } else {
+    return false;
+  }
+  if (typeof d.mime !== 'string') return false;
+  if (typeof d.requestId !== 'string' || d.requestId.length === 0 || d.requestId.length > MAX_REQUEST_ID) {
+    return false;
+  }
+  return true;
+}
+
+function imageSize(image: Blob | ArrayBuffer): number {
+  return image instanceof ArrayBuffer ? image.byteLength : image.size;
+}
+
+/**
+ * Validate an incoming `postclip:load-image` from `origin`. Checks, in
+ * order: the origin is allow-listed (else ignored, content untouched and
+ * unlogged), the shape is exactly the contract (type, Blob/ArrayBuffer
+ * image, requestId string), the MIME is allowed, and the size is within
+ * the cap. Accepted messages become a File for the normal arrival
+ * pipeline; rejected ones stay ignored (fail closed — the pipeline never
+ * sees a half-valid message).
+ */
 export function validateHostLoadImage(
   data: unknown,
   origin: string,
   allowList: readonly string[],
 ): HostLoadImageVerdict {
-  void data;
-  void origin;
-  void allowList;
-  void MAX_REQUEST_ID; // the GREEN validation enforces the requestId bound
-  return { kind: 'ignored', why: 'bad-message' };
+  // 1. The origin gate runs BEFORE anything else: a non-allow-listed
+  //    sender is ignored outright — its content is never inspected,
+  //    coerced or logged.
+  if (!allowList.includes(origin)) return { kind: 'ignored', why: 'bad-message' };
+  // 2. Shape: exactly the documented contract.
+  if (!isHostLoadImageMessage(data)) return { kind: 'ignored', why: 'bad-message' };
+  // 3. MIME allow-list.
+  if (!HOST_MIME_ALLOWLIST.includes(data.mime)) return { kind: 'ignored', why: 'unsupported-mime' };
+  // 4. Size cap.
+  if (imageSize(data.image) > HOST_MAX_IMAGE_BYTES) return { kind: 'ignored', why: 'too-large' };
+  // Accepted: a normal File on the normal arrival path.
+  const ext = data.mime.split('/')[1]?.split('+')[0] ?? 'img';
+  const file = new File([data.image], `from-host-app.${ext}`, { type: data.mime });
+  return { kind: 'accepted', file, requestId: data.requestId };
 }
 
 /** The reply target for a message that came from `origin`: the origin
  *  itself when allow-listed, else null (never "*", never a guess). */
 export function replyTargetFor(origin: string, allowList: readonly string[]): string | null {
-  void origin;
-  void allowList;
-  return null;
+  return allowList.includes(origin) ? origin : null;
 }
 
 export interface HostBridgeHandlers {
@@ -141,6 +211,11 @@ interface BridgeWindow {
   removeEventListener(type: 'message', listener: (event: MessageEvent) => void): void;
 }
 
+/** The minimal parent surface the bridge needs (injectable for tests). */
+interface BridgeParent {
+  postMessage(data: unknown, targetOrigin: string): void;
+}
+
 /**
  * Install the host bridge: the window message listener + the outgoing
  * postMessage surface. Returns null (and installs NOTHING) when the
@@ -153,6 +228,77 @@ export function createHostBridge(opts: {
   win?: BridgeWindow;
   parent?: unknown;
 }): HostBridge | null {
-  void opts;
-  return null;
+  const allowList = [...opts.allowList];
+  if (allowList.length === 0) return null;
+
+  const win: BridgeWindow = opts.win ?? (globalThis as unknown as BridgeWindow);
+  // `window.parent !== window` is the embedded check — a reference
+  // comparison, allowed cross-origin (no window.top anywhere; A43).
+  const parentWindow = (opts.parent ?? (win as unknown as { parent?: unknown }).parent) as
+    | BridgeParent
+    | undefined;
+  const embedded = parentWindow !== undefined && parentWindow !== (win as unknown);
+  if (!embedded || !parentWindow) return null;
+
+  /** The origin of the last ACCEPTED load — replies go back to it (an
+   *  allow-listed origin by construction), never to "*". */
+  let lastLoadOrigin: string | null = null;
+
+  const post = (data: unknown, targetOrigin: string) => {
+    if (!targetOrigin || targetOrigin === '*') return; // never "*" (A44)
+    parentWindow.postMessage(data, targetOrigin);
+  };
+
+  const onMessage = (event: MessageEvent) => {
+    // The origin gate: a non-allow-listed sender is ignored SILENTLY —
+    // no reply, no content logging, nothing inspected.
+    const target = replyTargetFor(event.origin, allowList);
+    if (!target) return;
+    const data = event.data as unknown;
+    if (typeof data === 'object' && data !== null && (data as { type?: unknown }).type === HOST_MSG_LOAD_IMAGE) {
+      const verdict = validateHostLoadImage(data, event.origin, allowList);
+      if (verdict.kind === 'accepted') {
+        lastLoadOrigin = event.origin;
+        opts.handlers.onLoadImage(verdict.file, verdict.requestId);
+      } else {
+        // A message from an ALLOW-LISTED origin that is malformed or
+        // oversized gets an explicit error (the host can fix it); the
+        // requestId is echoed when the message carried a usable one.
+        const requestId =
+          typeof (data as { requestId?: unknown }).requestId === 'string' &&
+          ((data as { requestId: string }).requestId.length ?? 0) > 0 &&
+          ((data as { requestId: string }).requestId.length ?? 0) <= MAX_REQUEST_ID
+            ? (data as { requestId: string }).requestId
+            : '';
+        post({ type: HOST_MSG_ERROR, requestId, code: verdict.why }, event.origin);
+      }
+    }
+    // Anything else (unknown types from an allow-listed origin) is
+    // ignored too — the contract has exactly four messages.
+  };
+
+  win.addEventListener('message', onMessage);
+
+  // Announce the bridge to every allow-listed origin on boot (A45).
+  for (const origin of allowList) {
+    post({ type: HOST_MSG_READY }, origin);
+  }
+
+  return {
+    allowList,
+    embedded,
+    reportResult(requestId: string, text: string) {
+      const target = lastLoadOrigin;
+      if (!target) return; // nothing to correlate — nothing leaves
+      post({ type: HOST_MSG_RESULT, requestId, text }, target);
+    },
+    reportError(requestId: string, code: HostErrorCode) {
+      const target = lastLoadOrigin;
+      if (!target) return;
+      post({ type: HOST_MSG_ERROR, requestId, code }, target);
+    },
+    destroy() {
+      win.removeEventListener('message', onMessage);
+    },
+  };
 }

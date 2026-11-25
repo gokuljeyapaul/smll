@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "project": "postclip",
   "phase": "BUILDING",
-  "current_slice": "R2-3",
+  "current_slice": "R2-2",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model; S5 adds the production-build e2e pass + bundle inspection to test.sh); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -66,16 +66,24 @@
       "note": "Round 2 slice 1 (issue #77, plan section 'Round 2' / slice S7, IDs A32-A36): the share-first result screen. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked before R2-3 started). Merge SHA + post-merge main verification recorded here by the R2-3 slice per the next-slice-updates-the-merge-SHA convention."
     },
     "R2-3": {
-      "status": "IN_PROGRESS",
+      "status": "MERGED",
       "issue": 78,
-      "branch": "feature/postclip/R2-3-model-once",
-      "note": "Round 2 slice 3 (issue #78, plan section 'Round 2' / slice S9, IDs A37-A41): the model downloads ONCE and survives \u2014 reload + same-profile browser restart land ready (cached) with zero model network requests; persist() requested at the user's opt-in (never at load); the estimate no-room refusal; the cheap size+marker fresh-start check; volatile storage explained kindly with no download; the download demoted behind the collapsed 'Advanced: optional tidy-up model' section; the A19 decision re-cited on numbers. RED committed under docs/evidence/R2-3/ (env-probe.json measured BEFORE any change per the issue's reproduce-first rule); GREEN in progress."
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/84",
+      "merge_sha": "ee67b2eff439d81b035d631d580a10ca975d3450",
+      "note": "Round 2 slice 3 (issue #78, plan section 'Round 2' / slice S9, IDs A37-A41): the model downloads ONCE and survives — reload + same-profile restart land ready (cached) with zero model network requests; persist() at the opt-in only; the estimate no-room refusal; the cheap size+marker fresh-start check; volatile storage explained kindly with no download; the download demoted behind the collapsed 'Advanced: optional tidy-up model' section; the A19 decision re-cited on numbers. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked before R2-2 started). Merge SHA + post-merge main verification recorded here by the R2-2 slice per the next-slice-updates-the-merge-SHA convention."
+    },
+    "R2-2": {
+      "status": "IN_PROGRESS",
+      "issue": 79,
+      "branch": "feature/postclip/R2-2-embeddable",
+      "note": "Round 2 slice 2 (issue #79, plan section 'Round 2' / slice S8, IDs A42-A46): embeddable and responsive — the mobile-first layout (320-1280, no horizontal overflow, >=44px touch targets, 100dvh, safe-area insets, light+dark), embedded iframe/WebView behaviour (no window.top/popups, the blocked-clipboard kind fallback, never silent), the postMessage host contract (origin allow-list default none, replies never '*', 32 MiB cap, png/jpeg/webp, documented in docs/INTEGRATION.md), the hosting docs (frame-ancestors HTTP header with nginx/Caddy/Node examples, allow=/sandbox recommendation, storage-partitioning reality) and the cross-origin round-trip e2e (a host test page on a second local origin). RED committed under docs/evidence/R2-2/red.log; GREEN in progress."
     }
   },
   "last_verified_merged_pr": {
-    "slice": "R2-1 (share-first result screen, issue #77)",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/83",
-    "merge_sha": "5bdb5823a1863472bc6105cc131c853a4d9489b1",
-    "main_check_after_merge": "monorepo / verify green on main at 5bdb582 (checked via the check-runs API before R2-3 branched)"
+    "slice": "R2-3 (model downloaded once, issue #78)",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/84",
+    "merge_sha": "ee67b2eff439d81b035d631d580a10ca975d3450",
+    "main_check_after_merge": "monorepo / verify: success on main at ee67b2eff439d81b035d631d580a10ca975d3450 (re-checked via the GitHub check-runs API at the start of R2-2)",
+    "note": "recorded here by the R2-2 slice per the next-slice-updates-the-merge-SHA convention"
   }
 }

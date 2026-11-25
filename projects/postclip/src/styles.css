@@ -47,7 +47,34 @@ body {
 .app {
   max-width: 720px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  /* R2-2 (A42): mobile-first fluid layout. Safe-area insets (notches, home
+     bars) via max(); the shell sizes against the FRAME's dynamic viewport
+     (100dvh — inside an iframe that is the frame's own height, so the host
+     may size the frame to anything); the 100vh line is only the fallback
+     for pre-dvh engines. */
+  padding: 24px
+    max(16px, env(safe-area-inset-right))
+    max(48px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  min-height: 100vh; /* fallback only — the dvh line below wins */
+  min-height: 100dvh;
+}
+
+/* R2-2 (A42): touch targets >= 44 px on every interactive element — the
+   primary actions stay tappable one-handed on a phone (WCAG 2.5.5). */
+.btn,
+.btn-secondary,
+.btn-copy-primary,
+.link-button,
+.export-item,
+.export-menu summary,
+.advanced-cleanup summary,
+.advanced-model summary,
+.raw-ocr summary,
+.llm-removed summary,
+.llm-toggle,
+.llm-include {
+  min-height: 44px;
 }
 
 .app-header {

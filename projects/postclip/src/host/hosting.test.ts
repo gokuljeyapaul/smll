@@ -46,11 +46,17 @@ describe('embedded behaviour source scan (R2-2, A43)', () => {
     const offenders: string[] = [];
     for (const file of shippedSources(SRC)) {
       const text = readFileSync(file, 'utf-8');
-      // Comments may EXPLAIN the ban; actual member access must not exist.
+      // Comments may EXPLAIN the ban (e.g. "no window.top anywhere") and
+      // strings may mention it; actual member access must not exist. Strip
+      // string literals first, then comments, then match.
       const noStrings = text.replace(/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`/g, '');
-      if (/window\s*\.\s*top\b/.test(noStrings)) offenders.push(`${file}: window.top`);
-      if (/window\s*\.\s*open\b/.test(noStrings)) offenders.push(`${file}: window.open`);
-      if (/\bopener\b/.test(noStrings)) offenders.push(`${file}: window.opener`);
+      const noComments = noStrings
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/^\s*\/\/.*$/gm, '')
+        .replace(/\/\/(?=.*$)/g, '');
+      if (/window\s*\.\s*top\b/.test(noComments)) offenders.push(`${file}: window.top`);
+      if (/window\s*\.\s*open\b/.test(noComments)) offenders.push(`${file}: window.open`);
+      if (/\bopener\b/.test(noComments)) offenders.push(`${file}: window.opener`);
     }
     expect(offenders, `embed-hostile APIs found: ${offenders.join(', ')}`).toEqual([]);
   });

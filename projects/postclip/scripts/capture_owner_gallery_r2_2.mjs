@@ -59,7 +59,13 @@ async function waitUp(url, timeoutMs = 60_000, expectOk = true) {
 
 function startPreview() {
   const child = spawn('npm', ['run', 'preview'], { cwd: ROOT, stdio: 'ignore', detached: false });
-  const stop = () => { try { child.kill('SIGKILL'); } catch {} };
+  const stop = () => {
+    try {
+      child.kill('SIGKILL');
+    } catch {
+      // already dead — nothing to do
+    }
+  };
   process.once('exit', stop);
   return { child, stop };
 }

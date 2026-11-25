@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- R2-2 (A42): interactive-widget=resizes-content — the on-screen
+         keyboard resizes the frame's viewport (keyboard-open friendly),
+         which pairs with the 100dvh shell sizing. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
     <meta name="description" content="Turn a screenshot of a post into clean, shareable text — privately, on your own device." />
     <meta name="theme-color" content="#101418" />
     <!-- S5 (A29): the strict CSP, verbatim from scripts/csp-policy.mjs (the
