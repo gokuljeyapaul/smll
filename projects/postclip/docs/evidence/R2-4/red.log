@@ -1,0 +1,13 @@
+== R2-4 RED part 1: the docs/dead-code consistency gate FAILS on the pre-clean-up tree ==
+command: bash scripts/cleanup_audit.sh
+cleanup_audit: FAIL - docs/design/round2/ still exists
+cleanup_audit: FAIL - stale mockup references:
+    docs/BUILD_PLAN.md
+cleanup_audit: FAIL - stage-transition debug logging still in src/:
+    src/model/manager.ts
+cleanup_audit: problems found (see above)
+cleanup_audit exit code: 1
+
+(Exit semantics written down in the script and in negative.log: exit 1 = the tree still
+carries round-2 scaffolding — the mockup folder, its plan reference, and the #58-chase
+stage-transition logging are all still present. Exit 0 after the clean-up = clean.)

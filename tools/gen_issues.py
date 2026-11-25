@@ -162,7 +162,11 @@ def create(project, issues, repo):
         body = i["body"]
         if "epic" in i["labels"]:
             for key, n in numbers.items():
-                body = body.replace("- [ ] " + key, "- [ ] #%d %s" % (n, key))
+                # Anchor the key with a digit lookahead: replacing the S1
+                # line must never rewrite the S10 line (prefix collision —
+                # postclip grew past S9, and the tools test caught this).
+                body = re.sub(r"- \[ \] %s(?!\d)" % re.escape(key),
+                              "- [ ] #%d %s" % (n, key), body)
         else:
             m = re.search(r"Blocked by: (%s S\d+)" % re.escape(project), body)
             if m and m.group(1) in numbers:
