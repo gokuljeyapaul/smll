@@ -1,6 +1,7 @@
 """Self-tests for plan_lint.py and verify_evidence.py (stdlib unittest)."""
 import json
 import pathlib
+import re
 import shutil
 import sys
 import tempfile
@@ -89,12 +90,19 @@ class ConformanceLintTests(unittest.TestCase):
 
     def test_owner_item_slice_must_exist(self):
         lines = self.text.splitlines()
+        # A WELL-FORMED slice ID the plan does not define. The original
+        # sentinel was "S9", which stayed valid only while the plan had no
+        # S9 — R2-3 (slice S9) legitimately added that section, so the
+        # sentinel is now DERIVED: the premise "an owner item naming a
+        # nonexistent slice must be flagged" stays true as the plan grows.
+        used = set(re.findall(r"(?m)^### ([SD]\d+)\b", self.text))
+        sentinel = next(s for s in (f"S{n}" for n in range(100)) if s not in used)
         for i, line in enumerate(lines):
             if line.startswith("| O03 |"):
                 cells = [c.strip() for c in line.strip().strip("|").split("|")]
-                cells[1] = "S9"
+                cells[1] = sentinel
                 lines[i] = "| " + " | ".join(cells) + " |"
-        self.assertTrue(any("O03" in p and "S9" in p for p in plan_lint.lint("\n".join(lines))))
+        self.assertTrue(any("O03" in p and sentinel in p for p in plan_lint.lint("\n".join(lines))))
 
 
 class PreflightOsTests(unittest.TestCase):
