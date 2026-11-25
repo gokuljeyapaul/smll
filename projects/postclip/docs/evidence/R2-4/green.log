@@ -1,0 +1,421 @@
+== model fetch/verify (no-op when the pinned file is already cached) == 
+fetch_model: Qwen3-0.6B-Q4_K_M.gguf already present and VERIFIED
+fetch_model: sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a size=396705472 (matches src/model/manifest.ts)
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 62 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.47 kB │ gzip:     0.80 kB
+dist/assets/worker-D29jU1ZI.js       225.50 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-d6Yclh7-.css         7.13 kB │ gzip:     1.97 kB
+dist/assets/index-CYEZvBwi.js        285.74 kB │ gzip:    91.82 kB
+
+✓ built in 3.59s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+== bundle inspection: TEST build (negative control — the detector must TRIP; exit 0 = tripped cleanly, exit 1 = control failure) == 
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+== vitest (two-pass, A25 in-run validation; the summary's host refs need the pass-1 junit) == 
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run --reporter=default --reporter=junit --outputFile.junit=docs/evidence/R2-4/junit/host-vitest.staging.xml
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ src/evidence/evidence-integrity-r2-4.test.ts (4 tests | 4 failed) 21ms
+   ❯ evidence integrity (A25, R2-4) (4)
+     × has a summary.json for the R2-4 slice 14ms
+     × accounts for every round-2 acceptance ID with a valid status 2ms
+     × every PASS points at passed JUnit testcases covering the required engines 1ms
+     × non-PASS entries carry notes; every referenced video exists in the manifest 1ms
+ ✓ src/evidence/evidence-integrity-s3.test.ts (4 tests) 113ms
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an HTTP error (404) fails closed without caching (A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > gives up after the attempt budget and fails closed with a purge (A12/A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: persist() unavailable in this browser - not requested
+
+ ✓ src/model/manager.test.ts (18 tests) 293ms
+ ✓ src/evidence/audit-deps.test.ts (4 tests) 900ms
+   ✓ audit deps (A26, S6) (4)
+     ✓ the model pin is well-formed and the cached weights byte-verify against it 883ms
+ ✓ src/evidence/evidence-integrity-s5.test.ts (4 tests) 78ms
+ ✓ src/evidence/evidence-integrity-s4.test.ts (4 tests) 86ms
+ ✓ src/cleanup/cleanup.test.ts (48 tests) 196ms
+ ✓ src/evidence/evidence-integrity-s6.test.ts (5 tests) 137ms
+ ✓ src/evidence/evidence-integrity-s2.test.ts (4 tests) 62ms
+ ✓ src/host/messaging.test.ts (22 tests) 222ms
+ ✓ src/model/sha256.test.ts (5 tests) 125ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > accepts every English fixture (>= 95% required)
+language gate: English accepted 33/33 = 100.0%
+  en blur01: ratio=0.333 words=33 accepted=true
+  en chrome01: ratio=0.255 words=47 accepted=true
+  en chrome02: ratio=0.273 words=33 accepted=true
+  en clean01: ratio=0.405 words=42 accepted=true
+  en clean02: ratio=0.400 words=75 accepted=true
+  en clean03: ratio=0.175 words=40 accepted=true
+  en clean04: ratio=0.346 words=26 accepted=true
+  en clean05: ratio=0.350 words=40 accepted=true
+  en clean06: ratio=0.342 words=38 accepted=true
+  en clean07: ratio=0.360 words=50 accepted=true
+  en clean08: ratio=0.488 words=41 accepted=true
+  en dark01: ratio=0.306 words=36 accepted=true
+  en dark02: ratio=0.341 words=44 accepted=true
+  en dark03: ratio=0.262 words=42 accepted=true
+  en emoji01: ratio=0.306 words=36 accepted=true
+  en emoji02: ratio=0.297 words=37 accepted=true
+  en heavychrome01: ratio=0.250 words=48 accepted=true
+  en heavychrome02: ratio=0.292 words=48 accepted=true
+  en huge01: ratio=0.441 words=34 accepted=true
+  en inj01: ratio=0.319 words=47 accepted=true
+  en inj02: ratio=0.279 words=43 accepted=true
+  en inj03: ratio=0.270 words=37 accepted=true
+  en inj04: ratio=0.366 words=41 accepted=true
+  en inj05: ratio=0.273 words=44 accepted=true
+  en longpost01: ratio=0.457 words=151 accepted=true
+  en longpost02: ratio=0.393 words=163 accepted=true
+  en lowcontrast01: ratio=0.463 words=41 accepted=true
+  en lowcontrast02: ratio=0.316 words=38 accepted=true
+  en nested01: ratio=0.393 words=56 accepted=true
+  en nested02: ratio=0.333 words=42 accepted=true
+  en nested03: ratio=0.302 words=43 accepted=true
+  en rotate01: ratio=0.371 words=35 accepted=true
+  en tinytext01: ratio=0.394 words=33 accepted=true
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+language gate: non-English accepted 0/5
+  de de01: ratio=0.024 words=42 reason=stopwords
+  de de02: ratio=0.022 words=46 reason=stopwords
+  de de03: ratio=0.033 words=61 reason=stopwords
+  es es01: ratio=0.024 words=41 reason=stopwords
+  es es02: ratio=0.019 words=53 reason=stopwords
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+language gate margins: threshold=0.12 min(en)=0.175 max(non-en)=0.033
+
+ ✓ src/language/gate.test.ts (10 tests) 80ms
+stdout | fixtures/manifest.test.ts > fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB
+fixture bytes total: 2849012
+
+ ✓ fixtures/manifest.test.ts (11 tests) 75ms
+ ✓ src/cleanup/llm/validate.test.ts (31 tests) 63ms
+ ✓ src/evidence/evidence-integrity-r2-2.test.ts (4 tests) 71ms
+ ✓ src/evidence/evidence-integrity-r2-3.test.ts (6 tests) 49ms
+ ✓ src/cleanup/llm/pipeline.test.ts (7 tests) 51ms
+ ✓ src/evidence/evidence-integrity-s1.test.ts (4 tests) 49ms
+ ✓ src/evidence/evidence-integrity.test.ts (4 tests) 22ms
+ ✓ src/evidence/evidence-integrity-r2-1.test.ts (4 tests) 37ms
+ ✓ src/host/hosting.test.ts (13 tests) 22ms
+stdout | src/cleanup/cleanup-latency.test.ts > deterministic cleanup latency (A22 budget) > cleanupOcrText on every fixture gold input completes within 60 s per call
+cleanup latency: 38 fixtures, mean 0.317 ms, max 3.810 ms (budget 60000 ms per call)
+
+ ✓ src/cleanup/cleanup-latency.test.ts (1 test) 25ms
+ ✓ src/ingest/route.test.ts (16 tests) 19ms
+ ✓ src/model/manifest.test.ts (8 tests) 11ms
+ ✓ src/model/download.test.ts (10 tests) 11ms
+ ✓ src/privacy/audit.test.ts (15 tests) 26ms
+ ✓ src/model/storage-policy.test.ts (12 tests) 11ms
+ ✓ src/image/validate.test.ts (10 tests) 17ms
+ ✓ src/evidence/bundle-inspection-evidence.test.ts (2 tests) 17ms
+ ✓ src/output/payload.test.ts (11 tests) 22ms
+ ✓ src/output/payload-suggestions.test.ts (7 tests) 15ms
+ ✓ src/model/state.test.ts (2 tests) 9ms
+ ✓ src/flow/arrival.test.ts (15 tests) 12ms
+ ✓ src/model/llm-default-decision.test.ts (3 tests) 9ms
+ ✓ src/ocr/normalize.test.ts (6 tests) 12ms
+ ✓ src/cleanup/llm/parse.test.ts (8 tests) 10ms
+ ✓ src/cleanup/llm/prompt.test.ts (4 tests) 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/evidence/evidence-integrity-r2-4.test.ts > evidence integrity (A25, R2-4) > has a summary.json for the R2-4 slice
+AssertionError: docs/evidence/R2-4/summary.json must exist: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/evidence/evidence-integrity-r2-4.test.ts:70:79
+     68| describe('evidence integrity (A25, R2-4)', () => {
+     69|   it('has a summary.json for the R2-4 slice', () => {
+     70|     expect(existsSync(SUMMARY), 'docs/evidence/R2-4/summary.json must …
+       |                                                                               ^
+     71|   });
+     72|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/evidence/evidence-integrity-r2-4.test.ts > evidence integrity (A25, R2-4) > accounts for every round-2 acceptance ID with a valid status
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/docs/evidence/R2-4/summary.json'
+ ❯ src/evidence/evidence-integrity-r2-4.test.ts:74:32
+     72|
+     73|   it('accounts for every round-2 acceptance ID with a valid status', (…
+     74|     const summary = JSON.parse(readFileSync(SUMMARY, 'utf-8')) as Summ…
+       |                                ^
+     75|     expect(summary.slice).toBe('R2-4');
+     76|     for (const id of R2_4_IDS) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/evidence/evidence-integrity-r2-4.test.ts > evidence integrity (A25, R2-4) > every PASS points at passed JUnit testcases covering the required engines
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/docs/evidence/R2-4/summary.json'
+ ❯ src/evidence/evidence-integrity-r2-4.test.ts:83:32
+     81|
+     82|   it('every PASS points at passed JUnit testcases covering the require…
+     83|     const summary = JSON.parse(readFileSync(SUMMARY, 'utf-8')) as Summ…
+       |                                ^
+     84|     for (const id of R2_4_IDS) {
+     85|       const entry = summary.acceptance[id];
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/evidence/evidence-integrity-r2-4.test.ts > evidence integrity (A25, R2-4) > non-PASS entries carry notes; every referenced video exists in the manifest
+Error: ENOENT: no such file or directory, open '/opt/data/workspace/smll/projects/postclip/docs/evidence/R2-4/summary.json'
+ ❯ src/evidence/evidence-integrity-r2-4.test.ts:118:32
+    116|
+    117|   it('non-PASS entries carry notes; every referenced video exists in t…
+    118|     const summary = JSON.parse(readFileSync(SUMMARY, 'utf-8')) as Summ…
+       |                                ^
+    119|     const manifest = JSON.parse(readFileSync(MANIFEST, 'utf-8')) as {
+    120|       videos: { id: string }[];
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 36 passed (37)
+      Tests  4 failed | 342 passed (346)
+   Start at  16:50:51
+   Duration  8.45s (setup 41%, environment 32%, tests 19%, import 3%, transform 3%, worker 2%)
+
+Environment  jsdom was created 37 times · 5.11s total, 32% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+JUNIT report written to /opt/data/workspace/smll/projects/postclip/docs/evidence/R2-4/junit/host-vitest.staging.xml
+bootstrap: seeded host-vitest.xml from pass 1 (4 expected failures, all the summary-missing A25 blocks)
+== summary.json generation (every junit ref verified against the committed JUnit) == 
+wrote /opt/data/workspace/smll/projects/postclip/docs/evidence/R2-4/summary.json (15 acceptance IDs re-affirmed, digest dfbfe7662354…)
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run --reporter=default --reporter=junit --outputFile.junit=docs/evidence/R2-4/junit/host-vitest.staging.xml
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > downloads the pinned file with streaming progress and ends ready (A12)
+postclip-model: persist() unavailable in this browser - not requested
+
+ ✓ src/evidence/evidence-integrity-r2-4.test.ts (4 tests) 81ms
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a checksum mismatch purges the cache and ends failed (A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a truncated file (stream ends short of the pinned size) fails closed with a purge (A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an HTTP error (404) fails closed without caching (A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > an interrupted download RESUMES with a Range request and ends ready (A12)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a server that ignores Range makes the app restart cleanly from zero (A12)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > gives up after the attempt budget and fails closed with a purge (A12/A13)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stale cached entry with the wrong size is re-downloaded and replaced
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > readCached() returns the cached bytes (the S4 runtime entry point)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > concurrent download() calls are single-flight (one download, one promote)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a failed download can be retried back to ready (the Try again path)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a starved requestAnimationFrame never freezes the download (CI stall fix)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a fetch that never settles is aborted and retried (CI stall fix 2)
+postclip-model: persist() unavailable in this browser - not requested
+
+stdout | src/model/manager.test.ts > ModelManager — download, verify, cache, fallback (S3) > a stalled download body is aborted and range-resumed (CI stall fix)
+postclip-model: persist() unavailable in this browser - not requested
+
+ ✓ src/model/manager.test.ts (18 tests) 304ms
+ ✓ src/evidence/audit-deps.test.ts (4 tests) 902ms
+   ✓ audit deps (A26, S6) (4)
+     ✓ the model pin is well-formed and the cached weights byte-verify against it 888ms
+ ✓ src/cleanup/cleanup.test.ts (48 tests) 161ms
+ ✓ src/evidence/evidence-integrity-s6.test.ts (5 tests) 113ms
+ ✓ src/model/sha256.test.ts (5 tests) 121ms
+ ✓ src/host/messaging.test.ts (22 tests) 197ms
+ ✓ src/evidence/evidence-integrity-s3.test.ts (4 tests) 90ms
+ ✓ src/evidence/evidence-integrity-s4.test.ts (4 tests) 83ms
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > accepts every English fixture (>= 95% required)
+language gate: English accepted 33/33 = 100.0%
+  en blur01: ratio=0.333 words=33 accepted=true
+  en chrome01: ratio=0.255 words=47 accepted=true
+  en chrome02: ratio=0.273 words=33 accepted=true
+  en clean01: ratio=0.405 words=42 accepted=true
+  en clean02: ratio=0.400 words=75 accepted=true
+  en clean03: ratio=0.175 words=40 accepted=true
+  en clean04: ratio=0.346 words=26 accepted=true
+  en clean05: ratio=0.350 words=40 accepted=true
+  en clean06: ratio=0.342 words=38 accepted=true
+  en clean07: ratio=0.360 words=50 accepted=true
+  en clean08: ratio=0.488 words=41 accepted=true
+  en dark01: ratio=0.306 words=36 accepted=true
+  en dark02: ratio=0.341 words=44 accepted=true
+  en dark03: ratio=0.262 words=42 accepted=true
+  en emoji01: ratio=0.306 words=36 accepted=true
+  en emoji02: ratio=0.297 words=37 accepted=true
+  en heavychrome01: ratio=0.250 words=48 accepted=true
+  en heavychrome02: ratio=0.292 words=48 accepted=true
+  en huge01: ratio=0.441 words=34 accepted=true
+  en inj01: ratio=0.319 words=47 accepted=true
+  en inj02: ratio=0.279 words=43 accepted=true
+  en inj03: ratio=0.270 words=37 accepted=true
+  en inj04: ratio=0.366 words=41 accepted=true
+  en inj05: ratio=0.273 words=44 accepted=true
+  en longpost01: ratio=0.457 words=151 accepted=true
+  en longpost02: ratio=0.393 words=163 accepted=true
+  en lowcontrast01: ratio=0.463 words=41 accepted=true
+  en lowcontrast02: ratio=0.316 words=38 accepted=true
+  en nested01: ratio=0.393 words=56 accepted=true
+  en nested02: ratio=0.333 words=42 accepted=true
+  en nested03: ratio=0.302 words=43 accepted=true
+  en rotate01: ratio=0.371 words=35 accepted=true
+  en tinytext01: ratio=0.394 words=33 accepted=true
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > rejects every German and Spanish fixture (zero non-English accepted)
+language gate: non-English accepted 0/5
+  de de01: ratio=0.024 words=42 reason=stopwords
+  de de02: ratio=0.022 words=46 reason=stopwords
+  de de03: ratio=0.033 words=61 reason=stopwords
+  es es01: ratio=0.024 words=41 reason=stopwords
+  es es02: ratio=0.019 words=53 reason=stopwords
+
+stdout | src/language/gate.test.ts > language gate confusion matrix over fixtures (A06) > separates English from non-English with a margin around the threshold
+language gate margins: threshold=0.12 min(en)=0.175 max(non-en)=0.033
+
+ ✓ src/language/gate.test.ts (10 tests) 55ms
+ ✓ src/evidence/evidence-integrity-s5.test.ts (4 tests) 79ms
+stdout | fixtures/manifest.test.ts > fixture manifest lint (A31) > total committed fixture bytes stay under 6 MB
+fixture bytes total: 2849012
+
+ ✓ fixtures/manifest.test.ts (11 tests) 79ms
+ ✓ src/evidence/evidence-integrity-r2-2.test.ts (4 tests) 67ms
+ ✓ src/evidence/evidence-integrity-s2.test.ts (4 tests) 94ms
+ ✓ src/cleanup/llm/validate.test.ts (31 tests) 91ms
+ ✓ src/cleanup/llm/pipeline.test.ts (7 tests) 65ms
+ ✓ src/evidence/evidence-integrity-s1.test.ts (4 tests) 64ms
+ ✓ src/evidence/evidence-integrity-r2-3.test.ts (6 tests) 61ms
+ ✓ src/evidence/evidence-integrity-r2-1.test.ts (4 tests) 37ms
+ ✓ src/privacy/audit.test.ts (15 tests) 23ms
+stdout | src/cleanup/cleanup-latency.test.ts > deterministic cleanup latency (A22 budget) > cleanupOcrText on every fixture gold input completes within 60 s per call
+cleanup latency: 38 fixtures, mean 0.348 ms, max 4.951 ms (budget 60000 ms per call)
+
+ ✓ src/cleanup/cleanup-latency.test.ts (1 test) 31ms
+ ✓ src/evidence/evidence-integrity.test.ts (4 tests) 25ms
+ ✓ src/host/hosting.test.ts (13 tests) 33ms
+ ✓ src/ingest/route.test.ts (16 tests) 26ms
+ ✓ src/image/validate.test.ts (10 tests) 20ms
+ ✓ src/output/payload.test.ts (11 tests) 23ms
+ ✓ src/evidence/bundle-inspection-evidence.test.ts (2 tests) 10ms
+ ✓ src/output/payload-suggestions.test.ts (7 tests) 12ms
+ ✓ src/cleanup/llm/prompt.test.ts (4 tests) 14ms
+ ✓ src/model/download.test.ts (10 tests) 15ms
+ ✓ src/ocr/normalize.test.ts (6 tests) 10ms
+ ✓ src/model/storage-policy.test.ts (12 tests) 14ms
+ ✓ src/flow/arrival.test.ts (15 tests) 22ms
+ ✓ src/model/manifest.test.ts (8 tests) 16ms
+ ✓ src/cleanup/llm/parse.test.ts (8 tests) 35ms
+ ✓ src/model/state.test.ts (2 tests) 11ms
+ ✓ src/model/llm-default-decision.test.ts (3 tests) 9ms
+
+ Test Files  37 passed (37)
+      Tests  346 passed (346)
+   Start at  16:51:03
+   Duration  8.52s (setup 44%, environment 26%, tests 19%, transform 4%, import 4%, worker 3%)
+
+Environment  jsdom was created 37 times · 4.21s total, 26% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+JUNIT report written to /opt/data/workspace/smll/projects/postclip/docs/evidence/R2-4/junit/host-vitest.staging.xml
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' --version
+== scripts/verify.sh (plan lint + evidence integrity at phase BUILDING, current slice R2-4) == 
+verify: phase=BUILDING
+plan_lint: OK (46 acceptance IDs, use cases checked, plan is internally consistent)
+verify_evidence: OK (phase BUILDING, 46 acceptance IDs defined)
+verify: OK
+EXIT CODES: model=0 build_test=0 inspect_test_control=0 lint=0 chromium=0 webkit=0 prod_build=0 inspect_prod=0 prod_chromium=0 prod_webkit=0 summary=0 unit=0 demo_build_test=0 demo=0 cleanup_audit=1 versions=0 verify=0
+R2-4 FINAL EVIDENCE RUN: FAILURES PRESENT — see the exit codes above.
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' --version
+== scripts/verify.sh (plan lint + evidence integrity at phase BUILDING, current slice R2-4) == 
+verify: phase=BUILDING
+plan_lint: OK (46 acceptance IDs, use cases checked, plan is internally consistent)
+verify_evidence: OK (phase BUILDING, 46 acceptance IDs defined)
+verify: OK
+EXIT CODES: cleanup_audit=1 versions=0 verify=0
+R2-4 FINAL EVIDENCE RUN: FAILURES PRESENT — see the exit codes above.
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' --version
+== scripts/verify.sh (plan lint + evidence integrity at phase BUILDING, current slice R2-4) == 
+verify: phase=BUILDING
+plan_lint: OK (46 acceptance IDs, use cases checked, plan is internally consistent)
+verify_evidence: OK (phase BUILDING, 46 acceptance IDs defined)
+verify: OK
+EXIT CODES: cleanup_audit=0 versions=0 verify=0
+R2-4 FINAL EVIDENCE RUN: ALL STAGES GREEN (negative controls tripped as expected; the cleaned tree passes the full suite).

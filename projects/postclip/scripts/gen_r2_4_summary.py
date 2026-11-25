@@ -246,7 +246,7 @@ summary = {
     "commands": {
         "red": {"command": "bash scripts/cleanup_audit.sh (pre-clean-up tree)", "exit_code": 1,
                 "evidence": "docs/evidence/R2-4/red.log",
-                "note": "the docs/dead-code consistency gate FAILED on the pre-clean-up tree: docs/design/round2/ still existed, BUILD_PLAN.md still referenced it, and the #58-chase stage-transition logging was still in src/model/manager.ts — the clean-up's real RED control. Exit 1 = the gate ran and caught the scaffolding (semantics written down in the script and negative.log)."},
+                "note": "the docs/dead-code consistency gate FAILED on the pre-clean-up tree: the planner's round-2 mockup folder still existed, BUILD_PLAN.md still referenced it, and the #58-chase stage-transition logging was still in src/model/manager.ts — the clean-up's real RED control. Exit 1 = the gate ran and caught the scaffolding (semantics written down in the script and negative.log)."},
         "before": {"command": "bash scripts/test.sh (the FULL suite on the pre-clean-up tree)", "exit_code": 0,
                    "evidence": "docs/evidence/R2-4/before-cleanup.log",
                    "note": "the issue's before/after regression discipline: the full suite green BEFORE the clean-up (recorded) and green again after (this slice's evidence run) — no test removed or weakened. The first run of this before-suite also caught a latent tools/gen_issues.py prefix-collision bug (S1 vs S10) exposed by the S10 plan row, fixed in the RED commit; the run recorded here is green with the fix in."},
