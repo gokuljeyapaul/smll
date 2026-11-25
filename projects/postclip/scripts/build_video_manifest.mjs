@@ -91,6 +91,13 @@ const TESTCASES = [
   'a39_no_room_refuses_the_download_before_any_byte_is_fetched',
   'a40_download_is_opt_in_behind_the_advanced_section',
   'a40_fresh_profile_records_the_model_absent_honestly',
+  // R2-2 (embeddable and responsive): every testcase that may own a video.
+  'a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport',
+  'a42_result_screen_fluid_through_the_viewport_matrix_one_real_read',
+  'a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame',
+  'a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so',
+  'a45_cross_origin_host_round_trip_load_image_to_result',
+  'a45_message_from_non_allowlisted_origin_is_ignored',
 ];
 
 /** Match a video directory name to its testcase. Playwright names video dirs

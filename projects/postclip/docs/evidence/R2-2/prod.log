@@ -1,0 +1,47 @@
+== production build + inspection (exit 0 = CLEAN) + e2e/prod per engine == 
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 62 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.45 kB │ gzip:     0.78 kB
+dist/assets/worker-D29jU1ZI.js       225.50 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-d6Yclh7-.css         7.13 kB │ gzip:     1.97 kB
+dist/assets/index-YjIWAoCz.js        284.71 kB │ gzip:    91.54 kB
+
+✓ built in 1.22s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+# bundle inspection (prod mode) — dist
+CSP meta: matches the expected policy verbatim
+CSP policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://huggingface.co; base-uri 'none'; form-action 'none'; object-src 'none'
+index.html resource URLs: 3, all same-origin
+no source maps shipped
+scanned 10 .js files (21720874 bytes)
+PRODUCTION BUNDLE: CLEAN — no test hooks, no eval, strict CSP verbatim.
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=chromium e2e/prod --reporter=list,junit
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 3 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/prod/a29_production.spec.ts:61:1 › a29_production_smoke_pick_review_share_copy_from_dist (3.5s)
+  ✓  2 [chromium] › e2e/prod/a29_production.spec.ts:100:1 › a29_production_strict_csp_shipped_and_enforced (3.6s)
+  ✓  3 [chromium] › e2e/prod/a29_production.spec.ts:189:1 › a29_production_test_hooks_absent_and_inert (2.8s)
+
+  3 passed (12.1s)
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test --project=webkit e2e/prod --reporter=list,junit
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 3 tests using 1 worker
+
+  ✓  1 [webkit] › e2e/prod/a29_production.spec.ts:61:1 › a29_production_smoke_pick_review_share_copy_from_dist (3.9s)
+  ✓  2 [webkit] › e2e/prod/a29_production.spec.ts:100:1 › a29_production_strict_csp_shipped_and_enforced (4.0s)
+  ✓  3 [webkit] › e2e/prod/a29_production.spec.ts:189:1 › a29_production_test_hooks_absent_and_inert (3.6s)
+
+  3 passed (13.8s)

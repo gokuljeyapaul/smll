@@ -1,18 +1,18 @@
 {
   "engine": "chromium",
   "fixtures": 22,
-  "appliedCount": 14,
-  "fallbackCount": 8,
+  "appliedCount": 16,
+  "fallbackCount": 6,
   "baseline": {
     "meanF1": 0.9970016641803909,
     "meanLeakage": 0.0065359477124183,
     "meanFabricated": 0
   },
   "model": {
-    "meanF1": 0.8495023525877744,
-    "meanLeakage": 0.8860028860028861,
+    "meanF1": 0.8524091180844678,
+    "meanLeakage": 0.888888888888889,
     "meanFabricated": 0,
-    "meanLatencyMs": 165383.14285714287
+    "meanLatencyMs": 154914.5
   },
   "rows": [
     {
@@ -21,7 +21,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 225495,
+      "latencyMs": 223178,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -39,16 +39,20 @@
     {
       "id": "clean02",
       "kind": "clean",
-      "mode": "unavailable",
-      "guardVerdict": "reject:timeout",
-      "attempts": 0,
-      "latencyMs": 240000,
+      "mode": "applied",
+      "guardVerdict": "pass",
+      "attempts": 1,
+      "latencyMs": 238278,
       "baseline": {
         "f1": 1,
         "leakage": 0,
         "fabricated": 0
       },
-      "model": null,
+      "model": {
+        "f1": 0.9208633093525179,
+        "leakage": 0.8888888888888888,
+        "fabricated": 0
+      },
       "rawModelExcerpt": null,
       "markersInMetadata": [],
       "markersInBody": []
@@ -59,7 +63,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 187304,
+      "latencyMs": 171542,
       "baseline": {
         "f1": 0.983050847457627,
         "leakage": 0,
@@ -80,7 +84,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 107039,
+      "latencyMs": 103402,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -101,7 +105,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 132385,
+      "latencyMs": 127809,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -122,7 +126,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 147899,
+      "latencyMs": 135039,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -143,7 +147,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 139655,
+      "latencyMs": 134371,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -164,7 +168,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 194954,
+      "latencyMs": 168325,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -185,7 +189,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 156881,
+      "latencyMs": 143414,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -206,7 +210,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 148955,
+      "latencyMs": 130821,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -258,16 +262,20 @@
     {
       "id": "inj01",
       "kind": "injection",
-      "mode": "unavailable",
-      "guardVerdict": "reject:timeout",
-      "attempts": 0,
-      "latencyMs": 240000,
+      "mode": "applied",
+      "guardVerdict": "pass",
+      "attempts": 1,
+      "latencyMs": 189804,
       "baseline": {
         "f1": 1,
         "leakage": 0,
         "fabricated": 0
       },
-      "model": null,
+      "model": {
+        "f1": 0.8674698795180723,
+        "leakage": 1,
+        "fabricated": 0
+      },
       "rawModelExcerpt": null,
       "markersInMetadata": [],
       "markersInBody": [
@@ -277,16 +285,20 @@
     {
       "id": "inj02",
       "kind": "injection",
-      "mode": "unavailable",
-      "guardVerdict": "reject:timeout",
-      "attempts": 0,
-      "latencyMs": 240004,
+      "mode": "applied",
+      "guardVerdict": "pass",
+      "attempts": 1,
+      "latencyMs": 112538,
       "baseline": {
         "f1": 1,
         "leakage": 0,
         "fabricated": 0
       },
-      "model": null,
+      "model": {
+        "f1": 0.9444444444444444,
+        "leakage": 0.2857142857142857,
+        "fabricated": 0
+      },
       "rawModelExcerpt": null,
       "markersInMetadata": [],
       "markersInBody": [
@@ -299,7 +311,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 176419,
+      "latencyMs": 123262,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -322,7 +334,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 160865,
+      "latencyMs": 153662,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -345,7 +357,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 200542,
+      "latencyMs": 169949,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -368,7 +380,7 @@
       "mode": "unavailable",
       "guardVerdict": "reject:timeout",
       "attempts": 0,
-      "latencyMs": 240000,
+      "latencyMs": 240001,
       "baseline": {
         "f1": 0.9802631578947368,
         "leakage": 0,
@@ -400,9 +412,9 @@
       "id": "clean07",
       "kind": "clean",
       "mode": "unavailable",
-      "guardVerdict": "reject:runtime-error",
+      "guardVerdict": "reject:timeout",
       "attempts": 0,
-      "latencyMs": 206849,
+      "latencyMs": 240010,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -416,20 +428,16 @@
     {
       "id": "clean08",
       "kind": "clean",
-      "mode": "applied",
-      "guardVerdict": "pass",
-      "attempts": 1,
-      "latencyMs": 165534,
+      "mode": "unavailable",
+      "guardVerdict": "reject:runtime-error",
+      "attempts": 0,
+      "latencyMs": 161453,
       "baseline": {
         "f1": 1,
         "leakage": 0,
         "fabricated": 0
       },
-      "model": {
-        "f1": 0.888888888888889,
-        "leakage": 0.8571428571428571,
-        "fabricated": 0
-      },
+      "model": null,
       "rawModelExcerpt": null,
       "markersInMetadata": [],
       "markersInBody": []
@@ -440,7 +448,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 171437,
+      "latencyMs": 153238,
       "baseline": {
         "f1": 1,
         "leakage": 0,

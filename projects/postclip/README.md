@@ -7,7 +7,7 @@ Screenshot of a post in, clean shareable text out — in your browser, nothing u
 3. A small local model can tidy it up further where your browser can run one (optional, collapsed out of the way, off by default).
 4. Share it (Telegram or any app via the share sheet), copy it, or export it as `.md` / `.txt` / `.json`.
 
-No cloud, no accounts, nothing stored. English only (v1). An installable web app (PWA). On iPhone, a plain web app cannot receive shares — the supported route is the host app ([docs/INTEGRATION.md](docs/INTEGRATION.md)).
+No cloud, no accounts, nothing stored. English only (v1). An installable web app (PWA) — and, since round 2, an embeddable component: a host app can embed PostClip in an iframe/WebView (responsive from 320 px up) and hand it screenshots through the postMessage contract (origin allow-list, default none) in [docs/INTEGRATION.md](docs/INTEGRATION.md). On iPhone, a plain web app cannot receive shares — the supported route is that host-app embedding ([docs/INTEGRATION.md](docs/INTEGRATION.md)).
 
 ## Demo
 

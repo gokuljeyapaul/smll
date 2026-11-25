@@ -32,6 +32,13 @@ import {
   type ArrivalState,
   type KindErrorReason,
 } from './flow/arrival';
+import {
+  HOST_ALLOWLIST_ENV,
+  HOST_ALLOWLIST_PARAM,
+  createHostBridge,
+  hostAllowList,
+  type HostBridge,
+} from './host/messaging';
 
 export type OcrStatus = 'idle' | 'reading' | 'ready' | 'error';
 
@@ -69,6 +76,13 @@ export function App() {
   const [note, setNote] = useState<string | null>(null);
   const engineRef = useRef<OcrEngine | null>(null);
   const runIdRef = useRef(0);
+  // R2-2 (A44/A45): the host bridge — installed ONLY when the app is
+  // embedded AND the origin allow-list is non-empty (default: empty, so
+  // standalone usage is byte-for-byte unchanged). hostRequestIdRef tracks
+  // which host request owns the in-flight read, so the result (or the kind
+  // error) goes back to the host with the right correlation id.
+  const hostBridgeRef = useRef<HostBridge | null>(null);
+  const hostRequestIdRef = useRef<string | null>(null);
   const [modelProgress, setModelProgress] = useState<ModelProgress>(modelManager.getStatus());
   const [llmEnabled, setLlmEnabled] = useState(LLM_CLEANUP_ENABLED_BY_DEFAULT);
   const llmEnabledRef = useRef(LLM_CLEANUP_ENABLED_BY_DEFAULT);
@@ -84,6 +98,10 @@ export function App() {
    * plus its ONE obvious next step. */
   const fail = useCallback((reason: KindErrorReason, detail?: string) => {
     setArrival((state) => nextArrivalState(state, { type: 'read-failed', reason, detail }));
+    // R2-2 (A45): a host-handed read reports its kind failure back with
+    // the exact reason as the postclip:error code (same strings as the UI).
+    const requestId = hostRequestIdRef.current;
+    if (requestId) hostBridgeRef.current?.reportError(requestId, reason);
   }, []);
 
   // S3 (UC08/UC09/UC14): the model manager runs beside the pipeline —
@@ -116,6 +134,9 @@ export function App() {
   const onImageSelected = useCallback(
     (file: File) => {
       const runId = ++runIdRef.current;
+      // R2-2 (A45): a new manual arrival supersedes any pending host
+      // request — the host handler re-claims the pipeline after this reset.
+      hostRequestIdRef.current = null;
       setImageFile(file);
       setNote(null);
       setRawText('');
@@ -207,6 +228,11 @@ export function App() {
           dispatch({ type: 'read-ok' });
           setLlmSuggestions(null);
           setLlmStatus('off');
+          // R2-2 (A45): the host gets the text the moment the standard read
+          // lands (the last postclip:result for a requestId wins — a model
+          // upgrade later sends the updated text the same way).
+          const hostRequestId = hostRequestIdRef.current;
+          if (hostRequestId) hostBridgeRef.current?.reportResult(hostRequestId, deterministic.text);
 
           // 7. S4 model cleanup (A19: OFF by default; the user opted in):
           //    runs in the Worker on the cached weights, goes through the
@@ -220,6 +246,11 @@ export function App() {
             if (runId !== runIdRef.current) return; // superseded by a newer pick
             if (outcome.kind === 'model') {
               setText(outcome.output.body);
+              // R2-2 (A45): the upgraded text replaces the standard result
+              // for the host too (the last postclip:result wins).
+              if (hostRequestId) {
+                hostBridgeRef.current?.reportResult(hostRequestId, outcome.output.body);
+              }
               setLlmSuggestions({ output: outcome.output, demoted: outcome.validation.demoted ?? false });
               setLlmStatus('applied');
             } else {
@@ -270,6 +301,30 @@ export function App() {
     [dispatch, fail],
   );
 
+  // R2-2 (A44/A45): the host bridge — postclip:load-image from an
+  // allow-listed origin enters the SAME arrival pipeline as a pick. The
+  // bridge installs nothing standalone (empty allow-list) or at top level,
+  // and it never logs message content (A15's rules are unchanged).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const env = import.meta.env as unknown as Record<string, string | undefined>;
+    const allowList = hostAllowList(env[HOST_ALLOWLIST_ENV], params.get(HOST_ALLOWLIST_PARAM));
+    const bridge = createHostBridge({
+      allowList,
+      handlers: {
+        onLoadImage: (file, requestId) => {
+          onImageSelected(file); // resets the pending-host ref synchronously…
+          hostRequestIdRef.current = requestId; // …then this load owns the pipeline
+        },
+      },
+    });
+    hostBridgeRef.current = bridge;
+    return () => {
+      bridge?.destroy();
+      hostBridgeRef.current = null;
+    };
+  }, [onImageSelected]);
+
   // UC03 (S2): Ctrl/Cmd+V with an image on the clipboard routes it into the
   // same pipeline as a pick, from any screen. A paste carrying no image file
   // is ignored — the review textarea's normal text pasting keeps working.
@@ -307,6 +362,7 @@ export function App() {
 
   const onStartOver = useCallback(() => {
     runIdRef.current++;
+    hostRequestIdRef.current = null;
     dispatch({ type: 'reset' });
     setImageFile(null);
     setText('');

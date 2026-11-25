@@ -1,0 +1,118 @@
+<!doctype html>
+<!--
+  R2-2 (A43/A45, issue #79) — the HOST test page: a stand-in "mobile app"
+  that embeds PostClip in an iframe from a DIFFERENT origin and talks to
+  it through the postMessage contract. Doubles as the O08 demo host page
+  (a mock mobile-app frame) for the owner gallery.
+
+  Query params (set by the e2e spec / gallery script):
+    app=<origin>          the embedded app's origin (default http://localhost:4173)
+    allow=<origin>        the origin placed in the app's allow-list query param
+                          (the ALLOW-LISTED sender test passes this page's own
+                          origin; the stranger test passes a different origin)
+    frameallow=<attrs>    optional iframe allow="" attribute (omit = the frame
+                          blocks the capability, which is the A43 case)
+  Privacy: this page keeps the received text only in the DOM — never in
+  its URL, its storage, or any network call.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Host app (demo)</title>
+    <style>
+      :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+      body { margin: 0; background: #e9edf2; color: #101418; padding: 12px; }
+      .phone {
+        max-width: 420px; margin: 0 auto; background: #fff; border-radius: 28px;
+        border: 8px solid #1a2027; overflow: hidden;
+      }
+      .phone-status { background: #1a2027; color: #e8eaf0; font-size: 12px; padding: 4px 14px; }
+      .host-toolbar {
+        display: flex; gap: 8px; align-items: center; padding: 10px 12px;
+        background: #f1f5f9; border-bottom: 1px solid #d9dde3;
+      }
+      .host-title { font-size: 14px; font-weight: 700; margin: 0; flex: 1; }
+      iframe { width: 100%; height: 480px; border: 0; display: block; background: #fff; }
+      button {
+        font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px;
+        border: 0; border-radius: 10px; background: #2563eb; color: #fff; cursor: pointer;
+      }
+      .status { font-size: 12px; color: #5c6470; margin: 10px 4px 4px; max-width: 420px; }
+      ol { font-size: 12px; color: #5c6470; margin: 4px; max-width: 420px; }
+      pre {
+        white-space: pre-wrap; word-break: break-word; background: #f8fafc;
+        border: 1px solid #d9dde3; border-radius: 10px; padding: 10px;
+        font-size: 13px; max-width: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone" id="phone">
+      <div class="phone-status">HOST APP · embeds PostClip below</div>
+      <div class="host-toolbar">
+        <p class="host-title">Host app (demo)</p>
+        <button id="send-btn" type="button">Send screenshot to PostClip</button>
+      </div>
+      <iframe id="postclip-frame" title="PostClip"></iframe>
+    </div>
+    <p class="status" id="host-status">Waiting for PostClip messages…</p>
+    <ol id="host-log" data-testid="host-log"></ol>
+    <pre id="result-text" hidden></pre>
+    <script>
+      (function () {
+        var params = new URLSearchParams(location.search);
+        var app = params.get('app') || 'http://localhost:4173';
+        var allow = params.get('allow') || app;
+        var frameAllow = params.get('frameallow');
+        var frame = document.getElementById('postclip-frame');
+        var src = app + '/?host=' + encodeURIComponent(allow);
+        frame.setAttribute('src', src);
+        if (frameAllow !== null) frame.setAttribute('allow', frameAllow);
+
+        var log = document.getElementById('host-log');
+        var status = document.getElementById('host-status');
+        var result = document.getElementById('result-text');
+        var count = 0;
+
+        // PostClip → host: record every message with its asserted origin.
+        window.addEventListener('message', function (event) {
+          // Only the embedded app's origin is meaningful; anything else is
+          // recorded as a stranger (the test asserts it never happens).
+          count += 1;
+          var d = event.data || {};
+          var li = document.createElement('li');
+          li.setAttribute('data-origin', event.origin);
+          li.setAttribute('data-type', String(d.type || '?'));
+          li.setAttribute('data-index', String(count));
+          li.textContent = '#' + count + ' from ' + event.origin + ' type=' + (d.type || '?');
+          log.appendChild(li);
+          status.textContent = 'Received ' + count + ' message(s).';
+          if (d.type === 'postclip:result') {
+            result.textContent = d.text;
+            result.hidden = false;
+          }
+        });
+
+        // host → PostClip: hand the screenshot over (Blob + requestId).
+        document.getElementById('send-btn').addEventListener('click', function () {
+          fetch('/fixture.png')
+            .then(function (r) { return r.arrayBuffer(); })
+            .then(function (buf) {
+              frame.contentWindow.postMessage(
+                {
+                  type: 'postclip:load-image',
+                  image: new Blob([buf], { type: 'image/png' }),
+                  mime: 'image/png',
+                  requestId: 'demo-request-1'
+                },
+                app
+              );
+              status.textContent = 'Screenshot sent — waiting for the text…';
+            })
+            .catch(function (err) { status.textContent = 'Send failed: ' + err; });
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,139 @@
+{
+  "slice": "R2-2",
+  "source_digest": "11460a40a88521d8b124be62be1539a61c580caa27fb91828c5ef55f1eb57c44",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright 1.65.1, build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+  },
+  "acceptance": {
+    "A42": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-2/junit/chromium-e2e.xml::a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport",
+        "junit:docs/evidence/R2-2/junit/webkit-e2e.xml::a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport",
+        "junit:docs/evidence/R2-2/junit/chromium-e2e.xml::a42_result_screen_fluid_through_the_viewport_matrix_one_real_read",
+        "junit:docs/evidence/R2-2/junit/webkit-e2e.xml::a42_result_screen_fluid_through_the_viewport_matrix_one_real_read",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::mobile-first layout facts (R2-2, A42) > uses 100dvh for viewport-relative height (never a bare 100vh)",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::mobile-first layout facts (R2-2, A42) > keeps a minimum 44px touch target on interactive elements",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::mobile-first layout facts (R2-2, A42) > respects safe-area insets"
+      ],
+      "videos": [
+        "video:a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport_chromium",
+        "video:a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport_webkit",
+        "video:a42_result_screen_fluid_through_the_viewport_matrix_one_real_read_chromium",
+        "video:a42_result_screen_fluid_through_the_viewport_matrix_one_real_read_webkit"
+      ],
+      "notes": "Both engines, the issue's full viewport matrix (320x568, 390x844, 768x1024, 1280x800) in BOTH color schemes on the home screen: no horizontal overflow anywhere (document scrollWidth <= viewport), the primary action (Choose screenshot) visible and fully inside the viewport with touch targets >= 44 px; the result screen walks the same matrix by resizing one real-OCR page (one real read per engine, then 320/390/768/1280 resize checks on Copy: visible, >= 44 px, inside the frame). Unit-pinned CSS facts: 100dvh (with the vh fallback line only ever preceding a dvh line), safe-area insets, a 44 px minimum touch target (the primary Copy at 56 px keeps a33's >1.2x proportion), and the standard mobile viewport meta \u2014 measured: WebKit logs a console error for the Chromium-only interactive-widget key, so the meta carries no engine-specific keys (A01's no-console-errors gate wins; keyboard-open friendliness is the 100dvh shell sizing, not a meta key). The layout keeps no assumption about owning the window: the shell sizes against the frame's dynamic viewport."
+    },
+    "A43": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-2/junit/chromium-e2e.xml::a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame",
+        "junit:docs/evidence/R2-2/junit/webkit-e2e.xml::a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame",
+        "junit:docs/evidence/R2-2/junit/chromium-e2e.xml::a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so",
+        "junit:docs/evidence/R2-2/junit/webkit-e2e.xml::a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::embedded behaviour source scan (R2-2, A43) > never touches window.top, window.open or window.opener in shipped source"
+      ],
+      "videos": [
+        "video:a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame_chromium",
+        "video:a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame_webkit",
+        "video:a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so_chromium",
+        "video:a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so_webkit"
+      ],
+      "notes": "Both engines: the app runs inside a cross-origin iframe (the host test page on a second local origin) \u2014 the home screen renders, the pick flow runs INSIDE the frame through the real in-browser OCR to the result screen, and the embedding host page records zero page errors. Where the frame blocks clipboard-write WITHOUT an allow= policy (the issue's exact example), Chromium shows the specific, kind fallback ('Copying is blocked here\u2026 select the text below and copy it yourself') with no 'Copied' note \u2014 never a silent failure; WebKit's in-frame clipboard behavior is attempted and recorded (the test asserts the no-silent-failure invariant: a visible outcome, copied OR explained). Source-scan (unit): no window.top, window.open or window.opener anywhere in shipped source."
+    },
+    "A44": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host allow-list (R2-2, A44) > defaults to EMPTY: nothing is accepted from other origins",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host allow-list (R2-2, A44) > parses URL-encoded comma-separated origins from the query param",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host allow-list (R2-2, A44) > drops invalid entries and normalizes to the origin (no path, no guess)",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host allow-list (R2-2, A44) > merges build-time env origins with query-param origins, de-duplicated",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host load-image validation (R2-2, A44) > accepts a well-formed message from an allow-listed origin",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host load-image validation (R2-2, A44) > rejects the wrong type, missing fields and wrong shapes (why: bad-message)",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host load-image validation (R2-2, A44) > rejects images over the 33554432 byte cap (why: too-large)",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host load-image validation (R2-2, A44) > rejects every mime outside the allow-list (why: unsupported-mime)",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host reply targets (R2-2, A44) > replies only to an allow-listed origin, never \"*\"",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host bridge (R2-2, A44/A45) > posts postclip:ready to each allow-listed origin on boot",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host bridge (R2-2, A44/A45) > a load-image from a NON-allow-listed origin is ignored \u2014 no reply, no handler call",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::host bridge (R2-2, A44/A45) > reportResult replies to the origin the load came from (allow-listed), never \"*\""
+      ],
+      "notes": "The contract is pure, unit-tested logic in src/host/messaging.ts: parseHostOrigins (URL-encoded comma-separated http(s) origins; invalid entries dropped, never coerced), hostAllowList (build-time VITE_POSTCLIP_HOST_ORIGINS + ?host= query param, de-duplicated; DEFAULT EMPTY \u2014 nothing accepted), validateHostLoadImage (origin gate FIRST \u2014 a non-allow-listed sender is ignored before its content is inspected or logged; then exact shape: type, Blob/ArrayBuffer image, bounded requestId; then the MIME allow-list image/png|jpeg|webp; then the 32 MiB size cap), replyTargetFor (allow-listed origin or null \u2014 never '*'). The bridge (createHostBridge) installs NOTHING when the allow-list is empty or the app is not embedded (standalone usage is byte-for-byte unaffected), posts postclip:ready to each allow-listed origin on boot, replies only to the origin an accepted load came from, and ignores non-allow-listed senders with no reply and no content logging. Documented in docs/INTEGRATION.md (docs-honesty unit-pinned: the message types, the 32 MiB cap and the MIME allow-list in the doc are the code's)."
+    },
+    "A45": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-2/junit/chromium-e2e.xml::a45_cross_origin_host_round_trip_load_image_to_result",
+        "junit:docs/evidence/R2-2/junit/webkit-e2e.xml::a45_cross_origin_host_round_trip_load_image_to_result",
+        "junit:docs/evidence/R2-2/junit/chromium-e2e.xml::a45_message_from_non_allowlisted_origin_is_ignored",
+        "junit:docs/evidence/R2-2/junit/webkit-e2e.xml::a45_message_from_non_allowlisted_origin_is_ignored"
+      ],
+      "videos": [
+        "video:a45_cross_origin_host_round_trip_load_image_to_result_chromium",
+        "video:a45_cross_origin_host_round_trip_load_image_to_result_webkit",
+        "video:a45_message_from_non_allowlisted_origin_is_ignored_chromium",
+        "video:a45_message_from_non_allowlisted_origin_is_ignored_webkit"
+      ],
+      "notes": "Both engines, TWO local origins: the host test page (e2e/fixtures/host/host.html, served on 4199) embeds the app (4173) in a cross-origin iframe. The allow-listed page (http://localhost:4199 allow-listed via ?host=) receives postclip:ready on boot with the app's origin recorded per message; its postclip:load-image (a real PNG Blob) drives the real in-browser OCR inside the frame and the result text (> 40 chars, real OCR output) comes back as postclip:result \u2014 every reply's origin asserted to be exactly the app's. The stranger page (http://127.0.0.1:4199, NOT allow-listed while localhost:4199 is) gets NOTHING: its load-image is ignored (no reading state inside the frame within the wait window, home screen intact, zero messages received \u2014 an untrusted origin is never replied to, and not even postclip:ready reaches it because the reply targetOrigin never matches). Privacy on both sides: the host page's URL unchanged and its localStorage/sessionStorage empty; the embedded app's localStorage/sessionStorage empty (the only thing that leaves the app is the result postMessage to the allow-listed origin; the demo host keeps the text in the DOM only \u2014 that is the feature)."
+    },
+    "A46": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > names every message type the code ships",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the exact size cap the code enforces",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the MIME allow-list the code enforces",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > documents the frame-ancestors HTTP header (meta CSP cannot set it)",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > gives a working example config for a static dist/",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > documents the iframe allow=/sandbox recommendation",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the storage-partitioning reality inside frames",
+        "junit:docs/evidence/R2-2/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the origin allow-list default (none accepted) and the never-\"*\" reply rule",
+        "junit:docs/evidence/R2-2/junit/chromium-e2e.xml::a15_no_storage_log_request_leaks_after_flows"
+      ],
+      "notes": "docs/INTEGRATION.md is the single source of truth for hosting and the hand-off: the exact frame-ancestors HTTP header the host must send (a <meta> CSP cannot set frame-ancestors \u2014 the spec ignores it in meta policies) with working example configs for the static dist/ this repo builds (nginx, Caddy, and a plain Node static server), the iframe allow=/sandbox recommendation that keeps the app working (allow=\"clipboard-write\" recommended; a sandbox=\"allow-scripts\" variant documented with its honest costs: opaque origin \u2192 no service worker, no model cache, clipboard blocked \u2192 the kind fallback), and the storage-partitioning reality inside frames (third-party storage is partitioned and often wiped; the app works with ephemeral storage \u2014 the rules cleanup needs none, and the model cache case links to A39's first-class volatile handling). The docs-honesty unit suite pins the doc to the code (message types, 32 MiB cap, MIME allow-list, the never-\"*\" reply rule, the default-empty allow-list). The A15 no-storage audit re-ran green on this tree (this slice's junit) \u2014 the contract adds exactly one allowed channel (the result postMessage to the allow-listed origin) and no post text enters any URL, storage, console or network request on either side (asserted per-flow in the a45 spec too)."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "bash scripts/run_r2_2_red.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-2/red.log",
+      "note": "the RED script records the new suites failing on the pre-implementation app: typecheck 0 and build:test 0 (the failures are behavioural, not build errors); lint exited 1 at RED time on the then-in-progress evidence-gallery script (an empty block in scripts/capture_owner_gallery_r2_2.mjs \u2014 tooling, not app code, fixed before GREEN); the new host-contract Vitest suites failed 18 of 35 tests on the scaffold; the new Playwright flows failed 3 of 6 (the 44px touch-target check measured 37px, the blocked-clipboard kind message absent, postclip:ready never arriving)"
+    },
+    "green": {
+      "command": "bash scripts/run_r2_2_final_evidence.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-2/green.log"
+    },
+    "e2e": {
+      "command": "npx playwright test --project=chromium / --project=webkit (all specs, test build)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-2/e2e.log"
+    },
+    "negative": {
+      "command": "extracted from the green e2e runs + the seeded controls",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-2/negative.log"
+    },
+    "demo": {
+      "command": "npm run build:test && npm run demo",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-2/demo.log"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-2/green.log"
+    }
+  },
+  "limitations": [
+    "Real WebView embedding (Android System WebView, iOS WKWebView) is NOT_RUN on this runner (A27): the e2e coverage uses Playwright's Chromium and WebKit with a real cross-origin iframe from a second local server \u2014 the same embedding mechanics a WebView uses, but not the real shells.",
+    "WebKit's clipboard-write behavior inside a cross-origin iframe without allow= is not deterministically blockable on this matrix; the a43 test asserts the engine-invariant (a visible outcome, copied OR explained) and Chromium (deterministically blocked) pins the specific kind fallback message. Attempted and recorded, never faked.",
+    "The origin allow-list travels in the ?host= query parameter (URL-encoded origins only, never post content); a host that cannot control its embed URL should use the build-time VITE_POSTCLIP_HOST_ORIGINS instead. Both are documented in docs/INTEGRATION.md.",
+    "The host channel bounds images at 32 MiB and the MIME allow-list to png/jpeg/webp (the formats the sniff stage reads); a host needing other formats would be a plan change, not a config.",
+    "postclip:result may arrive more than once for a requestId when the optional (off-by-default) model cleanup upgrades the text after the standard result \u2014 the last one wins; documented in docs/INTEGRATION.md.",
+    "Real-device behavior (real mobile share sheets, real WebViews, real OS clipboards) stays NOT_RUN (A27/A30, the plan's optional device pass)."
+  ]
+}

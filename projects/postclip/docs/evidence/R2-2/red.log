@@ -1,0 +1,2144 @@
+== R2-2 RED: typecheck + lint (proof the failures below are behavioural, not build errors) ==
+npm notice run postclip@0.1.0 typecheck
+npm notice run tsc --noEmit
+typecheck exit code: 0
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+
+/opt/data/workspace/smll/projects/postclip/scripts/capture_owner_gallery_r2_2.mjs
+  62:61  error  Empty block statement  no-empty
+
+✖ 1 problem (1 error, 0 warnings)
+
+lint exit code: 1
+== R2-2 RED part 1: host-contract suite (A44) + hosting/source checks (A42/A43/A46) on the scaffold ==
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run src/host
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ src/host/hosting.test.ts (13 tests | 4 failed) 37ms
+   ❯ mobile-first layout facts (R2-2, A42) (4)
+     × uses 100dvh for viewport-relative height (never a bare 100vh) 9ms
+     × respects safe-area insets 2ms
+     × keeps a minimum 44px touch target on interactive elements 2ms
+     × keeps the viewport meta keyboard-open friendly (interactive-widget) 1ms
+ ❯ src/host/messaging.test.ts (22 tests | 14 failed) 108ms
+   ❯ host allow-list (R2-2, A44) (5)
+     × parses URL-encoded comma-separated origins from the query param 11ms
+     × drops invalid entries and normalizes to the origin (no path, no guess) 1ms
+     × merges build-time env origins with query-param origins, de-duplicated 1ms
+   ❯ host load-image validation (R2-2, A44) (7)
+     × accepts a well-formed message from an allow-listed origin 8ms
+     × accepts an ArrayBuffer image (wrapped into the same File) 2ms
+     × rejects images over the 33554432 byte cap (why: too-large) 59ms
+     × rejects every mime outside the allow-list (why: unsupported-mime) 1ms
+   ❯ host reply targets (R2-2, A44) (1)
+     × replies only to an allow-listed origin, never "*" 1ms
+   ❯ host bridge (R2-2, A44/A45) (9)
+     × posts postclip:ready to each allow-listed origin on boot 1ms
+     × a valid load-image from an allow-listed origin reaches the pipeline 2ms
+     × a malformed load-image from an allow-listed origin gets a postclip:error (bad-message), still no content logging 5ms
+     × reportResult replies to the origin the load came from (allow-listed), never "*" 2ms
+     × reportResult before any load is a no-op (nothing to correlate, nothing leaves) 1ms
+     × destroy removes the listener (the bridge stops listening) 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 18 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/host/hosting.test.ts > mobile-first layout facts (R2-2, A42) > uses 100dvh for viewport-relative height (never a bare 100vh)
+AssertionError: the shell must size against the dynamic viewport: expected ':root {\n  color-scheme: light dark;\…' to match /100dvh/
+
+- Expected:
+/100dvh/
+
++ Received:
+":root {
+  color-scheme: light dark;
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #1a1d21;
+  --muted: #5c6470;
+  --accent: #2563eb;
+  --accent-pressed: #1d4ed8;
+  --border: #d9dde3;
+  --focus: #2563eb;
+  /* Button surfaces carry their own tokens (S5 — A23): the dark ACCENT
+     (#60a5fa) is a link/border/text color on the dark page background and
+     passes contrast there, but WHITE TEXT ON IT fails 4.5:1 (measured by
+     axe: 2.6:1). The button fill stays the deeper blue in BOTH schemes so
+     its white label always passes. */
+  --btn-bg: #2563eb;
+  --btn-bg-hover: #1d4ed8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101418;
+    --surface: #1a2027;
+    --text: #e8eaf0;
+    --muted: #9aa4b0;
+    --accent: #60a5fa;
+    --accent-pressed: #3b82f6;
+    --border: #2c343e;
+    --focus: #93c5fd;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.app-tagline {
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.privacy-note {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 36px 16px;
+  text-align: center;
+  background: var(--surface);
+  transition: border-color 120ms ease;
+}
+
+.dropzone.dragover {
+  border-color: var(--accent);
+}
+
+.dropzone-hint {
+  color: var(--muted);
+  margin: 8px 0 16px;
+}
+
+.dropzone-or {
+  color: var(--muted);
+  margin: 0 10px;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--btn-bg);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--btn-bg-hover);
+}
+
+/* S5 (A23): secondary buttons are OUTLINE buttons — hovering must keep the
+   transparent fill (accent text on a page background passes 4.5:1 in both
+   schemes), not inherit the primary .btn:hover fill. The RED axe run
+   measured accent-on-fill at 2.63:1 (dark) / 1.29:1 (light) — a serious
+   color-contrast violation whenever the pointer rests on one. */
+.btn-secondary:hover {
+  background: transparent;
+  border-color: var(--accent);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+.status {
+  margin: 16px 0 0;
+  color: var(--muted);
+}
+
+.error-banner {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fca5a5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .error-banner {
+    background: #3b1d20;
+    color: #fecaca;
+    border-color: #7f2c30;
+  }
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.review-label {
+  display: block;
+  font-weight: 600;
+  margin: 18px 0 8px;
+}
+
+.review-text {
+  width: 100%;
+  min-height: 220px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.review-text:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* R2-1 (A33): the result screen's action row — the answer comes first.
+   Copy is the LARGE primary action (fully above the fold at 390×844);
+   Share and the file-save menu follow; Edit comes after the row. */
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-copy-primary {
+  /* Visibly the primary: ~1.4× the secondary action's box. */
+  padding: 14px 26px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+/* The model opt-in stays reachable but collapsed out of the way (A33). */
+.advanced-cleanup {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-cleanup summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-cleanup[open] {
+  margin-bottom: 4px;
+}
+
+/* R2-3 (A40): the optional tidy-up model download lives only inside this
+   collapsed section on the home screen — never a front-page card. */
+.advanced-model {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-model summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-model[open] {
+  margin-bottom: 4px;
+}
+
+
+.copied-note {
+  color: var(--muted);
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 0;
+  text-decoration: underline;
+}
+
+.link-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.export-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.export-menu summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.export-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.export-items {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 240px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.export-item {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-item:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.export-item:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.raw-ocr {
+  margin-top: 20px;
+}
+
+.raw-ocr summary {
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.raw-ocr summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.raw-ocr-text {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* S3: the model status card, download progress and fallback banners. */
+.model-card {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+}
+
+.model-card-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.model-card-text {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.model-progress-block {
+  margin-top: 20px;
+}
+
+.model-progress-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 6px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--accent);
+  transition: width 120ms linear;
+}
+
+.model-ready {
+  margin-top: 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.model-banner {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.model-banner p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.cleanup-mode {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ── S4: model cleanup opt-in, status line, suggestions ─────────────── */
+
+.llm-toggle-row {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.llm-toggle input {
+  accent-color: var(--accent);
+}
+
+.llm-status {
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.llm-status[data-state='applied'] {
+  border-left: 4px solid #2f9e6f;
+}
+
+.llm-status[data-state='running'] {
+  border-left: 4px solid var(--accent);
+}
+
+.llm-status[data-state='unavailable'] {
+  border-left: 4px solid #c2622a;
+}
+
+.llm-suggestions {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.llm-suggestions-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.llm-suggestions-note {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.llm-demoted {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-left: 4px solid #c2622a;
+  border-radius: 6px;
+  background: rgba(194, 98, 42, 0.08);
+  font-size: 12.5px;
+}
+
+.llm-field {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.llm-field-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.llm-tag {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: var(--chip, #eef2f7);
+  font-size: 12.5px;
+}
+
+.llm-include {
+  margin-left: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.llm-include input {
+  accent-color: var(--accent);
+}
+
+.llm-removed summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.llm-removed-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+"
+
+ ❯ src/host/hosting.test.ts:63:72
+     61|
+     62|   it('uses 100dvh for viewport-relative height (never a bare 100vh)', …
+     63|     expect(styles, 'the shell must size against the dynamic viewport')…
+       |                                                                        ^
+     64|     // Any 100vh present must be the progressive fallback on the line
+     65|     // before a 100dvh line — never the only height.
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯
+
+ FAIL  src/host/hosting.test.ts > mobile-first layout facts (R2-2, A42) > respects safe-area insets
+AssertionError: expected ':root {\n  color-scheme: light dark;\…' to match /safe-area-inset/
+
+- Expected:
+/safe-area-inset/
+
++ Received:
+":root {
+  color-scheme: light dark;
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #1a1d21;
+  --muted: #5c6470;
+  --accent: #2563eb;
+  --accent-pressed: #1d4ed8;
+  --border: #d9dde3;
+  --focus: #2563eb;
+  /* Button surfaces carry their own tokens (S5 — A23): the dark ACCENT
+     (#60a5fa) is a link/border/text color on the dark page background and
+     passes contrast there, but WHITE TEXT ON IT fails 4.5:1 (measured by
+     axe: 2.6:1). The button fill stays the deeper blue in BOTH schemes so
+     its white label always passes. */
+  --btn-bg: #2563eb;
+  --btn-bg-hover: #1d4ed8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101418;
+    --surface: #1a2027;
+    --text: #e8eaf0;
+    --muted: #9aa4b0;
+    --accent: #60a5fa;
+    --accent-pressed: #3b82f6;
+    --border: #2c343e;
+    --focus: #93c5fd;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.app-tagline {
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.privacy-note {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 36px 16px;
+  text-align: center;
+  background: var(--surface);
+  transition: border-color 120ms ease;
+}
+
+.dropzone.dragover {
+  border-color: var(--accent);
+}
+
+.dropzone-hint {
+  color: var(--muted);
+  margin: 8px 0 16px;
+}
+
+.dropzone-or {
+  color: var(--muted);
+  margin: 0 10px;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--btn-bg);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--btn-bg-hover);
+}
+
+/* S5 (A23): secondary buttons are OUTLINE buttons — hovering must keep the
+   transparent fill (accent text on a page background passes 4.5:1 in both
+   schemes), not inherit the primary .btn:hover fill. The RED axe run
+   measured accent-on-fill at 2.63:1 (dark) / 1.29:1 (light) — a serious
+   color-contrast violation whenever the pointer rests on one. */
+.btn-secondary:hover {
+  background: transparent;
+  border-color: var(--accent);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+.status {
+  margin: 16px 0 0;
+  color: var(--muted);
+}
+
+.error-banner {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fca5a5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .error-banner {
+    background: #3b1d20;
+    color: #fecaca;
+    border-color: #7f2c30;
+  }
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.review-label {
+  display: block;
+  font-weight: 600;
+  margin: 18px 0 8px;
+}
+
+.review-text {
+  width: 100%;
+  min-height: 220px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.review-text:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* R2-1 (A33): the result screen's action row — the answer comes first.
+   Copy is the LARGE primary action (fully above the fold at 390×844);
+   Share and the file-save menu follow; Edit comes after the row. */
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-copy-primary {
+  /* Visibly the primary: ~1.4× the secondary action's box. */
+  padding: 14px 26px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+/* The model opt-in stays reachable but collapsed out of the way (A33). */
+.advanced-cleanup {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-cleanup summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-cleanup[open] {
+  margin-bottom: 4px;
+}
+
+/* R2-3 (A40): the optional tidy-up model download lives only inside this
+   collapsed section on the home screen — never a front-page card. */
+.advanced-model {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-model summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-model[open] {
+  margin-bottom: 4px;
+}
+
+
+.copied-note {
+  color: var(--muted);
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 0;
+  text-decoration: underline;
+}
+
+.link-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.export-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.export-menu summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.export-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.export-items {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 240px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.export-item {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-item:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.export-item:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.raw-ocr {
+  margin-top: 20px;
+}
+
+.raw-ocr summary {
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.raw-ocr summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.raw-ocr-text {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* S3: the model status card, download progress and fallback banners. */
+.model-card {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+}
+
+.model-card-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.model-card-text {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.model-progress-block {
+  margin-top: 20px;
+}
+
+.model-progress-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 6px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--accent);
+  transition: width 120ms linear;
+}
+
+.model-ready {
+  margin-top: 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.model-banner {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.model-banner p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.cleanup-mode {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ── S4: model cleanup opt-in, status line, suggestions ─────────────── */
+
+.llm-toggle-row {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.llm-toggle input {
+  accent-color: var(--accent);
+}
+
+.llm-status {
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.llm-status[data-state='applied'] {
+  border-left: 4px solid #2f9e6f;
+}
+
+.llm-status[data-state='running'] {
+  border-left: 4px solid var(--accent);
+}
+
+.llm-status[data-state='unavailable'] {
+  border-left: 4px solid #c2622a;
+}
+
+.llm-suggestions {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.llm-suggestions-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.llm-suggestions-note {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.llm-demoted {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-left: 4px solid #c2622a;
+  border-radius: 6px;
+  background: rgba(194, 98, 42, 0.08);
+  font-size: 12.5px;
+}
+
+.llm-field {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.llm-field-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.llm-tag {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: var(--chip, #eef2f7);
+  font-size: 12.5px;
+}
+
+.llm-include {
+  margin-left: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.llm-include input {
+  accent-color: var(--accent);
+}
+
+.llm-removed summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.llm-removed-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+"
+
+ ❯ src/host/hosting.test.ts:76:20
+     74|
+     75|   it('respects safe-area insets', () => {
+     76|     expect(styles).toMatch(/safe-area-inset/);
+       |                    ^
+     77|   });
+     78|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯
+
+ FAIL  src/host/hosting.test.ts > mobile-first layout facts (R2-2, A42) > keeps a minimum 44px touch target on interactive elements
+AssertionError: expected ':root {\n  color-scheme: light dark;\…' to match /min-height:\s*44px/
+
+- Expected:
+/min-height:\s*44px/
+
++ Received:
+":root {
+  color-scheme: light dark;
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #1a1d21;
+  --muted: #5c6470;
+  --accent: #2563eb;
+  --accent-pressed: #1d4ed8;
+  --border: #d9dde3;
+  --focus: #2563eb;
+  /* Button surfaces carry their own tokens (S5 — A23): the dark ACCENT
+     (#60a5fa) is a link/border/text color on the dark page background and
+     passes contrast there, but WHITE TEXT ON IT fails 4.5:1 (measured by
+     axe: 2.6:1). The button fill stays the deeper blue in BOTH schemes so
+     its white label always passes. */
+  --btn-bg: #2563eb;
+  --btn-bg-hover: #1d4ed8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101418;
+    --surface: #1a2027;
+    --text: #e8eaf0;
+    --muted: #9aa4b0;
+    --accent: #60a5fa;
+    --accent-pressed: #3b82f6;
+    --border: #2c343e;
+    --focus: #93c5fd;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.app-tagline {
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.privacy-note {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 36px 16px;
+  text-align: center;
+  background: var(--surface);
+  transition: border-color 120ms ease;
+}
+
+.dropzone.dragover {
+  border-color: var(--accent);
+}
+
+.dropzone-hint {
+  color: var(--muted);
+  margin: 8px 0 16px;
+}
+
+.dropzone-or {
+  color: var(--muted);
+  margin: 0 10px;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--btn-bg);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--btn-bg-hover);
+}
+
+/* S5 (A23): secondary buttons are OUTLINE buttons — hovering must keep the
+   transparent fill (accent text on a page background passes 4.5:1 in both
+   schemes), not inherit the primary .btn:hover fill. The RED axe run
+   measured accent-on-fill at 2.63:1 (dark) / 1.29:1 (light) — a serious
+   color-contrast violation whenever the pointer rests on one. */
+.btn-secondary:hover {
+  background: transparent;
+  border-color: var(--accent);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+.status {
+  margin: 16px 0 0;
+  color: var(--muted);
+}
+
+.error-banner {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fca5a5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .error-banner {
+    background: #3b1d20;
+    color: #fecaca;
+    border-color: #7f2c30;
+  }
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.review-label {
+  display: block;
+  font-weight: 600;
+  margin: 18px 0 8px;
+}
+
+.review-text {
+  width: 100%;
+  min-height: 220px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.review-text:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* R2-1 (A33): the result screen's action row — the answer comes first.
+   Copy is the LARGE primary action (fully above the fold at 390×844);
+   Share and the file-save menu follow; Edit comes after the row. */
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-copy-primary {
+  /* Visibly the primary: ~1.4× the secondary action's box. */
+  padding: 14px 26px;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+/* The model opt-in stays reachable but collapsed out of the way (A33). */
+.advanced-cleanup {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-cleanup summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-cleanup[open] {
+  margin-bottom: 4px;
+}
+
+/* R2-3 (A40): the optional tidy-up model download lives only inside this
+   collapsed section on the home screen — never a front-page card. */
+.advanced-model {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-model summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-model[open] {
+  margin-bottom: 4px;
+}
+
+
+.copied-note {
+  color: var(--muted);
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 0;
+  text-decoration: underline;
+}
+
+.link-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.export-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.export-menu summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.export-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.export-items {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 240px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.export-item {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-item:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.export-item:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.raw-ocr {
+  margin-top: 20px;
+}
+
+.raw-ocr summary {
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.raw-ocr summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.raw-ocr-text {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* S3: the model status card, download progress and fallback banners. */
+.model-card {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+}
+
+.model-card-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.model-card-text {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.model-progress-block {
+  margin-top: 20px;
+}
+
+.model-progress-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 6px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--accent);
+  transition: width 120ms linear;
+}
+
+.model-ready {
+  margin-top: 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.model-banner {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.model-banner p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.cleanup-mode {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ── S4: model cleanup opt-in, status line, suggestions ─────────────── */
+
+.llm-toggle-row {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.llm-toggle input {
+  accent-color: var(--accent);
+}
+
+.llm-status {
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.llm-status[data-state='applied'] {
+  border-left: 4px solid #2f9e6f;
+}
+
+.llm-status[data-state='running'] {
+  border-left: 4px solid var(--accent);
+}
+
+.llm-status[data-state='unavailable'] {
+  border-left: 4px solid #c2622a;
+}
+
+.llm-suggestions {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.llm-suggestions-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.llm-suggestions-note {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.llm-demoted {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-left: 4px solid #c2622a;
+  border-radius: 6px;
+  background: rgba(194, 98, 42, 0.08);
+  font-size: 12.5px;
+}
+
+.llm-field {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.llm-field-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.llm-tag {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: var(--chip, #eef2f7);
+  font-size: 12.5px;
+}
+
+.llm-include {
+  margin-left: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.llm-include input {
+  accent-color: var(--accent);
+}
+
+.llm-removed summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.llm-removed-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+"
+
+ ❯ src/host/hosting.test.ts:80:20
+     78|
+     79|   it('keeps a minimum 44px touch target on interactive elements', () =…
+     80|     expect(styles).toMatch(/min-height:\s*44px/);
+       |                    ^
+     81|   });
+     82|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯
+
+ FAIL  src/host/hosting.test.ts > mobile-first layout facts (R2-2, A42) > keeps the viewport meta keyboard-open friendly (interactive-widget)
+AssertionError: expected '<!doctype html>\n<html lang="en">\n  …' to match /interactive-widget=resizes-content/
+
+- Expected:
+/interactive-widget=resizes-content/
+
++ Received:
+"<!doctype html>
+<html lang=\"en\">
+  <head>
+    <meta charset=\"UTF-8\" />
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
+    <meta name=\"description\" content=\"Turn a screenshot of a post into clean, shareable text — privately, on your own device.\" />
+    <meta name=\"theme-color\" content=\"#101418\" />
+    <!-- S5 (A29): the strict CSP, verbatim from scripts/csp-policy.mjs (the
+         single source of truth). The test build appends exactly one
+         connect-src origin — the local model server — via vite.config.ts. -->
+    <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://huggingface.co; base-uri 'none'; form-action 'none'; object-src 'none'\" />
+    <link rel=\"manifest\" href=\"/manifest.webmanifest\" />
+    <title>PostClip</title>
+  </head>
+  <body>
+    <div id=\"root\"></div>
+    <script type=\"module\" src=\"/src/main.tsx\"></script>
+  </body>
+</html>
+"
+
+ ❯ src/host/hosting.test.ts:85:18
+     83|   it('keeps the viewport meta keyboard-open friendly (interactive-widg…
+     84|     const html = readFileSync(join(ROOT, 'index.html'), 'utf-8');
+     85|     expect(html).toMatch(/interactive-widget=resizes-content/);
+       |                  ^
+     86|   });
+     87| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host allow-list (R2-2, A44) > parses URL-encoded comma-separated origins from the query param
+AssertionError: expected [] to deeply equal [ 'https://host.example.com' ]
+
+- Expected
++ Received
+
+- [
+-   "https://host.example.com",
+- ]
++ []
+
+ ❯ src/host/messaging.test.ts:66:64
+     64|
+     65|   it('parses URL-encoded comma-separated origins from the query param'…
+     66|     expect(parseHostOrigins('https%3A%2F%2Fhost.example.com')).toEqual…
+       |                                                                ^
+     67|     expect(
+     68|       parseHostOrigins(encodeURIComponent('https://a.example,http://lo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host allow-list (R2-2, A44) > drops invalid entries and normalizes to the origin (no path, no guess)
+AssertionError: expected [] to deeply equal [ 'https://host.example.com' ]
+
+- Expected
++ Received
+
+- [
+-   "https://host.example.com",
+- ]
++ []
+
+ ❯ src/host/messaging.test.ts:73:88
+     71|
+     72|   it('drops invalid entries and normalizes to the origin (no path, no …
+     73|     expect(parseHostOrigins(encodeURIComponent('https://host.example.c…
+       |                                                                                        ^
+     74|       'https://host.example.com',
+     75|     ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host allow-list (R2-2, A44) > merges build-time env origins with query-param origins, de-duplicated
+AssertionError: expected [] to deeply equal [ 'http://localhost:4199', …(2) ]
+
+- Expected
++ Received
+
+- [
+-   "http://localhost:4199",
+-   "https://env.example",
+-   "https://q.example",
+- ]
++ []
+
+ ❯ src/host/messaging.test.ts:85:27
+     83|       encodeURIComponent('https://q.example,http://localhost:4199'),
+     84|     );
+     85|     expect(merged.sort()).toEqual(
+       |                           ^
+     86|       ['http://localhost:4199', 'https://env.example', 'https://q.exam…
+     87|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host load-image validation (R2-2, A44) > accepts a well-formed message from an allow-listed origin
+AssertionError: expected 'ignored' to be 'accepted' // Object.is equality
+
+Expected: "accepted"
+Received: "ignored"
+
+ ❯ src/host/messaging.test.ts:94:20
+     92|   it('accepts a well-formed message from an allow-listed origin', () =…
+     93|     const v = validateHostLoadImage(loadMessage(), 'https://host.examp…
+     94|     expect(v.kind).toBe('accepted');
+       |                    ^
+     95|     if (v.kind !== 'accepted') return;
+     96|     expect(v.requestId).toBe('req-1');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host load-image validation (R2-2, A44) > accepts an ArrayBuffer image (wrapped into the same File)
+AssertionError: expected 'ignored' to be 'accepted' // Object.is equality
+
+Expected: "accepted"
+Received: "ignored"
+
+ ❯ src/host/messaging.test.ts:107:20
+    105|       ALLOW,
+    106|     );
+    107|     expect(v.kind).toBe('accepted');
+       |                    ^
+    108|     if (v.kind === 'accepted') expect(v.file.size).toBe(512);
+    109|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host load-image validation (R2-2, A44) > rejects images over the 33554432 byte cap (why: too-large)
+AssertionError: expected { kind: 'ignored', why: 'bad-message' } to deeply equal { kind: 'ignored', why: 'too-large' }
+
+- Expected
++ Received
+
+  {
+    "kind": "ignored",
+-   "why": "too-large",
++   "why": "bad-message",
+  }
+
+ ❯ src/host/messaging.test.ts:150:75
+    148|   it(`rejects images over the ${HOST_MAX_IMAGE_BYTES} byte cap (why: t…
+    149|     const big = loadMessage({ image: pngBlob(HOST_MAX_IMAGE_BYTES + 1)…
+    150|     expect(validateHostLoadImage(big, 'https://host.example.com', ALLO…
+       |                                                                           ^
+    151|       kind: 'ignored',
+    152|       why: 'too-large',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host load-image validation (R2-2, A44) > rejects every mime outside the allow-list (why: unsupported-mime)
+AssertionError: mime image/gif: expected { kind: 'ignored', why: 'bad-message' } to deeply equal { kind: 'ignored', …(1) }
+
+- Expected
++ Received
+
+  {
+    "kind": "ignored",
+-   "why": "unsupported-mime",
++   "why": "bad-message",
+  }
+
+ ❯ src/host/messaging.test.ts:165:33
+    163|         ALLOW,
+    164|       );
+    165|       expect(v, `mime ${mime}`).toEqual({ kind: 'ignored', why: 'unsup…
+       |                                 ^
+    166|     }
+    167|     for (const mime of HOST_MIME_ALLOWLIST) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host reply targets (R2-2, A44) > replies only to an allow-listed origin, never "*"
+AssertionError: expected null to be 'https://host.example.com' // Object.is equality
+
+- Expected:
+"https://host.example.com"
+
++ Received:
+null
+
+ ❯ src/host/messaging.test.ts:178:63
+    176| describe('host reply targets (R2-2, A44)', () => {
+    177|   it('replies only to an allow-listed origin, never "*"', () => {
+    178|     expect(replyTargetFor('https://host.example.com', ALLOW)).toBe('ht…
+       |                                                               ^
+    179|     expect(replyTargetFor('https://evil.example', ALLOW)).toBeNull();
+    180|     expect(replyTargetFor('https://host.example.com', [])).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host bridge (R2-2, A44/A45) > posts postclip:ready to each allow-listed origin on boot
+AssertionError: expected null not to be null
+ ❯ src/host/messaging.test.ts:232:26
+    230|   it('posts postclip:ready to each allow-listed origin on boot', () =>…
+    231|     const b = makeBridge(['https://host.example.com', 'http://localhos…
+    232|     expect(b.bridge).not.toBeNull();
+       |                          ^
+    233|     const readies = b.calls.filter((c) => (c.data as { type?: string }…
+    234|     expect(readies.map((c) => c.targetOrigin).sort()).toEqual(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host bridge (R2-2, A44/A45) > a valid load-image from an allow-listed origin reaches the pipeline
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ src/host/messaging.test.ts:243:27
+    241|     const b = makeBridge(['https://host.example.com']);
+    242|     b.message(loadMessage(), 'https://host.example.com');
+    243|     expect(b.onLoadImage).toHaveBeenCalledTimes(1);
+       |                           ^
+    244|     const [file, requestId] = b.onLoadImage.mock.calls[0];
+    245|     expect(file).toBeInstanceOf(File);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host bridge (R2-2, A44/A45) > a malformed load-image from an allow-listed origin gets a postclip:error (bad-message), still no content logging
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/host/messaging.test.ts:262:20
+    260|     expect(b.onLoadImage).not.toHaveBeenCalled();
+    261|     const errors = b.calls.filter((c) => (c.data as { type?: string })…
+    262|     expect(errors).toHaveLength(1);
+       |                    ^
+    263|     expect(errors[0].data).toEqual({ type: HOST_MSG_ERROR, requestId: …
+    264|     expect(errors[0].targetOrigin).toBe('https://host.example.com');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host bridge (R2-2, A44/A45) > reportResult replies to the origin the load came from (allow-listed), never "*"
+TypeError: Cannot read properties of null (reading 'reportResult')
+ ❯ src/host/messaging.test.ts:270:15
+    268|     const b = makeBridge(['https://host.example.com', 'http://localhos…
+    269|     b.message(loadMessage({ requestId: 'r3' }), 'http://localhost:4199…
+    270|     b.bridge!.reportResult('r3', 'the extracted text');
+       |               ^
+    271|     const results = b.calls.filter((c) => (c.data as { type?: string }…
+    272|     expect(results).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host bridge (R2-2, A44/A45) > reportResult before any load is a no-op (nothing to correlate, nothing leaves)
+TypeError: Cannot read properties of null (reading 'reportResult')
+ ❯ src/host/messaging.test.ts:280:15
+    278|   it('reportResult before any load is a no-op (nothing to correlate, n…
+    279|     const b = makeBridge(['https://host.example.com']);
+    280|     b.bridge!.reportResult('nope', 'never sent');
+       |               ^
+    281|     expect(b.calls.filter((c) => (c.data as { type?: string }).type ==…
+    282|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/18]⎯
+
+ FAIL  src/host/messaging.test.ts > host bridge (R2-2, A44/A45) > destroy removes the listener (the bridge stops listening)
+TypeError: Cannot read properties of null (reading 'destroy')
+ ❯ src/host/messaging.test.ts:286:15
+    284|   it('destroy removes the listener (the bridge stops listening)', () =…
+    285|     const b = makeBridge(['https://host.example.com']);
+    286|     b.bridge!.destroy();
+       |               ^
+    287|     expect(b.listeners).toHaveLength(0);
+    288|     b.message(loadMessage(), 'https://host.example.com');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/18]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  18 failed | 17 passed (35)
+   Start at  02:25:46
+   Duration  1.43s (environment 61%, setup 22%, tests 10%, transform 5%, import 2%, worker 1%)
+
+vitest (host suites) exit code: 1
+== R2-2 RED part 2: the new Playwright flows (chromium, TEST build) ==
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 61 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.15 kB │ gzip:     0.63 kB
+dist/assets/worker-D29jU1ZI.js       225.50 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-BWxCpVyf.css         6.78 kB │ gzip:     1.86 kB
+dist/assets/index-aTV1jQxX.js        283.04 kB │ gzip:    90.79 kB
+
+✓ built in 766ms
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+npm notice run postclip@0.1.0 npx
+npm notice run 'playwright' test e2e/r2_2_responsive.spec.ts e2e/r2_2_embedded.spec.ts --project=chromium --reporter=list
+[WebServer] npm notice run postclip@0.1.0 preview
+[WebServer] npm notice run vite preview
+
+Running 6 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/r2_2_embedded.spec.ts:46:1 › a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame (2.9s)
+  ✘  2 [chromium] › e2e/r2_2_embedded.spec.ts:76:1 › a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so (35.5s)
+  ✘  3 [chromium] › e2e/r2_2_embedded.spec.ts:115:1 › a45_cross_origin_host_round_trip_load_image_to_result (1.1m)
+  ✓  4 [chromium] › e2e/r2_2_embedded.spec.ts:167:1 › a45_message_from_non_allowlisted_origin_is_ignored (9.9s)
+  ✘  5 [chromium] › e2e/r2_2_responsive.spec.ts:65:1 › a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport (2.1s)
+  ✓  6 [chromium] › e2e/r2_2_responsive.spec.ts:85:1 › a42_result_screen_fluid_through_the_viewport_matrix_one_real_read (3.1s)
+
+
+  1) [chromium] › e2e/r2_2_embedded.spec.ts:76:1 › a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#postclip-frame').contentFrame().locator('.error-banner')
+    Expected substring: "copy it yourself"
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" locator('#postclip-frame').contentFrame().locator('.error-banner') with timeout 30000ms
+      - waiting for locator('#postclip-frame').contentFrame().locator('.error-banner')
+
+
+       97 |     await expect(banner).toBeVisible({ timeout: 20_000 });
+       98 |     await expect(banner).toContainText('blocked');
+    >  99 |     await expect(banner).toContainText('copy it yourself');
+          |                          ^
+      100 |     await expect(copied).toHaveCount(0);
+      101 |   } else {
+      102 |     // WebKit's in-frame clipboard behavior is not reliably blockable here
+        at /opt/data/workspace/smll/projects/postclip/e2e/r2_2_embedded.spec.ts:99:26
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/r2_2_embedded-a43-copy-in--b79c0-llow-falls-back-and-says-so-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/r2_2_embedded-a43-copy-in--b79c0-llow-falls-back-and-says-so-chromium/error-context.md
+
+    Error Context: test-results/r2_2_embedded-a43-copy-in--b79c0-llow-falls-back-and-says-so-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/r2_2_embedded-a43-copy-in--b79c0-llow-falls-back-and-says-so-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/r2_2_embedded-a43-copy-in--b79c0-llow-falls-back-and-says-so-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/r2_2_embedded.spec.ts:115:1 › a45_cross_origin_host_round_trip_load_image_to_result 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#host-log li[data-type="postclip:ready"]')
+    Expected: visible
+    Timeout: 60000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#host-log li[data-type="postclip:ready"]') with timeout 60000ms
+      - waiting for locator('#host-log li[data-type="postclip:ready"]')
+
+
+      121 |   // The app announces itself to the allow-listed origin on boot.
+      122 |   const readyLi = page.locator('#host-log li[data-type="postclip:ready"]');
+    > 123 |   await expect(readyLi).toBeVisible({ timeout: 60_000 });
+          |                         ^
+      124 |   await expect(readyLi).toHaveAttribute('data-origin', APP_ORIGIN);
+      125 |
+      126 |   // host → PostClip: hand the screenshot over.
+        at /opt/data/workspace/smll/projects/postclip/e2e/r2_2_embedded.spec.ts:123:25
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/r2_2_embedded-a45-cross-or-017ba-d-trip-load-image-to-result-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/r2_2_embedded-a45-cross-or-017ba-d-trip-load-image-to-result-chromium/error-context.md
+
+    Error Context: test-results/r2_2_embedded-a45-cross-or-017ba-d-trip-load-image-to-result-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/r2_2_embedded-a45-cross-or-017ba-d-trip-load-image-to-result-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/r2_2_embedded-a45-cross-or-017ba-d-trip-load-image-to-result-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › e2e/r2_2_responsive.spec.ts:65:1 › a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport 
+
+    Error: touch target >= 44 px tall at 320x568
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 44
+    Received:    37
+
+      51 |   const box = await loc.boundingBox();
+      52 |   expect(box, `the primary action has a bounding box at ${vpName}`).toBeTruthy();
+    > 53 |   expect(box!.height, `touch target >= 44 px tall at ${vpName}`).toBeGreaterThanOrEqual(44);
+         |                                                                  ^
+      54 |   expect(box!.x, `fully inside the viewport (left) at ${vpName}`).toBeGreaterThanOrEqual(0);
+      55 |   expect(box!.y, `fully inside the viewport (top) at ${vpName}`).toBeGreaterThanOrEqual(0);
+      56 |   expect(box!.x + box!.width, `fully inside the viewport (right) at ${vpName}`).toBeLessThanOrEqual(
+        at expectTappable (/opt/data/workspace/smll/projects/postclip/e2e/r2_2_responsive.spec.ts:53:66)
+        at /opt/data/workspace/smll/projects/postclip/e2e/r2_2_responsive.spec.ts:78:7
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/r2_2_responsive-a42-home-s-200a5-ry-action-at-every-viewport-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/r2_2_responsive-a42-home-s-200a5-ry-action-at-every-viewport-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/r2_2_responsive-a42-home-s-200a5-ry-action-at-every-viewport-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/r2_2_responsive-a42-home-s-200a5-ry-action-at-every-viewport-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › e2e/r2_2_embedded.spec.ts:76:1 › a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so 
+    [chromium] › e2e/r2_2_embedded.spec.ts:115:1 › a45_cross_origin_host_round_trip_load_image_to_result 
+    [chromium] › e2e/r2_2_responsive.spec.ts:65:1 › a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport 
+  3 passed (2.2m)
+build:test exit code: 0; playwright (new R2-2 specs, chromium) exit code: 1

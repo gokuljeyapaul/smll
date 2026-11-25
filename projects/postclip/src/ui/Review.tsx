@@ -123,7 +123,20 @@ export function Review({
       setCopied(true);
     } catch (err) {
       setCopied(false);
-      setActionError(`Copy failed: ${String(err)}`);
+      // R2-2 (A43): inside an iframe/WebView without allow="clipboard-write"
+      // (or any context the engine refuses), the Copy button FALLS BACK and
+      // says so — a specific, kind message with the obvious next step; it
+      // never silently fails.
+      if (
+        err instanceof DOMException &&
+        (err.name === 'NotAllowedError' || err.name === 'SecurityError')
+      ) {
+        setActionError(
+          'Copying is blocked here — the app embedding PostClip has not allowed clipboard access. Select the text below and copy it yourself; it works the same.',
+        );
+      } else {
+        setActionError(`Copy failed: ${String(err)}`);
+      }
     }
   };
 
