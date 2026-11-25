@@ -86,6 +86,16 @@ test('a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so', async (
   await expect(app.getByRole('heading', { name: 'Your text' })).toBeVisible({
     timeout: 180_000,
   });
+  // Determinism (the Review screen renders during READING too — the heading
+  // alone is not the result): wait for the actual result text before acting,
+  // so the Copy click cannot race a mid-read text change that clears the
+  // banner.
+  await expect
+    .poll(async () => (await app.locator('#review-text').inputValue()).length, {
+      timeout: 120_000,
+      message: 'the real OCR result is in the text box before the Copy click',
+    })
+    .toBeGreaterThan(40);
 
   await app.locator('#copy-btn').click();
   const banner = app.locator('.error-banner');

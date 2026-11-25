@@ -91,6 +91,14 @@ test('a42_result_screen_fluid_through_the_viewport_matrix_one_real_read', async 
   await page.goto('/');
   await page.setInputFiles('#file-input', 'fixtures/images/clean01.png');
   await expect(page.getByRole('heading', { name: 'Your text' })).toBeVisible({ timeout: 180_000 });
+  // Determinism: the Review screen renders during READING too — the heading
+  // alone is not the result. The resize matrix must run on the RESULT.
+  await expect
+    .poll(async () => (await page.locator('#review-text').inputValue()).length, {
+      timeout: 120_000,
+      message: 'the real OCR result is on screen before the resize matrix',
+    })
+    .toBeGreaterThan(40);
 
   for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
