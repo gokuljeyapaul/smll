@@ -32,7 +32,15 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const OUT = join(ROOT, 'docs/evidence/R2-2/owner');
 const APP_PORT = 4173;
-const APP_ORIGIN = `http://localhost:${APP_PORT}`;
+// The app preview is served at 127.0.0.1 and health-checked there: vite's
+// default 'localhost' bind came up IPv6-only ([::1]:4173) in this
+// container while node's fetch('http://localhost:4173') stayed on IPv4 and
+// never fell back — the gallery's readiness poll failed against a server
+// that was up (browsers resolve ::1 fine, which is why the e2e suites
+// never saw this). The HOST page keeps its localhost:4199 origin: the
+// allow-list entry is the e2e suite's allowed page, and 127.0.0.1 vs
+// localhost stay different origins by design (a45's stranger page).
+const APP_ORIGIN = `http://127.0.0.1:${APP_PORT}`;
 const HOST_PORT = 4199;
 const HOST_ORIGIN = `http://localhost:${HOST_PORT}`;
 const VIEWPORTS = [
@@ -58,7 +66,15 @@ async function waitUp(url, timeoutMs = 60_000, expectOk = true) {
 }
 
 function startPreview() {
-  const child = spawn('npm', ['run', 'preview'], { cwd: ROOT, stdio: 'ignore', detached: false });
+  // Spawn vite directly (no npm wrapper) with an explicit IPv4 host: the
+  // readiness poll and the server must agree on the stack, and SIGKILL
+  // must reach the server process itself (through the npm wrapper it
+  // killed only the wrapper and orphaned the server on the port).
+  const child = spawn(
+    process.execPath,
+    ['node_modules/vite/bin/vite.js', 'preview', '--port', String(APP_PORT), '--host', '127.0.0.1', '--strictPort'],
+    { cwd: ROOT, stdio: 'ignore', detached: false },
+  );
   const stop = () => {
     try {
       child.kill('SIGKILL');

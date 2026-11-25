@@ -186,7 +186,7 @@ if ! stage 9 "negative+versions+verify"; then
     cat "$EV/bundle-inspection-test-build.txt"
     echo
     echo "== R2-2 RED evidence: the new tests failing on the pre-implementation app (headline lines) =="
-    grep -E "Tests  26 failed|vitest \(host suites\) exit code|playwright \(new R2-2 specs, chromium\) exit code" "$EV/red.log" | head -6
+    grep -E "Tests  18 failed|vitest \(host suites\) exit code|playwright \(new R2-2 specs, chromium\) exit code" "$EV/red.log" | head -6
   } > "$EV/negative.log"
 
   node - "$EV" <<'EOF' >> "$EV/green.log" 2>&1

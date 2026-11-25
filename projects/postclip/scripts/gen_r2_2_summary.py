@@ -210,7 +210,7 @@ summary = {
     "commands": {
         "red": {"command": "bash scripts/run_r2_2_red.sh", "exit_code": 0,
                 "evidence": "docs/evidence/R2-2/red.log",
-                "note": "the RED script records the new suites failing on the pre-implementation app (typecheck+lint green, behavioural assertion failures)"},
+                "note": "the RED script records the new suites failing on the pre-implementation app: typecheck 0 and build:test 0 (the failures are behavioural, not build errors); lint exited 1 at RED time on the then-in-progress evidence-gallery script (an empty block in scripts/capture_owner_gallery_r2_2.mjs — tooling, not app code, fixed before GREEN); the new host-contract Vitest suites failed 18 of 35 tests on the scaffold; the new Playwright flows failed 3 of 6 (the 44px touch-target check measured 37px, the blocked-clipboard kind message absent, postclip:ready never arriving)"},
         "green": {"command": "bash scripts/run_r2_2_final_evidence.sh", "exit_code": 0,
                   "evidence": "docs/evidence/R2-2/green.log"},
         "e2e": {"command": "npx playwright test --project=chromium / --project=webkit (all specs, test build)",

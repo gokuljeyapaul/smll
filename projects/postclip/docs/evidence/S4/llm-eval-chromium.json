@@ -9,10 +9,10 @@
     "meanFabricated": 0
   },
   "model": {
-    "meanF1": 0.8495023525877744,
-    "meanLeakage": 0.8860028860028861,
+    "meanF1": 0.8524091180844678,
+    "meanLeakage": 0.888888888888889,
     "meanFabricated": 0,
-    "meanLatencyMs": 152173.0625
+    "meanLatencyMs": 154914.5
   },
   "rows": [
     {
@@ -21,7 +21,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 220345,
+      "latencyMs": 223178,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -39,16 +39,20 @@
     {
       "id": "clean02",
       "kind": "clean",
-      "mode": "unavailable",
-      "guardVerdict": "reject:timeout",
-      "attempts": 0,
-      "latencyMs": 240002,
+      "mode": "applied",
+      "guardVerdict": "pass",
+      "attempts": 1,
+      "latencyMs": 238278,
       "baseline": {
         "f1": 1,
         "leakage": 0,
         "fabricated": 0
       },
-      "model": null,
+      "model": {
+        "f1": 0.9208633093525179,
+        "leakage": 0.8888888888888888,
+        "fabricated": 0
+      },
       "rawModelExcerpt": null,
       "markersInMetadata": [],
       "markersInBody": []
@@ -59,7 +63,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 183136,
+      "latencyMs": 171542,
       "baseline": {
         "f1": 0.983050847457627,
         "leakage": 0,
@@ -80,7 +84,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 101586,
+      "latencyMs": 103402,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -101,7 +105,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 135309,
+      "latencyMs": 127809,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -122,7 +126,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 153435,
+      "latencyMs": 135039,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -143,7 +147,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 146267,
+      "latencyMs": 134371,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -164,7 +168,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 179924,
+      "latencyMs": 168325,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -185,7 +189,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 143303,
+      "latencyMs": 143414,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -206,7 +210,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 130558,
+      "latencyMs": 130821,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -227,7 +231,7 @@
       "mode": "unavailable",
       "guardVerdict": "reject:timeout",
       "attempts": 0,
-      "latencyMs": 240000,
+      "latencyMs": 240001,
       "baseline": {
         "f1": 0.9857142857142858,
         "leakage": 0.1111111111111111,
@@ -261,7 +265,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 187148,
+      "latencyMs": 189804,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -284,7 +288,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 111090,
+      "latencyMs": 112538,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -307,7 +311,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 127988,
+      "latencyMs": 123262,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -330,7 +334,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 144594,
+      "latencyMs": 153662,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -353,7 +357,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 168964,
+      "latencyMs": 169949,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -376,7 +380,7 @@
       "mode": "unavailable",
       "guardVerdict": "reject:timeout",
       "attempts": 0,
-      "latencyMs": 240003,
+      "latencyMs": 240001,
       "baseline": {
         "f1": 0.9802631578947368,
         "leakage": 0,
@@ -393,7 +397,7 @@
       "mode": "unavailable",
       "guardVerdict": "reject:timeout",
       "attempts": 0,
-      "latencyMs": 240001,
+      "latencyMs": 240000,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -408,9 +412,9 @@
       "id": "clean07",
       "kind": "clean",
       "mode": "unavailable",
-      "guardVerdict": "reject:runtime-error",
+      "guardVerdict": "reject:timeout",
       "attempts": 0,
-      "latencyMs": 132226,
+      "latencyMs": 240010,
       "baseline": {
         "f1": 1,
         "leakage": 0,
@@ -424,20 +428,16 @@
     {
       "id": "clean08",
       "kind": "clean",
-      "mode": "applied",
-      "guardVerdict": "pass",
-      "attempts": 1,
-      "latencyMs": 142832,
+      "mode": "unavailable",
+      "guardVerdict": "reject:runtime-error",
+      "attempts": 0,
+      "latencyMs": 161453,
       "baseline": {
         "f1": 1,
         "leakage": 0,
         "fabricated": 0
       },
-      "model": {
-        "f1": 0.888888888888889,
-        "leakage": 0.8571428571428571,
-        "fabricated": 0
-      },
+      "model": null,
       "rawModelExcerpt": null,
       "markersInMetadata": [],
       "markersInBody": []
@@ -448,7 +448,7 @@
       "mode": "applied",
       "guardVerdict": "pass",
       "attempts": 1,
-      "latencyMs": 158290,
+      "latencyMs": 153238,
       "baseline": {
         "f1": 1,
         "leakage": 0,
