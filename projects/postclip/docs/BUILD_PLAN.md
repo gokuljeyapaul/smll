@@ -345,6 +345,16 @@ Observable result: the model downloads ONCE and survives — after a download it
 - **GREEN**: all pass in the required engines; the previous suite (A01–A36) still passes; the existing download-flow specs that must now open the Advanced section first change with the UI in the same PR (the flows themselves are unchanged and unloosened).
 - **Evidence**: standard set under `docs/evidence/R2-3/`; the persistent-vs-ephemeral scenario table with numbers; the O09 owner gallery.
 
+### S10 — R2-4: Clean-up after round 2 (issue #82)
+
+**Acceptance IDs:** A25, A32, A46 (re-affirmations; no new IDs — the full suite keeps every earlier ID passing)
+
+Observable result: the repo is tidy and truthful after round 2: the planner's low-fidelity round-2 mockups are replaced by links to the real owner galleries (O07–O09, already committed) and deleted; the plan carries no round-2 sidecar text; `README.md`, `docs/INTEGRATION.md`, `docs/KNOWN_LIMITS.md`, `docs/status.md` and `milestone-status.json` describe the product exactly as it is (real-device checks honestly `NOT_RUN`, O03–O09 awaiting owner review); the temporary #68 stage-transition debug logging is removed; merged round-2 branches are deleted and the epics closed with proof links. No product behaviour changes.
+
+- **RED**: the docs/dead-code consistency gate (`scripts/cleanup_audit.sh`) fails on the pre-clean-up tree (the mockup folder and its plan reference exist; the #58-chase stage-transition log exists in `src/`), and the full suite is recorded green BEFORE the clean-up (both pre- and post-clean-up runs committed; no test removed or weakened).
+- **GREEN**: the audit passes; the full suite passes again on the final tree — every earlier acceptance ID (A01–A31 from rounds S0–S6 and A32–A46 from S7–S9) still green.
+- **Evidence**: standard set under `docs/evidence/R2-4/` (`red.log` with both pre-clean-up runs, `green.log`, `e2e.log`, `prod.log`, `negative.log`, `demo.log`, `junit/`, `versions.json`, `summary.json`).
+
 ## Round 2 (improvements from the owner's hands-on review)
 
 Round 2 re-opens delivery after the owner's review of the finished build (epic #80). The plan stays the single source of truth; each round-2 slice is one issue, one PR, with the same evidence rules as S0–S6. Phase goes back to `BUILDING` until the round is done. Round-2 rules (from the epic, binding for every slice in this round):
