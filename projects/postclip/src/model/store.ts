@@ -33,6 +33,11 @@ export interface ModelStore {
   size(key: string): Promise<number | null>;
   /** Read the cached bytes under `key` (S4 runtime entry point). */
   read(key: string): Promise<Uint8Array | null>;
+  /** R2-3 (A37): write a SMALL text record under `key` (the verified
+   * sha256 marker). Metadata only — never model bytes, never user text. */
+  putText(key: string, text: string): Promise<void>;
+  /** R2-3 (A37): read a small text record, or null when absent. */
+  readText(key: string): Promise<string | null>;
   /** Remove the model cache entirely (purge). */
   clear(): Promise<void>;
 }
@@ -149,6 +154,23 @@ export class OpfsModelStore implements ModelStore {
     }
   }
 
+  async putText(key: string, text: string): Promise<void> {
+    const fh = await (await this.dir()).getFileHandle(key, { create: true });
+    const w = await fh.createWritable();
+    await w.write(new TextEncoder().encode(text) as Uint8Array<ArrayBuffer>);
+    await w.close();
+  }
+
+  async readText(key: string): Promise<string | null> {
+    try {
+      const file = await (await (await this.dir()).getFileHandle(key)).getFile();
+      if (file.size === 0) return null;
+      return await file.text();
+    } catch {
+      return null;
+    }
+  }
+
   async clear(): Promise<void> {
     try {
       await this.writable?.close();
@@ -215,6 +237,21 @@ export class CacheStorageModelStore implements ModelStore {
       const res = await (await this.cache()).match(key);
       if (!res) return null;
       return new Uint8Array(await res.arrayBuffer());
+    } catch {
+      return null;
+    }
+  }
+
+  async putText(key: string, text: string): Promise<void> {
+    const cache = await this.cache();
+    await cache.put(key, new Response(text, { headers: { 'content-type': 'application/json' } }));
+  }
+
+  async readText(key: string): Promise<string | null> {
+    try {
+      const res = await (await this.cache()).match(key);
+      if (!res) return null;
+      return await res.text();
     } catch {
       return null;
     }

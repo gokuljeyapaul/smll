@@ -22,6 +22,7 @@ import { PINNED_MODEL, testModelUrlOverride, type PinnedModel } from './manifest
 import { openModelStore, type ModelStore } from './store';
 import { Sha256Incremental } from './sha256';
 import { nextModelState, type ModelEvent, type ModelFailReason, type ModelState } from './state';
+import { measureStorageQuota, planCacheCheck, roomBarBytes } from './storage-policy';
 
 export interface ModelProgress {
   state: ModelState;
@@ -164,6 +165,26 @@ export class ModelManager {
     return `model-${this.manifest.sha256}.gguf`;
   }
 
+  /**
+   * R2-3 (A37): the verified sha256 marker — a tiny JSON record in the SAME
+   * model cache as the weights ({ sha256, sizeBytes, verifiedAt }). It is
+   * what makes the fresh-start check CHEAP: size + marker match → trust,
+   * with no 397 MB re-hash on launch; a missing marker costs one re-hash
+   * (a cache from before markers), then it is written. Metadata only —
+   * never model bytes, never user content.
+   */
+  private markerKey(): string {
+    return `model-${this.manifest.sha256}.verified.json`;
+  }
+
+  private markerPayload(): { sha256: string; sizeBytes: number; verifiedAt: string } {
+    return {
+      sha256: this.manifest.sha256,
+      sizeBytes: this.manifest.sizeBytes,
+      verifiedAt: new Date().toISOString(),
+    };
+  }
+
   /** The download URL: the pinned one, or the test override in test builds. */
   private downloadUrl(): string {
     return testModelUrlOverride() ?? this.manifest.url;
@@ -175,7 +196,12 @@ export class ModelManager {
     return this.store;
   }
 
-  /** Probe + cache check; never network. Absent/ready/unsupported result. */
+  /** Probe + cache check; never network. Absent/ready/unsupported result.
+   *
+   * R2-3 (A37): the fresh-start cache check is CHEAP — size plus the
+   * recorded sha256 marker (planCacheCheck: trust / rehash / purge). The
+   * 397 MB re-hash runs only when the marker is missing (a cache from
+   * before markers); a mismatch fails closed to absent. */
   async check(): Promise<void> {
     const caps = await this.probe();
     if (!caps.supported) {
@@ -188,9 +214,51 @@ export class ModelManager {
       this.apply({ type: 'PROBE_FAILED' }, { reason: 'unsupported' });
       return;
     }
-    if ((await store.size(this.cacheKey())) === this.manifest.sizeBytes) {
-      this.apply({ type: 'CACHE_HIT' }, { receivedBytes: this.manifest.sizeBytes });
+    const size = await store.size(this.cacheKey());
+    if (size !== this.manifest.sizeBytes) return; // honestly absent
+    let markerPresent = false;
+    let markerMatches = false;
+    const markerRaw = await store.readText(this.markerKey());
+    if (markerRaw !== null) {
+      markerPresent = true;
+      try {
+        const marker = JSON.parse(markerRaw) as { sha256?: unknown; sizeBytes?: unknown };
+        markerMatches =
+          marker.sha256 === this.manifest.sha256 && marker.sizeBytes === this.manifest.sizeBytes;
+      } catch {
+        markerMatches = false; // unparseable marker — untrusted
+      }
     }
+    const plan = planCacheCheck({ sizeMatches: true, markerPresent, markerMatches });
+    if (plan === 'trust') {
+      this.apply({ type: 'CACHE_HIT' }, { receivedBytes: this.manifest.sizeBytes });
+      return;
+    }
+    if (plan === 'rehash') {
+      // One-time verification for a cache that predates markers: hash the
+      // cached bytes; on match write the marker and land ready, else purge
+      // and stay honestly absent (fail closed — a size-matching but
+      // unverified file is never trusted as "ready").
+      const bytes = await store.read(this.cacheKey());
+      if (bytes) {
+        const hasher = new Sha256Incremental();
+        hasher.update(bytes);
+        if (hasher.digestHex() === this.manifest.sha256) {
+          try {
+            await store.putText(this.markerKey(), JSON.stringify(this.markerPayload()));
+          } catch {
+            // the marker is an optimization: its absence only costs the
+            // next launch the same one-time re-hash
+          }
+          this.apply({ type: 'CACHE_HIT' }, { receivedBytes: this.manifest.sizeBytes });
+          return;
+        }
+      }
+      await store.clear();
+      return;
+    }
+    // purge: a marker that does not match this pin is stale — fail closed.
+    await store.clear();
   }
 
   /**
@@ -236,6 +304,24 @@ export class ModelManager {
     const url = this.downloadUrl();
     const hasher = new Sha256Incremental();
     let received = 0;
+
+    // R2-3 (A37): request persistent storage at the USER'S OPT-IN — this
+    // method only ever runs from the download button, never at load. Best
+    // effort by design: real browsers may grant the guarantee; this
+    // headless matrix denies it in EVERY context (measured —
+    // docs/evidence/R2-3/env-probe.json), which is exactly why the offer
+    // decision (storage-policy.ts) does NOT key on the persist() result.
+    try {
+      const persistFn = navigator.storage?.persist;
+      if (typeof persistFn === 'function') {
+        const granted = await persistFn.call(navigator.storage);
+        console.info(`postclip-model: persist() requested at the download opt-in (granted=${String(granted)})`);
+      } else {
+        console.info('postclip-model: persist() unavailable in this browser - not requested');
+      }
+    } catch {
+      // unsupported storage manager — best effort, never fatal
+    }
     // Optimistic until disproven: a 206 proves Range support, a 200 that
     // answers a Range request disproves it (then a restart is the only way).
     let rangesUsable = true;
@@ -244,6 +330,18 @@ export class ModelManager {
       { type: 'DOWNLOAD_START' },
       { receivedBytes: 0, totalBytes: this.manifest.sizeBytes, attemptsUsed: 0, reason: null },
     );
+
+    // R2-3 (A38): the storage estimate is checked against the need BEFORE
+    // any byte is fetched (the room bar covers the promote's peak: temp +
+    // final). Not enough room → the kind refusal (GIVE_UP lands 'failed'
+    // from the 'downloading' state), zero model bytes.
+    const quota = await measureStorageQuota(this.manifest.sizeBytes);
+    if (quota !== null && quota < roomBarBytes(this.manifest.sizeBytes)) {
+      await store.discardTemp();
+      await store.clear();
+      this.apply({ type: 'GIVE_UP' }, { reason: 'no-room' });
+      return;
+    }
 
     // Inactivity watchdog (defense in depth): a download body that delivers no
     // chunk for 20 s is aborted and flows into the existing resume path
@@ -329,6 +427,14 @@ export class ModelManager {
           await store.clear();
           this.apply({ type: 'GIVE_UP' }, { reason: 'storage-error' });
           return;
+        }
+        // R2-3 (A37): record the verified sha256 marker so the NEXT launch
+        // trusts the cache cheaply (size + marker; no 397 MB re-hash).
+        try {
+          await store.putText(this.markerKey(), JSON.stringify(this.markerPayload()));
+        } catch {
+          // best effort: a missing marker only costs the next launch a
+          // one-time re-hash before it trusts the cache
         }
         this.apply({ type: 'VERIFY_OK' }, { receivedBytes: received });
         return;

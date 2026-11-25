@@ -1,0 +1,139 @@
+{
+  "slice": "R2-3",
+  "measured_with": "Playwright (this host, headless)",
+  "environments": [
+    {
+      "label": "chromium persistent profile (launch 1)",
+      "profile": "/opt/data/cache/scratch/postclip-r2-3-persist-jdDQOe",
+      "reused": true,
+      "facts": {
+        "persistFn": true,
+        "persistedFn": true,
+        "estimateFn": true,
+        "persistedBefore": false,
+        "persistResult": false,
+        "persistedAfter": false,
+        "quotaBytes": 10737418240,
+        "usageBytes": 0
+      },
+      "storage": {
+        "opfs": "error:NotFoundError: A requested file or directory could not be found at the time an o",
+        "cacheStorage": "missing"
+      }
+    },
+    {
+      "label": "chromium persistent profile REUSED (launch 2, same dir)",
+      "profile": "/opt/data/cache/scratch/postclip-r2-3-persist-jdDQOe",
+      "reused": true,
+      "facts": {
+        "persistFn": true,
+        "persistedFn": true,
+        "estimateFn": true,
+        "persistedBefore": false,
+        "persistResult": false,
+        "persistedAfter": false,
+        "quotaBytes": 10737418414,
+        "usageBytes": 174
+      },
+      "storage": {
+        "opfs": "error:NotFoundError: A requested file or directory could not be found at the time an o",
+        "cacheStorage": "missing"
+      }
+    },
+    {
+      "label": "chromium incognito (--incognito, private window)",
+      "profile": "/opt/data/cache/scratch/postclip-r2-3-probe-F53W51",
+      "reused": false,
+      "facts": {
+        "persistFn": true,
+        "persistedFn": true,
+        "estimateFn": true,
+        "persistedBefore": false,
+        "persistResult": false,
+        "persistedAfter": false,
+        "quotaBytes": 10737418240,
+        "usageBytes": 0
+      },
+      "storage": {
+        "opfs": "written",
+        "cacheStorage": "written"
+      }
+    },
+    {
+      "label": "chromium ephemeral context (newContext)",
+      "profile": "(ephemeral context — wiped at close)",
+      "reused": false,
+      "facts": {
+        "persistFn": true,
+        "persistedFn": true,
+        "estimateFn": true,
+        "persistedBefore": false,
+        "persistResult": false,
+        "persistedAfter": false,
+        "quotaBytes": 10737418240,
+        "usageBytes": 0
+      },
+      "storage": {
+        "opfs": "written",
+        "cacheStorage": "written"
+      }
+    },
+    {
+      "label": "webkit ephemeral context (newContext)",
+      "profile": "(ephemeral context — wiped at close)",
+      "reused": false,
+      "facts": {
+        "persistFn": true,
+        "persistedFn": true,
+        "estimateFn": true,
+        "persistedBefore": false,
+        "persistResult": false,
+        "persistedAfter": false,
+        "quotaBytes": 1048576000,
+        "usageBytes": 0
+      },
+      "storage": {
+        "opfs": "error:UnknownError: The operation failed for an unknown transient reason (e.g. out of ",
+        "cacheStorage": "written"
+      }
+    },
+    {
+      "label": "webkit persistent profile (launch 1)",
+      "profile": "/opt/data/cache/scratch/postclip-r2-3-wk-pal31t",
+      "reused": true,
+      "facts": {
+        "persistFn": true,
+        "persistedFn": true,
+        "estimateFn": true,
+        "persistedBefore": false,
+        "persistResult": false,
+        "persistedAfter": false,
+        "quotaBytes": 1048576000,
+        "usageBytes": 0
+      },
+      "storage": {
+        "opfs": "error:NotFoundError: The object can not be found here.",
+        "cacheStorage": "missing"
+      }
+    },
+    {
+      "label": "webkit persistent profile REUSED (launch 2, same dir)",
+      "profile": "/opt/data/cache/scratch/postclip-r2-3-wk-pal31t",
+      "reused": true,
+      "facts": {
+        "persistFn": true,
+        "persistedFn": true,
+        "estimateFn": true,
+        "persistedBefore": false,
+        "persistResult": false,
+        "persistedAfter": false,
+        "quotaBytes": 1048576000,
+        "usageBytes": 136
+      },
+      "storage": {
+        "opfs": "error:NotFoundError: The object can not be found here.",
+        "cacheStorage": "missing"
+      }
+    }
+  ]
+}

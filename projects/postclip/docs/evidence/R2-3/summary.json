@@ -1,0 +1,117 @@
+{
+  "slice": "R2-3",
+  "source_digest": "adc3e466162e96b24b6a7a6d8c7046309ed23993d367d9a277a0778f8c48156d",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright 1.65.1, build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+  },
+  "acceptance": {
+    "A37": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-3/junit/chromium-e2e.xml::a37_model_downloads_once_survives_reload_and_same_profile_restart",
+        "junit:docs/evidence/R2-3/junit/webkit-e2e.xml::a37_model_downloads_once_survives_reload_and_same_profile_restart"
+      ],
+      "videos": [
+        "video:a37_model_downloads_once_survives_reload_and_same_profile_restart_chromium",
+        "video:a37_model_downloads_once_survives_reload_and_same_profile_restart_webkit"
+      ],
+      "notes": "Both engines, REAL persistent profiles (launchPersistentContext): one real download of the pinned 396,705,472-byte file from the local server, then a reload and a full close-and-relaunch on the SAME profile dir both land ready with the small 'ready (cached)' state, no download button, and ZERO model network requests (request log asserted). navigator.storage.persist() is requested at the download (the user's opt-in — spy-pinned: 0 calls at load, >=1 after the click), never silently at load. The verified sha256 marker (model-<sha>.verified.json in the model cache) makes the fresh-start check cheap: size + marker; the 397 MB re-hash only when the marker is missing (planCacheCheck trust/rehash/purge, unit-pinned). The persistent-vs-ephemeral scenario table with numbers: docs/evidence/R2-3/scenario-table.json; the measured environments BEFORE any change: docs/evidence/R2-3/env-probe.json."
+    },
+    "A38": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > a working store with room → offer (the measured matrix quotas both pass)",
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > no room → the no-room refusal (quota under the room bar)",
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > a detected lost cache → volatile, even with room",
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > the refusals are kind, exact, and name what still works",
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::fresh-start cache check plan (R2-3, A37/A38) > size + matching marker → trust (cheap: no 397 MB re-hash on launch)",
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::fresh-start cache check plan (R2-3, A37/A38) > size matches, marker missing → rehash once, then the marker makes it cheap",
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::fresh-start cache check plan (R2-3, A37/A38) > a marker naming another pin or size → purge (stale, fail closed)"
+      ],
+      "notes": "The pure storage-offer policy (src/model/storage-policy.ts): offer / no-room (quota under the pinned size × 2 — the promote's temp+final peak) / volatile (the storage reports it cannot keep the model) / unavailable, with the exact kind refusal messages (unit-pinned, the measured matrix quotas — Chromium 10 GiB, WebKit 1 GiB — both stay OFFER). The cheap-check plan (trust/rehash/purge) is unit-pinned. What is honestly NOT detectable in-session is measured and disclosed: docs/evidence/R2-3/env-probe.json shows this headless matrix reports persist()===false in EVERY Chromium context (persistent, incognito, ephemeral) and the same 10 GiB quota in incognito as in a normal profile — so persist() denial is recorded at the opt-in but never gates the offer, and a private window is not distinguishable from a first visit."
+    },
+    "A39": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-3/junit/chromium-e2e.xml::a39_volatile_storage_shows_kind_explanation_and_no_download",
+        "junit:docs/evidence/R2-3/junit/webkit-e2e.xml::a39_volatile_storage_shows_kind_explanation_and_no_download",
+        "junit:docs/evidence/R2-3/junit/chromium-e2e.xml::a39_no_room_refuses_the_download_before_any_byte_is_fetched",
+        "junit:docs/evidence/R2-3/junit/webkit-e2e.xml::a39_no_room_refuses_the_download_before_any_byte_is_fetched"
+      ],
+      "videos": [
+        "video:a39_volatile_storage_shows_kind_explanation_and_no_download_chromium",
+        "video:a39_volatile_storage_shows_kind_explanation_and_no_download_webkit",
+        "video:a39_no_room_refuses_the_download_before_any_byte_is_fetched_chromium",
+        "video:a39_no_room_refuses_the_download_before_any_byte_is_fetched_webkit"
+      ],
+      "notes": "Both engines: the volatile-storage scenario (?testStorage=volatile, test-build-only — the storage reports it cannot keep the model) shows the kind explanation once, plainly, offers NO download button, and the standard rules cleanup still works end to end (real OCR pick → result text). The no-room scenario (?testStorage=no-room — the estimate below the room bar) refuses at the download click with the kind no-room message and fetches ZERO model bytes (request log asserted). The production wiring: the estimate is measured at the download (measureStorageQuota) and the refusal is the same code path as the override; the volatile signal's real-platform triggers are disclosed in KNOWN_LIMITS.md (measured: no in-session API on this matrix distinguishes them)."
+    },
+    "A40": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-3/junit/chromium-e2e.xml::a40_download_is_opt_in_behind_the_advanced_section",
+        "junit:docs/evidence/R2-3/junit/webkit-e2e.xml::a40_download_is_opt_in_behind_the_advanced_section",
+        "junit:docs/evidence/R2-3/junit/chromium-e2e.xml::a40_fresh_profile_records_the_model_absent_honestly",
+        "junit:docs/evidence/R2-3/junit/webkit-e2e.xml::a40_fresh_profile_records_the_model_absent_honestly"
+      ],
+      "videos": [
+        "video:a40_download_is_opt_in_behind_the_advanced_section_chromium",
+        "video:a40_download_is_opt_in_behind_the_advanced_section_webkit"
+      ],
+      "notes": "Both engines: the home screen never pushes the model — the download lives only inside the collapsed 'Advanced: optional tidy-up model' section (#advanced-model, open-attribute null, button hidden until opened, then visible); the main flow's furniture is unchanged; a fresh profile honestly shows absent with the offer only inside the section. Cached means ready, visibly: the home screen shows the small 'Tidy-up model ready (cached)' state (#model-ready) and never the download button (asserted after the reload and the same-profile restart in A37). The existing download-flow specs (a12/a13/a14/a21/eval/uc13/demo/a29) open the section before the download click in the same PR — the flows are unchanged and unloosened."
+    },
+    "A41": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::the off-by-default decision rests on the measured numbers (R2-3, A41) > the LLM cleanup ships DISABLED by default (A19/A21, pinned constant)",
+        "junit:docs/evidence/R2-3/junit/host-vitest.xml::the off-by-default decision rests on the measured numbers (R2-3, A41) > the committed A19 re-run shows the rules baseline at least as good as the model (the decision rests on these numbers)",
+        "junit:docs/evidence/R2-3/junit/chromium-e2e.xml::eval_llm_vs_baseline_standard_and_injection_sets"
+      ],
+      "notes": "The off-by-default / advanced-section decision rests on numbers: the A19 measurement is re-run on this tree (eval_llm_vs_baseline_standard_and_injection_sets re-executed in this slice's chromium run, refreshing docs/evidence/S4/llm-eval-chromium.json) and the unit test pins the committed constant (LLM_CLEANUP_ENABLED_BY_DEFAULT === false) to what those numbers say: the model mode does NOT beat the rules baseline (baseline meanF1 > model meanF1), leaks chrome above the 2% bar and/or exceeds the 60 s budget. The eval is Chromium-only by design (the pinned model cannot load in Playwright's WebKit — A21's designed fallback). The A19 re-citation is in the PR body and the plan row."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "bash scripts/run_r2_3_red.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-3/red.log",
+      "note": "the RED script exits 0 when the new tests FAIL as required (real assertion failures on the missing behaviour)"
+    },
+    "green": {
+      "command": "bash scripts/run_r2_3_final_evidence.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-3/green.log"
+    },
+    "e2e": {
+      "command": "npx playwright test --project=chromium / --project=webkit (all specs, test build)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-3/e2e.log"
+    },
+    "negative": {
+      "command": "extracted from the green e2e runs + the seeded controls",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-3/negative.log"
+    },
+    "demo": {
+      "command": "npm run build:test && npm run demo",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-3/demo.log"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-3/green.log"
+    }
+  },
+  "limitations": [
+    "In-session, a wiped/private model store is NOT distinguishable from a first visit on this engine matrix (MEASURED, docs/evidence/R2-3/env-probe.json): Chromium headless reports persist()===false in EVERY context (persistent profile, incognito, ephemeral) and the same 10 GiB quota in incognito as in a normal profile, and a write/read probe succeeds everywhere in-session. The app therefore: requests persist() at the user's opt-in (recorded honestly; real browsers may grant it), refuses on the honest estimate bar (no-room), and shows the volatile refusal when the storage reports it cannot keep the model — the deterministic coverage is the test-build ?testStorage override (A29: absent from production). A real-device pass (A27) would measure real-Chrome incognito behaviour.",
+    "The volatile signal's production triggers (a real private window signature, a WebView wipe signal) are not observable with the APIs this matrix exposes; the policy and the refusal UI are wired and test-covered so a platform that reports the signal (e.g. a host app via R2-2's embedding) gets the kind refusal for free.",
+    "The fresh-start cheap check trusts the cache on size + the recorded sha256 marker; a marker that dies with a partially-evicted cache costs one 397 MB re-hash (by design, fail-closed), and corruption AFTER the marker was written is not re-detected at launch (the same trust model as every browser cache; the download itself always verifies before caching).",
+    "The existing download-flow specs open the Advanced section before the download click (a12/a13/a14/a21/eval/uc13/demo/a29, changed with the UI in this PR): the flows and assertions are otherwise unchanged.",
+    "Real installed-PWA / real-OS private-window behavior on the owner's devices stays NOT_RUN (A27, the plan's optional real-device pass; checklist in docs/KNOWN_LIMITS.md)."
+  ]
+}

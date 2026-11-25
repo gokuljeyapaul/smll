@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "project": "postclip",
   "phase": "BUILDING",
-  "current_slice": "R2-1",
+  "current_slice": "R2-3",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model; S5 adds the production-build e2e pass + bundle inspection to test.sh); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -59,17 +59,23 @@
       "note": "Post-completion, owner-requested demo slice (issue #73): the natural-pace full-working demo video docs/demo/postclip-full-demo.mp4, the mp4-vs-GIF size comparison, the README Demo section + staleness fixes, the video_manifest.json entry, the .gitignore second-video exception, and the capture/post-production scripts. Merged by the agent under the autonomous merge policy; monorepo / verify green on main at the merge commit (run 45289832013; reported in the issue #73 done-comment). Merge SHA + post-merge main result recorded here by the R2-1 slice per the next-slice-updates-the-merge-SHA convention."
     },
     "R2-1": {
-      "status": "READY_FOR_MERGE",
+      "status": "MERGED",
       "issue": 77,
-      "branch": "feature/postclip/R2-1-share-first",
       "pr": "https://github.com/gokuljeyapaul/smll/pull/83",
-      "note": "Round 2 slice 1 (issue #77, plan section 'Round 2' / slice S7, IDs A32-A36): the share-first result screen — auto-OCR on arrival, one progress state, text with a large Copy button first (visible without scrolling at 390x844), then Share/Save, then Edit; the model opt-in collapsed out of the way; three synthetic nested-text fixtures (real rasterized pictures) at 100% nested-token recall in both engines (bar >= 75%); the pure arrival state machine (A34); kind errors with one obvious next step (A36); docs/INTEGRATION.md for the iPhone host-app hand-off. Full local suite green on the final tree (chromium 41/41, webkit 32 passed + 9 platform-skips, prod e2e both engines, vitest 281/281, demo both engines, verify.sh exit 0) with digest-matched committed evidence under docs/evidence/R2-1/ (source_digest 43e8ea06c5d7…). READY_FOR_MERGE under the autonomous merge policy once 'monorepo / verify' is green on the PR head; its merge SHA and the post-merge main verification go to the R2-2 slice's update per the next-slice-updates-the-merge-SHA convention."
+      "merge_sha": "5bdb5823a1863472bc6105cc131c853a4d9489b1",
+      "note": "Round 2 slice 1 (issue #77, plan section 'Round 2' / slice S7, IDs A32-A36): the share-first result screen. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked before R2-3 started). Merge SHA + post-merge main verification recorded here by the R2-3 slice per the next-slice-updates-the-merge-SHA convention."
+    },
+    "R2-3": {
+      "status": "IN_PROGRESS",
+      "issue": 78,
+      "branch": "feature/postclip/R2-3-model-once",
+      "note": "Round 2 slice 3 (issue #78, plan section 'Round 2' / slice S9, IDs A37-A41): the model downloads ONCE and survives \u2014 reload + same-profile browser restart land ready (cached) with zero model network requests; persist() requested at the user's opt-in (never at load); the estimate no-room refusal; the cheap size+marker fresh-start check; volatile storage explained kindly with no download; the download demoted behind the collapsed 'Advanced: optional tidy-up model' section; the A19 decision re-cited on numbers. RED committed under docs/evidence/R2-3/ (env-probe.json measured BEFORE any change per the issue's reproduce-first rule); GREEN in progress."
     }
   },
   "last_verified_merged_pr": {
-    "slice": "DV (post-completion demo video, issue #73)",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/74",
-    "merge_sha": "6d1fa76a65795bea2ce52760144a65a2cfc72a67",
-    "main_check_after_merge": "monorepo / verify green on main at 6d1fa76 (reported in the issue #73 done-comment; re-checked before R2-1 started)"
+    "slice": "R2-1 (share-first result screen, issue #77)",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/83",
+    "merge_sha": "5bdb5823a1863472bc6105cc131c853a4d9489b1",
+    "main_check_after_merge": "monorepo / verify green on main at 5bdb582 (checked via the check-runs API before R2-3 branched)"
   }
 }

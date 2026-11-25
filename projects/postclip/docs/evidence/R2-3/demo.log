@@ -1,0 +1,117 @@
+== demo == 
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 61 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.15 kB │ gzip:     0.63 kB
+dist/assets/worker-D29jU1ZI.js       225.50 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-BWxCpVyf.css         6.78 kB │ gzip:     1.86 kB
+dist/assets/index-aTV1jQxX.js        283.04 kB │ gzip:    90.79 kB
+
+✓ built in 1.86s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+demo: building the test app (the demo needs the test-only model-server overrides)
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 61 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                        1.15 kB │ gzip:     0.63 kB
+dist/assets/worker-D29jU1ZI.js       225.50 kB
+dist/assets/wllama-CO25czjY.wasm  10,244.62 kB │ gzip: 2,917.28 kB
+dist/assets/index-BWxCpVyf.css         6.78 kB │ gzip:     1.86 kB
+dist/assets/index-aTV1jQxX.js        283.04 kB │ gzip:    90.79 kB
+
+✓ built in 2.18s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+[preview-out] ➜  Local:   http://127.0.0.1:4197/
+[model-server] serve_model: serving .cache/models/Qwen3-0.6B-Q4_K_M.gguf
+[model-server] serve_model: size=396705472 sha256=ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+[model-server] serve_model: wrong-hash sha256=36005419135a620d750a781264d65beff0732917521d8a3817442e96566f71bb (differs from the pinned one)
+[model-server] serve_model: truncated size=198352736 (half of 396705472)
+[model-server] serve_model: listening on http://127.0.0.1:4599 (file size 396705472)
+[model-server] serve_model: logging requests to artifacts/model-server.log
+demo: serving built app at http://127.0.0.1:4197/
+  [chromium] PASS — home screen renders
+  [chromium] PASS — installable: service worker registered with a complete precache ({"manifestCount":22,"cachedCount":22,"active":true})
+  [chromium] PASS — real OCR + cleanup produce review text (184 chars)
+  [chromium] PASS — review text is the cleaned body (first gold body line present) ('Shipped our first offline-first release today.')
+  [chromium] PASS — UI chrome is removed from the review text
+  [chromium] PASS — Web Share payload equals the edited text
+  [chromium] PASS — Copy shows feedback
+  [chromium] PASS — clipboard paste round-trip delivers the edited text (241 chars)
+  [chromium] PASS — export .txt downloads the edited text exactly (byte-identical)
+  [chromium] PASS — non-English screenshot is rejected with a clear message
+  [chromium] PASS — no cleanup ran for the rejected screenshot
+  [chromium] PASS — tiny image is rejected before OCR with the too-small message
+  [chromium] PASS — no-storage audit: only the allow-listed caches exist (app shell; model cache from S3) (caches: precache-v1)
+  [chromium] PASS — paste event with an image file is processed end to end (372 chars)
+  [chromium] PASS — share-target POST through the service worker is processed (246 chars)
+  [chromium] PASS — offline reload renders the app shell
+  [chromium] PASS — real OCR works with the network disabled (195 chars)
+[model-server] serve_model: GET /model-slow range=- status=200 sent=396705472
+[model-server] (node:369761) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 drain listeners added to [ServerResponse]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+  [chromium] PASS — model download shows live progress and ends ready (UC08) (ready=true maxSeen=100% samples=382)
+  [chromium] PASS — the model cache holds exactly one weights entry of the pinned size plus its verified marker (weights=1 (396705472 bytes, pinned 396705472) markers=1 other=[])
+[model-server] serve_model: GET /model-kill-fresh range=- status=200-kill sent=99176368
+[model-server] serve_model: GET /model-kill-fresh range=bytes=98566144- status=206 sent=298139328
+  [chromium] PASS — an interrupted model download resumes and ends ready
+  [chromium] PASS — the cached model is found offline with no network
+  [chromium] PASS — offline processing with the model cached still produces review text (372 chars)
+  [chromium] PASS — offline processing issued ZERO network requests (failed=0 nonSW=0)
+[model-server] serve_model: GET /model-wrong-hash range=- status=200 sent=396705472
+  [chromium] PASS — a checksum failure shows the fallback banner
+  [chromium] PASS — the bad model file is purged from the cache
+  [chromium] PASS — standard cleanup still works after the model failure (246 chars)
+[model-server] serve_model: GET /model range=- status=200 sent=396705472
+  [chromium] PASS — the model re-downloads and is ready for the cleanup step
+  [chromium] PASS — the model-cleanup opt-in toggle is offered (default off)
+  [chromium] PASS — model cleanup is OFF by default (A19 decision)
+  [chromium] PASS — model cleanup settles into a designed state (state=applied) (state=applied status="Model cleanup applied — every word verified against the screenshot." text=262 chars suggestions=true)
+  [chromium] PASS — suggestion payload toggles default off (plan point 5) (includeTags=false)
+  [chromium] PASS — denied clipboard explains and the file picker still works (explained=true diag={"banner":"Pasting needs clipboard permission, which is currently blocked for this site. You can still add your screenshot with the","reviewVisible":false,"homeHeading":"PostClip"})
+  [webkit] PASS — home screen renders
+  [webkit] PASS — installable: service worker registered with a complete precache ({"manifestCount":22,"cachedCount":22,"active":true})
+  [webkit] PASS — real OCR + cleanup produce review text (184 chars)
+  [webkit] PASS — review text is the cleaned body (first gold body line present) ('Shipped our first offline-first release today.')
+  [webkit] PASS — UI chrome is removed from the review text
+  [webkit] PASS — Web Share payload equals the edited text
+  [webkit] PASS — Copy shows feedback
+  [webkit] PASS — clipboard paste round-trip delivers the edited text (241 chars)
+  [webkit] PASS — export .txt downloads the edited text exactly (byte-identical)
+  [webkit] PASS — non-English screenshot is rejected with a clear message
+  [webkit] PASS — no cleanup ran for the rejected screenshot
+  [webkit] PASS — tiny image is rejected before OCR with the too-small message
+  [webkit] PASS — no-storage audit: only the allow-listed caches exist (app shell; model cache from S3) (caches: postclip-model-v1,precache-v1)
+  [webkit] PASS — paste event with an image file is processed end to end (372 chars)
+  [webkit] PASS — share-target POST through the service worker is processed (246 chars)
+  [webkit] PASS — offline reload renders the app shell
+  [webkit] PASS — real OCR works with the network disabled (195 chars)
+[model-server] serve_model: GET /model-slow range=- status=200 sent=396705472
+  [webkit] PASS — model download shows live progress and ends ready (UC08) (ready=true maxSeen=100% samples=13)
+  [webkit] PASS — the model cache holds exactly one weights entry of the pinned size plus its verified marker (weights=1 (396705472 bytes, pinned 396705472) markers=1 other=[])
+[model-server] serve_model: GET /model-kill-fresh range=- status=200-kill sent=99176368
+[model-server] serve_model: GET /model-kill-fresh range=bytes=11730627- status=206 sent=384974845
+  [webkit] PASS — an interrupted model download resumes and ends ready
+  [webkit] PASS — the cached model is found offline with no network
+  [webkit] PASS — offline processing with the model cached still produces review text (372 chars)
+  [webkit] PASS — offline processing issued ZERO network requests (failed=0 nonSW=0)
+[model-server] serve_model: GET /model-wrong-hash range=- status=200 sent=396705472
+  [webkit] PASS — a checksum failure shows the fallback banner
+  [webkit] PASS — the bad model file is purged from the cache
+  [webkit] PASS — standard cleanup still works after the model failure (246 chars)
+[model-server] serve_model: GET /model range=- status=200 sent=396705472
+  [webkit] PASS — the model re-downloads and is ready for the cleanup step
+  [webkit] PASS — the model-cleanup opt-in toggle is offered (default off)
+  [webkit] PASS — model cleanup is OFF by default (A19 decision)
+  [webkit] PASS — model cleanup settles into a designed state (state=unavailable) (state=unavailable status="Model cleanup couldn't run for this screenshot — showing the standard rules cleanup." text=184 chars suggestions=false)
+demo: chromium=PASS webkit=PASS
+[preview] exited code=143 sig=null
+exit codes: build_test=0 demo=0

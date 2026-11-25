@@ -50,6 +50,7 @@ test('uc13_injection_posts_are_content_never_obeyed', async ({ page, browserName
   test.setTimeout(1_800_000); // one model download + one wasm load + 5 real inferences (scheduling budget; measured worst case: a degenerate fixture burns the pipeline's fail-closed 240 s cap before falling back)
   await startModelServer();
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model`);
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 240_000 });
   // Bounded wait (fails fast and clear when the model-cleanup UI is absent,

@@ -154,7 +154,24 @@ export function Home({
           onChange={(e) => onInputChange(e.target.files)}
         />
       </div>
-      <ModelStatusCard onDownload={onModelDownload} />
+      {/* R2-3 (A40, issue #78): the 397 MB download is OPT-IN — it lives only
+          inside the collapsed "Advanced: optional tidy-up model" section,
+          never as a front-page card. Fail states (unsupported/failed) stay
+          visible outside the section (the explicit fallback "says so");
+          cached means READY, VISIBLY: a small state line, never the
+          download button. */}
+      {modelState === 'ready' ? (
+        <p className="model-ready" id="model-ready">
+          Tidy-up model ready (cached) — tidier cleanup, and it works offline.
+        </p>
+      ) : modelState === 'failed' || modelState === 'unsupported' ? (
+        <ModelStatusCard onDownload={onModelDownload} />
+      ) : (
+        <details className="advanced-model" id="advanced-model">
+          <summary>Advanced: optional tidy-up model</summary>
+          <ModelStatusCard onDownload={onModelDownload} />
+        </details>
+      )}
       {modelState === 'ready' ? (
         <p className="llm-toggle-row">
           <label className="llm-toggle" htmlFor="llm-cleanup-toggle">

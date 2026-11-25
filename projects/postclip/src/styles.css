@@ -229,6 +229,23 @@ body {
   margin-bottom: 4px;
 }
 
+/* R2-3 (A40): the optional tidy-up model download lives only inside this
+   collapsed section on the home screen — never a front-page card. */
+.advanced-model {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.advanced-model summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.advanced-model[open] {
+  margin-bottom: 4px;
+}
+
 
 .copied-note {
   color: var(--muted);

@@ -62,6 +62,8 @@ export function modelUrl(): string {
 export interface TestFlags {
   modelUrl: string | null;
   forceUnsupported: boolean;
+  /** R2-3 test-only storage-scenario override: 'volatile' | 'no-room' | null. */
+  storage: 'volatile' | 'no-room' | null;
 }
 export function parseTestFlags(search: string): TestFlags {
   const params = new URLSearchParams(search);
@@ -75,7 +77,9 @@ export function parseTestFlags(search: string): TestFlags {
       modelUrl = null;
     }
   }
-  return { modelUrl, forceUnsupported: params.get('testProbe') === 'unsupported' };
+  const rawStorage = params.get('testStorage');
+  const storage = rawStorage === 'volatile' || rawStorage === 'no-room' ? rawStorage : null;
+  return { modelUrl, forceUnsupported: params.get('testProbe') === 'unsupported', storage };
 }
 
 /**
@@ -102,5 +106,20 @@ export function testForceUnsupported(): boolean {
     return parseTestFlags(window.location.search).forceUnsupported;
   } catch {
     return false;
+  }
+}
+
+/**
+ * TEST-ONLY storage-scenario override (R2-3, A29-gated): 'volatile' forces
+ * the storage provider to report it cannot keep the model (the detected
+ * lost-cache / private-window class); 'no-room' forces the storage
+ * estimate below the room bar. Absent from the production bundle.
+ */
+export function testStorageOverride(): 'volatile' | 'no-room' | null {
+  if (!__POSTCLIP_TEST_BUILD__) return null;
+  try {
+    return parseTestFlags(window.location.search).storage;
+  } catch {
+    return null;
   }
 }

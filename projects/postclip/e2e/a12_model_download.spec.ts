@@ -24,6 +24,8 @@ test('a12_model_downloads_verifies_caches', async ({ page }) => {
   const capture = startCapture(page);
 
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-slow`);
+  // R2-3: the download is opt-in behind the collapsed Advanced section.
+  await page.locator('#advanced-model summary').click();
   await expect(page.locator('#model-download-btn')).toBeVisible();
   await page.locator('#model-download-btn').click();
 
@@ -76,6 +78,7 @@ test('a12_interrupted_download_resumes', async ({ page }) => {
   // /model-kill-fresh destroys EVERY fresh (non-Range) request after ~25%:
   // the only way to `ready` is to resume from the received offset.
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model-kill-fresh`);
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 120_000 });
 

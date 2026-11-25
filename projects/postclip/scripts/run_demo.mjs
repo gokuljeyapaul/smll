@@ -340,6 +340,7 @@ async function demoIn(engineName, browserType) {
     // verifies sha256 and ends ready — the local server serves the REAL file,
     // paced so the progress bar is observable.
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-slow`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     // Record every REAL progress-bar DOM state with a MutationObserver
     // (timer sampling starves while the streamed hash runs on the main
@@ -370,35 +371,52 @@ async function demoIn(engineName, browserType) {
     );
     // The model cache lives in OPFS (Chromium) or Cache Storage (WebKit) —
     // the app probes and picks per engine (src/model/store.ts).
-    const cachedBytes = await page.evaluate(async () => {
-      let total = 0;
-      let entries = 0;
-      try {
-        const root = await navigator.storage.getDirectory();
-        const dir = await root.getDirectoryHandle('postclip-model');
-        for await (const [name, handle] of dir.entries()) {
-          entries += 1;
-          total += (await handle.getFile()).size;
-          void name;
-        }
-      } catch { /* no OPFS model dir to clear */ }
-      try {
-        const names = await caches.keys();
-        const model = names.find((n) => n.startsWith('postclip-model'));
-        if (model) {
-          const cache = await caches.open(model);
-          for (const k of await cache.keys()) {
-            entries += 1;
-            total += (await (await cache.match(k.url)).blob()).size;
+    // R2-3 (A37): a verified download also records the cheap fresh-start
+    // marker (model-<sha>.verified.json — metadata only) in the SAME store
+    // as the weights, so the honest expectation on this design is exactly
+    // one WEIGHTS entry of the pinned size plus exactly one marker entry —
+    // and nothing else. (The S3-era count of entries === 1 failed on this
+    // tree exactly as it should once the marker landed; the check was
+    // updated to the designed shape, not the other way around.)
+    const cacheShape = await page.evaluate(
+      async ({ pinned }) => {
+        const shape = { weights: 0, weightBytes: 0, markers: 0, other: [] };
+        const see = (name, size) => {
+          if (size === pinned) {
+            shape.weights += 1;
+            shape.weightBytes += size;
+          } else if (/\.verified\.json$/.test(name) && size < 4096) {
+            shape.markers += 1;
+          } else {
+            shape.other.push(`${name}:${size}`);
           }
-        }
-      } catch { /* no Cache Storage model cache */ }
-      return entries === 1 ? total : -entries;
-    });
+        };
+        try {
+          const root = await navigator.storage.getDirectory();
+          const dir = await root.getDirectoryHandle('postclip-model');
+          for await (const [name, handle] of dir.entries()) {
+            see(name, (await handle.getFile()).size);
+          }
+        } catch { /* no OPFS model dir */ }
+        try {
+          const names = await caches.keys();
+          const model = names.find((n) => n.startsWith('postclip-model'));
+          if (model) {
+            const cache = await caches.open(model);
+            for (const k of await cache.keys()) {
+              const blob = await (await cache.match(k.url)).blob();
+              see(k.url.split('/').pop() || k.url, blob.size);
+            }
+          }
+        } catch { /* no Cache Storage model cache */ }
+        return shape;
+      },
+      { pinned: MODEL_SIZE_BYTES },
+    );
     step(
-      'the model cache holds exactly one entry of the pinned size',
-      cachedBytes === MODEL_SIZE_BYTES,
-      `${cachedBytes} bytes (pinned ${MODEL_SIZE_BYTES})`,
+      'the model cache holds exactly one weights entry of the pinned size plus its verified marker',
+      cacheShape.weights === 1 && cacheShape.markers === 1 && cacheShape.other.length === 0,
+      `weights=${cacheShape.weights} (${cacheShape.weightBytes} bytes, pinned ${MODEL_SIZE_BYTES}) markers=${cacheShape.markers} other=${JSON.stringify(cacheShape.other)}`,
     );
 
     // S3 (UC08): an interrupted download RESUMES — the server destroys every
@@ -407,6 +425,7 @@ async function demoIn(engineName, browserType) {
     // (the progress step cached the same content-addressed key).
     await clearModelCache(page);
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-kill-fresh`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     const resumed = await page
       .locator('#model-ready')
@@ -459,6 +478,7 @@ async function demoIn(engineName, browserType) {
     // model from the resume step would otherwise short-circuit to ready.)
     await clearModelCache(page);
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model-wrong-hash`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     const badModelBanner = await page
       .locator('#model-banner')
@@ -498,6 +518,7 @@ async function demoIn(engineName, browserType) {
     // never shows either way.
     await clearModelCache(page);
     await page.goto(`http://127.0.0.1:${PORT}/?testModelUrl=http://127.0.0.1:4599/model`);
+    await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
     await page.locator('#model-download-btn').click();
     const modelReadyAgain = await page
       .locator('#model-ready')

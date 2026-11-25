@@ -69,6 +69,39 @@ final tree, 2 `NOT_RUN`).
   artifact). `frame-ancestors` cannot be enforced in a meta policy (CSP spec)
   and belongs to the hosting layer (plan D10 keeps hosting out of scope).
 
+## Round 2 (R2-3, model downloaded once) — measured and disclosed
+
+- **In-session, a wiped/private model store is NOT distinguishable from a
+  first visit on this engine matrix** (MEASURED before any change:
+  `docs/evidence/R2-3/env-probe.json`): headless Chromium reports
+  `navigator.storage.persist() === false` in EVERY context — a persistent
+  profile, an incognito window and an ephemeral context alike — and the
+  SAME 10 GiB quota in incognito as in a normal profile; WebKit reports
+  `persist() === false` with a 1 GiB quota. A write/read probe succeeds
+  everywhere in-session. Consequences, all honest:
+  - `persist()` IS requested at the user's download opt-in (never silently
+    at load, issue #78's rule) and the result is recorded — but it never
+    gates the offer, because on this matrix it would block every legitimate
+    download while detecting nothing.
+  - The no-room refusal is REAL (the estimate is measured at the download;
+    the bar is the pinned size × 2, the promote's temp+final peak).
+  - The volatile refusal (the kind explanation, no download offered) is
+    wired to the storage provider's signal; its deterministic coverage is
+    the test-only `?testStorage=volatile` override (A29: absent from the
+    production bundle). A real private window on the owner's devices may
+    look different — A27's optional real-device pass would measure it.
+- **The fresh-start cache check trusts size + the recorded sha256 marker**
+  (`model-<sha>.verified.json` in the model cache): a marker that dies with
+  a partially-evicted cache costs one 397 MB re-hash (by design,
+  fail-closed). Corruption AFTER the marker was written is not re-detected
+  at launch — the same trust model as every browser cache; the download
+  itself always verifies before caching (A12/A13 unchanged).
+- **The existing download-flow specs open the Advanced section before the
+  download click** (a12/a13/a14/a21/eval/uc13/demo/a29, changed with the
+  UI in the R2-3 PR): the flows and their assertions are otherwise
+  unchanged and unloosened — the download is an opt-in inside a collapsed
+  section now (A40).
+
 ## Round 2 (R2-1, share-first result screen) — measured and disclosed
 
 - **Text inside pictures within the screenshot (A35, nested-image text).**

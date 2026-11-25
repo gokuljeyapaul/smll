@@ -33,6 +33,7 @@ test('a14_offline_processing_zero_network_requests', async ({ page }) => {
   // absorbs CI-environment variance that a 120 s budget flaked on (attempt 2
   // of PR #67's CI stalled past 120 s on a run where a13's full 396 MB
   // wrong-hash download+hash completed in 13 s).
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 480_000 });
 

@@ -47,6 +47,7 @@ describe('parseTestFlags — test-only overrides (S3, A29)', () => {
     expect(parseTestFlags('?testModelUrl=http://127.0.0.1:4599/model')).toEqual({
       modelUrl: 'http://127.0.0.1:4599/model',
       forceUnsupported: false,
+      storage: null,
     });
     expect(parseTestFlags('?testModelUrl=https://example.test/x.gguf').modelUrl).toBe(
       'https://example.test/x.gguf',
@@ -63,5 +64,12 @@ describe('parseTestFlags — test-only overrides (S3, A29)', () => {
     expect(parseTestFlags('?testProbe=unsupported').forceUnsupported).toBe(true);
     expect(parseTestFlags('?testProbe=other').forceUnsupported).toBe(false);
     expect(parseTestFlags('').forceUnsupported).toBe(false);
+  });
+
+  it('R2-3: parses the storage-scenario override (volatile | no-room), rejecting anything else', () => {
+    expect(parseTestFlags('?testStorage=volatile').storage).toBe('volatile');
+    expect(parseTestFlags('?testStorage=no-room').storage).toBe('no-room');
+    expect(parseTestFlags('?testStorage=other').storage).toBeNull();
+    expect(parseTestFlags('').storage).toBeNull();
   });
 });

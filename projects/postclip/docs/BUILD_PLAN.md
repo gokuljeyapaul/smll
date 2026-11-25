@@ -133,6 +133,11 @@ Library choices are **candidates, resolved at build time**, not promises. Candid
 | A34 | P0 | host | UC15 | The arrival screen-state machine (arrived → reading → result, or a kind error) is pure, unit-tested logic, and every kind error maps to its specific message plus one obvious next step. | Vitest |
 | A35 | P0 | web | UC16 | Nested-text fixtures (≥ 3 synthetic screenshots with text inside pictures, ground truth committed): the OCR pass extracts the nested-image text at or above the stated recall bar; per-fixture numbers are recorded in evidence and `KNOWN_LIMITS.md` states the honest limit. | Playwright browser eval |
 | A36 | P0 | chromium | UC15 | A shared image that cannot be read shows its specific kind error and one obvious next step; a share POST without an image stays ignored (A08's fail-closed negative unchanged). | Playwright |
+| A37 | P0 | web | UC08 | The model downloads ONCE and survives: after a download, a reload and a full same-profile browser restart land `ready` with zero model network requests and no re-download; `navigator.storage.persist()` is requested at the download (the user's opt-in), never silently at load; the fresh-start cache check is cheap (size + the recorded sha256 marker; the 397 MB re-hash only when the marker is missing). The persistent-vs-ephemeral scenario table is recorded in evidence with numbers. | Playwright both engines (persistent-context relaunch) |
+| A38 | P0 | host | UC08 | The storage-offer decision logic is pure and unit-tested: offer / not enough room (the kind no-room refusal) / volatile (a detected lost cache) / unavailable, each with its exact verdict and message; the cheap-check plan (trust / rehash / purge) is unit-tested. | Vitest |
+| A39 | P0 | web | UC09 | Volatile storage is a first-class case: when the app detects the model cache was lost (or the storage reports it cannot keep the model), it says so once, plainly, offers no download, and the standard rules cleanup keeps working end to end. | Playwright both engines |
+| A40 | P0 | web | UC08 | The model download is opt-in behind a clearly labelled "Advanced: optional tidy-up model" section, collapsed on the home screen and absent from the result path; with the model cached the home screen shows the small "Tidy-up model ready (cached)" state and never the download button. | Playwright both engines |
+| A41 | P0 | host | UC05 | The off-by-default / advanced-section decision rests on numbers: the A19 measurement (the LLM cleanup slower and worse than the rules baseline) is repeated on the final tree and re-cited, and the LLM stays disabled by default (the committed constant is unit-pinned). | Vitest + the eval re-run |
 
 ## Testability map
 
@@ -174,6 +179,7 @@ The agent produces each artifact from a *passing* run in a form the owner can op
 | O05 | S5 | UC01, UC04 | `docs/evidence/S5/owner/` mobile-viewport (390x844) screenshots, offline reload, keyboard focus | Usable one-handed on a phone-sized screen; works offline; focus is visible |
 | O06 | S6 | UC01, UC14 | `docs/demo/` single compilation video (at most 15 MB, 720p) of all use-case flows in Chromium and WebKit | The whole product tour looks like something you would actually use |
 | O07 | S7 | UC15, A32, A33 | `docs/evidence/R2-1/owner/` mobile-viewport gallery (390×844 and 360×800): a share arrives, the progress state, the result screen with Copy first | A shared screenshot goes straight to its text with Copy as the obvious first action; nothing is in the way |
+| O09 | S9 | UC08, A37, A40 | `docs/evidence/R2-3/owner/` mobile-viewport gallery (390×844 and 360×800): the home screen with the model not offered, the Advanced section opened, and the "ready (cached)" state after a restart | The 397 MB download is never pushed at anyone; the model, once downloaded, is remembered across restarts; the ephemeral/lost-cache case is explained kindly |
 
 ### Planner-review
 
@@ -310,6 +316,16 @@ Observable result: an image that arrives — shared into the installed app throu
 - **RED**: the new share-arrival Playwright flows fail on the current app (no result-first screen: the Copy action is not the first, above-the-fold action at 390×844; the reading state has no dedicated progress surface; the nested-text fixture set does not exist), and the Vitest state-machine suite fails on the scaffolded, unwired transition table.
 - **GREEN**: all pass in the required engines; the previous suite (A01–A31) still passes; the review screen becomes the result screen (heading "Your text"), and the tests that name the old heading change with it in the same PR.
 - **Evidence**: standard set under `docs/evidence/R2-1/`; the nested-text recall table; the O07 owner gallery.
+
+### S9 — R2-3: Model downloaded once (round 2, issue #78)
+
+**Acceptance IDs:** A37, A38, A39, A40, A41
+
+Observable result: the model downloads ONCE and survives — after a download it is found again after a reload and after a full same-profile browser restart, cheaply (size + the recorded sha256 marker), with zero network requests and no re-download; `navigator.storage.persist()` is requested at the user's opt-in (never silently at load) and the storage estimate is checked against the 397 MB need before starting, with a kind refusal when there is no room; when the app detects the cache was lost (volatile storage: private windows, WebView wipes, eviction) it says so once, plainly, offers no download and keeps the rules-based cleanup; the download is opt-in behind a collapsed "Advanced: optional tidy-up model" section, and the cached model shows as a small "ready (cached)" state, never the download button.
+
+- **RED**: the new Playwright persistence flows fail on the current app (no Advanced section — the 397 MB download is a front-page card; no "ready (cached)" state; `persist()` is never requested; no marker; the volatile case shows the download instead of the kind explanation), and the Vitest storage-decision suite fails on the scaffolded, unwired policy. The measured environments (persistent profile, incognito, fresh contexts — `docs/evidence/R2-3/env-probe.json`) are recorded BEFORE any change, per the issue's "reproduce and find which first".
+- **GREEN**: all pass in the required engines; the previous suite (A01–A36) still passes; the existing download-flow specs that must now open the Advanced section first change with the UI in the same PR (the flows themselves are unchanged and unloosened).
+- **Evidence**: standard set under `docs/evidence/R2-3/`; the persistent-vs-ephemeral scenario table with numbers; the O09 owner gallery.
 
 ## Round 2 (improvements from the owner's hands-on review)
 

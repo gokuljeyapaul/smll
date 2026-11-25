@@ -1,0 +1,137 @@
+== R2-3 RED: typecheck + lint (proof the failures below are behavioural, not build errors) ==
+$ npm run typecheck
+npm notice run postclip@0.1.0 typecheck
+npm notice run tsc --noEmit
+typecheck exit code: 0
+
+$ npm run lint
+npm notice run postclip@0.1.0 lint
+npm notice run eslint .
+lint exit code: 0
+
+== R2-3 RED part 1: the storage-offer decision suite (A38) on the unwired scaffold ==
+$ npx vitest run src/model/storage-policy.test.ts
+     60|     expect(decideStorageOffer(facts({ quotaBytes: ROOM - 1, cacheWasLo…
+       |                                                                                             ^
+     61|   });
+     62|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/model/storage-policy.test.ts > fresh-start cache check plan (R2-3, A37/A38) > size + matching marker → trust (cheap: no 397 MB re-hash on launch)
+AssertionError: expected 'purge' to be 'trust' // Object.is equality
+
+Expected: "trust"
+Received: "purge"
+
+ ❯ src/model/storage-policy.test.ts:89:42
+     87| describe('fresh-start cache check plan (R2-3, A37/A38)', () => {
+     88|   it('size + matching marker → trust (cheap: no 397 MB re-hash on laun…
+     89|     expect(planCacheCheck(cacheFacts())).toBe('trust');
+       |                                          ^
+     90|   });
+     91|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/model/storage-policy.test.ts > fresh-start cache check plan (R2-3, A37/A38) > size matches, marker missing → rehash once, then the marker makes it cheap
+AssertionError: expected 'purge' to be 'rehash' // Object.is equality
+
+Expected: "rehash"
+Received: "purge"
+
+ ❯ src/model/storage-policy.test.ts:93:66
+     91|
+     92|   it('size matches, marker missing → rehash once, then the marker make…
+     93|     expect(planCacheCheck(cacheFacts({ markerPresent: false }))).toBe(…
+       |                                                                  ^
+     94|   });
+     95|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 6 passed (12)
+   Start at  18:39:43
+   Duration  1.06s (transform 63%, setup 31%, tests 3%, import 2%, worker 2%)
+
+vitest (storage-policy suite) exit code: 1
+
+== R2-3 RED part 2: the new persistence e2e flows against the CURRENT app (A37/A39/A40) ==
+$ npm run build:test  (the current, unchanged app — the new spec runs against it)
+
+✓ built in 1.24s
+ocr-assets: worker + core copied (36583953 bytes)
+ocr-assets: eng.traineddata.gz verified (sha256 18c1ac52b75e35d4…, 1984273 bytes)
+precache-manifest.js: 22 entries, 49.6 MB of build output (incl. 13 ocr-assets)
+build:test exit code: 0
+
+$ npx playwright test e2e/r2_3_model_once.spec.ts --project=chromium --reporter=list
+    > 281 |   await expect(page.locator('#advanced-model')).toBeVisible();
+          |                                                 ^
+      282 |   await expect(page.locator('#advanced-model summary')).toContainText('Advanced: optional tidy-up model');
+      283 |   expect(await page.locator('#advanced-model').getAttribute('open'), 'collapsed by default').toBeNull();
+      284 |   // Nothing about the model is offered by default: the button is hidden
+        at /opt/data/workspace/smll/projects/postclip/e2e/r2_3_model_once.spec.ts:281:49
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/r2_3_model_once-a40-downlo-0800c-behind-the-advanced-section-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/r2_3_model_once-a40-downlo-0800c-behind-the-advanced-section-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/r2_3_model_once-a40-downlo-0800c-behind-the-advanced-section-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/r2_3_model_once-a40-downlo-0800c-behind-the-advanced-section-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › e2e/r2_3_model_once.spec.ts:294:1 › a40_fresh_profile_records_the_model_absent_honestly 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#advanced-model')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#advanced-model') with timeout 30000ms
+      - waiting for locator('#advanced-model')
+
+
+      305 |   const page = ctx.pages()[0] ?? (await ctx.newPage());
+      306 |   await page.goto(`${BASE}/`);
+    > 307 |   await expect(page.locator('#advanced-model')).toBeVisible();
+          |                                                 ^
+      308 |   await page.locator('#advanced-model summary').click();
+      309 |   await expect(page.locator('#model-download-btn')).toBeVisible(); // the honest offer
+      310 |   await expect(page.locator('#model-ready')).toHaveCount(0);
+        at /opt/data/workspace/smll/projects/postclip/e2e/r2_3_model_once.spec.ts:307:49
+
+    Error Context: test-results/r2_3_model_once-a40-fresh--49d04-s-the-model-absent-honestly-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/r2_3_model_once-a40-fresh--49d04-s-the-model-absent-honestly-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/r2_3_model_once-a40-fresh--49d04-s-the-model-absent-honestly-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [chromium] › e2e/r2_3_model_once.spec.ts:111:1 › a37_model_downloads_once_survives_reload_and_same_profile_restart 
+    [chromium] › e2e/r2_3_model_once.spec.ts:208:1 › a39_volatile_storage_shows_kind_explanation_and_no_download 
+    [chromium] › e2e/r2_3_model_once.spec.ts:243:1 › a39_no_room_refuses_the_download_before_any_byte_is_fetched 
+    [chromium] › e2e/r2_3_model_once.spec.ts:274:1 › a40_download_is_opt_in_behind_the_advanced_section 
+    [chromium] › e2e/r2_3_model_once.spec.ts:294:1 › a40_fresh_profile_records_the_model_absent_honestly 
+playwright (new R2-3 spec, chromium) exit code: 1
+
+== R2-3 RED part 3: the measured environments (recorded BEFORE any change — issue #78 'reproduce and find which first') ==
+$ node scripts/probe_storage_envs.mjs (already recorded: docs/evidence/R2-3/env-probe.json)
+env-probe.json present (4083 bytes)
+
+R2-3 RED: ALL PARTS FAILED AS REQUIRED (real assertion failures on the missing behaviour).

@@ -20,6 +20,7 @@ import { MODEL_SERVER, startModelServer } from './helpers/model-server';
 async function modelReady(page: Page) {
   await startModelServer();
   await page.goto(`/?testModelUrl=${MODEL_SERVER}/model`);
+  await page.locator('#advanced-model summary').click(); // R2-3: opt-in section
   await page.locator('#model-download-btn').click();
   await expect(page.locator('#model-ready')).toBeVisible({ timeout: 240_000 });
 }
