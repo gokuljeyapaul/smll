@@ -80,18 +80,18 @@
       "note": "Round 2 slice 2 (issue #79, plan slice S8, IDs A42-A46): embeddable and responsive — the mobile-first layout (320-1280, no horizontal overflow, >=44px touch targets, 100dvh, safe-area insets, light+dark), embedded iframe/WebView behaviour (no window.top/popups, the blocked-clipboard kind fallback, never silent), the postMessage host contract (origin allow-list default none, replies never '*', 32 MiB cap, png/jpeg/webp, documented in docs/INTEGRATION.md), the hosting docs (frame-ancestors HTTP header with nginx/Caddy/Node examples, allow=/sandbox recommendation, storage-partitioning reality) and the cross-origin round-trip e2e (a host test page on a second local origin). Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked at the start of R2-4). Merge SHA + post-merge main verification recorded here by the R2-4 slice per the next-slice-updates-the-merge-SHA convention."
     },
     "R2-4": {
-      "status": "READY_FOR_MERGE",
+      "status": "MERGED",
       "issue": 82,
-      "pr": "this PR (closes #82)",
-      "branch": "feature/postclip/R2-4-cleanup",
-      "note": "Round 2 slice 4, the final one (issue #82, plan slice S10, no new acceptance IDs — the full suite re-affirms A32-A46 on the cleaned tree and keeps every earlier ID green): the clean-up after round 2. Delivered: the planner's round-2 mockup folder deleted and folded into the committed real owner galleries (O07-O09); BUILD_PLAN's 'Round 2' sidecar section folded into the normal plan (its standing rules moved to the Slices intro, the S10 row added); README, KNOWN_LIMITS, status.md and this file trued up (R2-2 recorded MERGED at d045980); the #68 stage-transition debug logging removed from src/model/manager.ts (the watchdog/abort/retry FIXES stay, tested; the R2-3 persist()-at-opt-in log stays — it documents A37); the standing scripts/cleanup_audit.sh docs/dead-code gate wired into scripts/test.sh (RED exit 1 on the pre-clean-up tree in docs/evidence/R2-4/red.log; the full suite green BEFORE the clean-up in before-cleanup.log — whose first run caught the latent tools/gen_issues.py S1/S10 prefix collision, fixed with its detector test green; GREEN: the full suite on the cleaned tree via scripts/run_r2_4_final_evidence.sh, digest-matched summary); merged round-2 branches deleted; epic #80 closed with proof links. The merge SHA + post-merge main verification are recorded in the issue #82 done-comment (the final slice of the round has no successor slice to record them here) and written into the ledger by the follow-up docs closeout PR sanctioned by the root AGENTS.md merge bookkeeping."
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/86",
+      "merge_sha": "11491d0d16af2393652bc928cb87f69f307c8203",
+      "note": "Round 2 slice 4, the final one (issue #82, plan slice S10, no new acceptance IDs — the full suite re-affirms A32-A46 on the cleaned tree and keeps every earlier ID green): the clean-up after round 2. Delivered: the planner's round-2 mockup folder deleted and folded into the committed real owner galleries (O07-O09); BUILD_PLAN's 'Round 2' sidecar section folded into the normal plan (its standing rules moved to the Slices intro, the S10 row added); README, KNOWN_LIMITS, status.md and this file trued up (R2-2 recorded MERGED at d045980); the #68 stage-transition debug logging removed from src/model/manager.ts (the watchdog/abort/retry FIXES stay, tested; the R2-3 persist()-at-opt-in log stays — it documents A37); the standing scripts/cleanup_audit.sh docs/dead-code gate wired into scripts/test.sh (RED exit 1 on the pre-clean-up tree in docs/evidence/R2-4/red.log; the full suite green BEFORE the clean-up in before-cleanup.log — whose first run caught the latent tools/gen_issues.py S1/S10 prefix collision, fixed with its detector test green; GREEN: the full suite on the cleaned tree via scripts/run_r2_4_final_evidence.sh, ALL STAGES GREEN, digest-matched summary); merged round-2 branches deleted; epic #80 closed with proof links. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit. The merge SHA + post-merge main verification are in the issue #82 done-comment and written into the ledger by this closeout PR (the root AGENTS.md's authorized final-documentation closeout for the last slice)."
     }
   },
   "last_verified_merged_pr": {
-    "slice": "R2-2 (embeddable and responsive, issue #79)",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/85",
-    "merge_sha": "d04598015f08ae069dab1c8f5de0f18d86c2b575",
-    "main_check_after_merge": "monorepo / verify: success on main at d04598015f08ae069dab1c8f5de0f18d86c2b575 (re-checked via the GitHub check-runs API at the start of R2-4)",
-    "note": "recorded here by the R2-4 slice per the next-slice-updates-the-merge-SHA convention"
+    "slice": "R2-4 (clean-up after round 2, issue #82)",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/86",
+    "merge_sha": "11491d0d16af2393652bc928cb87f69f307c8203",
+    "main_check_after_merge": "monorepo / verify: success on main at 11491d0d16af2393652bc928cb87f69f307c8203 (checked via the GitHub check-runs API; reported in the issue #82 done-comment)",
+    "note": "the final slice of round 2 — recorded here by the authorized final-documentation closeout PR (root AGENTS.md merge bookkeeping); no successor slice exists"
   }
 }
