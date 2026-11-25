@@ -1,0 +1,31 @@
+== R2-4 RED part 1: the docs/dead-code consistency gate FAILS on the pre-clean-up tree ==
+command: bash scripts/cleanup_audit.sh
+cleanup_audit: FAIL - docs/design/round2/ still exists
+cleanup_audit: FAIL - stale mockup references:
+    docs/BUILD_PLAN.md
+cleanup_audit: FAIL - stage-transition debug logging still in src/:
+    src/model/manager.ts
+cleanup_audit: problems found (see above)
+cleanup_audit exit code: 1
+
+(Exit semantics written down in the script and in negative.log: exit 1 = the tree still
+carries round-2 scaffolding — the mockup folder, its plan reference, and the #58-chase
+stage-transition logging are all still present. Exit 0 after the clean-up = clean.)
+
+== R2-4 RED part 2: the FULL suite green BEFORE the clean-up (the issue's before/after discipline) ==
+command: bash scripts/test.sh
+real output: docs/evidence/R2-4/before-cleanup.log
+exit code: 0 (test: OK — tools self-tests 41 OK; vitest 36 files / 342 tests passed; Playwright
+95 passed + 9 skipped [chromium + webkit, test build, 1.9 h]; the production-build pass 6 passed;
+bundle inspection PRODUCTION BUNDLE: CLEAN)
+
+NOTE: the FIRST run of this before-suite exited 1 at the tools stage —
+test_gen_issues' test_create_makes_labels_then_slices_then_epic_and_links_blockers caught a
+latent prefix-collision bug in tools/gen_issues.py: the epic linker's
+replace('- [ ] postclip S1') also rewrote the new '- [ ] postclip S10' line (added by this
+slice's first commit, the S10 plan row), linking S10 to S1's number —
+"AssertionError: '#111 postclip S' not found" / "Ran 11 tests in 2.608s / FAILED (failures=1)",
+exit 1 (real output, recorded above in this file's claim). Fixed with a digit lookahead in the
+same commit as this RED evidence; the committed before-cleanup.log is the GREEN re-run with the
+fix in. G2 check: the test that failed is the detector, not an obstacle — it passes against the
+fixed tool and was not touched.

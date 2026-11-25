@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "project": "postclip",
   "phase": "BUILDING",
-  "current_slice": "R2-2",
+  "current_slice": "R2-4",
   "owner_decisions": {
     "D1_ci": "no_exception_needed (ubuntu CI runs real Playwright + OCR + model; S5 adds the production-build e2e pass + bundle inspection to test.sh); contingency: ask owner for one setup-node line if runner Node is too old",
     "D8_llm_scope": "progressive",
@@ -63,27 +63,35 @@
       "issue": 77,
       "pr": "https://github.com/gokuljeyapaul/smll/pull/83",
       "merge_sha": "5bdb5823a1863472bc6105cc131c853a4d9489b1",
-      "note": "Round 2 slice 1 (issue #77, plan section 'Round 2' / slice S7, IDs A32-A36): the share-first result screen. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked before R2-3 started). Merge SHA + post-merge main verification recorded here by the R2-3 slice per the next-slice-updates-the-merge-SHA convention."
+      "note": "Round 2 slice 1 (issue #77, plan slice S7, IDs A32-A36): the share-first result screen. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked before R2-3 started). Merge SHA + post-merge main verification recorded here by the R2-3 slice per the next-slice-updates-the-merge-SHA convention."
     },
     "R2-3": {
       "status": "MERGED",
       "issue": 78,
       "pr": "https://github.com/gokuljeyapaul/smll/pull/84",
       "merge_sha": "ee67b2eff439d81b035d631d580a10ca975d3450",
-      "note": "Round 2 slice 3 (issue #78, plan section 'Round 2' / slice S9, IDs A37-A41): the model downloads ONCE and survives — reload + same-profile restart land ready (cached) with zero model network requests; persist() at the opt-in only; the estimate no-room refusal; the cheap size+marker fresh-start check; volatile storage explained kindly with no download; the download demoted behind the collapsed 'Advanced: optional tidy-up model' section; the A19 decision re-cited on numbers. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked before R2-2 started). Merge SHA + post-merge main verification recorded here by the R2-2 slice per the next-slice-updates-the-merge-SHA convention."
+      "note": "Round 2 slice 3 (issue #78, plan slice S9, IDs A37-A41): the model downloads ONCE and survives — reload + same-profile restart land ready (cached) with zero model network requests; persist() at the opt-in only; the estimate no-room refusal; the cheap size+marker fresh-start check; volatile storage explained kindly with no download; the download demoted behind the collapsed 'Advanced: optional tidy-up model' section; the A19 decision re-cited on numbers. Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked before R2-2 started). Merge SHA + post-merge main verification recorded here by the R2-2 slice per the next-slice-updates-the-merge-SHA convention."
     },
     "R2-2": {
-      "status": "IN_PROGRESS",
+      "status": "MERGED",
       "issue": 79,
-      "branch": "feature/postclip/R2-2-embeddable",
-      "note": "Round 2 slice 2 (issue #79, plan section 'Round 2' / slice S8, IDs A42-A46): embeddable and responsive — the mobile-first layout (320-1280, no horizontal overflow, >=44px touch targets, 100dvh, safe-area insets, light+dark), embedded iframe/WebView behaviour (no window.top/popups, the blocked-clipboard kind fallback, never silent), the postMessage host contract (origin allow-list default none, replies never '*', 32 MiB cap, png/jpeg/webp, documented in docs/INTEGRATION.md), the hosting docs (frame-ancestors HTTP header with nginx/Caddy/Node examples, allow=/sandbox recommendation, storage-partitioning reality) and the cross-origin round-trip e2e (a host test page on a second local origin). RED committed under docs/evidence/R2-2/red.log; GREEN in progress."
+      "pr": "https://github.com/gokuljeyapaul/smll/pull/85",
+      "merge_sha": "d04598015f08ae069dab1c8f5de0f18d86c2b575",
+      "note": "Round 2 slice 2 (issue #79, plan slice S8, IDs A42-A46): embeddable and responsive — the mobile-first layout (320-1280, no horizontal overflow, >=44px touch targets, 100dvh, safe-area insets, light+dark), embedded iframe/WebView behaviour (no window.top/popups, the blocked-clipboard kind fallback, never silent), the postMessage host contract (origin allow-list default none, replies never '*', 32 MiB cap, png/jpeg/webp, documented in docs/INTEGRATION.md), the hosting docs (frame-ancestors HTTP header with nginx/Caddy/Node examples, allow=/sandbox recommendation, storage-partitioning reality) and the cross-origin round-trip e2e (a host test page on a second local origin). Squash-merged by the agent under the autonomous merge policy (all gates held); monorepo / verify green on main at the merge commit (re-checked at the start of R2-4). Merge SHA + post-merge main verification recorded here by the R2-4 slice per the next-slice-updates-the-merge-SHA convention."
+    },
+    "R2-4": {
+      "status": "READY_FOR_MERGE",
+      "issue": 82,
+      "pr": "this PR (closes #82)",
+      "branch": "feature/postclip/R2-4-cleanup",
+      "note": "Round 2 slice 4, the final one (issue #82, plan slice S10, no new acceptance IDs — the full suite re-affirms A32-A46 on the cleaned tree and keeps every earlier ID green): the clean-up after round 2. Delivered: the planner's round-2 mockup folder deleted and folded into the committed real owner galleries (O07-O09); BUILD_PLAN's 'Round 2' sidecar section folded into the normal plan (its standing rules moved to the Slices intro, the S10 row added); README, KNOWN_LIMITS, status.md and this file trued up (R2-2 recorded MERGED at d045980); the #68 stage-transition debug logging removed from src/model/manager.ts (the watchdog/abort/retry FIXES stay, tested; the R2-3 persist()-at-opt-in log stays — it documents A37); the standing scripts/cleanup_audit.sh docs/dead-code gate wired into scripts/test.sh (RED exit 1 on the pre-clean-up tree in docs/evidence/R2-4/red.log; the full suite green BEFORE the clean-up in before-cleanup.log — whose first run caught the latent tools/gen_issues.py S1/S10 prefix collision, fixed with its detector test green; GREEN: the full suite on the cleaned tree via scripts/run_r2_4_final_evidence.sh, digest-matched summary); merged round-2 branches deleted; epic #80 closed with proof links. The merge SHA + post-merge main verification are recorded in the issue #82 done-comment (the final slice of the round has no successor slice to record them here) and written into the ledger by the follow-up docs closeout PR sanctioned by the root AGENTS.md merge bookkeeping."
     }
   },
   "last_verified_merged_pr": {
-    "slice": "R2-3 (model downloaded once, issue #78)",
-    "pr": "https://github.com/gokuljeyapaul/smll/pull/84",
-    "merge_sha": "ee67b2eff439d81b035d631d580a10ca975d3450",
-    "main_check_after_merge": "monorepo / verify: success on main at ee67b2eff439d81b035d631d580a10ca975d3450 (re-checked via the GitHub check-runs API at the start of R2-2)",
-    "note": "recorded here by the R2-2 slice per the next-slice-updates-the-merge-SHA convention"
+    "slice": "R2-2 (embeddable and responsive, issue #79)",
+    "pr": "https://github.com/gokuljeyapaul/smll/pull/85",
+    "merge_sha": "d04598015f08ae069dab1c8f5de0f18d86c2b575",
+    "main_check_after_merge": "monorepo / verify: success on main at d04598015f08ae069dab1c8f5de0f18d86c2b575 (re-checked via the GitHub check-runs API at the start of R2-4)",
+    "note": "recorded here by the R2-4 slice per the next-slice-updates-the-merge-SHA convention"
   }
 }

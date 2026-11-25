@@ -17,5 +17,9 @@ if [ "$PHASE" != "PLAN_ONLY" ]; then
   # inspection must come back clean on the dist/ that pass just built.
   npm run test:e2e:prod
   node scripts/inspect_bundle.mjs dist prod
+  # R2-4 (issue #82): the standing docs/dead-code consistency gate — no stale
+  # round-2 references, no stall-chase stage logging, every ledger-linked
+  # evidence path exists.
+  bash scripts/cleanup_audit.sh
 fi
 echo "test: OK"

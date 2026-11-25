@@ -1,0 +1,29 @@
+{
+  "slice": "R2-4",
+  "toolchain": {
+    "node": "v26.12.1",
+    "npm": "12.0.2 (package-lock.json, npm ci)",
+    "vite": "8.3.8",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1",
+    "eslint": "9 (typescript-eslint 8.73.0)",
+    "react": "19.3.1",
+    "playwright": "1.65.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright build webkit-2388)",
+    "ffmpeg": "ffprobe version n9.0.1-11-ge47273f4d9-20260831 Copyright (c) 2007-2026 the FFmpeg developers",
+    "axe_core": "@axe-core/playwright 4.14.0 (axe-core 4.10.3 bundled)"
+  },
+  "r2_4_additions": {
+    "slice": "R2-4 — Clean-up after round 2 (issue #82): no product behaviour changes",
+    "mockups": "the planner's round-2 mockup folder (3 low-fi PNGs + README, PR #81) DELETED; every repo reference folded — the real owner galleries are docs/evidence/R2-1/owner/ (O07), R2-2/owner/ (O08), R2-3/owner/ (O09); the slice issues #77/#78/#79 got pointer comments",
+    "plan": "BUILD_PLAN.md: the \"Round 2\" sidecar section folded into the normal plan (its two standing rules moved into the Slices intro; the S7–S10 slice rows are the plan); the mockup paragraph removed; the S10/R2-4 row added in the first commit",
+    "docs": "README.md Project state truthful (round 2 delivered; phase BUILDING awaiting owner review of O03–O09); KNOWN_LIMITS.md restructured (round-2 sections folded into the single flow, per-ID accounting pointers updated); INTEGRATION.md verified accurate as shipped (no change needed); status.md + milestone-status.json completed (R2-2 recorded MERGED at d045980)",
+    "code_hygiene": "src/model/manager.ts: the #68 stage-transition console.info (observability added only for the #58 CI model stall) removed; the watchdog/abort/retry-budget FIXES stay (tested by the manager suite); the R2-3 persist()-at-opt-in console.info stays (it documents A37 behavior, KNOWN_LIMITS cites the recording)",
+    "audit_gate": "scripts/cleanup_audit.sh — the standing docs/dead-code consistency gate (no references to the deleted round-2 mockup folder, no round-2 TODO scaffolding, no stall-chase stage logging in src/, every ledger-linked evidence path exists), wired into scripts/test.sh; RED (exit 1 on the pre-clean-up tree) in red.log, GREEN in green.log",
+    "gen_issues_fix": "tools/gen_issues.py epic-linker prefix collision (S1 vs S10) fixed with a digit lookahead — exposed by the S10 plan row, caught by the tools test",
+    "digest": "the summary source_digest covers src/public/e2e/fixtures/lockfile/config on the R2-4 final tree"
+  },
+  "dependency_changes": "R2-4 adds ZERO npm dependencies (source + tests + scripts + docs only).",
+  "measured_machine": "same container as S0-S6 (Debian 13, kernel 6.8.0-147-generic, 16 vCPU, 62 GiB RAM); headless-Linux numbers, single-threaded WASM path; real-device behavior is NOT_RUN (A27/A30)"
+}

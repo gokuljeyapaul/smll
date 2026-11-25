@@ -1,0 +1,215 @@
+{
+  "slice": "R2-4",
+  "source_digest": "dfbfe76623548e18d3faaf998f33bc82c3db94863c21d8d8e8d01029e51fd814",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "node": "v26.12.1",
+    "chromium": "HeadlessChrome/159.0.8154.6 (Playwright 1.65.1, build chromium-1255)",
+    "webkit": "Version 27.2 (Playwright 1.65.1, build webkit-2388)",
+    "host": "Hermes agent on an openclawlaunch Linux container: 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+  },
+  "acceptance": {
+    "A32": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a32_share_target_lands_result_first_with_copy_visible_and_exact"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-1 (plan S7): the share-target POST through the real service worker starts OCR automatically, shows the progress state and lands on the result screen with Copy visible without scrolling at 390x844; Copy puts exactly the result text on the clipboard; the POST body is never cached or logged. Chromium-only platform ID (as A08)."
+    },
+    "A33": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a33_every_arrival_lands_result_first_copy_primary_then_share_save_then_edit"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-1 (plan S7): every arrival channel lands on the result-first screen — Copy first, visible without scrolling at 390x844, then Share/Save, then Edit; no drop zone, paste button, model card or model toggle on the reading/result path (the model opt-in stays collapsed out of the way)."
+    },
+    "A34": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::arrival screen-state machine (R2-1, A34) > idle + image-arrived → reading (the arrival starts reading by itself)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::arrival screen-state machine (R2-1, A34) > every kind error maps to its ONE specific, kind message — the exact A07 strings (A34)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::arrival screen-state machine (R2-1, A34) > every kind error maps to one non-empty obvious next step (A36)"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-1 (plan S7): the arrival screen-state machine (arrived → reading → result, or a kind error) is pure, unit-tested logic; every kind error maps to its specific message plus one obvious next step."
+    },
+    "A35": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::eval_nested_text_recall_on_fixtures",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::eval_nested_text_recall_on_fixtures"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-1 (plan S7): the nested-text fixtures run through the real in-browser OCR in both engines; per-fixture multiset token recall 100.0% (bar ≥ 75%), JSON re-measured on this run's tree (docs/evidence/R2-1/nested-text-recall-*.json carry the delivery-slice numbers; the honest limit — flat synthetic pictures, not a promise about arbitrary photos — is in docs/KNOWN_LIMITS.md)."
+    },
+    "A36": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a36_shared_image_with_no_text_shows_kind_error_and_one_next_step",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a36_share_post_without_an_image_stays_ignored"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-1 (plan S7): a shared image that cannot be read shows its specific kind error and one obvious next step; a share POST without an image stays ignored (A08's fail-closed negative unchanged). Chromium-only platform ID."
+    },
+    "A37": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a37_model_downloads_once_survives_reload_and_same_profile_restart",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a37_model_downloads_once_survives_reload_and_same_profile_restart"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-3 (plan S9): the model downloads ONCE and survives — a reload and a full same-profile browser restart land ready (cached) with zero model network requests and no re-download; persist() is requested at the download opt-in, never silently at load; the fresh-start check is cheap (size + the recorded sha256 marker)."
+    },
+    "A38": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > a working store with room → offer (the measured matrix quotas both pass)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > no room → the no-room refusal (quota under the room bar)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > a detected lost cache → volatile, even with room",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::storage-offer decision (R2-3, A38) > the refusals are kind, exact, and name what still works",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::fresh-start cache check plan (R2-3, A37/A38) > size + matching marker → trust (cheap: no 397 MB re-hash on launch)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::fresh-start cache check plan (R2-3, A37/A38) > size matches, marker missing → rehash once, then the marker makes it cheap",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::fresh-start cache check plan (R2-3, A37/A38) > a marker naming another pin or size → purge (stale, fail closed)"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-3 (plan S9): the storage-offer decision logic (offer / no-room refusal / volatile / unavailable) and the cheap-check plan (trust / rehash / purge) are pure, unit-tested logic with exact verdicts and messages."
+    },
+    "A39": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a39_volatile_storage_shows_kind_explanation_and_no_download",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a39_volatile_storage_shows_kind_explanation_and_no_download",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a39_no_room_refuses_the_download_before_any_byte_is_fetched",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a39_no_room_refuses_the_download_before_any_byte_is_fetched"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-3 (plan S9): volatile storage is a first-class case — a detected lost model cache gets one plain explanation, no download offered, and the standard rules cleanup keeps working end to end; the no-room refusal happens before any byte is fetched."
+    },
+    "A40": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a40_download_is_opt_in_behind_the_advanced_section",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a40_download_is_opt_in_behind_the_advanced_section",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a40_fresh_profile_records_the_model_absent_honestly",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a40_fresh_profile_records_the_model_absent_honestly"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-3 (plan S9): the download is opt-in behind the collapsed 'Advanced: optional tidy-up model' section, absent from the result path; with the model cached the home screen shows the small 'ready (cached)' state and never the download button."
+    },
+    "A41": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::the off-by-default decision rests on the measured numbers (R2-3, A41) > the LLM cleanup ships DISABLED by default (A19/A21, pinned constant)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::the off-by-default decision rests on the measured numbers (R2-3, A41) > the committed A19 re-run shows the rules baseline at least as good as the model (the decision rests on these numbers)",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::eval_llm_vs_baseline_standard_and_injection_sets"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-3 (plan S9): the off-by-default decision rests on numbers — the A19 measurement (LLM slower and worse than the rules baseline) re-cited, the disabled constant unit-pinned, the eval re-run on this tree (Chromium; WebKit-on-Linux cannot load the 397 MB wasm, the designed fallback — a stated engine limit)."
+    },
+    "A42": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a42_home_screen_no_overflow_and_tappable_primary_action_at_every_viewport",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a42_result_screen_fluid_through_the_viewport_matrix_one_real_read",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a42_result_screen_fluid_through_the_viewport_matrix_one_real_read",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::mobile-first layout facts (R2-2, A42) > uses 100dvh for viewport-relative height (never a bare 100vh)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::mobile-first layout facts (R2-2, A42) > keeps a minimum 44px touch target on interactive elements",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::mobile-first layout facts (R2-2, A42) > respects safe-area insets"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-2 (plan S8): mobile-first responsive layout — no horizontal overflow at 320–1280, primary actions visible and tappable (≥ 44 px), fluid widths, 100dvh, safe-area insets, no full-window assumption, light and dark both fine."
+    },
+    "A43": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a43_app_runs_inside_cross_origin_iframe_pick_flow_works_in_frame",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a43_copy_in_frame_without_clipboard_allow_falls_back_and_says_so",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::embedded behaviour source scan (R2-2, A43) > never touches window.top, window.open or window.opener in shipped source"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-2 (plan S8): embedded behaviour — the app runs inside a cross-origin iframe, the pick flow works in-frame, a blocked clipboard-write gets the specific kind fallback (never silent), and the source scan keeps window.top/window.open/opener out of shipped source."
+    },
+    "A44": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host allow-list (R2-2, A44) > defaults to EMPTY: nothing is accepted from other origins",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host allow-list (R2-2, A44) > parses URL-encoded comma-separated origins from the query param",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host allow-list (R2-2, A44) > drops invalid entries and normalizes to the origin (no path, no guess)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host allow-list (R2-2, A44) > merges build-time env origins with query-param origins, de-duplicated",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host load-image validation (R2-2, A44) > accepts a well-formed message from an allow-listed origin",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host load-image validation (R2-2, A44) > rejects the wrong type, missing fields and wrong shapes (why: bad-message)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host load-image validation (R2-2, A44) > rejects images over the 33554432 byte cap (why: too-large)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host load-image validation (R2-2, A44) > rejects every mime outside the allow-list (why: unsupported-mime)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host reply targets (R2-2, A44) > replies only to an allow-listed origin, never \"*\"",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host bridge (R2-2, A44/A45) > posts postclip:ready to each allow-listed origin on boot",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host bridge (R2-2, A44/A45) > a load-image from a NON-allow-listed origin is ignored — no reply, no handler call",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::host bridge (R2-2, A44/A45) > reportResult replies to the origin the load came from (allow-listed), never \"*\""
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-2 (plan S8): the host messaging contract is pure, unit-tested logic — postclip:load-image validation (shape, 32 MiB cap, MIME allow-list, requestId), the origin allow-list (default EMPTY, query param + build-time config), replies only to allow-listed origins (never \"*\"), documented in docs/INTEGRATION.md."
+    },
+    "A45": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a45_cross_origin_host_round_trip_load_image_to_result",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a45_cross_origin_host_round_trip_load_image_to_result",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a45_message_from_non_allowlisted_origin_is_ignored",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::a45_message_from_non_allowlisted_origin_is_ignored"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-2 (plan S8): the cross-origin host round trip on two local origins — postclip:load-image → postclip:result (real OCR) works, postclip:ready on boot, non-allow-listed senders ignored, reply origins asserted, no post text in any URL or storage on either side."
+    },
+    "A46": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > names every message type the code ships",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the exact size cap the code enforces",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the MIME allow-list the code enforces",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > documents the frame-ancestors HTTP header (meta CSP cannot set it)",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > gives a working example config for a static dist/",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > documents the iframe allow=/sandbox recommendation",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the storage-partitioning reality inside frames",
+        "junit:docs/evidence/R2-4/junit/host-vitest.xml::INTEGRATION.md documents the shipped contract (R2-2, A46) > states the origin allow-list default (none accepted) and the never-\"*\" reply rule",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a15_no_storage_log_request_leaks_after_flows"
+      ],
+      "notes": "Re-affirmed on the R2-4 cleaned tree by the full-suite re-run (this slice changes no product behaviour); delivered by R2-2 (plan S8): the hosting documentation is pinned to the code (message types, caps, MIME allow-list, frame-ancestors header with nginx/Caddy/Node examples, allow=/sandbox recommendation, storage-partitioning reality), and the A15 no-storage audit re-ran green on this tree — the result postMessage to the allow-listed origin is the only allowed exit."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "bash scripts/cleanup_audit.sh (pre-clean-up tree)",
+      "exit_code": 1,
+      "evidence": "docs/evidence/R2-4/red.log",
+      "note": "the docs/dead-code consistency gate FAILED on the pre-clean-up tree: docs/design/round2/ still existed, BUILD_PLAN.md still referenced it, and the #58-chase stage-transition logging was still in src/model/manager.ts — the clean-up's real RED control. Exit 1 = the gate ran and caught the scaffolding (semantics written down in the script and negative.log)."
+    },
+    "before": {
+      "command": "bash scripts/test.sh (the FULL suite on the pre-clean-up tree)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-4/before-cleanup.log",
+      "note": "the issue's before/after regression discipline: the full suite green BEFORE the clean-up (recorded) and green again after (this slice's evidence run) — no test removed or weakened. The first run of this before-suite also caught a latent tools/gen_issues.py prefix-collision bug (S1 vs S10) exposed by the S10 plan row, fixed in the RED commit; the run recorded here is green with the fix in."
+    },
+    "green": {
+      "command": "bash scripts/run_r2_4_final_evidence.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-4/green.log"
+    },
+    "e2e": {
+      "command": "npx playwright test --project=chromium / --project=webkit (all specs, test build)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-4/e2e.log"
+    },
+    "negative": {
+      "command": "extracted from the green e2e runs + the seeded controls",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-4/negative.log"
+    },
+    "demo": {
+      "command": "npm run build:test && npm run demo",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-4/demo.log"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/R2-4/green.log"
+    }
+  },
+  "limitations": [
+    "R2-4 changes no product behaviour: every PASS here is a re-affirmation of a round-2 ID on the cleaned tree; the delivery proofs and per-flow details live in the R2-1/R2-2/R2-3 summaries (docs/evidence/R2-*/summary.json).",
+    "The round-1 IDs (A01–A31) keep their round-1 accounting (docs/evidence/S6/conformance_report.md); the full suite re-ran every one of them green on this tree, but their formal per-ID claims stay with their delivery slices.",
+    "O03–O09 (owner-visual galleries) remain PENDING_OWNER_REVIEW — the owner has confirmed only O01/O02; the project stays in phase BUILDING until then (issue #82's rule 6).",
+    "Real-device behavior (share sheets, WebViews, real OS clipboards) stays NOT_RUN (A27/A30, the plan's optional device pass)."
+  ]
+}
