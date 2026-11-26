@@ -1,6 +1,6 @@
 # smll 🧰✨
 
-> Small models. Big jobs. Your laptop. 💪 A portfolio of local-first apps where a tiny open-weight model does the heavy lifting on a plain CPU, built by an AI agent that has to show its receipts before anything merges.
+> Small models. Big jobs. Your laptop. 💪 Apps where a tiny open-weight model does the heavy lifting on a plain CPU, built by an AI agent that has to show its receipts before anything merges.
 
 **No cloud model. No upload. No "trust me bro".** Each app ships its *own* small model, and that model has to beat a boring non-AI baseline in a measured fight or it doesn't ship. Every claim is backed by a test that actually ran.
 
@@ -11,7 +11,7 @@
 | 📸 [**postclip**](projects/postclip/) | You screenshot a post. It hands you the *words*. Share the image in, get clean copy-ready text out, including text hiding inside the images inside the screenshot. 🕵️<br><br>[![postclip: screenshot in, clean text out](assets/postclip-demo.gif)](projects/postclip/docs/demo/postclip-full-demo.mp4) | ✅ **Built.** Offline, zero uploads, no accounts, embeddable in your app. Big **Copy** button first, because we respect your thumb. [Demo 🎬](projects/postclip/docs/demo/postclip-full-demo.mp4) · [Every flow 🎬](projects/postclip/docs/demo/postclip-demo.mp4) · [Embed it](projects/postclip/docs/INTEGRATION.md) |
 | 🔒 [**coaching-privacy-pipeline**](projects/coaching-privacy-pipeline/) | Coaching sessions are packed with names, employers and "wait, I could work out who that is" clues. This scrubs them, then **audits itself** and blocks when it isn't sure. 🙈 | ✅ **Built** (`v0.1.0-poc`). Transcripts *and* audio, fully offline, nothing generative to make stuff up. Synthetic data only, and *not* a compliance stamp. [Status](projects/coaching-privacy-pipeline/docs/status.md) |
 
-### 🚧 Up next: the small-model portfolio
+### 🚧 Up next
 
 Planned and queued for the agent, built one at a time in this order. Each picks its model by measurement against a non-AI baseline; if the small model loses, the baseline ships and the numbers get published anyway.
 
