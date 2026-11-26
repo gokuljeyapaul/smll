@@ -15,7 +15,7 @@ A testbed where an autonomous agent (**Atina**, via the Atina Autobot GitHub App
 | Project | The pitch | Status |
 |---|---|---|
 | 📸 [`postclip`](projects/postclip/) | Screenshot of a post in, clean shareable text out. Real in-browser OCR, offline, zero upload. | **Built**, rounds 1 and 2 (share-first flow, embeddable, model cached once). Waiting on you to confirm the owner-visual checks. [Plan](projects/postclip/docs/BUILD_PLAN.md) · [Conformance](projects/postclip/docs/evidence/S6/conformance_report.md) · [Full demo 🎬](projects/postclip/docs/demo/postclip-full-demo.mp4) · [All flows 🎬](projects/postclip/docs/demo/postclip-demo.mp4) |
-| 🔒 [`coaching-privacy-pipeline`](projects/coaching-privacy-pipeline/) | Fully offline, non-generative transcript and audio privacy PoC. | Planned. Hasn't started. [Plan](projects/coaching-privacy-pipeline/docs/BUILD_PLAN.md) |
+| 🔒 [`coaching-privacy-pipeline`](projects/coaching-privacy-pipeline/) | Fully offline, non-generative transcript and audio privacy PoC: redact, link-check, fail closed. | **Built.** Slices S0–S7 plus issues #9–#23 merged, release `v0.1.0-poc` published. Synthetic data only; real-data and legal conformance not assessed. [Plan](projects/coaching-privacy-pipeline/docs/BUILD_PLAN.md) · [Status](projects/coaching-privacy-pipeline/docs/status.md) |
 
 ## The rules of the game
 
