@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "project": "inboxpilot",
+  "phase": "PLAN_ONLY",
+  "current_slice": null,
+  "owner_decisions": {
+    "product_inference": "local CPU only, open-weight models pinned per project",
+    "builder": "Hermes via Ollama Cloud (build-time only)"
+  },
+  "slices": {},
+  "acceptance": {}
+}
