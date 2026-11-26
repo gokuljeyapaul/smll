@@ -22,6 +22,11 @@ Executed autonomously by a building agent on Linux (runner-neutral, `docs/runner
 | D6 | Installs | Project `.venv` + pip; Playwright Chromium. |
 | D7 | Permissions | Index only what the signed-in user can read; record each file's owner, sharing state and `capabilities.canDownload`; files that cannot be downloaded are listed but not indexed. A file removed from the user's access disappears from the index on the next sync. |
 | D8 | Merging | Agent merges its own PRs under the policy below. |
+| D9 | Where data lives | **Nothing is uploaded or copied.** Local files are read in place and never moved or duplicated. The app stores only its index: extracted text chunks, embeddings, file paths/Drive ids, hashes and anchors, in one SQLite database in the user's data dir (`~/.local/share/folderchat/` on Linux, the platform equivalent elsewhere; overridable with `FOLDERCHAT_DATA_DIR`). Drive files are downloaded or exported to memory or a temp file only long enough to extract text, then deleted; only their extracted text and link go into the index. "Remove folder" and "Disconnect Drive" purge every chunk, embedding and cached token for that source. |
+| D10 | Phone use | The UI is mobile-first and responsive (works from 360 px wide, ≥ 44 px touch targets, no horizontal scroll). By default the server listens on localhost only. `folderchat serve --lan` opts in to phone access on the same Wi-Fi: it shows a QR code carrying a one-time token, and requests without the token are refused. It is never exposed beyond the local network. In `--lan` mode the phone can also **upload** files (UC13). |
+| D11 | Uploads from a phone | Uploaded files are the one case where the app stores a file. They are saved to `<data dir>/uploads/`, a managed folder that is indexed like any local folder and shown as the source "Phone uploads". Uploads accept only the supported formats (UC09), within the D12 limits, and need the QR token. Each upload can be deleted on its own; deleting removes the file and its index entries. |
+| D12 | Limits (small-model aware) | Defaults in `config/limits.yaml`, validated by a schema; values outside the safe range are refused at startup. **Per file:** ≤ 50 MB, ≤ 500 pages, ≤ 2 M extracted characters. **Per source:** ≤ 20,000 files, with a warning above 5,000 that shows the estimated index time. **Question:** ≤ 1,000 characters. **Model context:** the prompt (instructions + question + retrieved passages) is assembled against a token budget derived from the pinned model's real context length, minus a reserved answer budget, and is never truncated mid-passage. The number of passages is cut to fit, and the answer says when only part of the evidence fit. **Answer:** capped output tokens and a wall-clock timeout, after which it falls back to "find passages" mode with a notice. Anything over a limit is listed with a specific reason ("too large: 72 MB > 50 MB"), never silently truncated or skipped. |
+| D13 | Clear everything | Besides per-source removal (D9), `folderchat reset` and Settings → "Clear all data" delete the whole index, all phone uploads, temp files and every stored token (OS keyring entries included), after a confirmation that shows what will be deleted. Downloaded model files are kept unless `--models` is given. Afterwards the app starts as if freshly installed. |
 
 ## Use cases
 
@@ -39,6 +44,8 @@ Executed autonomously by a building agent on Linux (runner-neutral, `docs/runner
 | UC10 | Access changes | When a Drive file is unshared or deleted, it leaves the index and stops being cited. |
 | UC11 | Offline | After sync, asking works with no network. |
 | UC12 | Languages | Questions in a configured, eval-passed language are answered in that language; others get a clear notice. |
+| UC13 | Upload from a phone | On a phone connected via `serve --lan`, pick or share supported files (UC09 formats; photos of text are out of scope, as there is no OCR) and they are added to "Phone uploads" and become answerable. |
+| UC14 | Clear data | Remove one source, delete one upload, or clear everything the app has stored, with a clear confirmation of what goes. |
 
 ## Architecture
 
@@ -103,13 +110,18 @@ Selection (S0): citation precision (cited quote is a verbatim substring of the c
 | A17 | P1 | host | UC12 | Language config: an enabled language passes its eval set; a configured-but-failing language returns `UNSUPPORTED_LANGUAGE` with keyword results. | pytest + eval |
 | A18 | P0 | host | - | License inventory for dependencies and models; seeded violation caught. | audit script |
 | A19 | P1 | web | - | A real end-to-end demo (add folder + Drive, ask, cite, share) recorded as a ≤ 15 MB 720p video. | video manifest |
+| A20 | P0 | web | UC04, UC06 | The ask → answer → open citation → share flow works at 360×800, 390×844 and 1280×800 with no horizontal overflow and ≥ 44 px touch targets. | Playwright (viewport matrix) |
+| A21 | P0 | host | UC01, UC02 | Data location: after indexing, source files are byte-identical and untouched; no copy of any source file exists in the data dir or temp after indexing; the server binds to localhost by default; in `--lan` mode a request without the QR token is refused; "Remove folder"/"Disconnect Drive" leaves no chunks, embeddings or tokens for that source. | pytest |
+| A22 | P0 | web | UC13 | From a phone-sized browser in `--lan` mode with the QR token, uploading a fixture PDF and DOCX adds them to "Phone uploads" and a question about them is answered with citations; deleting one upload removes the file and its chunks; an upload without the token, of an unsupported type or over the size limit is refused with a specific message. | Playwright (360×800) |
+| A23 | P0 | host | UC14 | `folderchat reset` (and the UI action) leaves no index, uploads, temp files or keyring tokens behind, keeps models unless `--models` is given, and the next start behaves like a fresh install; per-source removal deletes only that source. | pytest |
+| A24 | P0 | host | UC01, UC04 | Limits: each D12 limit has a boundary test (just under passes, just over is refused with the specific reason); out-of-range `limits.yaml` values are refused at startup; for every question the assembled prompt fits the pinned model's context with the answer budget reserved (asserted with the model's own tokenizer); when passages are dropped to fit, the answer says so; a timed-out answer falls back to passage mode. | pytest real model |
 
 ## Conformance
 
 | ID | Slice | Refs | Artifact (committed path) | The owner confirms |
 |---|---|---|---|---|
 | O01 | S0 | UC04, UC05 | `docs/evidence/S0/model_selection.md` with sample answers, citations and "not found" cases | Answers are grounded and citations really say what's claimed |
-| O02 | S1 | UC06, UC07 | `docs/evidence/S1/owner/` UI screenshots + a shared-text sample | The shared answer reads well and the links make sense |
+| O02 | S1 | UC06, UC07 | `docs/evidence/S1/owner/` UI screenshots at phone (390×844) and desktop size + a shared-text sample | It works well on a phone, the shared answer reads well, and the links make sense |
 | O03 | S2 | UC02, UC10 | `docs/evidence/S2/owner/` Drive connect, folder picker, sync status, unshare-then-gone screenshots | Drive connection is clear and respects sharing |
 | O04 | S5 | UC04, UC06 | `docs/demo/folderchat-demo.mp4` | The demo shows the real product working |
 
@@ -119,7 +131,7 @@ TDD and evidence as in `AGENTS.md`.
 
 ### S0 — Ask a local folder, get cited answers: pick the model by measurement
 
-**Acceptance IDs:** A01, A02, A03, A04, A05, A06
+**Acceptance IDs:** A01, A02, A03, A04, A05, A06, A24
 
 Observable result: `folderchat add fixtures/corpus && folderchat ask "What is the travel reimbursement limit?"` prints a cited answer with verified quotes, and an unanswerable question prints "not found" with the closest passages.
 
@@ -127,13 +139,13 @@ Observable result: `folderchat add fixtures/corpus && folderchat ask "What is th
 
 ### S1 — Local web UI and sharing
 
-**Acceptance IDs:** A08, A09, A10
+**Acceptance IDs:** A08, A09, A10, A20, A21, A22
 
-Observable result: in the browser the user asks, reads streamed cited answers, opens a source at its page, and copies/shares the answer as text with links.
+Observable result: in the browser (on the laptop, or on a phone over the same Wi-Fi via `serve --lan`) the user asks, reads streamed cited answers, opens a source at its page, and copies/shares the answer as text with links.
 
 ### S2 — Google Drive: connect, index, sync, respect sharing
 
-**Acceptance IDs:** A11, A12, A13, A14, A15
+**Acceptance IDs:** A11, A12, A13, A14, A15, A23
 
 Observable result: the user signs in read-only, picks Drive folders (incl. shared ones), asks questions across local + Drive files, and an unshared file disappears from answers after sync.
 
