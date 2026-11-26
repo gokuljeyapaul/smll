@@ -31,7 +31,7 @@ The complete, linted specification is `docs/BUILD_PLAN.md`; follow it. This proj
 
 ## Delivery loop (one slice = one PR)
 
-1. `git checkout main && git pull --ff-only`; previous slice `MERGED`; `bash scripts/preflight.sh build`.
+1. `git checkout main && git pull --ff-only`; previous slice `MERGED`, or stack on its green, waiting PR per root `AGENTS.md` Git step 8; `bash scripts/preflight.sh build`.
 2. Branch `feature/tickerpulse/S<n>-<short-name>`.
 3. **RED first**: failing behavioural tests (pytest assertions, an e2e CLI/UI flow failing on missing behaviour, or an eval check failing its bar). Import/build errors are not RED. Save real output + exit code to `docs/evidence/S<n>/red.log`.
 4. **GREEN**: implement; run lint, types, unit, integration, real-model, e2e, negative and all prior regression; save `green.log`, `e2e.log`, `negative.log`, `junit/*.xml`, `versions.json`, and any eval JSON the slice names.
