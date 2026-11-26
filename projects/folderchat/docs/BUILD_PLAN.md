@@ -22,6 +22,8 @@ Executed autonomously by a building agent on Linux (runner-neutral, `docs/runner
 | D6 | Installs | Project `.venv` + pip; Playwright Chromium. |
 | D7 | Permissions | Index only what the signed-in user can read; record each file's owner, sharing state and `capabilities.canDownload`; files that cannot be downloaded are listed but not indexed. A file removed from the user's access disappears from the index on the next sync. |
 | D8 | Merging | Agent merges its own PRs under the policy below. |
+| D9 | Where data lives | **Nothing is uploaded or copied.** Local files are read in place and never moved or duplicated. The app stores only its index: extracted text chunks, embeddings, file paths/Drive ids, hashes and anchors, in one SQLite database in the user's data dir (`~/.local/share/folderchat/` on Linux, the platform equivalent elsewhere; overridable with `FOLDERCHAT_DATA_DIR`). Drive files are downloaded or exported to memory or a temp file only long enough to extract text, then deleted; only their extracted text and link go into the index. "Remove folder" and "Disconnect Drive" purge every chunk, embedding and cached token for that source. |
+| D10 | Phone use | The UI is mobile-first and responsive (works from 360 px wide, ≥ 44 px touch targets, no horizontal scroll). By default the server listens on localhost only. `folderchat serve --lan` opts in to phone access on the same Wi-Fi: it shows a QR code carrying a one-time token, and requests without the token are refused. It is never exposed beyond the local network. |
 
 ## Use cases
 
@@ -103,13 +105,15 @@ Selection (S0): citation precision (cited quote is a verbatim substring of the c
 | A17 | P1 | host | UC12 | Language config: an enabled language passes its eval set; a configured-but-failing language returns `UNSUPPORTED_LANGUAGE` with keyword results. | pytest + eval |
 | A18 | P0 | host | - | License inventory for dependencies and models; seeded violation caught. | audit script |
 | A19 | P1 | web | - | A real end-to-end demo (add folder + Drive, ask, cite, share) recorded as a ≤ 15 MB 720p video. | video manifest |
+| A20 | P0 | web | UC04, UC06 | The ask → answer → open citation → share flow works at 360×800, 390×844 and 1280×800 with no horizontal overflow and ≥ 44 px touch targets. | Playwright (viewport matrix) |
+| A21 | P0 | host | UC01, UC02 | Data location: after indexing, source files are byte-identical and untouched; no copy of any source file exists in the data dir or temp after indexing; the server binds to localhost by default; in `--lan` mode a request without the QR token is refused; "Remove folder"/"Disconnect Drive" leaves no chunks, embeddings or tokens for that source. | pytest |
 
 ## Conformance
 
 | ID | Slice | Refs | Artifact (committed path) | The owner confirms |
 |---|---|---|---|---|
 | O01 | S0 | UC04, UC05 | `docs/evidence/S0/model_selection.md` with sample answers, citations and "not found" cases | Answers are grounded and citations really say what's claimed |
-| O02 | S1 | UC06, UC07 | `docs/evidence/S1/owner/` UI screenshots + a shared-text sample | The shared answer reads well and the links make sense |
+| O02 | S1 | UC06, UC07 | `docs/evidence/S1/owner/` UI screenshots at phone (390×844) and desktop size + a shared-text sample | It works well on a phone, the shared answer reads well, and the links make sense |
 | O03 | S2 | UC02, UC10 | `docs/evidence/S2/owner/` Drive connect, folder picker, sync status, unshare-then-gone screenshots | Drive connection is clear and respects sharing |
 | O04 | S5 | UC04, UC06 | `docs/demo/folderchat-demo.mp4` | The demo shows the real product working |
 
@@ -127,9 +131,9 @@ Observable result: `folderchat add fixtures/corpus && folderchat ask "What is th
 
 ### S1 — Local web UI and sharing
 
-**Acceptance IDs:** A08, A09, A10
+**Acceptance IDs:** A08, A09, A10, A20, A21
 
-Observable result: in the browser the user asks, reads streamed cited answers, opens a source at its page, and copies/shares the answer as text with links.
+Observable result: in the browser (on the laptop, or on a phone over the same Wi-Fi via `serve --lan`) the user asks, reads streamed cited answers, opens a source at its page, and copies/shares the answer as text with links.
 
 ### S2 — Google Drive: connect, index, sync, respect sharing
 
