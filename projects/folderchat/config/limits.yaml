@@ -1,0 +1,13 @@
+# folderchat limits (D12 defaults). Validated against the safe range in
+# src/folderchat/config.py at startup; a value outside the range is refused.
+max_file_mb: 50
+max_pages: 500
+max_extracted_chars: 2000000
+max_files_per_source: 20000
+warn_files_per_source: 5000
+max_question_chars: 1000
+retrieve_top_k: 8
+prompt_source_count: 5
+answer_max_tokens: 384
+answer_timeout_s: 90
+reserved_answer_tokens: 512

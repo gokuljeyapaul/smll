@@ -1,0 +1,9 @@
+# folderchat languages (D5). A language ships only after passing the answer + retrieval
+# eval for that language; anything else must be answered with UNSUPPORTED_LANGUAGE and
+# keyword results. S0 ships English; the eval set is fixtures/qa.jsonl (see
+# docs/evidence/S0/).
+default: en
+languages:
+  en:
+    enabled: true
+    eval: "fixtures/qa.jsonl (S0, English)"

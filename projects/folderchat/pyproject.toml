@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "folderchat"
+version = "0.1.0"
+description = "Ask a local folder, get cited answers (or an honest 'not found') with a local CPU small model."
+requires-python = ">=3.11"
+# Pinned dependencies live in requirements.txt (the single source of truth,
+# resolved at build time and recorded in docs/evidence/<slice>/versions.json).
+dependencies = []
+
+[project.scripts]
+folderchat = "folderchat.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "fast: no model inference (pure logic, parsers, config, CLI surface)",
+  "slow: real model inference (embeddings and/or the answer model) — CI runs a bounded subset",
+  "bench: full eval / candidate benches — building host only, excluded from CI",
+]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src"]

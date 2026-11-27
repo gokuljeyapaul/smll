@@ -1,0 +1,7 @@
+Operations meeting, 2026-11-17.
+
+Attendees: Dana Whitmore, fleet manager.
+
+The 2026-11-17 ops meeting chose FleetTrack as the new vehicle telematics provider.
+
+Telematics install begins with the long-haul fleet in January 2027.

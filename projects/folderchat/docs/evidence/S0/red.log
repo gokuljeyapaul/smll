@@ -1,0 +1,772 @@
+# S0 RED evidence — real command, real output, 2026-11-27T11:37:12Z
+
+## $ .venv/bin/python -m pytest tests -m "fast or slow" --junitxml=docs/evidence/S0/junit/red.staging.xml -q
+FFFFFFFFFFsFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                           [100%]
+=================================== FAILURES ===================================
+____________________________ test_a01_help_offline _____________________________
+
+cli = <function cli.<locals>._cli at 0x704ba24a62a0>, offline = None
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a01_help_offline0/folderchat-data')
+
+    def test_a01_help_offline(cli, offline, data_dir):
+        """A01: `folderchat --help` works with the network refused."""
+        r = cli(["--help"])
+>       assert r.returncode == 0, f"exit {r.returncode}\nstdout={r.stdout}\nstderr={r.stderr}"
+E       AssertionError: exit 1
+E         stdout=
+E         stderr=/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', '--help'],...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').returncode
+
+tests/e2e/test_cli.py:9: AssertionError
+_______________________ test_a01_help_inprocess_offline ________________________
+
+offline = None
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a01_help_inprocess_offlin0/folderchat-data')
+capsys = <_pytest.capture.CaptureFixture object at 0x704ba24f8440>
+
+    def test_a01_help_inprocess_offline(offline, data_dir, capsys):
+        """A01: --help also works in-process under the socket guard."""
+>       from folderchat.cli import main
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/e2e/test_cli.py:17: ModuleNotFoundError
+___________________________ test_a01_doctor_offline ____________________________
+
+cli = <function cli.<locals>._cli at 0x704ba24a4d60>, offline = None
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a01_doctor_offline0/folderchat-data')
+
+    def test_a01_doctor_offline(cli, offline, data_dir):
+        """A01: `folderchat doctor` runs offline and reports the pinned models verified."""
+        r = cli(["doctor"])
+>       assert r.returncode == 0, f"exit {r.returncode}\nstdout={r.stdout}\nstderr={r.stderr}"
+E       AssertionError: exit 1
+E         stdout=
+E         stderr=/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'doctor'],...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').returncode
+
+tests/e2e/test_cli.py:30: AssertionError
+____________________ test_a01_doctor_detects_tampered_model ____________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a01_doctor_detects_tamper0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x704ba24a0160>
+
+    def test_a01_doctor_detects_tampered_model(tmp_path, monkeypatch):
+        """A01: doctor must actually verify sha256 — a tampered model file is reported, not waved through."""
+        import hashlib
+        import json
+    
+        good = tmp_path / "models" / "good.gguf"
+        bad = tmp_path / "models" / "bad.gguf"
+        good.parent.mkdir(parents=True)
+        good.write_bytes(b"good bytes")
+        bad.write_bytes(b"tampered bytes")
+    
+        def sha(p):
+            return hashlib.sha256(p.read_bytes()).hexdigest()
+    
+        fake = {
+            "roles": {
+                "answer": {
+                    "name": "fake", "repo": "x/y", "file": "bad.gguf", "url": "https://example.invalid/bad.gguf",
+                    "sha256": sha(good), "size_bytes": len(b"tampered bytes"), "license": "MIT",
+                },
+                "embedding": {
+                    "name": "fake-emb", "repo": "x/z",
+                    "files": [{"path": "model.safetensors", "sha256": "0" * 64, "size_bytes": 1}],
+                },
+            }
+        }
+        manifest_path = tmp_path / "manifest.json"
+        manifest_path.write_text(json.dumps(fake))
+        monkeypatch.setenv("FOLDERCHAT_MODEL_DIR", str(tmp_path / "models"))
+        monkeypatch.setenv("FOLDERCHAT_MANIFEST", str(manifest_path))
+        monkeypatch.setenv("FOLDERCHAT_DATA_DIR", str(tmp_path / "data"))
+>       from folderchat.cli import main
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/e2e/test_cli.py:67: ModuleNotFoundError
+__________________________ test_ask_before_any_source __________________________
+
+cli = <function cli.<locals>._cli at 0x704ba24d4860>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_ask_before_any_source0/folderchat-data')
+
+    def test_ask_before_any_source(cli, data_dir):
+        """A clean install answers honestly when nothing is indexed yet."""
+        r = cli(["ask", "What is the travel reimbursement limit?"])
+        assert r.returncode != 0
+>       assert "no sources" in (r.stdout + r.stderr).lower()
+E       AssertionError: assert 'no sources' in '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: no module named folderchat\n'
+E        +  where '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: no module named folderchat\n' = <built-in method lower of str object at 0x704ba2aaeee0>()
+E        +    where <built-in method lower of str object at 0x704ba2aaeee0> = ('' + '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').lower
+E        +      where '' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'ask', 'Wh...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stdout
+E        +      and   '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'ask', 'Wh...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stderr
+
+tests/e2e/test_cli.py:79: AssertionError
+_________________________ test_a02_add_fixture_folder __________________________
+
+cli = <function cli.<locals>._cli at 0x704ba24d4f40>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a02_add_fixture_folder0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+
+    def test_a02_add_fixture_folder(cli, data_dir, corpus_path):
+        """A02: adding the fixture folder indexes every supported file; skips are listed with reasons."""
+        r = cli(["add", str(corpus_path)], timeout=900)
+>       assert r.returncode == 0, f"exit {r.returncode}\nstdout={r.stdout}\nstderr={r.stderr}"
+E       AssertionError: exit 1
+E         stdout=
+E         stderr=/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').returncode
+
+tests/e2e/test_cli.py:85: AssertionError
+___________________________ test_a02_anchors_persist ___________________________
+
+cli = <function cli.<locals>._cli at 0x704ba24d4d60>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a02_anchors_persist0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+
+    def test_a02_anchors_persist(cli, data_dir, corpus_path):
+        """A02: chunks carry page anchors (PDF) and heading anchors (Markdown)."""
+        r = cli(["add", str(corpus_path)], timeout=900)
+>       assert r.returncode == 0, f"exit {r.returncode}\nstdout={r.stdout}\nstderr={r.stderr}"
+E       AssertionError: exit 1
+E         stdout=
+E         stderr=/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').returncode
+
+tests/e2e/test_cli.py:98: AssertionError
+______________________ test_a04_ask_travel_question_cited ______________________
+
+cli = <function cli.<locals>._cli at 0x704ba24d5300>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a04_ask_travel_question_c0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+
+    def test_a04_ask_travel_question_cited(cli, data_dir, corpus_path):
+        """A04/S0 goal: the demo question returns a cited answer with a verified quote."""
+        add = cli(["add", str(corpus_path)], timeout=900)
+>       assert add.returncode == 0, add.stderr
+E       AssertionError: /opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').returncode
+
+tests/e2e/test_cli.py:114: AssertionError
+___________________ test_a06_ask_unanswerable_says_not_found ___________________
+
+cli = <function cli.<locals>._cli at 0x704ba24d54e0>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a06_ask_unanswerable_says0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+
+    def test_a06_ask_unanswerable_says_not_found(cli, data_dir, corpus_path):
+        """A06: an unanswerable question prints 'not found' with the closest passages."""
+        add = cli(["add", str(corpus_path)], timeout=900)
+>       assert add.returncode == 0, add.stderr
+E       AssertionError: /opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').returncode
+
+tests/e2e/test_cli.py:138: AssertionError
+____________________ test_a03_recall_smoke_hybrid_meets_bar ____________________
+
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a03_recall_smoke_hybrid_m0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+qa_lines = [{'id': 'qa000_0', 'type': 'answerable', 'question': 'What is the travel reimbursement limit?', 'gold_answer': '$500 p... 'type': 'answerable', 'question': 'Which class must flights be booked in?', 'gold_answer': 'economy class', ...}, ...]
+
+    def test_a03_recall_smoke_hybrid_meets_bar(data_dir, corpus_path, qa_lines):
+        """CI slow subset: recall@8 (hybrid) >= 0.90 on the first 25 answerable questions."""
+>       from folderchat.config import data_dir as resolve_data_dir, load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/eval/test_retrieval_eval.py:18: ModuleNotFoundError
+_____________________ test_add_corpus_reports_and_anchors ______________________
+
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_add_corpus_reports_and_an0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+
+    def test_add_corpus_reports_and_anchors(data_dir, corpus_path):
+>       from folderchat.config import data_dir as resolve_data_dir, load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/integration/test_add_index.py:7: ModuleNotFoundError
+_____________________ test_bm25_retrieval_finds_gold_chunk _____________________
+
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_bm25_retrieval_finds_gold0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+
+    def test_bm25_retrieval_finds_gold_chunk(data_dir, corpus_path):
+        """End-to-end ingest -> BM25 query finds the chunk containing the gold span."""
+>       from folderchat.config import data_dir as resolve_data_dir, load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/integration/test_add_index.py:26: ModuleNotFoundError
+____________ test_question_over_limit_refused_with_specific_reason _____________
+
+cli = <function cli.<locals>._cli at 0x704ba24d54e0>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_question_over_limit_refus0/folderchat-data')
+
+    def test_question_over_limit_refused_with_specific_reason(cli, data_dir):
+        """A24: a question just over 1000 chars is refused with the numbers, exit != 0."""
+        r = cli(["ask", "x" * 1001])
+        assert r.returncode != 0
+>       assert "1001" in (r.stdout + r.stderr)
+E       AssertionError: assert '1001' in ('' + '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n')
+E        +  where '' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'ask', 'xx...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stdout
+E        +  and   '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'ask', 'xx...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stderr
+
+tests/negative/test_negative.py:11: AssertionError
+_______________ test_out_of_range_limits_refused_at_cli_startup ________________
+
+cli = <function cli.<locals>._cli at 0x704ba24d7380>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_out_of_range_limits_refus0/folderchat-data')
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_out_of_range_limits_refus0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x704ba2a4b120>
+
+    def test_out_of_range_limits_refused_at_cli_startup(cli, data_dir, tmp_path, monkeypatch):
+        bad = tmp_path / "limits.yaml"
+        bad.write_text(textwrap.dedent("""\
+            max_question_chars: 100000
+        """))
+        monkeypatch.setenv("FOLDERCHAT_LIMITS", str(bad))
+        r = cli(["ask", "hi"])
+        assert r.returncode != 0
+>       assert "max_question_chars" in (r.stdout + r.stderr)
+E       AssertionError: assert 'max_question_chars' in ('' + '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n')
+E        +  where '' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'ask', 'hi...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stdout
+E        +  and   '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'ask', 'hi...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stderr
+
+tests/negative/test_negative.py:32: AssertionError
+____________________ test_add_missing_folder_fails_cleanly _____________________
+
+cli = <function cli.<locals>._cli at 0x704ba24d79c0>
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_add_missing_folder_fails_0/folderchat-data')
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_add_missing_folder_fails_0')
+
+    def test_add_missing_folder_fails_cleanly(cli, data_dir, tmp_path):
+        r = cli(["add", str(tmp_path / "nope")])
+        assert r.returncode != 0
+>       assert "not found" in (r.stdout + r.stderr).lower() or "no such" in (r.stdout + r.stderr).lower()
+E       AssertionError: assert ('not found' in '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: no module named folderchat\n' or 'no such' in '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: no module named folderchat\n')
+E        +  where '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: no module named folderchat\n' = <built-in method lower of str object at 0x704ba26f4540>()
+E        +    where <built-in method lower of str object at 0x704ba26f4540> = ('' + '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').lower
+E        +      where '' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stdout
+E        +      and   '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stderr
+E        +  and   '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: no module named folderchat\n' = <built-in method lower of str object at 0x704ba26f4540>()
+E        +    where <built-in method lower of str object at 0x704ba26f4540> = ('' + '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').lower
+E        +      where '' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stdout
+E        +      and   '/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n' = CompletedProcess(args=['/opt/data/workspace/smll/projects/folderchat/.venv/bin/python', '-m', 'folderchat', 'add', '/o...ode=1, stdout='', stderr='/opt/data/workspace/smll/projects/folderchat/.venv/bin/python: No module named folderchat\n').stderr
+
+tests/negative/test_negative.py:38: AssertionError
+_________________ test_a24_timeout_falls_back_to_passage_mode __________________
+
+data_dir = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_a24_timeout_falls_back_to0/folderchat-data')
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+load_engine = <function load_engine.<locals>._load at 0x704ba27e02c0>
+
+    @pytest.mark.slow
+    def test_a24_timeout_falls_back_to_passage_mode(data_dir, corpus_path, load_engine):
+        """A24: a timed-out answer falls back to 'find passages' mode with a visible notice."""
+        import sqlite3
+    
+>       from folderchat.config import data_dir as resolve_data_dir, load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/negative/test_negative.py:46: ModuleNotFoundError
+_________________ test_a24_prompt_fits_context_and_drop_notice _________________
+
+load_engine = <function load_engine.<locals>._load at 0x704ba27e00e0>
+corpus_path = PosixPath('/opt/data/workspace/smll/projects/folderchat/fixtures/corpus')
+
+    @pytest.mark.slow
+    def test_a24_prompt_fits_context_and_drop_notice(load_engine, corpus_path):
+        """A24: the assembled prompt fits the pinned model's real context with the answer budget
+        reserved (asserted with the model's own tokenizer); dropped passages produce a notice."""
+        passages = [{"text": "Reimbursement is capped at $500 per trip. " * 60, "file": "a.md", "page": None, "heading": "Travel"}] * 12
+>       engine = load_engine(n_threads=4)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/negative/test_negative.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+overrides = {'n_threads': 4}
+
+    def _load(**overrides):
+        import json as _json
+    
+>       from folderchat.answer import AnswerEngine
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/conftest.py:108: ModuleNotFoundError
+_________________________ test_best_sentences_selected _________________________
+
+    def test_best_sentences_selected():
+>       from folderchat.baseline import extract_key_sentences
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_baseline.py:5: ModuleNotFoundError
+__________________ test_baseline_answer_mode_returns_passages __________________
+
+    def test_baseline_answer_mode_returns_passages():
+>       from folderchat.baseline import passages_answer
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_baseline.py:18: ModuleNotFoundError
+__________________________ test_chunks_carry_anchors ___________________________
+
+    def test_chunks_carry_anchors():
+>       chunker = _mod()
+                  ^^^^^^
+
+tests/unit/test_chunker.py:10: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import chunker
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_chunker.py:5: ModuleNotFoundError
+________________________ test_chunk_size_cap_respected _________________________
+
+    def test_chunk_size_cap_respected():
+>       chunker = _mod()
+                  ^^^^^^
+
+tests/unit/test_chunker.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import chunker
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_chunker.py:5: ModuleNotFoundError
+________________________ test_chunks_never_cut_mid_word ________________________
+
+    def test_chunks_never_cut_mid_word():
+>       chunker = _mod()
+                  ^^^^^^
+
+tests/unit/test_chunker.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import chunker
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_chunker.py:5: ModuleNotFoundError
+_____________________ test_empty_blocks_produce_no_chunks ______________________
+
+    def test_empty_blocks_produce_no_chunks():
+>       chunker = _mod()
+                  ^^^^^^
+
+tests/unit/test_chunker.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import chunker
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_chunker.py:5: ModuleNotFoundError
+___________________ test_extract_citations_both_ref_syntaxes ___________________
+
+    def test_extract_citations_both_ref_syntaxes():
+>       cite = _mod()
+               ^^^^^^
+
+tests/unit/test_cite.py:10: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import cite
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_cite.py:5: ModuleNotFoundError
+_____________________ test_verify_citation_verbatim_passes _____________________
+
+    def test_verify_citation_verbatim_passes():
+>       cite = _mod()
+               ^^^^^^
+
+tests/unit/test_cite.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import cite
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_cite.py:5: ModuleNotFoundError
+__________ test_verify_citation_whitespace_normalized_still_verbatim ___________
+
+    def test_verify_citation_whitespace_normalized_still_verbatim():
+>       cite = _mod()
+               ^^^^^^
+
+tests/unit/test_cite.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import cite
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_cite.py:5: ModuleNotFoundError
+___________________ test_verify_citation_mutated_quote_fails ___________________
+
+    def test_verify_citation_mutated_quote_fails():
+>       cite = _mod()
+               ^^^^^^
+
+tests/unit/test_cite.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import cite
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_cite.py:5: ModuleNotFoundError
+_____________ test_unverifiable_citation_removed_and_claim_marked ______________
+
+    def test_unverifiable_citation_removed_and_claim_marked():
+>       cite = _mod()
+               ^^^^^^
+
+tests/unit/test_cite.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import cite
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_cite.py:5: ModuleNotFoundError
+______________________ test_ref_to_missing_source_dropped ______________________
+
+    def test_ref_to_missing_source_dropped():
+>       cite = _mod()
+               ^^^^^^
+
+tests/unit/test_cite.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import cite
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_cite.py:5: ModuleNotFoundError
+_____________________________ test_strip_ref_tags ______________________________
+
+    def test_strip_ref_tags():
+>       cite = _mod()
+               ^^^^^^
+
+tests/unit/test_cite.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _mod():
+>       from folderchat import cite
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_cite.py:5: ModuleNotFoundError
+_______________________ test_defaults_load_and_validate ________________________
+
+    def test_defaults_load_and_validate():
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_limits_config.py:5: ModuleNotFoundError
+__________________ test_out_of_range_limit_refused_at_startup __________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_out_of_range_limit_refuse0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x704ba2a1c290>
+
+    def test_out_of_range_limit_refused_at_startup(tmp_path, monkeypatch):
+        import textwrap
+    
+        import pytest
+    
+>       from folderchat.config import ConfigError, load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_limits_config.py:18: ModuleNotFoundError
+_______________________ test_upper_boundary_is_inclusive _______________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_upper_boundary_is_inclusi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x704ba250d150>
+
+    def test_upper_boundary_is_inclusive(tmp_path, monkeypatch):
+        import textwrap
+    
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_limits_config.py:32: ModuleNotFoundError
+___________________________ test_unknown_key_refused ___________________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_unknown_key_refused0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x704ba250e150>
+
+    def test_unknown_key_refused(tmp_path, monkeypatch):
+        import textwrap
+    
+        import pytest
+    
+>       from folderchat.config import ConfigError, load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_limits_config.py:50: ModuleNotFoundError
+_________________________ test_languages_config_loads __________________________
+
+    def test_languages_config_loads():
+>       from folderchat.config import load_languages
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_limits_config.py:60: ModuleNotFoundError
+______________________ test_pdf_parsed_with_page_anchors _______________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_pdf_parsed_with_page_anch0')
+
+    def test_pdf_parsed_with_page_anchors(tmp_path):
+        p = tmp_path / "doc.pdf"
+        _tiny_pdf(p, pages=2)
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_pdf_parsed_with_page_anch0/doc.pdf')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+____________________ test_encrypted_pdf_listed_with_reason _____________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_encrypted_pdf_listed_with0')
+
+    def test_encrypted_pdf_listed_with_reason(tmp_path):
+        import pypdf
+    
+        p = tmp_path / "secrets.pdf"
+        _tiny_pdf(p, pages=1)
+        reader = pypdf.PdfReader(str(p))
+        writer = pypdf.PdfWriter()
+        for page in reader.pages:
+            writer.add_page(page)
+        writer.encrypt(user_password="hunter2")
+        with open(p, "wb") as f:
+            writer.write(f)
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_encrypted_pdf_listed_with0/secrets.pdf')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+_______________________________ test_docx_parsed _______________________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_docx_parsed0')
+
+    def test_docx_parsed(tmp_path):
+        import docx
+    
+        p = tmp_path / "spec.docx"
+        d = docx.Document()
+        d.add_heading("Scanner Specification", level=1)
+        d.add_paragraph("The scanner rollout begins in March 2027.")
+        d.save(str(p))
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_docx_parsed0/spec.docx')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+________________________ test_markdown_heading_anchors _________________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_markdown_heading_anchors0')
+
+    def test_markdown_heading_anchors(tmp_path):
+        p = tmp_path / "policy.md"
+        p.write_text("# Travel\n\nReimbursement is capped at $500 per trip.\n\n## Per diem\n\nThe daily per diem is $65.\n")
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_markdown_heading_anchors0/policy.md')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+_______________________________ test_html_parsed _______________________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_html_parsed0')
+
+    def test_html_parsed(tmp_path):
+        p = tmp_path / "benefits.html"
+        p.write_text("<html><body><h1>Benefits</h1><p>The 401k match is 4 percent.</p></body></html>")
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_html_parsed0/benefits.html')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+__________________ test_unknown_extension_listed_with_reason ___________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_unknown_extension_listed_0')
+
+    def test_unknown_extension_listed_with_reason(tmp_path):
+        p = tmp_path / "legacy_data.xyz"
+        p.write_bytes(b"\x00\x01binary")
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_unknown_extension_listed_0/legacy_data.xyz')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+__________________ test_oversize_file_refused_before_parsing ___________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_oversize_file_refused_bef0')
+
+    def test_oversize_file_refused_before_parsing(tmp_path):
+        """A24 boundary: just over the file-size limit is refused with the specific numbers."""
+        p = tmp_path / "huge.txt"
+        with open(p, "wb") as f:
+            f.truncate(51 * 1024 * 1024)  # sparse: instant, no repo bloat
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_oversize_file_refused_bef0/huge.txt')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+______________________ test_file_just_under_limit_passes _______________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_file_just_under_limit_pas0')
+
+    def test_file_just_under_limit_passes(tmp_path):
+        """A24 boundary: just under the limit indexes fine."""
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:103: ModuleNotFoundError
+_____________________ test_extracted_char_ceiling_enforced _____________________
+
+tmp_path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_extracted_char_ceiling_en0')
+
+    def test_extracted_char_ceiling_enforced(tmp_path):
+        """A24: over the extracted-character limit is listed, never silently truncated."""
+        p = tmp_path / "long.txt"
+        p.write_text("filler text line\n" * 200000)  # ~3.2M chars > 2M limit
+>       result = _parse(p)
+                 ^^^^^^^^^
+
+tests/unit/test_parsers.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/opt/data/cache/scratch/pytest-of-hermes/pytest-0/test_extracted_char_ceiling_en0/long.txt')
+limits_overrides = {}
+
+    def _parse(path, **limits_overrides):
+>       from folderchat.config import load_limits
+E       ModuleNotFoundError: No module named 'folderchat'
+
+tests/unit/test_parsers.py:5: ModuleNotFoundError
+=========================== short test summary info ============================
+SKIPPED [1] tests/eval/test_retrieval_eval.py:35: full eval is a building-host bench run
+FAILED tests/e2e/test_cli.py::test_a01_help_offline - AssertionError: exit 1
+FAILED tests/e2e/test_cli.py::test_a01_help_inprocess_offline - ModuleNotFoun...
+FAILED tests/e2e/test_cli.py::test_a01_doctor_offline - AssertionError: exit 1
+FAILED tests/e2e/test_cli.py::test_a01_doctor_detects_tampered_model - Module...
+FAILED tests/e2e/test_cli.py::test_ask_before_any_source - AssertionError: as...
+FAILED tests/e2e/test_cli.py::test_a02_add_fixture_folder - AssertionError: e...
+FAILED tests/e2e/test_cli.py::test_a02_anchors_persist - AssertionError: exit 1
+FAILED tests/e2e/test_cli.py::test_a04_ask_travel_question_cited - AssertionE...
+FAILED tests/e2e/test_cli.py::test_a06_ask_unanswerable_says_not_found - Asse...
+FAILED tests/eval/test_retrieval_eval.py::test_a03_recall_smoke_hybrid_meets_bar
+FAILED tests/integration/test_add_index.py::test_add_corpus_reports_and_anchors
+FAILED tests/integration/test_add_index.py::test_bm25_retrieval_finds_gold_chunk
+FAILED tests/negative/test_negative.py::test_question_over_limit_refused_with_specific_reason
+FAILED tests/negative/test_negative.py::test_out_of_range_limits_refused_at_cli_startup
+FAILED tests/negative/test_negative.py::test_add_missing_folder_fails_cleanly
+FAILED tests/negative/test_negative.py::test_a24_timeout_falls_back_to_passage_mode
+FAILED tests/negative/test_negative.py::test_a24_prompt_fits_context_and_drop_notice
+FAILED tests/unit/test_baseline.py::test_best_sentences_selected - ModuleNotF...
+FAILED tests/unit/test_baseline.py::test_baseline_answer_mode_returns_passages
+FAILED tests/unit/test_chunker.py::test_chunks_carry_anchors - ModuleNotFound...
+FAILED tests/unit/test_chunker.py::test_chunk_size_cap_respected - ModuleNotF...
+FAILED tests/unit/test_chunker.py::test_chunks_never_cut_mid_word - ModuleNot...
+FAILED tests/unit/test_chunker.py::test_empty_blocks_produce_no_chunks - Modu...
+FAILED tests/unit/test_cite.py::test_extract_citations_both_ref_syntaxes - Mo...
+FAILED tests/unit/test_cite.py::test_verify_citation_verbatim_passes - Module...
+FAILED tests/unit/test_cite.py::test_verify_citation_whitespace_normalized_still_verbatim
+FAILED tests/unit/test_cite.py::test_verify_citation_mutated_quote_fails - Mo...
+FAILED tests/unit/test_cite.py::test_unverifiable_citation_removed_and_claim_marked
+FAILED tests/unit/test_cite.py::test_ref_to_missing_source_dropped - ModuleNo...
+FAILED tests/unit/test_cite.py::test_strip_ref_tags - ModuleNotFoundError: No...
+FAILED tests/unit/test_limits_config.py::test_defaults_load_and_validate - Mo...
+FAILED tests/unit/test_limits_config.py::test_out_of_range_limit_refused_at_startup
+FAILED tests/unit/test_limits_config.py::test_upper_boundary_is_inclusive - M...
+FAILED tests/unit/test_limits_config.py::test_unknown_key_refused - ModuleNot...
+FAILED tests/unit/test_limits_config.py::test_languages_config_loads - Module...
+FAILED tests/unit/test_parsers.py::test_pdf_parsed_with_page_anchors - Module...
+FAILED tests/unit/test_parsers.py::test_encrypted_pdf_listed_with_reason - Mo...
+FAILED tests/unit/test_parsers.py::test_docx_parsed - ModuleNotFoundError: No...
+FAILED tests/unit/test_parsers.py::test_markdown_heading_anchors - ModuleNotF...
+FAILED tests/unit/test_parsers.py::test_html_parsed - ModuleNotFoundError: No...
+FAILED tests/unit/test_parsers.py::test_unknown_extension_listed_with_reason
+FAILED tests/unit/test_parsers.py::test_oversize_file_refused_before_parsing
+FAILED tests/unit/test_parsers.py::test_file_just_under_limit_passes - Module...
+FAILED tests/unit/test_parsers.py::test_extracted_char_ceiling_enforced - Mod...
+44 failed, 1 passed, 1 skipped, 7 deselected in 2.19s
+
+EXIT CODE: 1
