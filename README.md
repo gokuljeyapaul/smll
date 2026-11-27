@@ -1,32 +1,58 @@
-# smll — Autonomous Software Building & Validation Monorepo
+# smll 🧰✨
 
-One GitHub repository (`.git/` only at this root) for multiple independent projects under `projects/`, serving as a testbed for autonomous software building and validation. The autonomous agent — currently **Atina**, via the Atina Autobot GitHub App — reads this root `AGENTS.md`, then the active project's instructions.
+> Small models. Big jobs. Your laptop. 💪 Apps where a tiny open-weight model does the heavy lifting on a plain CPU, built by an AI agent that has to show its receipts before anything merges.
 
-## Project index
+**No cloud model. No upload. No "trust me bro".** Each app ships its *own* small model, and that model has to beat a boring non-AI baseline in a measured fight or it doesn't ship. Every claim is backed by a test that actually ran.
 
-| Project | Description | Delivery plan | Status |
+## 🎯 The lineup
+
+| Project | The pitch | The vibe check |
+|---|---|---|
+| 📸 [**postclip**](projects/postclip/) | You screenshot a post. It hands you the *words*. Share the image in, get clean copy-ready text out, including text hiding inside the images inside the screenshot. 🕵️<br><br>[![postclip: screenshot in, clean text out](assets/postclip-demo.gif)](projects/postclip/docs/demo/postclip-full-demo.mp4) | ✅ **Built.** Offline, zero uploads, no accounts, embeddable in your app. Big **Copy** button first, because we respect your thumb. [Demo 🎬](projects/postclip/docs/demo/postclip-full-demo.mp4) · [Embed it](projects/postclip/docs/INTEGRATION.md) |
+| 🔒 [**coaching-privacy-pipeline**](projects/coaching-privacy-pipeline/) | Coaching sessions are packed with names, employers and "wait, I could work out who that is" clues. This scrubs them, then **audits itself** and blocks when it isn't sure. 🙈 | ✅ **Built** (`v0.1.0-poc`). Transcripts *and* audio, fully offline, nothing generative to make stuff up. Synthetic data only, and *not* a compliance stamp. [Status](projects/coaching-privacy-pipeline/docs/status.md) |
+
+### 🚧 Up next
+
+Planned and queued for the agent, built one at a time in this order. Each picks its model by measurement against a non-AI baseline; if the small model loses, the baseline ships and the numbers get published anyway.
+
+| # | Project | The pitch | What the small model is showing off |
 |---|---|---|---|
-| [`postclip`](projects/postclip/) | Screenshot of a post in, clean shareable text out — real in-browser OCR, deterministic cleanup, and an opt-in pinned local LLM tidy-up; installable, offline, zero-upload | [`BUILD_PLAN.md`](projects/postclip/docs/BUILD_PLAN.md) | **COMPLETE** — all slices S0–S6 merged and verified (see the project [README](projects/postclip/README.md), the [conformance report](projects/postclip/docs/evidence/S6/conformance_report.md), and the demo video: [full natural-pace run](projects/postclip/docs/demo/postclip-full-demo.mp4)) |
-| [`coaching-privacy-pipeline`](projects/coaching-privacy-pipeline/) | Fully offline, non-generative transcript and audio privacy PoC | [`BUILD_PLAN.md`](projects/coaching-privacy-pipeline/docs/BUILD_PLAN.md) | planned — not yet started |
+| 1 | 📂 [**folderchat**](projects/folderchat/) | Ask your folders and Google Drive anything. Get answers that **quote the exact passage**, or an honest "not found". Share the answer with links. | Citing its sources word for word, and knowing when to shut up |
+| 2 | 📬 [**inboxpilot**](projects/inboxpilot/) | Your inbox, triaged and summarised, with replies drafted in the sender's language. You approve everything. It **cannot send**. Like, physically. | Tool calling that doesn't fall for "ignore previous instructions" emails |
+| 3 | 🧾 [**receiptledger**](projects/receiptledger/) | Receipts from email, Drive, phone photos and bank statements become a tidy, categorised ledger. GST maths checked. | Reading crumpled receipt photos better than OCR + regex |
+| 4 | 🎙️ [**voicenote**](projects/voicenote/) | Rant into your phone in Hinglish, Tamil or English. Get a transcript, a summary and dated to-dos in your calendar. "Kal shaam" included. | Indian languages and code-mixed speech on a CPU |
+| 5 | 📈 [**tickerpulse**](projects/tickerpulse/) | News, filings and posts for your watchlist, read by a small model and turned into an explained Buy/Hold/Sell, with an honest backtest. Paper trading only, not advice. | Reading sarcasm, slang and "$META vs meta" into structured signals |
 
-## Initial GitHub repository bootstrap (owner/operator)
+All five are `PLAN_ONLY`: the plan, rules and plan-check scripts are in place, and no product code exists yet. The agent doesn't sleep. 😴❌
 
-1. Put these files at the **GitHub repository root**. Do not put this monorepo inside a second project repository.
-2. Ensure the repository contains root `AGENTS.md`, `.github/workflows/monorepo-ci.yml`, `.github/scripts/verify_changed_projects.py`, and `.github/pull_request_template.md`.
-3. Enable pull-request-based branch rules on `main` (or the designated integration branch); configure stable required status check **`monorepo / verify`**, required reviews if desired, and auto-merge if desired. The GitHub UI/organization settings cannot be declared by the build plan itself.
-4. Grant the autonomous agent (Atina) scoped GitHub access to this **one** repository. Use its workspace instructions to tell it where this clone is and to read this root `AGENTS.md`.
-5. Have the agent start Slice S0 in `projects/<name>/`, implementing its required scripts and real TDD functionality in the first feature PR. Until that implementation exists, missing scripts should cause CI to fail rather than show false success. (postclip's S0–S6 campaign is the worked example of this loop.)
+## 🤖 Wait, an agent builds these?
 
-See `AGENTS.md` for monorepo-wide PR policy. For a new project, add a directory under `projects/` with its own instructions, test scripts and evidence ledger; do not create another Git repository.
+Yep. **Atina** reads a plan, writes a test that *fails first* (on purpose, for the right reason), makes it pass, commits the evidence and opens a PR. You type one line:
 
-## Agent access
+```text
+ "Continue postclip."  ──►  issue ──► RED ──► GREEN ──► evidence ──► PR ──► CI ✅ ──► merged ──► proof posted
+```
 
-This repository is worked on by an agent through the **Atina Autobot** GitHub App (bot account `atina-autobot[bot]`), installed on the `gokuljeyapaul` account with access to all of its repositories. The agent authenticates with short-lived installation access tokens — no personal access tokens are stored — so its pushes, PRs and merges are attributed to `atina-autobot[bot]`. Commits use the bot identity `atina-autobot[bot] <359380225+atina-autobot[bot]@users.noreply.github.com>`.
+- **One feature = one PR = one demo.** No lonely utilities that do nothing.
+- **PASS means a test ran and passed.** Not "felt right". Not "probably".
+- **Stuck? It says `BLOCKED`.** It does not get creative with your repo.
+- Rulebook: [`AGENTS.md`](AGENTS.md).
 
-This documents bootstrap step 4 (agent GitHub access) for the owner-authorized connection verified through this PR. Functional changes continue to follow the slice process in [`AGENTS.md`](AGENTS.md).
+<details>
+<summary>🛠️ Add a project / set up the repo</summary>
 
-## Evidence and merge semantics
+**New project**
+1. Make `projects/<name>/` with its own `AGENTS.md`, `README.md`, `docs/BUILD_PLAN.md`, `docs/status.md` and real `scripts/{setup,test,demo,verify}.sh`.
+2. Generate the work queue: `python3 tools/gen_issues.py --project <name>` (preview; add `--create --repo owner/name` to go live).
+3. Tell the agent: "Continue `<name>`."
 
-Each project maintains `docs/status.md` and actual sanitized test logs in `docs/evidence/<slice>/`. The PR contains evidence **before** merge. GitHub provides actual CI and merge-state evidence. A merge SHA is only available after merge and is recorded in the next PR or final status closeout PR; never prepopulate it.
+One `.git/`, at the root. Never `git init` a second repo in here.
 
-Heavy offline ML execution may exceed ordinary hosted-runner resources. Required real-model gates must run on an approved capable runner or remain blocked; they cannot be silently mocked. Never commit model weights, credentials, real coaching data or raw recordings.
+**Owner setup (once)**
+- Protect `main` with a PR-only ruleset requiring **`monorepo / verify`** (CI is in `.github/workflows/monorepo-ci.yml`).
+- Install the Atina Autobot GitHub App on this repo only. Short-lived tokens, commits as `atina-autobot[bot]`.
+- Optional: enable auto-merge.
+
+**Heavy ML:** real-model gates may need an approved capable runner. They are never quietly mocked, and weights, secrets and real recordings are never committed.
+
+</details>
