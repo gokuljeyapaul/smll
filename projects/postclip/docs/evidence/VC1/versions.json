@@ -1,0 +1,14 @@
+{
+  "captured_for": "VC1 (owner-directed removal of the S6 compilation video)",
+  "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+  "ram": "62.8 GiB",
+  "node": "v26.12.1",
+  "npm": "12.0.2",
+  "python3": "3.14.9",
+  "playwright": "1.65.1",
+  "browsers_path": "/opt/data/home/.cache/ms-playwright (chromium-1255, chromium_headless_shell-1255, webkit-2388)",
+  "ffmpeg": "ffmpeg version n9.0.1-11-ge47273f4d9-20260831 Copyright (c) 2000-2026 the FFmpeg developers",
+  "removed_video": "docs/demo/postclip-demo.mp4 — 7,100,292 bytes, 164.9 s, 720p, sha256 40fcc06ecc66e9b490215652d2b328cbe549b38b8a516152a8a7588ef6e88356 (at removal; the file is gone from the tree — the hash was recorded from the pre-removal file)",
+  "kept_video": "docs/demo/postclip-full-demo.mp4 — 684,904 bytes, 101.3 s, 720p, sha256 299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb",
+  "host": "Hermes agent subagent container (postclip VC1 gate host): 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+}

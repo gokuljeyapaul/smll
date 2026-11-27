@@ -184,5 +184,6 @@ Latency/memory budgets: `docs/evidence/S5/` (delivered) and the S6 re-run in
 accuracy: `docs/evidence/S0/` + every later re-run. LLM measurements:
 `docs/evidence/S4/`. License/dependency audit:
 `docs/evidence/S6/license_inventory.json`. Videos:
-`docs/evidence/video_manifest.json` + the committed tour
-`docs/demo/postclip-demo.mp4`.
+`docs/evidence/video_manifest.json` + the committed demo
+`docs/demo/postclip-full-demo.mp4` (the former S6 compilation tour was
+removed from the tree by the owner's instruction, 2026-11-26).

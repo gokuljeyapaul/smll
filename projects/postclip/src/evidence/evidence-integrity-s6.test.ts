@@ -126,12 +126,20 @@ describe('evidence integrity (A25, S6)', () => {
   it('non-PASS entries carry notes, and referenced videos exist in the manifest', () => {
     const manifest = JSON.parse(readFileSync(MANIFEST, 'utf-8')) as { videos: { id: string }[] };
     const videoIds = new Set(manifest.videos.map((v) => v.id));
+    // Owner instruction (Telegram, 2026-11-26): keep the round-2 full demo
+    // (postclip_full_demo) and REMOVE the S6 compilation — so the
+    // postclip_demo_compilation asset and its manifest entry are gone. The
+    // historical S6 summary still references the video and stays as written
+    // (never rewrite history); skip exactly that one id here and keep every
+    // other video ref checked below. Removal recorded in docs/evidence/VC1/.
+    const removedByOwnerInstruction = new Set(['postclip_demo_compilation']);
     for (const [id, entry] of Object.entries(summary.acceptance)) {
       if (entry.status !== 'PASS') {
         expect(entry.notes, `${id} (${entry.status}) must explain itself`).toBeTruthy();
       }
       for (const video of entry.videos ?? []) {
         const vid = video.replace(/^video:/, '');
+        if (removedByOwnerInstruction.has(vid)) continue;
         expect(videoIds.has(vid), `${id} references video ${vid} missing from the manifest`).toBe(true);
       }
     }

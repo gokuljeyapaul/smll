@@ -27,7 +27,7 @@ Build **postclip**: an installable single-page web app (React + TypeScript + Vit
 - **Fail closed.** Bad/corrupt/unsupported input, a bad model file, invalid LLM output, or a failed guard degrades to the previous safe stage with a visible flag; nothing is silently dropped or invented.
 - **Resolve versions at build time** (latest mutually compatible library versions), pin them in the lockfile, and record them in `docs/evidence/<slice>/versions.json`. Do not copy versions from this repo's docs or from web search snippets. Hashes and measurements must come from real downloads/runs and be recorded with the command that produced them.
 - Test hooks and the eval runner exist only in dev/test builds and must be absent from the production build (A29).
-- Never commit secrets, per-flow videos, model weights, `node_modules`, build output or machine-specific paths. The only committed videos are the ≤ 15 MB demo assets in `docs/demo/` (the S6 compilation and the natural-pace full-working demo, owner-authorized in issue #73).
+- Never commit secrets, per-flow videos, model weights, `node_modules`, build output or machine-specific paths. The only committed video is the ≤ 15 MB demo asset in `docs/demo/` (the natural-pace full-working demo, owner-authorized in issue #73 and re-recorded in PR #88; the former S6 compilation was removed from the tree by the owner's instruction, 2026-11-26 — recorded in `docs/evidence/VC1/`).
 
 ## Delivery loop (one slice = one PR)
 
@@ -37,7 +37,7 @@ Slices S0–S6 are defined in `docs/BUILD_PLAN.md`. For each slice:
 2. Branch `feature/postclip/S<n>-<short-name>`.
 3. **RED first**: write failing behavioral tests (Vitest assertions, a Playwright flow failing on missing behavior, or an eval check failing). A scaffold that builds may be committed first. Build/import errors are not RED. Save real output and exit code to `docs/evidence/S<n>/red.log`.
 4. **GREEN**: implement; run typecheck, lint, Vitest, Playwright e2e in Chromium **and** WebKit, the eval runs, negative tests and all prior regression; save `green.log`, `e2e.log`, `negative.log`, JUnit XML under `docs/evidence/S<n>/junit/` named `chromium*.xml`, `webkit*.xml` and `host*.xml`, plus `versions.json`.
-5. **Record video** of every passing Playwright flow (Playwright's video recording) to `artifacts/video/` (never committed); append entries with sha256, size, duration and the JUnit testcase to `docs/evidence/video_manifest.json`. In S6 produce the single compressed compilation video and commit it.
+5. **Record video** of every passing Playwright flow (Playwright's video recording) to `artifacts/video/` (never committed); append entries with sha256, size, duration and the JUnit testcase to `docs/evidence/video_manifest.json`. In S6 produce the single compressed compilation video and commit it (that S6 asset was later removed from the tree by the owner's instruction, 2026-11-26 — see `docs/evidence/VC1/`; the committed demo since then is the full-working one).
 6. Produce the **Owner-visual** artifacts the plan lists for this slice (plan, "Conformance"), viewable from a phone, and post the tick-list in the slice issue (the owner answers `O01 ok` / `O02 no: <why>`; never tick items yourself). Write `docs/evidence/S<n>/summary.json` (schema below), update `docs/status.md`, `milestone-status.json` and README commands. Set phase `BUILDING` in S0 and `COMPLETE` only when S6 is merged.
 7. Review the staged diff for secrets/stray files; open **one PR** with `.github/pull_request_template.md`, honestly filled in, then follow the merge policy below.
 

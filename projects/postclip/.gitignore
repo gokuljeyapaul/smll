@@ -17,8 +17,10 @@ android/app/build/
 *.pyc
 __pycache__/
 test-results/
-# Committed demo videos (plan D7 / O06 + issue #73): the S6 compilation
-# tour and the natural-pace full-working demo in docs/demo/; every
-# per-flow video stays in artifacts/ (ignored).
-!docs/demo/postclip-demo.mp4
+# Committed demo video (plan D7 + issue #73; re-recorded in DV2/PR #88):
+# the natural-pace full-working demo in docs/demo/. The former S6
+# compilation exception was removed by the owner's instruction (2026-11-26,
+# docs/evidence/VC1/) — docs/demo/postclip-demo.mp4 is covered by the
+# generic *.mp4 ignore rule again; every per-flow video stays in
+# artifacts/ (ignored).
 !docs/demo/postclip-full-demo.mp4

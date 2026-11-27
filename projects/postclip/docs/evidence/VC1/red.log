@@ -1,0 +1,47 @@
+# RED — postclip VC1 (owner-directed removal of the S6 compilation video)
+# Applied first, tests untouched: docs/demo/postclip-demo.mp4 (sha256 40fcc06ecc66e9b490215652d2b328cbe549b38b8a516152a8a7588ef6e88356, 7100292 bytes) git-removed; the postclip_demo_compilation entry removed from docs/evidence/video_manifest.json (35 lines).
+# The current-tree integrity checks that pin the committed compilation must FAIL before their scoped owner-instruction update.
+
+$ npx vitest run src/evidence/evidence-integrity-s6.test.ts
+npm notice run postclip@0.1.0 npx
+npm notice run 'vitest' run src/evidence/evidence-integrity-s6.test.ts
+
+ RUN  v5.1.1 /opt/data/workspace/smll/projects/postclip
+
+ ❯ src/evidence/evidence-integrity-s6.test.ts (5 tests | 1 failed) 85ms
+   ❯ evidence integrity (A25, S6) (5)
+     × non-PASS entries carry notes, and referenced videos exist in the manifest 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/evidence/evidence-integrity-s6.test.ts > evidence integrity (A25, S6) > non-PASS entries carry notes, and referenced videos exist in the manifest
+AssertionError: A24 references video postclip_demo_compilation missing from the manifest: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/evidence/evidence-integrity-s6.test.ts:135:94
+    133|       for (const video of entry.videos ?? []) {
+    134|         const vid = video.replace(/^video:/, '');
+    135|         expect(videoIds.has(vid), `${id} references video ${vid} missi…
+       |                                                                                              ^
+    136|       }
+    137|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  21:21:31
+   Duration  523ms (setup 54%, tests 32%, transform 8%, import 3%, worker 3%)
+
+exit_code=1
+
+$ python3 scripts/verify_evidence.py
+verify_evidence: FAIL
+  - docs/evidence/S6/summary.json: A24 references missing video postclip_demo_compilation
+exit_code=1
