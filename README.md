@@ -22,6 +22,7 @@ Planned and queued for the agent, built one at a time in this order. Each picks 
 | 3 | 🧾 [**receiptledger**](projects/receiptledger/) | Receipts from email, Drive, phone photos and bank statements become a tidy, categorised ledger. GST maths checked. | Reading crumpled receipt photos better than OCR + regex |
 | 4 | 🎙️ [**voicenote**](projects/voicenote/) | Rant into your phone in Hinglish, Tamil or English. Get a transcript, a summary and dated to-dos in your calendar. "Kal shaam" included. | Indian languages and code-mixed speech on a CPU |
 | 5 | 📈 [**tickerpulse**](projects/tickerpulse/) | News, filings and posts for your watchlist, read by a small model and turned into an explained Buy/Hold/Sell, with an honest backtest. Paper trading only, not advice. | Reading sarcasm, slang and "$META vs meta" into structured signals |
+| 6 | ♟️ [**pawnstorm**](projects/pawnstorm/) | Small models play chess right in your browser tab. No server, no install. Watch two battle, play one, or get coached by another. Plug in **any** model and it lands on a leaderboard with receipts. | Playing legal chess at all, then explaining a position without making things up |
 
 All five are `PLAN_ONLY`: the plan, rules and plan-check scripts are in place, and no product code exists yet. The agent doesn't sleep. 😴❌
 
