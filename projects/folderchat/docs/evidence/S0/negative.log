@@ -1,0 +1,7 @@
+== negative controls (expected refusals; control passes when observed exit == expected) ==
+-- .venv/bin/python -m folderchat ask <1001 chars>  EXPECTED exit=2  OBSERVED exit=2
+Question too long: 1001 > 1000 characters.
+-- FOLDERCHAT_LIMITS=<max_file_mb: 5000> ask  EXPECTED exit=2  OBSERVED exit=2
+configuration refused at startup: max_file_mb=5000 outside its safe range [1, 50]
+-- add /nonexistent-folder-xyz  EXPECTED exit=1  OBSERVED exit=1
+add failed: folder not found: /nonexistent-folder-xyz

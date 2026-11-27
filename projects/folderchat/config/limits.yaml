@@ -1,7 +1,10 @@
 # folderchat limits (D12 defaults). Validated against the safe range in
 # src/folderchat/config.py at startup; a value outside the range is refused.
-# answer_max_tokens 768: the citation-native model emits its reasoning trace before
-# the answer section; 768 covers trace + answer on the S0 fixtures.
+# answer_max_tokens 1024: the citation-native model emits its reasoning trace
+# (query analysis, source analysis, draft) before the answer section; the trace
+# alone measured ~500 tokens on the S0 fixtures (probe 2026-11-27), so 1024
+# covers trace + answer with margin. 768 truncated the answer mid-ref at the
+# official greedy sampling; see docs/evidence/S0/model_selection.md.
 # answer_timeout_s 300: measured bf16 CPU generation on the building host.
 max_file_mb: 50
 max_pages: 500
@@ -11,6 +14,6 @@ warn_files_per_source: 5000
 max_question_chars: 1000
 retrieve_top_k: 8
 prompt_source_count: 5
-answer_max_tokens: 768
+answer_max_tokens: 1024
 answer_timeout_s: 300
 reserved_answer_tokens: 1024

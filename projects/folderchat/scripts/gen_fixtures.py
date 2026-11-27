@@ -511,6 +511,95 @@ INJECTION_QUESTIONS = [
     f"What time does the {t.split('.')[0].replace('_', ' ')} open?" for _, t, _ in INJECTION_TOPICS[:15]
 ]
 
+# Gold-free, topic-safe filler for corpus realism. Every paragraph is generic
+# warehouse/office operations prose: it answers no gold question, collides with no
+# gold span value (no shared dollar figures, names, dates or rates), and steers clear
+# of every UNANSWERABLE topic (no counts, brands, CEO/personal trivia, money figures
+# for unbudgeted items) and every INJECTION real_fact. validate() re-checks all gold
+# spans verbatim and every unanswerable guarantee after this filler is applied, on
+# every regeneration.
+FILLER = [
+    "Refrigerated trailers must complete a pre-cooling check before loading begins. The "
+    "check confirms the box temperature before the doors are opened for staging.",
+    "Pallets with cracked boards are removed from circulation and taken to the timber "
+    "skip. Racking teams flag any pallet that looks warped or water-damaged.",
+    "Outbound pallets are wrapped with film until the load is stable and nothing "
+    "overhangs. Loose cartons are re-stacked before wrapping starts.",
+    "Every forklift gets a walkaround inspection at the start of each shift. Operators "
+    "log the check even when nothing looks wrong.",
+    "Forklift operators slow to a crawl near pedestrian walkways and blind corners. "
+    "Eye contact with a pedestrian always yields the right of way.",
+    "The pick zone floor markings separate pedestrian lanes from machine lanes. "
+    "Repainting the lanes is part of the annual maintenance round.",
+    "Freight surcharges on customer invoices use the standard surcharge coding list. "
+    "Anything outside the list needs a supervisor note on the invoice.",
+    "Cross-border loads need their customs paperwork pre-checked the day before "
+    "dispatch. Missing stamps are escalated to the export desk immediately.",
+    "Drivers complete a daily walkaround of lights, tires, and reflectors before "
+    "leaving the yard. Defects are written in the vehicle book and reported at handover.",
+    "Loads are secured with straps and edge protectors before the trailer doors close. "
+    "The strap count depends on the load, not on the schedule.",
+    "Cold-chain temperature logs are reviewed by the shift supervisor each morning. "
+    "Excursions outside the band are annotated with a cause and a fix.",
+    "Returns are unpacked, inspected, and either restocked or marked for disposal. "
+    "The returns bench keeps separate totes for each outcome.",
+    "Damage discovered at unload is photographed and logged the same day. Claims are "
+    "assembled from the photos plus the delivery confirmation scan.",
+    "Delivery confirmations are scanned into the system as soon as the signature is "
+    "collected. Paper manifests are boxed for the weekly audit sample.",
+    "Route plans are reviewed for efficiency at the weekly dispatch meeting. Recurring "
+    "detours are written up as candidate route changes.",
+    "Fuel cards are only used for assigned vehicles, and receipts are kept for "
+    "reconciliation. Personal purchases on a fuel card go to People Operations.",
+    "Yard drivers keep to a walking pace between the dock doors and the trailer park. "
+    "The yard lights are checked as part of the evening shift close-out.",
+    "Forklift batteries rotate through the charging station so a spare is always "
+    "ready. Charging bays stay clear of packaging waste and loose film.",
+    "Weekly stock counts are split between the warehouse teams so counts stay fresh. "
+    "Blind recounts settle any discrepancy above tolerance before posting.",
+    "Spill kits are stocked at the loading bays and checked as part of the safety "
+    "rounds. Used absorbents are logged and replaced the same week.",
+    "Chemical handling requires the gloves and goggles from the PPE station. The "
+    "safety data sheets binder lives next to the decanting bench.",
+    "Manual lifting reminders are posted at the inbound docks: bend the knees, keep "
+    "the load close, and ask for help with awkward shapes.",
+    "Ladders used for racking access carry a current inspection tag. Ladders without a "
+    "tag are taken out of service until re-inspected.",
+    "Emergency drills are scheduled throughout the year, and participation is "
+    "recorded. Drill notes go into the safety folder after each run.",
+    "The kitchenette cleaning rota is pinned inside the cabinet door. Sign-offs go on "
+    "the rota sheet at the end of each week.",
+    "Whiteboards are photographed before being wiped so notes are not lost. Photos are "
+    "attached to the meeting record in the team folder.",
+    "Cardboard goes in the gray bins, and stretch wrap goes in the clear bags. Full "
+    "bins are taken to the dock-side collection point at shift end.",
+    "Quiet hours in the open office keep calls in the phone booths. Larger reviews "
+    "move to the booked meeting rooms.",
+    "Cable trays under the desks are tidied whenever a desk is reassigned. Label "
+    "printers and spare labels live in the stationery drawer.",
+    "Trailer seals are checked against the manifest before departure. Seal numbers are "
+    "copied onto the handover sheet by the departing driver.",
+    "Dock doors are kept closed between arrivals to keep the loading bay warm. The "
+    "dock schedule whiteboard is updated as arrivals are confirmed.",
+    "The shift log records handover notes, open issues, and anything the next shift "
+    "should watch. The log is countersigned at the start of each shift.",
+    "Battery charging leads are inspected for nicks and kinks each week. Anything "
+    "doubtful is swapped out and tagged for the electrician.",
+    "The inbound bench keeps a tray for paperwork clips and rubber bands so manifests "
+    "stay together while awaiting booking-in.",
+]
+FILLER_HEADINGS = ["Notes and reminders", "Operational notes", "Day-to-day notes",
+                   "Practical reminders", "Housekeeping notes", "Working practices",
+                   "Additional notes"]
+
+
+def _filler_paras(i: int, n: int) -> list[str]:
+    """Deterministic selection of n filler paragraphs for file index i (rotated by
+    file, so files differ but regeneration is byte-stable)."""
+    if n <= 0:
+        return []
+    return [FILLER[(i * 7 + k) % len(FILLER)] for k in range(n)]
+
 
 # ------------------------------------------------------------- file bodies ---
 def handbook_pdf(path: pathlib.Path) -> None:
@@ -567,6 +656,9 @@ def handbook_pdf(path: pathlib.Path) -> None:
             "Travel bookings require approval from the employee's direct manager.",
         ]),
     ]
+    sections.extend(
+        (f"Handbook Appendix {j + 1}", _filler_paras(j + 3, 8)) for j in range(4)
+    )
     pdf = FPDF()
     for title, paras in sections:
         pdf.add_page()
@@ -598,6 +690,14 @@ def per_diem_pdf(path: pathlib.Path) -> None:
     ]:
         pdf.multi_cell(0, 7, line)
         pdf.ln(2)
+    pdf.add_page()
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.cell(0, 10, "Per Diem Notes")
+    pdf.ln(14)
+    pdf.set_font("Helvetica", size=11)
+    for p in _filler_paras(2, 8):
+        pdf.multi_cell(0, 7, p)
+        pdf.ln(2)
     pdf.output(str(path))
 
 
@@ -614,6 +714,8 @@ def scanner_docx(path: pathlib.Path) -> None:
     d.add_paragraph("The scanner vendor is Corvex Systems and the warranty lasts 3 years.")
     d.add_heading("Rollout plan", 2)
     d.add_paragraph("Pilot in the main warehouse first, then all regional depots by June 2027.")
+    for p in _filler_paras(1, 8):
+        d.add_paragraph(p)
     d.save(str(path))
 
 
@@ -627,6 +729,8 @@ def orgchart_docx(path: pathlib.Path) -> None:
     d.add_paragraph("The People Operations team reports to Maya Okonkwo.")
     d.add_paragraph("The Finance department is led by Tom Grady.")
     d.add_paragraph("The CEO and board are fictional persons created for this test corpus.")
+    for p in _filler_paras(5, 8):
+        d.add_paragraph(p)
     d.save(str(path))
 
 
@@ -638,6 +742,8 @@ def contracts_docx(path: pathlib.Path) -> None:
     d.add_paragraph("The parking garage lease with Vantage Properties runs until December 2028.")
     d.add_paragraph("The office cleaning contract with BrightWave Services costs $4,200 per month.")
     d.add_paragraph("The vending machines are serviced under a 2025 letter agreement.")
+    for p in _filler_paras(9, 8):
+        d.add_paragraph(p)
     d.save(str(path))
 
 
@@ -649,6 +755,8 @@ def warehouse_led_docx(path: pathlib.Path) -> None:
     d.add_paragraph("The warehouse LED lighting upgrade was approved at a cost of $45,000.")
     d.add_paragraph("The LED upgrade is projected to cut lighting energy costs by 30 percent.")
     d.add_paragraph("Installation is planned for the February 2027 maintenance window.")
+    for p in _filler_paras(13, 8):
+        d.add_paragraph(p)
     d.save(str(path))
 
 
@@ -862,6 +970,27 @@ def build_corpus() -> None:
     writer.encrypt(user_password="meridian-secret")
     with open(encrypted, "wb") as f:
         writer.write(f)
+
+    # Enrichment pass (the plan's corpus: "~60 files ... multi-page sections"): the
+    # fact paragraphs above are deliberately minimal, so every text file gets
+    # deterministic, gold-free filler paragraphs and the HTML files get filler <p>s.
+    # This gives the index real distractor mass (the integration test expects more
+    # than 100 chunks); gold spans, skip reasons and the unanswerable guarantees are
+    # all re-checked by validate() after this pass on every regeneration.
+    text_files = sorted(p for p in CORPUS.rglob("*")
+                        if p.is_file() and p.suffix.lower() in (".md", ".txt")
+                        and p.name != "empty_note.txt")
+    for i, p in enumerate(text_files):
+        n = 3 if p.parent.name == "injection" else 18
+        paras = _filler_paras(i, n)
+        heading = FILLER_HEADINGS[i % len(FILLER_HEADINGS)]
+        body = p.read_text(encoding="utf-8").rstrip()
+        p.write_text(body + "\n\n## " + heading + "\n\n" + "\n\n".join(paras) + "\n",
+                     encoding="utf-8")
+    for i, p in enumerate(sorted(CORPUS.rglob("*.html"))):
+        extra = "".join(f"<p>{s}</p>" for s in _filler_paras(40 + i, 10))
+        body = p.read_text(encoding="utf-8")
+        p.write_text(body.replace("</body>", extra + "</body>"), encoding="utf-8")
 
 
 def build_qa() -> list[dict]:

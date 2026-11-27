@@ -170,7 +170,7 @@ def test_a01_pleias_patch_tokenizer_equality(qa_lines, answer_model_path):
                "Citations use <ref name=\"1\">quoted text</ref> markers."]
     mismatches = 0
     for text in probes:
-        gguf_ids = llm.tokenize(text.encode("utf-8"), special=True).tolist()
+        gguf_ids = list(llm.tokenize(text.encode("utf-8"), special=True))
         hf_ids = hf.encode(text, add_special_tokens=False).ids
         if gguf_ids != hf_ids:
             mismatches += 1

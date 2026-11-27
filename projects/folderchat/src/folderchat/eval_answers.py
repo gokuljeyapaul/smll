@@ -216,8 +216,11 @@ def _answer(engine: Any, line: dict[str, Any], hits: list[dict[str, Any]], limit
     if result.not_found:
         return {"not_found": True}
     claims = _claims(result.answer_text)
-    supported = sum(1 for c in claims if any(cite_q in c for cite_q in
-                                             [q["quote"] for q in result.citations]))
+    # A claim is supported when its sentence carries at least one [n] marker for a
+    # VERIFIED citation (clean_text only keeps markers for verified citations, and
+    # ref bodies — the quoted spans — are stripped from the display text).
+    marker = re.compile(r"\[\d+\]")
+    supported = sum(1 for c in claims if marker.search(c))
     return {
         "not_found": False,
         "answer_text": result.answer_text,

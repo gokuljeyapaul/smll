@@ -46,7 +46,7 @@ LIMIT_RANGES: dict[str, tuple[int | float, int | float]] = {
     "max_question_chars": (100, 1_000),
     "retrieve_top_k": (1, 20),
     "prompt_source_count": (1, 12),
-    "answer_max_tokens": (64, 768),
+    "answer_max_tokens": (64, 1536),
     "answer_timeout_s": (5, 600),
     "reserved_answer_tokens": (128, 2_048),
 }

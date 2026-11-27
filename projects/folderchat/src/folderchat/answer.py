@@ -148,6 +148,13 @@ class AnswerEngine:
         ttft: float | None = None
         started = time.monotonic()
         timed_out = False
+        # Sampling: near-greedy with a light repeat penalty. The official
+        # Pleias-RAG-Library reference defaults (temp=0.0, repetition_penalty=1.0)
+        # were measured on these fixtures (probe, 2026-11-27): greedy decoding
+        # degenerates into a citation-repetition loop and never reaches
+        # <|answer_end|> within the token budget. temp=0.1 + repeat_penalty=1.05
+        # terminates cleanly on the same prompts; the deviation and its measurement
+        # are recorded in docs/evidence/S0/model_selection.md.
         stop_pieces = ["<|end_of_text|>", "<|im_end|>"] if self.prompt_family == "occ-rag" else ["<|end_of_text|>"]
         try:
             token_iter = self._llm.generate(prompt_ids, temp=self.temperature, top_p=0.95,

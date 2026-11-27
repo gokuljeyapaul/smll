@@ -1,0 +1,30 @@
+== lint: ruff + mypy ==
+All checks passed!
+Success: no issues found in 15 source files
+ruff=0 mypy=0
+== pytest fast (no model inference) ==
+...............................                                          [100%]
+31 passed, 24 deselected in 33.71s
+fast exit=0
+== pytest slow (real models: embeddings + answer model) ==
+        report = add_source(str(corpus_path), load_limits(), data_dir=resolve_data_dir())
+        assert report.indexed_files > 40, f"expected the ~60-file corpus indexed, got {report.indexed_files}"
+>       assert report.chunks > 100
+E       AssertionError: assert 50 > 100
+E        +  where 50 = AddReport(source_path='/opt/data/workspace/smll/projects/folderchat/fixtures/corpus', indexed_files=48, skipped=[{'rel...h': 'secrets_encrypted.pdf', 'reason': 'encrypted or password-protected PDF'}], chunks=50, files_seen=52, warned=False).chunks
+
+tests/integration/test_add_index.py:12: AssertionError
+=============================== warnings summary ===============================
+tests/eval/test_retrieval_eval.py::test_a03_recall_smoke_hybrid_meets_bar
+  /opt/data/workspace/smll/projects/folderchat/src/folderchat/embedder.py:19: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+    dim = self._model.get_sentence_embedding_dimension()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/eval/test_retrieval_eval.py:36: full eval is a building-host bench run
+FAILED tests/e2e/test_cli.py::test_a04_ask_travel_question_cited - AssertionE...
+FAILED tests/e2e/test_cli.py::test_a06_ask_unanswerable_says_not_found - Asse...
+FAILED tests/e2e/test_cli.py::test_a01_pleias_patch_tokenizer_equality - Attr...
+FAILED tests/integration/test_add_index.py::test_add_corpus_reports_and_anchors
+4 failed, 11 passed, 1 skipped, 39 deselected, 1 warning in 1171.88s (0:19:31)
+slow exit=1
