@@ -1,0 +1,7 @@
+# VC1 full-suite run 1 — exit 1: ONE WebKit flake, unrelated to this slice's diff (docs + manifest + the scoped vitest integrity test; no app/e2e code changed).
+# 94 passed / 1 failed / 9 skipped. Failed: [webkit] e2e/r2_3_model_once.spec.ts:108 a37_model_downloads_once_survives_reload_and_same_profile_restart — '#model-ready' not visible within 60s after reload (the post-reload fresh-start cache check), after 1.4h of chromium real-model eval load. The identical chromium test passed in the same run (40.7s).
+# Isolated re-run on the same tree (the diagnosis):
+$ npx playwright test e2e/r2_3_model_once.spec.ts:108 --project=webkit
+  1 passed (46.7s) — a37_model_downloads_once_survives_reload_and_same_profile_restart (44.9s)
+exit_code=0
+# Local retries are 0 (playwright.config.ts: retries: CI ? 1 : 0) — CI's sanctioned retry (retries:1, the #58 roulette handling) would have absorbed this in-flight; the full local suite was re-run as-is for the clean receipt (test-full.log).

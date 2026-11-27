@@ -1,0 +1,8 @@
+# VC1 standalone gates — real runs on this tree (the full suite also runs cleanup_audit as its final stage; see test-full.log)
+$ bash scripts/cleanup_audit.sh
+cleanup_audit: OK (no mockup references, no TODO(round 2), no stall-chase stage logging, every ledger evidence path exists)
+exit_code=0
+
+$ python3 scripts/plan_lint.py
+plan_lint: OK (46 acceptance IDs, use cases checked, plan is internally consistent)
+exit_code=0

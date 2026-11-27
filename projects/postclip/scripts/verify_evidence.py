@@ -194,6 +194,15 @@ def verify(root):
                 problems.append("%s: %s is %s without notes explaining why" % (rel, aid, status))
             for v in entry.get("videos") or []:
                 vid = v[len("video:"):] if v.startswith("video:") else v
+                # Owner instruction (Telegram, 2026-11-26): keep the round-2 full
+                # demo (postclip_full_demo) and REMOVE the S6 compilation — the
+                # postclip_demo_compilation asset and its manifest entry are gone.
+                # The historical S6 summary still references the video and stays
+                # as written (never rewrite history); skip exactly that one id
+                # here and keep every other video ref checked below. Removal
+                # recorded in docs/evidence/VC1/.
+                if vid == "postclip_demo_compilation":
+                    continue
                 rec = manifest.get(vid)
                 if not rec:
                     problems.append("%s: %s references missing video %s" % (rel, aid, vid))

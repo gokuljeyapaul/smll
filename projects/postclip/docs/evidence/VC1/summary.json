@@ -1,0 +1,88 @@
+{
+  "slice": "VC1",
+  "issue": null,
+  "source_digest": "17c2918584fb260218238702160ae79edca6ecb82f81a6bdc1b405ef7b4a0581",
+  "tested_on": {
+    "os": "Debian GNU/Linux 13 (trixie), x86_64, kernel 6.8.0-147-generic",
+    "ram": "62.8 GiB",
+    "node": "v26.12.1",
+    "npm": "12.0.2",
+    "python3": "3.14.9",
+    "playwright": "1.65.1",
+    "browsers": "chromium-1255 + webkit-2388 (PLAYWRIGHT_BROWSERS_PATH=/opt/data/home/.cache/ms-playwright)",
+    "host": "Hermes agent subagent container (postclip VC1 gate host): 16 vCPU, 62 GiB RAM; headless-Linux numbers; real-device behavior is NOT_RUN"
+  },
+  "why": "The owner's removal instruction (Telegram, 2026-11-26): the demo folder has two videos — keep the LATEST (docs/demo/postclip-full-demo.mp4, the round-2 re-record, 684,904 bytes, sha256 299b22cc…, merged in PR #88) and REMOVE the older one (docs/demo/postclip-demo.mp4, the S6 every-flow compilation, 7,100,292 bytes, sha256 40fcc06e…, committed in PR #72). Delivered as one PR; no issue exists — the instruction and PR #72/#88 are the reference.",
+  "acceptance": {
+    "A24": {
+      "status": "PASS",
+      "tests": [
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/R2-4/junit/webkit-e2e.xml::uc01_pick_ocr_review_share",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a12_model_downloads_verifies_caches",
+        "junit:docs/evidence/R2-4/junit/chromium-e2e.xml::a21_model_cleanup_flow_verified_result_or_visible_fallback"
+      ],
+      "videos": ["video:postclip_full_demo"],
+      "notes": "VC1 (the owner's 2026-11-26 removal instruction) restates A24 on the tree after the owner-directed removal: the per-flow video coverage is UNCHANGED (the committed R2-4 full-suite junit above — both engines, every UC01-UC14 flow green on the final round-2 tree; the full suite re-ran green on this very tree, see commands) and the SINGLE committed demo asset is the round-2 full-working re-record docs/demo/postclip-full-demo.mp4 (manifest id postclip_full_demo; 684,904 bytes, 101.3 s, sha256 299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb — byte-identical to PR #88's asset, re-hashed on this tree). The S6 every-flow compilation docs/demo/postclip-demo.mp4 (manifest id postclip_demo_compilation; 7,100,292 bytes, 164.9 s, sha256 40fcc06ecc66e9b490215652d2b328cbe549b38b8a516152a8a7588ef6e88356) was REMOVED by the owner's instruction and its manifest entry with it; the historical S6 evidence for the per-flow coverage and the compilation stays as written in docs/evidence/S6/ (never rewrite history)."
+    }
+  },
+  "commands": {
+    "red": {
+      "command": "npx vitest run src/evidence/evidence-integrity-s6.test.ts  (then)  python3 scripts/verify_evidence.py — with the removal applied and the checks untouched",
+      "exit_code": 1,
+      "evidence": "docs/evidence/VC1/red.log",
+      "note": "both fail on exactly the removed entry: vitest 4 passed / 1 failed — 'A24 references video postclip_demo_compilation missing from the manifest' (exit 1); verify_evidence: FAIL — 'docs/evidence/S6/summary.json: A24 references missing video postclip_demo_compilation' (exit 1)"
+    },
+    "green_scoped_checks": {
+      "command": "npx vitest run src/evidence/evidence-integrity-s6.test.ts  (after the owner-instruction-scoped skip)",
+      "exit_code": 0,
+      "evidence": "docs/evidence/VC1/red.log (context) + docs/evidence/VC1/test-full.log (in-suite)",
+      "note": "5 passed (5) — only postclip_demo_compilation is skipped, with the owner-instruction comment; every other check intact"
+    },
+    "cleanup_audit": {
+      "command": "bash scripts/cleanup_audit.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/VC1/cleanup-audit.log",
+      "note": "the R2-4 standing docs/dead-code gate: no stale references, every ledger-linked evidence path exists"
+    },
+    "plan_lint": {
+      "command": "python3 scripts/plan_lint.py",
+      "exit_code": 0,
+      "evidence": "docs/evidence/VC1/cleanup-audit.log",
+      "note": "46 acceptance IDs, plan internally consistent"
+    },
+    "full_suite_run1": {
+      "command": "bash scripts/test.sh",
+      "exit_code": 1,
+      "evidence": "docs/evidence/VC1/test-full-run1-flake.log",
+      "note": "94 passed / 1 failed / 9 skipped (1.8h). The single failure — [webkit] e2e/r2_3_model_once.spec.ts:108 a37_model_downloads_once_survives_reload_and_same_profile_restart, '#model-ready' not visible within 60 s after reload — is a load-dependent WebKit flake UNRELATED to this slice's diff (no app/e2e code changed): the identical chromium test passed in the same run (40.7 s), and the isolated re-run on the same tree passed (44.9 s, exit 0 — docs/evidence/VC1/test-full-run1-flake-diagnosis.txt). Local retries are 0 (playwright.config.ts: retries: CI ? 1 : 0); CI's sanctioned retries:1 absorbs this class in-flight. The full suite was re-run as-is for the clean receipt (full_suite below)."
+    },
+    "full_suite": {
+      "command": "bash scripts/test.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/VC1/test-full.log",
+      "note": "ALL STAGES GREEN (1.9h): tool self-tests (30 + 11) OK; typecheck OK; lint OK; npm test — vitest 37 files / 346 tests PASS (incl. the scoped evidence-integrity-s6 test); Playwright e2e on the test build — 95 passed / 9 skipped across Chromium + WebKit (the run-1 flake, webkit a37, PASSED at 41.1 s); production-build e2e pass — 6 passed (a29 smoke + strict CSP + hooks-absent, both engines); bundle inspection: PRODUCTION BUNDLE: CLEAN — no test hooks, no eval, strict CSP verbatim; cleanup_audit OK"
+    },
+    "verify": {
+      "command": "bash scripts/verify.sh",
+      "exit_code": 0,
+      "evidence": "docs/evidence/VC1/verify.log",
+      "note": "plan lint + evidence integrity on this tree; VC1 is current_slice, its summary digest matches the working tree (17c29185…)"
+    }
+  },
+  "artifacts": {
+    "removed_video": "docs/demo/postclip-demo.mp4 — 7,100,292 bytes (7.1 MB), 164.9 s, 720p, sha256 40fcc06ecc66e9b490215652d2b328cbe549b38b8a516152a8a7588ef6e88356 (the pre-removal file's real values, recorded here and in versions.json; the file is gone from the tree)",
+    "kept_video": "docs/demo/postclip-full-demo.mp4 — 684,904 bytes (0.68 MB), 101.3 s, 720p, sha256 299b22cc1f9a3bbf710ebcca212ad734d845c66b133933c9d673f7a9b2a44aeb (re-hashed on this tree after the removal — byte-identical to PR #88)",
+    "manifest": "docs/evidence/video_manifest.json — the postclip_demo_compilation entry (35 lines incl. its 22-item compilation_of) removed; 107 → 106 entries; postclip_full_demo present",
+    "references_updated": "docs/evidence/video_manifest.json; project README.md (Demo section S6 bullet removed, intro, Round-1 S6 narrative, S6 tooling paragraph, trust section); root README.md (postclip row); AGENTS.md (committed-videos rule, S6 delivery-loop step); .gitignore (the !docs/demo/postclip-demo.mp4 exception removed, comment updated); docs/KNOWN_LIMITS.md (Videos pointer); docs/status.md (phase, next-required-action, accounting lines, A24 row, O06 row closed by the owner's removal decision, DV2 trued up to MERGED at 9ab6f40…, the VC1 entries); milestone-status.json (current_slice → VC1, DV2 → MERGED + merge SHA, the VC1 entry, last_verified_merged_pr → DV2/#88)",
+    "integrity_checks_scoped": "src/evidence/evidence-integrity-s6.test.ts and scripts/verify_evidence.py — each skips exactly postclip_demo_compilation with a comment citing the owner instruction (Telegram, 2026-11-26); every other check intact; nothing else loosened. RED before the scoping in red.log (exit 1 each)",
+    "stays_as_written": "docs/evidence/S6/ (summary.json, conformance_report.md, green.log, versions.json), docs/evidence/DV/ + DV2/, the S6 generation scripts (scripts/make_demo_video.mjs, scripts/gen_s6_summary.py, scripts/run_s6_final_evidence.sh — historical reproducers; their output is covered by the generic *.mp4 ignore and re-running them needs the never-committed per-flow recordings), docs/BUILD_PLAN.md's D7/A24/O06 clauses (the historical S6 spec — superseded by the owner's instruction, recorded in the ledger rather than by rewriting the plan)"
+  },
+  "limitations": [
+    "The removed file's sha256/size/duration are recorded from the pre-removal file — they can no longer be recomputed from the tree (versions.json, this summary, the ledger, and the manifest's git history are the record).",
+    "One digested path changed (src/evidence/evidence-integrity-s6.test.ts — the sanctioned owner-instruction scoping), so the source digest moved dfbfe766… → 17c29185…; per verify_evidence.py's freshness rule VC1 is current_slice with this digest-matched summary, and the R2-4/DV2 summaries become historical exactly as every earlier slice's did (the verifier's design: earlier slices are not re-checked).",
+    "Full-suite run 1 hit one load-dependent WebKit flake (a37 post-reload model-ready timeout; unrelated to this docs-only diff — the isolated re-run and the full re-run both green; receipts in test-full-run1-flake.log + test-full-run1-flake-diagnosis.txt). Local retries are 0; CI runs retries:1.",
+    "No video was re-encoded or re-watched in this slice; the kept asset is byte-identical to PR #88's (sha256 re-checked). The removed S6 compilation was never re-verified before removal — it was the committed PR #72 asset (sha256 40fcc06e… as recorded).",
+    "Real-device behavior (A27/A30) stays NOT_RUN; this slice changes no product behavior — the only src/ change is the scoped evidence-integrity test."
+  ]
+}

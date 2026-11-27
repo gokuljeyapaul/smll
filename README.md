@@ -6,7 +6,7 @@ One GitHub repository (`.git/` only at this root) for multiple independent proje
 
 | Project | Description | Delivery plan | Status |
 |---|---|---|---|
-| [`postclip`](projects/postclip/) | Screenshot of a post in, clean shareable text out — real in-browser OCR, deterministic cleanup, and an opt-in pinned local LLM tidy-up; installable, offline, zero-upload | [`BUILD_PLAN.md`](projects/postclip/docs/BUILD_PLAN.md) | **COMPLETE** — all slices S0–S6 merged and verified (see the project [README](projects/postclip/README.md), the [conformance report](projects/postclip/docs/evidence/S6/conformance_report.md), and the demo videos: [full natural-pace run](projects/postclip/docs/demo/postclip-full-demo.mp4) · [every-flow compilation](projects/postclip/docs/demo/postclip-demo.mp4)) |
+| [`postclip`](projects/postclip/) | Screenshot of a post in, clean shareable text out — real in-browser OCR, deterministic cleanup, and an opt-in pinned local LLM tidy-up; installable, offline, zero-upload | [`BUILD_PLAN.md`](projects/postclip/docs/BUILD_PLAN.md) | **COMPLETE** — all slices S0–S6 merged and verified (see the project [README](projects/postclip/README.md), the [conformance report](projects/postclip/docs/evidence/S6/conformance_report.md), and the demo video: [full natural-pace run](projects/postclip/docs/demo/postclip-full-demo.mp4)) |
 | [`coaching-privacy-pipeline`](projects/coaching-privacy-pipeline/) | Fully offline, non-generative transcript and audio privacy PoC | [`BUILD_PLAN.md`](projects/coaching-privacy-pipeline/docs/BUILD_PLAN.md) | planned — not yet started |
 
 ## Initial GitHub repository bootstrap (owner/operator)
