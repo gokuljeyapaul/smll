@@ -24,6 +24,8 @@ if [ "$MODE" = build ]; then
   check "free disk >= ${MIN_DISK} GB (have ${DISK_GB})" "[ ${DISK_GB:-0} -ge $MIN_DISK ]" "free disk space or report BLOCKED with the numbers"
   info "RAM: $(awk '/MemTotal/{printf "%.1f GB", $2/1048576}' /proc/meminfo 2>/dev/null || echo unknown)" "true" ""
   info "CPU cores: $(nproc 2>/dev/null || echo unknown)" "true" ""
+  info "cgroup cpu.max (quota/period): $(cat /sys/fs/cgroup/cpu.max 2>/dev/null || echo unknown)" "true" ""
+  info "load avg (1/5/15 min): $(cut -d' ' -f1-3 /proc/loadavg 2>/dev/null || echo unknown)" "true" ""
   check "pypi.org reachable" "python3 -c 'import urllib.request;urllib.request.urlopen(\"https://pypi.org/simple/pip/\",timeout=10)'" "network to PyPI is required for setup"
   check "huggingface.co reachable" "python3 -c 'import urllib.request;urllib.request.urlopen(\"https://huggingface.co\",timeout=10)'" "network to Hugging Face is required to fetch pinned models"
 fi

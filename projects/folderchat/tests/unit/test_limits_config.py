@@ -43,7 +43,6 @@ def test_upper_boundary_is_inclusive(tmp_path, monkeypatch):
 
 
 def test_unknown_key_refused(tmp_path, monkeypatch):
-    import textwrap
 
     import pytest
 
@@ -60,5 +59,5 @@ def test_languages_config_loads():
     from folderchat.config import load_languages
 
     langs = load_languages()
-    assert langs["default"] == "en"
-    assert langs["languages"]["en"]["enabled"] is True
+    assert langs.default == "en"
+    assert langs.languages["en"]["enabled"] is True

@@ -17,6 +17,7 @@ def test_best_sentences_selected():
 def test_baseline_answer_mode_returns_passages():
     from folderchat.baseline import passages_answer
 
-    result = passages_answer("limit", [{"text": "Reimbursement capped at $500 per trip.", "file": "p.md", "page": 1, "heading": None}])
-    assert result.not_found is False
-    assert result.passages[0]["file"] == "p.md"
+    hit = {"text": "Reimbursement capped at $500 per trip.", "file": "p.md", "page": 1, "heading": None}
+    result = passages_answer("limit", [hit])
+    assert result["not_found"] is False
+    assert result["passages"][0]["file"] == "p.md"

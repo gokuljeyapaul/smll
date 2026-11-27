@@ -16,7 +16,8 @@ def _tiny_pdf(path, pages=2):
     for i in range(pages):
         pdf.add_page()
         pdf.set_font("Helvetica", size=11)
-        pdf.multi_cell(0, 8, f"Page {i + 1} of the tiny test document. Travel reimbursement is capped at $500 per trip.")
+        pdf.multi_cell(0, 8, f"Page {i + 1} of the tiny test document. "
+                            f"Travel reimbursement is capped at $500 per trip.")
     pdf.output(str(path))
 
 
@@ -98,17 +99,22 @@ def test_oversize_file_refused_before_parsing(tmp_path):
     assert "51" in (result.reason or "")
 
 
-def test_file_just_under_limit_passes(tmp_path):
-    """A24 boundary: just under the limit indexes fine."""
+def test_file_size_boundary_both_sides(tmp_path):
+    """A24 boundary: just under the file-size limit indexes fine; just over is refused
+    with the specific numbers. Uses the 1 MB floor of the safe range so the fixture
+    stays small."""
     from folderchat.config import load_limits
 
-    limits = load_limits()
-    size = int((limits.max_file_mb - 1) * 1024 * 1024)
-    p = tmp_path / "big-but-ok.txt"
-    with open(p, "wb") as f:
-        f.truncate(size)
-    result = _parse(p)
-    assert result.status == "indexed", result.reason
+    load_limits(max_file_mb=1)
+    ok = tmp_path / "just-under.txt"
+    ok.write_text("x" * (int(0.9 * 1024 * 1024)))
+    assert _parse(ok, max_file_mb=1).status == "indexed", _parse(ok, max_file_mb=1).reason
+    over = tmp_path / "just-over.txt"
+    over.write_text("x" * (int(1.2 * 1024 * 1024)))
+    result = _parse(over, max_file_mb=1)
+    assert result.status == "skipped"
+    assert "too large" in (result.reason or "")
+    assert "1.2 MB > 1 MB" in (result.reason or "")
 
 
 def test_extracted_char_ceiling_enforced(tmp_path):

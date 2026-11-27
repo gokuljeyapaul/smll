@@ -58,24 +58,24 @@ def source_digest(root: pathlib.Path) -> str:
 def junit_testcase_passed(root: pathlib.Path, ref: str) -> tuple[bool, str]:
     m = re.fullmatch(r"junit:(.+?)::(.+)", ref)
     if not m:
-        return False, "malformed test reference %r" % ref
+        return False, f"malformed test reference {ref!r}"
     rel, name = m.group(1), m.group(2)
     path = root / rel
     if not path.is_file():
-        return False, "missing JUnit file %s" % rel
+        return False, f"missing JUnit file {rel}"
     try:
         tree = ET.parse(str(path))
     except ET.ParseError as exc:
-        return False, "unparseable JUnit %s: %s" % (rel, exc)
+        return False, f"unparseable JUnit {rel}: {exc}"
     found = False
     for tc in tree.iter("testcase"):
         if tc.get("name") == name or (tc.get("name") or "").endswith("[" + name + "]"):
             found = True
             for bad in ("failure", "error", "skipped"):
                 if tc.find(bad) is not None:
-                    return False, "testcase %r in %s has <%s>" % (name, rel, bad)
+                    return False, f"testcase {name!r} in {rel} has <{bad}>"
     if not found:
-        return False, "testcase %r not found in %s" % (name, rel)
+        return False, f"testcase {name!r} not found in {rel}"
     return True, ""
 
 

@@ -1,6 +1,5 @@
 """S0 CLI e2e — the issue #93 observable contract, driven through the real CLI."""
-import subprocess
-import sys
+import pytest
 
 
 def test_a01_help_offline(cli, offline, data_dir):
@@ -142,3 +141,38 @@ def test_a06_ask_unanswerable_says_not_found(cli, data_dir, corpus_path):
     assert "not found" in low, f"missing 'not found':\n{r.stdout}"
     assert "closest" in low or "closest passages" in low
     assert "[1]" in r.stdout, "closest passages must be listed"
+
+
+def test_a01_pleias_patch_tokenizer_equality(qa_lines, answer_model_path):
+    """A01/A04 integrity: the recorded GGUF metadata patch (pre 'pleias-rag' -> 'gpt-2',
+    see scripts/model_manifest.json) must not change tokenization — the patched model's
+    token ids must EQUAL the HF tokenizer's (loaded from the model's own tokenizer.json)
+    on the fixture questions and the prompt's structural markers."""
+    import llama_cpp
+
+    from folderchat.config import load_manifest, models_dir, resolve_model_path
+
+    manifest = load_manifest()
+    entry = manifest["roles"]["answer"]
+    if "patch" not in entry:
+        pytest.skip("answer role has no recorded patch")
+    patched = resolve_model_path(entry)
+    llm = llama_cpp.Llama(model_path=str(patched), n_ctx=512, n_threads=2, verbose=False)
+    from tokenizers import Tokenizer
+
+    tok_path = models_dir() / (entry.get("name", "aux") + "-aux") / "tokenizer.json"
+    assert tok_path.is_file(), "pinned aux tokenizer.json missing (run scripts/fetch_model.py)"
+    hf = Tokenizer.from_file(str(tok_path))
+    probes = [e["question"] for e in qa_lines[:40]]
+    probes += ["<|query_start|>What is the travel reimbursement limit?<|query_end|>",
+               "<|source_start|><|source_id|>1 Reimbursement is capped at $500 per trip.<|source_end|>",
+               "<|language_start|>", "<|answer_start|>The cap is $500.<|answer_end|><|end_of_text|>",
+               "Citations use <ref name=\"1\">quoted text</ref> markers."]
+    mismatches = 0
+    for text in probes:
+        gguf_ids = llm.tokenize(text.encode("utf-8"), special=True).tolist()
+        hf_ids = hf.encode(text, add_special_tokens=False).ids
+        if gguf_ids != hf_ids:
+            mismatches += 1
+    llm.close()
+    assert mismatches == 0, f"{mismatches}/{len(probes)} probe strings tokenize differently"

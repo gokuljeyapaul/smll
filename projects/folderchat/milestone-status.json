@@ -1,12 +1,18 @@
 {
   "schema_version": "1.0",
   "project": "folderchat",
-  "phase": "PLAN_ONLY",
-  "current_slice": null,
+  "phase": "BUILDING",
+  "current_slice": "S0",
   "owner_decisions": {
     "product_inference": "local CPU only, open-weight models pinned per project",
     "builder": "Hermes via Ollama Cloud (build-time only)"
   },
-  "slices": {},
+  "slices": {
+    "S0": {
+      "status": "BUILDING",
+      "issue": 93,
+      "note": "Cited answers (issue #93) on branch feature/folderchat/S0-cited-answers: implementation + behavioural suite green locally (fast 31/31, lint + mypy strict clean); the building-host evidence run (scripts/run_s0_final_evidence.sh: slow suite, full retrieval eval, the answer-selection bench over every pinned candidate + baseline with the plan's ship rule, latency under measured contention) is running; the PR carries the measured evidence, digest-matched summary.json and the ship-rule verdict"
+    }
+  },
   "acceptance": {}
 }

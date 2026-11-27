@@ -41,9 +41,9 @@ def test_add_missing_folder_fails_cleanly(cli, data_dir, tmp_path):
 @pytest.mark.slow
 def test_a24_timeout_falls_back_to_passage_mode(data_dir, corpus_path, load_engine):
     """A24: a timed-out answer falls back to 'find passages' mode with a visible notice."""
-    import sqlite3
 
-    from folderchat.config import data_dir as resolve_data_dir, load_limits
+    from folderchat.config import data_dir as resolve_data_dir
+    from folderchat.config import load_limits
     from folderchat.indexer import add_source
 
     add_source(str(corpus_path), load_limits(), data_dir=resolve_data_dir())
@@ -63,7 +63,8 @@ def test_a24_timeout_falls_back_to_passage_mode(data_dir, corpus_path, load_engi
 def test_a24_prompt_fits_context_and_drop_notice(load_engine, corpus_path):
     """A24: the assembled prompt fits the pinned model's real context with the answer budget
     reserved (asserted with the model's own tokenizer); dropped passages produce a notice."""
-    passages = [{"text": "Reimbursement is capped at $500 per trip. " * 60, "file": "a.md", "page": None, "heading": "Travel"}] * 12
+    long_text = "Reimbursement is capped at $500 per trip. " * 60
+    passages = [{"text": long_text, "file": "a.md", "page": None, "heading": "Travel"}] * 12
     engine = load_engine(n_threads=4)
     assembled = engine.assemble_prompt("What is the travel reimbursement limit?", passages)
     budget = engine.token_count(assembled["prompt"]) + engine.reserved_answer_tokens

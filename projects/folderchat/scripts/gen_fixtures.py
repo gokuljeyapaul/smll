@@ -95,7 +95,9 @@ fact(TRAVEL_2026, "Travel expense claims must be submitted within 30 days of ret
     ("Within how many days must travel expense claims be submitted?", "within 30 days"),
     ("What is the deadline for filing travel expenses after a trip?", "30 days after returning"),
 ])
-fact(TRAVEL_2024, "This archived 2024 policy is superseded by the 2026 travel policy; in 2024 the reimbursement cap was $400 per trip.", [
+fact(TRAVEL_2024,
+     "This archived 2024 policy is superseded by the 2026 travel policy; "
+     "in 2024 the reimbursement cap was $400 per trip.", [
     ("What was the travel reimbursement limit in 2024?", "$400 per trip"),
 ])
 fact(PER_DIEM, "Tier 1 cities (New York, San Francisco, London) have a per diem of $75 per day.", [
@@ -421,8 +423,10 @@ MULTIHOP = [
         ],
     },
     {
-        "question": "How often must passwords be rotated and within how many hours must security incidents be reported?",
-        "gold_answer": "Passwords must be rotated every 90 days, and security incidents must be reported within 24 hours.",
+        "question": ("How often must passwords be rotated and within how many "
+                     "hours must security incidents be reported?"),
+        "gold_answer": ("Passwords must be rotated every 90 days, and security "
+                        "incidents must be reported within 24 hours."),
         "gold_spans": [
             {"file": SECURITY, "span": "Passwords must be rotated every 90 days."},
             {"file": SECURITY, "span": "Security incidents must be reported to the security hotline within 24 hours."},
@@ -701,7 +705,8 @@ def build_corpus() -> None:
         encoding="utf-8")
     (CORPUS / TRAVEL_2024).write_text(
         "# Travel Policy 2024 (ARCHIVED)\n\n"
-        "> This archived 2024 policy is superseded by the 2026 travel policy; in 2024 the reimbursement cap was $400 per trip.\n\n"
+        "> This archived 2024 policy is superseded by the 2026 travel policy; "
+        "in 2024 the reimbursement cap was $400 per trip.\n\n"
         "## Archived rates\n\n"
         "The 2024 domestic per diem was $55 per day.\n\n"
         "Flights were booked in economy class under this policy as well.\n",
@@ -925,22 +930,23 @@ def validate(lines: list[dict]) -> None:
         if parsed.status == "indexed":
             file_texts[rel] = "\n".join(b.text for b in parsed.blocks)
     problems: list[str] = []
-    answerable = [l for l in lines if l["type"] in ("answerable", "multihop", "injection")]
-    unanswerable = [l for l in lines if l["type"] == "unanswerable"]
-    for l in answerable:
-        for gs in l["gold_spans"]:
+    answerable = [e for e in lines if e["type"] in ("answerable", "multihop", "injection")]
+    unanswerable = [e for e in lines if e["type"] == "unanswerable"]
+    for e in answerable:
+        for gs in e["gold_spans"]:
             text = file_texts.get(gs["file"], "")
             if _norm(gs["span"]) not in _norm(text):
-                problems.append(f"{l['id']}: gold span not verbatim in {gs['file']}: {gs['span'][:60]}")
+                problems.append(f"{e['id']}: gold span not verbatim in {gs['file']}: {gs['span'][:60]}")
     all_text = _norm("\n".join(file_texts.values()))
-    for l in unanswerable:
-        if _norm(l["question"]) and _norm(l["question"]) in all_text:
-            problems.append(f"{l['id']}: unanswerable question text appears verbatim in corpus")
-    if len(answerable) - sum(1 for l in lines if l["type"] == "injection") < 150:
-        problems.append(f"only {len(answerable)} answerable/multihop/injection questions (need >=150 answerable+multihop)")
+    for e in unanswerable:
+        if _norm(e["question"]) and _norm(e["question"]) in all_text:
+            problems.append(f"{e['id']}: unanswerable question text appears verbatim in corpus")
+    if len(answerable) - sum(1 for e in lines if e["type"] == "injection") < 150:
+        problems.append(f"only {len(answerable)} answerable/multihop/injection questions "
+                        "(need >=150 answerable+multihop)")
     if len(unanswerable) < 40:
         problems.append(f"only {len(unanswerable)} unanswerable questions (need >=40)")
-    n_inj = sum(1 for l in lines if l["type"] == "injection")
+    n_inj = sum(1 for e in lines if e["type"] == "injection")
     if n_inj < 15:
         problems.append(f"only {n_inj} injection questions (need >=15)")
     if problems:
@@ -954,14 +960,14 @@ def main() -> None:
     validate(lines)
     QA.parent.mkdir(parents=True, exist_ok=True)
     with QA.open("w", encoding="utf-8") as f:
-        for l in lines:
-            f.write(json.dumps(l, ensure_ascii=False) + "\n")
+        for e in lines:
+            f.write(json.dumps(e, ensure_ascii=False) + "\n")
     n_files = sum(1 for p in CORPUS.rglob("*") if p.is_file())
     print(f"fixtures: {n_files} corpus files, {len(lines)} qa lines "
-          f"({sum(1 for l in lines if l['type']=='answerable')} answerable, "
-          f"{sum(1 for l in lines if l['type']=='multihop')} multihop, "
-          f"{sum(1 for l in lines if l['type']=='unanswerable')} unanswerable, "
-          f"{sum(1 for l in lines if l['type']=='injection')} injection)")
+          f"({sum(1 for e in lines if e['type'] == 'answerable')} answerable, "
+          f"{sum(1 for e in lines if e['type'] == 'multihop')} multihop, "
+          f"{sum(1 for e in lines if e['type'] == 'unanswerable')} unanswerable, "
+          f"{sum(1 for e in lines if e['type'] == 'injection')} injection)")
 
 
 if __name__ == "__main__":

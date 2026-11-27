@@ -1,10 +1,10 @@
 """A02 (integration): adding a real folder builds the full index — slow: real embeddings."""
-import json
 import sqlite3
 
 
 def test_add_corpus_reports_and_anchors(data_dir, corpus_path):
-    from folderchat.config import data_dir as resolve_data_dir, load_limits
+    from folderchat.config import data_dir as resolve_data_dir
+    from folderchat.config import load_limits
     from folderchat.indexer import add_source
 
     report = add_source(str(corpus_path), load_limits(), data_dir=resolve_data_dir())
@@ -23,7 +23,8 @@ def test_add_corpus_reports_and_anchors(data_dir, corpus_path):
 
 def test_bm25_retrieval_finds_gold_chunk(data_dir, corpus_path):
     """End-to-end ingest -> BM25 query finds the chunk containing the gold span."""
-    from folderchat.config import data_dir as resolve_data_dir, load_limits
+    from folderchat.config import data_dir as resolve_data_dir
+    from folderchat.config import load_limits
     from folderchat.indexer import add_source
     from folderchat.retrieve import retrieve
 

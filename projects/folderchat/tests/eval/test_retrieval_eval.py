@@ -15,7 +15,8 @@ def _recall_at_k(qa_lines, mode, data_dir, k=8, subset=None):
 
 def test_a03_recall_smoke_hybrid_meets_bar(data_dir, corpus_path, qa_lines):
     """CI slow subset: recall@8 (hybrid) >= 0.90 on the first 25 answerable questions."""
-    from folderchat.config import data_dir as resolve_data_dir, load_limits
+    from folderchat.config import data_dir as resolve_data_dir
+    from folderchat.config import load_limits
     from folderchat.indexer import add_source
 
     add_source(str(corpus_path), load_limits(), data_dir=resolve_data_dir())
@@ -33,7 +34,8 @@ def test_a03_recall_full_eval_recorded(data_dir, corpus_path, qa_lines):
 
     if os.environ.get("FOLDERCHAT_RUN_BENCH") != "1":
         pytest.skip("full eval is a building-host bench run")
-    from folderchat.config import data_dir as resolve_data_dir, load_limits
+    from folderchat.config import data_dir as resolve_data_dir
+    from folderchat.config import load_limits
     from folderchat.indexer import add_source
 
     add_source(str(corpus_path), load_limits(), data_dir=resolve_data_dir())

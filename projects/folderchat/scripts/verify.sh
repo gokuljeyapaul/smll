@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
-# PLAN-ONLY verify: plan lint + ledger honesty (PLAN_ONLY may claim no PASS).
-# S0 replaces this with plan lint + evidence integrity (summary.json, JUnit-backed PASS, source digest).
+# S0 real verify: plan lint + evidence integrity (PASS needs a passing JUnit testcase;
+# the current slice's summary.json source_digest must match the tree).
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-source scripts/plan_only_guard.sh
-python3 scripts/plan_lint.py
-if grep -Eq '\| *PASS *\|' docs/status.md; then echo "FAIL: docs/status.md claims PASS in PLAN_ONLY"; exit 1; fi
-echo "verify OK (PLAN_ONLY)"
+source scripts/_phase.sh
+echo "verify: phase=$PHASE"
+if [ "$PHASE" = "PLAN_ONLY" ]; then
+  echo "verify: FAIL phase is PLAN_ONLY but this is the real verify script" >&2
+  exit 1
+fi
+.venv/bin/python scripts/plan_lint.py
+.venv/bin/python scripts/verify_evidence.py
+echo "verify: OK"

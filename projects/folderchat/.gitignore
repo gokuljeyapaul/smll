@@ -12,3 +12,4 @@ playwright-report/
 *.safetensors
 *.onnx
 .env
+*.egg-info/

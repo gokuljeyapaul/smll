@@ -19,7 +19,7 @@ def test_vector_backend_choice_measured(data_dir, corpus_path):
     import numpy as np
 
     from folderchat import db
-    from folderchat.config import data_dir as resolve_data_dir, load_limits
+    from folderchat.config import load_limits
     from folderchat.embedder import load_embedder
     from folderchat.indexer import add_source
     from folderchat.retrieve import retrieve

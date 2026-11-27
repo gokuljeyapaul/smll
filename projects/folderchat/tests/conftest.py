@@ -106,9 +106,10 @@ def load_engine():
         import json as _json
 
         from folderchat.answer import AnswerEngine
+        from folderchat.config import resolve_model_path
 
         manifest = _json.loads(MANIFEST.read_text(encoding="utf-8"))
-        return AnswerEngine(manifest, model_path=MODELS_DIR / manifest["roles"]["answer"]["file"], **overrides)
+        return AnswerEngine(manifest, model_path=resolve_model_path(manifest["roles"]["answer"]), **overrides)
     return _load
 
 

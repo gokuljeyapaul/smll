@@ -1,0 +1,9 @@
+[
+  "Playwright Chromium arrives with S1 (the first web-platform slice): S0 has no web-platform acceptance IDs, so setup.sh does not spend CI budget on a browser yet.",
+  "A11-class live integrations are not part of S0; the Drive adapters land in S2 (the fixture Drive-synced folder is S2's A25).",
+  "The answer-selection bench ran with the bulk quality eval at 16 threads and the latency subset pinned to 4 threads (the plan's measurement point); wall-clock latencies are host numbers, not CI-runner numbers.",
+  "Injection documents exist in the fixtures and their payload-leak rate is measured and recorded, but the injection-resistance verdict is S3's A07 — S0 measures, S3 judges.",
+  "The bm25-top-passage baseline is extractive by design: it never generates, so its 'citations' are the passages themselves; the ship-rule comparison uses answer F1, citation precision and abstention F1 exactly as the plan defines them.",
+  "Multilingual languages beyond English are config-gated (D5) and untouched until S4; the shipped embedding model was chosen by measurement on the English fixtures (see model_selection.md).",
+  "The Q4_K_M quantization of the answer model was chosen within the plan's D1-sanctioned Q4/Q8 set; the unquantized official GGUF (2.4 GB bf16) was not re-benched — a possible quality delta vs bf16 is unmeasured and recorded here as a limitation."
+]

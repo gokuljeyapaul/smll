@@ -132,7 +132,90 @@ def fetch_verified(url: str, target: Path, sha256: str, size_bytes: int) -> bool
 
 def fetch_single(entry: dict) -> bool:
     target = MODELS_DIR / entry["file"]
-    return fetch_verified(entry["url"], target, entry["sha256"], int(entry["size_bytes"]))
+    if not fetch_verified(entry["url"], target, entry["sha256"], int(entry["size_bytes"])):
+        return False
+    ok = True
+    if entry.get("patch"):
+        ok = apply_patch(entry, target) and ok
+    for aux in entry.get("aux_files", []):
+        aux_target = MODELS_DIR / (entry.get("name", "aux") + "-aux") / aux["path"]
+        ok = fetch_verified(aux["url"], aux_target, aux["sha256"], int(aux["size_bytes"])) and ok
+    return ok
+
+
+def apply_patch(entry: dict, upstream: Path) -> bool:
+    """Apply the manifest's recorded metadata patch to the verified upstream artifact
+    and sha256-pin the result.
+
+    Recorded reason (S0): the upstream Pleias GGUFs set tokenizer.ggml.pre='pleias-rag',
+    a pre-tokenizer type llama.cpp never learned — llama.cpp refuses to load the file
+    (hard error even on current master). The tokenizer's actual pre-tokenizer is the
+    GPT-2 regex + ByteLevel (read from the model's tokenizer.json), so the kv is
+    rewritten to 'gpt2'. The patched artifact is re-pinned by sha256 here and its
+    tokenization is verified against the HF tokenizer by
+    tests/e2e/test_cli.py::test_a01_pleias_patch_tokenizer_equality (token-id equality
+    on the fixture questions and the prompt markers)."""
+    patch = entry["patch"]
+    target = MODELS_DIR / patch["output_file"]
+    if target.is_file():
+        got_hash, got_size = sha256_and_size(target)
+        if patch.get("sha256") and got_hash == patch["sha256"] and got_size == int(patch["size_bytes"]):
+            print(f"fetch_model: {patch['output_file']} already present and VERIFIED (patched)")
+            return True
+
+    import gguf
+
+    reader = gguf.GGUFReader(str(upstream))
+    pre_field = reader.get_field("tokenizer.ggml.pre")
+    if pre_field is not None and pre_field.contents() == patch["pre_value"]:
+        print(f"fetch_model: {upstream.name} already has pre={patch['pre_value']} — no patch needed")
+        return True
+    arch_field = reader.get_field("general.architecture")
+    arch = arch_field.contents() if arch_field is not None else "llama"
+    print(f"fetch_model: applying recorded patch to {upstream.name} -> {patch['output_file']} "
+          f"(pre: {pre_field.contents() if pre_field is not None else '<missing>'} -> {patch['pre_value']})")
+    writer = gguf.GGUFWriter(path=None, arch=arch)
+    writer_managed = {"GGUF.version", "GGUF.tensor_count", "GGUF.kv_count", "general.architecture"}
+    had_pre = False
+    for name, item in reader.fields.items():
+        if name in writer_managed:
+            continue  # the writer emits these itself
+        if name == "tokenizer.ggml.pre":
+            had_pre = True
+            writer.add_key_value(name, patch["pre_value"], gguf.GGUFValueType.STRING)
+            continue
+        vtype = item.types[0]
+        if vtype == gguf.GGUFValueType.ARRAY:
+            writer.add_key_value(name, item.contents(), gguf.GGUFValueType.ARRAY, sub_type=item.types[-1])
+        else:
+            writer.add_key_value(name, item.contents(), vtype)
+    if not had_pre:
+        # upstream omitted the kv entirely (llama.cpp would fall back to the 'default'
+        # pre, which is not this tokenizer's true pre) — add it
+        writer.add_key_value("tokenizer.ggml.pre", patch["pre_value"], gguf.GGUFValueType.STRING)
+    for tensor in reader.tensors:
+        writer.add_tensor(tensor.name, tensor.data, raw_dtype=tensor.tensor_type)
+    tmp = target.with_suffix(".tmp")
+    writer.write_header_to_file(path=str(tmp))
+    writer.write_kv_data_to_file()
+    writer.write_tensors_to_file()
+    writer.close()
+    got_hash, got_size = sha256_and_size(tmp)
+    if patch.get("sha256"):
+        if got_hash != patch["sha256"] or got_size != int(patch["size_bytes"]):
+            print(f"fetch_model: patched artifact MISMATCH: sha256={got_hash} size={got_size} "
+                  f"(expected {patch['sha256']}, {patch['size_bytes']})", file=sys.stderr)
+            tmp.unlink(missing_ok=True)
+            return False
+    else:
+        # first run: report the freshly computed pin so it can be recorded in the manifest
+        print(f"fetch_model: PATCH_PIN sha256={got_hash} size_bytes={got_size} "
+              f"(record this in scripts/model_manifest.json -> patch)")
+        tmp.replace(target)
+        return True
+    tmp.replace(target)
+    print(f"fetch_model: patched artifact VERIFIED: {patch['output_file']}")
+    return True
 
 
 def fetch_snapshot(entry: dict) -> bool:

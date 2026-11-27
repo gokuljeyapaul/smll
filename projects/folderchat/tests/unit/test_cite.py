@@ -8,7 +8,10 @@ def _mod():
 
 def test_extract_citations_both_ref_syntaxes():
     cite = _mod()
-    text = 'The limit is $500.<ref name="<|source_id|>1">Reimbursement is capped at $500</ref> Per diem $65.<ref name="2">Per diem is $65 per day</ref>'
+    text = (
+        'The limit is $500.<ref name="<|source_id|>1">Reimbursement is capped at $500</ref> '
+        'Per diem $65.<ref name="2">Per diem is $65 per day</ref>'
+    )
     cites = cite.extract_citations(text)
     assert [(c.source_id, c.quote) for c in cites] == [
         (1, "Reimbursement is capped at $500"),
@@ -46,9 +49,12 @@ def test_unverifiable_citation_removed_and_claim_marked():
     kept = [c for c in result.citations if c.verified]
     dropped = [c for c in result.citations if not c.verified]
     assert len(kept) == 1 and len(dropped) == 1
-    assert "Bonus" in result.unsupported_claims
-    assert "capped at $500" in result.clean_text
-    assert "nine thousand dollars" not in result.clean_text or True  # claim kept as text but flagged unsupported
+    assert any("Bonus" in c for c in result.unsupported_claims), result.unsupported_claims
+    # display contract: a verified citation becomes a [n] marker in the clean text,
+    # an unverifiable one is removed while its claim is flagged
+    assert "[1]" in result.clean_text
+    assert "<ref" not in result.clean_text
+    assert "nine thousand dollars" not in result.clean_text
 
 
 def test_ref_to_missing_source_dropped():
