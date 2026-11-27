@@ -2,7 +2,7 @@
 
 Small language models play chess in your browser: watch two SLMs battle, play one yourself, or get coached by another. **SLM showcase:** plug-and-play models, benchmarked honestly.
 
-Pick a bundled model, paste a Hugging Face GGUF link, load a local file or point it at a model server on your own machine. Every game records exactly which model played it, so tournaments, puzzles and a ratings ladder turn pawnstorm into a reproducible chess benchmark for small models. Runs locally on CPU; no cloud model, no accounts, no tracking.
+Pick a bundled model, paste a Hugging Face GGUF link, load a local file or point it at a model server on your own machine. Every game records exactly which model played it, so tournaments, puzzles and a ratings ladder turn pawnstorm into a reproducible chess benchmark for small models. **Browser only:** a static site with no backend; the models run inside the tab on your CPU. No server, no cloud model, no accounts, no tracking. (Already run Ollama or LM Studio? You can plug that in too, but you never need to.)
 
 **Status:** `PLAN_ONLY` — see [`docs/status.md`](docs/status.md).
 

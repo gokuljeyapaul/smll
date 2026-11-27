@@ -1,6 +1,6 @@
 # BUILD_PLAN — pawnstorm
 
-**pawnstorm** is a browser chess app where **small open-weight language models play chess**: SLM vs SLM, human vs SLM, or a **guided** game where the human plays an SLM while a second SLM coaches them. Models are **plug and play**: pick a bundled one, paste a Hugging Face GGUF link, load a local file, or point it at a model server running on your own machine. Because every game is recorded with exactly which model played it, pawnstorm doubles as a **chess benchmark for small models**, with tournaments, a rating ladder and tactics puzzles. Everything runs locally on CPU; no cloud model is ever called.
+**pawnstorm** is a browser chess app where **small open-weight language models play chess**: SLM vs SLM, human vs SLM, or a **guided** game where the human plays an SLM while a second SLM coaches them. Models are **plug and play**: pick a bundled one, paste a Hugging Face GGUF link, load a local file, or point it at a model server running on your own machine. Because every game is recorded with exactly which model played it, pawnstorm doubles as a **chess benchmark for small models**, with tournaments, a rating ladder and tactics puzzles. It is **browser-only**: a static site with no backend, where the models run inside the tab on the CPU. No cloud model is ever called, and a local model server is an optional extra, never a requirement.
 
 Executed autonomously by a building agent on Linux (runner-neutral, `docs/runners/`); machine-linted by `python3 scripts/plan_lint.py`.
 
@@ -19,16 +19,17 @@ Executed autonomously by a building agent on Linux (runner-neutral, `docs/runner
 | D1 | CI budget | Shipped default player and coach models ≤ 1B parameters each, GGUF ≤ Q4/Q5, ≤ 1 GB on disk each. CI runs a real-model **smoke** only: ≤ 20 fixed positions per role plus one capped game of ≤ 20 plies with the shipped default in headless Chromium. Full games, tournaments, candidate selection, puzzle sets and coach evaluation are `bench` (building host). S0 measures per-move latency and the whole CI run and records both. |
 | D2 | Stack | TypeScript + Vite single-page app, installable PWA; `chess.js` (or an equally small, permissively licensed rules library, chosen at build) for rules and PGN; in-browser CPU inference via `wllama` (llama.cpp WebAssembly, GGUF), with `transformers.js` (ONNX, WASM) as a second runtime only if a candidate needs it; Vitest for unit tests; Playwright (Chromium) for e2e and for the headless arena runner. Node LTS resolved at build and pinned in `.nvmrc`. |
 | D3 | Game modes | **Watch:** SLM vs SLM (or SLM vs ladder bot), with pause, step, speed and "why?" (the model's short reason, shown as the model's own words). **Play:** human vs SLM, choose colour, undo, resign, offer draw (the SLM side answers by a simple rule: accepts only if the position is a dead draw or repeated). **Guided:** human vs SLM, with a second SLM as coach (D5). Any model can take any seat, including the same model on both sides (loaded once). |
-| D4 | Plug-and-play models | A model is a **profile** in `config/models.json` (schema-validated): id, name, source, chat template, context length, sampling (temperature, top-p, seed, max tokens), and prompt profile. Sources: (a) **bundled presets**: pinned by repo + revision + sha256 in `scripts/model_manifest.json`, downloaded once and cached in browser storage; (b) **Hugging Face GGUF link**: the user pastes a repo/file; the app downloads it, computes and shows its sha256, and reads the chat template and context length from GGUF metadata (overridable); (c) **local file**: a GGUF picked from disk, kept in browser storage (OPFS); (d) **local model server**: an OpenAI-compatible endpoint (Ollama, llama.cpp server, LM Studio and similar). **Local only:** an endpoint is accepted only on loopback (`localhost`, `127.0.0.0/8`, `[::1]`) or a private LAN address (`10/8`, `172.16/12`, `192.168/16`, `fc00::/7`); anything else is refused with "pawnstorm only talks to models on your own machine or network". User-added models are playable at once but labelled **unverified** until they have benchmark results on this device. |
+| D4 | Plug-and-play models | A model is a **profile** in `config/models.json` (schema-validated): id, name, source, chat template, context length, sampling (temperature, top-p, seed, max tokens), and prompt profile. Sources: (a) **bundled presets**: pinned by repo + revision + sha256 in `scripts/model_manifest.json`, downloaded once and cached in browser storage; (b) **Hugging Face GGUF link**: the user pastes a repo/file; the app downloads it, computes and shows its sha256, and reads the chat template and context length from GGUF metadata (overridable); (c) **local file**: a GGUF picked from disk, kept in browser storage (OPFS); (d) **local model server (optional extra; nothing in the app needs it)**: an OpenAI-compatible endpoint (Ollama, llama.cpp server, LM Studio and similar). **Local only:** an endpoint is accepted only on loopback (`localhost`, `127.0.0.0/8`, `[::1]`) or a private LAN address (`10/8`, `172.16/12`, `192.168/16`, `fc00::/7`); anything else is refused with "pawnstorm only talks to models on your own machine or network". User-added models are playable at once but labelled **unverified** until they have benchmark results on this device. |
 | D5 | Coach (guided mode) | The coach gets the position, the move history, the legal moves and a set of **facts computed by code** (checks, captures, pieces attacked and defended, hanging pieces, material balance, the opponent's last move and its threats). It answers in a fixed JSON shape: hint level, optional suggested move, a short explanation, and the squares/pieces it refers to. Three hint levels: 1 "what to look at" (no move), 2 "which piece", 3 "the move and why". After each human move, the coach can flag a blunder ("that leaves your knight on f3 undefended"). A **verifier** checks every hint before it is shown: the suggested move must be legal; every square, piece and claim it names (check, capture, attacked, hanging, defended) must be true on the board; anything unverifiable is removed and the hint falls back to the deterministic hint for that position. |
 | D6 | Move protocol | The player model receives the board as FEN plus an ASCII diagram, the move history (SAN) and, depending on the **move mode**, the legal moves. Modes: `free` (no legal-move list), `listed` (legal moves in the prompt, default for play), `constrained` (decoding restricted by grammar to legal moves; only on runtimes that support grammars, otherwise the mode is shown as unsupported for that model, never silently replaced). The reply must contain exactly one move in SAN or UCI, plus an optional short reason. Illegal or unparseable replies get up to 2 retries with the specific error; then the **illegal-move policy** applies: in casual play a random legal move is played and visibly flagged ("pawnstorm moved for the model"); in benchmarks the model forfeits the game (configurable). Every attempt is logged in the game record. |
-| D7 | Phone | Mobile-first, responsive UI (works from 360 px wide, ≥ 44 px touch targets, tap-to-move and drag-to-move, no horizontal scroll). Running a model inside a phone browser may be slow or run out of memory; the app measures and warns before loading, and fails closed with a clear message. A phone can instead use a local model server on the same Wi-Fi (D4 d). No native apps. |
+| D7 | Phone | Mobile-first, responsive UI (works from 360 px wide, ≥ 44 px touch targets, tap-to-move and drag-to-move, no horizontal scroll). Running a model inside a phone browser may be slow or run out of memory; the app measures and warns before loading, and fails closed with a clear message. Browser-only on a phone means the smallest presets; a phone can optionally use a local model server on the same Wi-Fi (D4 d) for bigger models. No native apps. |
 | D8 | Storage and privacy | No accounts, no telemetry, no analytics, strict CSP. Stored only in this browser: cached model files, the user's model profiles, saved games (PGN) and benchmark results. "Clear all data" removes everything (optionally keeping model files), after a confirmation that shows what goes. After models are cached, the app makes no network requests except to a configured local model server. Export/import of games (PGN) and results (JSON). |
 | D9 | Baselines and rating ladder | Built-in bots written for this project (no third-party engine in the product): **L0** random legal mover, **L1** greedy (best immediate material, random tie-break), **L2** minimax depth 2 with material + simple mobility, **L3** minimax depth 3 with alpha-beta. Ratings are fitted with a Bradley–Terry / Elo model anchored at **L0 = 0**, reported with 95% confidence intervals, and only shown once a model has ≥ 40 games against ≥ 2 opponents. |
 | D10 | Benchmark rules | Fixed **opening suite** (`fixtures/openings.json`: ≥ 50 short, balanced openings written as move lists for this project), every pairing played with colours swapped, deterministic seeds, max 200 plies (then a draw by adjudication rule recorded as such), per-move token and wall-clock caps. Every result and PGN header records: model id, file sha256, quantization, runtime + version, threads, sampling settings, seed, move mode, prompt-profile version, app version, device summary. **Puzzles:** a fixed subset of the Lichess puzzle database (CC0), stored with its source, scored as "first move correct" and "full line correct". A **reference engine** (e.g. Stockfish, GPL-3) may be used only by the benchmark tooling on the building host for move-quality metrics (average centipawn loss, blunder rate); it is never bundled into the production build. |
 | D11 | Limits (small-model aware) | Defaults in `config/limits.json`, schema-validated: model file ≤ 4 GB (warning above 1.5 GB on phones); two different models loaded at once only if estimated memory fits (else one is unloaded, or the user is told why not); prompt assembled against the model's real context length minus a reserved answer budget, with history shortened to the last N moves plus FEN when needed (never cutting the FEN or the legal-move list); answer capped in tokens and seconds, after which the illegal-move policy applies. |
 | D12 | Installs | Project-local `npm ci` (lockfile committed); Playwright Chromium. For `bench` only: a reference engine binary or npm package on the building host, not part of the shipped app. |
 | D13 | Merging | Agent merges its own PRs under the policy below. |
+| D14 | Browser only, no backend | The product is the static `dist/` folder: HTML, JS, WASM and assets that any static file host serves (GitHub Pages, Netlify, `npx serve`, a USB stick behind any plain web server). There is no application server, API, database or proxy, and no build-time or run-time dependency on one. Everything (rules, bots, inference, coach verification, tournaments, ratings, storage) runs in the page and its Web Workers. The only network use is loading the site, downloading a model file the user chose (from Hugging Face, directly into the browser), and an optional user-configured local model server (D4 d). **Threads without server headers:** multi-threaded WASM needs cross-origin isolation (COOP/COEP). Where the host can set those headers they are used; where it can't (e.g. GitHub Pages), a bundled service-worker shim adds them on the page's own responses so threads still work; if neither works (first load before the worker is active, an unsupported browser), the app runs single-threaded and says so. **Hosting is an owner step:** S5 produces `dist/` and `docs/HOSTING.md` (how to self-host or publish to a static host); the agent never deploys or publishes. |
 
 ## Use cases
 
@@ -62,7 +63,11 @@ seat pickers (Watch / Play / Guided / Arena)
  coach/   board facts (code) → coach SLM → hint verifier → fallback deterministic hint
  bench/   tournament scheduler · opening suite · puzzles · rating fit · result store · export
  ui/      responsive board, model library, leaderboard, settings (PWA, strict CSP)
- tools/   headless arena CLI = the same app in headless Chromium via Playwright (bench, CI smoke)
+ sw/      service worker: offline app shell + model cache + COOP/COEP shim (D14)
+ tools/   headless arena CLI = the same app in headless Chromium via Playwright (dev/bench/CI only,
+          not part of the product)
+
+ Product = static dist/ (no backend). Network: site load, chosen model download, optional local server.
 ```
 
 ## The SLM showcase
@@ -126,6 +131,8 @@ Selection and **ship rules** (both by measurement on the building host, numbers 
 | A25 | P0 | web | UC12 | Removing one model, game or benchmark run removes only that; "Clear all data" empties every store (cache, OPFS, IndexedDB, local storage) except model files when kept, and the next load behaves like a fresh install. | Playwright |
 | A26 | P0 | host | UC11 | Privacy and build audit: no telemetry/analytics code or requests, strict CSP present, test hooks absent from the production build, the reference engine absent from the production build. | Vitest audit |
 | A27 | P0 | host | - | License inventory for dependencies, models, piece-set and other artwork, opening suite and puzzle data; the reference engine is listed as bench-only; seeded violation caught. | audit script |
+| A29 | P0 | web | UC01, UC02, UC03, UC06, UC11 | Browser only: the production `dist/`, served by a plain static file server with no backend and no special headers, passes watch, play, guided and a small tournament with a real preset model; every request the page makes goes to the static server, the chosen model's download host, or nowhere (asserted from the network log); a source audit finds no server/API code in the product. | Playwright (plain static server) |
+| A30 | P0 | web | UC01, UC11 | Threads without server headers: served by a static server that sends no COOP/COEP, the service-worker shim makes the page cross-origin isolated after its first load and the model runs multi-threaded (thread count recorded); with the shim disabled or before it activates, the app runs single-threaded, shows that it is, and still plays legal moves. | Playwright (headerless static server) |
 | A28 | P1 | web | - | A real end-to-end demo (watch, play, guided, plug in a model, tournament, leaderboard) recorded as a ≤ 15 MB 720p video. | video manifest |
 
 ## Conformance
@@ -137,7 +144,7 @@ Selection and **ship rules** (both by measurement on the building host, numbers 
 | O03 | S2 | UC04 | `docs/evidence/S2/owner/` "add a model" screenshots for each source + the refused-endpoint message | Plugging in a model is easy and the local-only rule is clear |
 | O04 | S3 | UC03 | `docs/evidence/S3/owner/` guided-game screenshots with hints at each level and a blunder flag | The hints are helpful and true |
 | O05 | S4 | UC06, UC08 | `docs/evidence/S4/owner/` leaderboard screenshots and an exported plain-text summary | The benchmark results are clear and honest |
-| O06 | S5 | UC01, UC03 | `docs/demo/pawnstorm-demo.mp4` | The demo shows the real product working |
+| O06 | S5 | UC01, UC03 | `docs/demo/pawnstorm-demo.mp4` and `docs/HOSTING.md` | The demo shows the real product working, and the hosting steps are clear enough to publish it yourself |
 
 ## Slices
 
@@ -153,9 +160,9 @@ Observable result: `npm run arena -- --white preset:<default> --black ladder:L1 
 
 ### S1 — Watch and play in the browser, phone-first
 
-**Acceptance IDs:** A08, A09, A10, A11
+**Acceptance IDs:** A08, A09, A10, A11, A30
 
-Observable result: in the browser (laptop or phone), the user watches two SLMs play with their reasons shown, and plays a full game against the default model by tap or drag.
+Observable result: in the browser (laptop or phone), the user watches two SLMs play with their reasons shown, and plays a full game against the default model by tap or drag, multi-threaded even from a static host that can't set special headers.
 
 ### S2 — Plug and play: add any local model
 
@@ -175,11 +182,11 @@ Observable result: in a guided game, the coach gives level 1–3 hints and flags
 
 Observable result: the user runs a small round-robin from the browser (or `npm run arena -- --tournament`), sees standings, ratings with confidence intervals, puzzle accuracy and the leaderboard, and exports PGN/JSON/text; re-running with the same seed reproduces it.
 
-### S5 — Offline, privacy, clear data, licenses, demo
+### S5 — Browser-only, offline, privacy, clear data, licenses, demo
 
-**Acceptance IDs:** A24, A25, A26, A27, A28
+**Acceptance IDs:** A24, A25, A26, A27, A28, A29
 
-Observable result: the app works with the network off, "Clear all data" leaves nothing behind, the audit and license inventory are committed with `docs/KNOWN_LIMITS.md`, and the demo video is in the repo.
+Observable result: the production `dist/` runs every mode from a plain static server with no backend, works with the network off, "Clear all data" leaves nothing behind, the audit, license inventory, `docs/KNOWN_LIMITS.md` and `docs/HOSTING.md` are committed, and the demo video is in the repo.
 
 ## Toolchain and preflight
 
@@ -192,7 +199,9 @@ Observable result: the app works with the network off, "Clear all data" leaves n
 |---|---|
 | Small models play many illegal or very weak moves | Move modes incl. `listed` and `constrained`, retries with the error, flagged fallback, published illegal-move rates, ship rule with an L1 fallback default |
 | In-browser inference too slow for full games in CI | D1: CI runs a capped smoke; full games and tournaments are `bench`; per-move latency recorded in S0 |
-| Multi-threaded WASM needs cross-origin isolation (COOP/COEP) | The app and the test server send the headers; a single-thread fallback is detected, used and shown |
+| Multi-threaded WASM needs cross-origin isolation (COOP/COEP), which many static hosts can't set | Headers where the host allows; otherwise the service-worker shim (D14, A30); single-thread fallback detected, used and shown |
+| Cross-origin isolation blocks loading cross-origin resources (e.g. model files) | Model downloads use CORS-enabled hosts (Hugging Face serves CORS); the shim and CSP are tested with a real download (A29) |
+| A backend creeps in "just for one feature" | D14 forbids it; A29 asserts the network log and audits the source |
 | Two models at once exhaust browser memory (especially phones) | Memory estimate before loading; same model loaded once; fail closed with a clear message (A11, D11) |
 | "Plug and play" becomes a path to cloud models | Local-only endpoint rule with negative tests (A13) |
 | Coach says confident nonsense | Verifier against board facts, fallback to deterministic hints, ship rule vs the deterministic baseline |
