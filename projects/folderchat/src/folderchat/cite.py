@@ -81,6 +81,20 @@ def apply_citation_verifier(answer_text: str, chunks_by_source_id: dict[int, str
         last = m.end()
     clean_parts.append(answer_text[last:])
     clean_text = _normalize("".join(clean_parts))
+    # Display hygiene: the model uses <|source_id|>N tokens as inline prose
+    # references and can leak other control tokens into the answer section. Map
+    # source-id references to the display markers of VERIFIED citations (drop the
+    # reference when that source has no verified citation) and strip any other
+    # residual special token — control tokens never reach the user.
+    sid_to_display = {c.source_id: c.display_number for c in citations if c.verified and c.display_number}
+
+    def _sub_source_id(m: re.Match[str]) -> str:
+        d = sid_to_display.get(int(m.group(1)))
+        return f"[{d}]" if d else ""
+
+    clean_text = re.sub(r"<\|source_id\|>\s*(\d+)", _sub_source_id, clean_text)
+    clean_text = re.sub(r"<\|[^<>|]*\|>", "", clean_text)
+    clean_text = re.sub(r"</?ref[^>]*>", "", clean_text)
     return VerifiedAnswer(clean_text=clean_text, citations=citations,
                           unsupported_claims=unsupported, dropped_citations=dropped)
 

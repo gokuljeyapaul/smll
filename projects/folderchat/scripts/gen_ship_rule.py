@@ -22,6 +22,37 @@ METRIC_KEYS = ("answer_f1", "citation_precision", "citation_recall", "abstention
               "gold_source_cited_rate", "injection_leak_rate")
 
 
+def apply_to_manifest(verdict: dict, manifest_path: pathlib.Path) -> None:
+    """Apply the measured verdict to the manifest: default_mode + the winning
+    candidate promoted to the shipped answer role (repo/file/sha256/prompt_family
+    copied from the benched candidate entry). The consistency test then asserts
+    the manifest matches the recorded verdict — the verdict is never hand-applied."""
+    m = json.loads(manifest_path.read_text(encoding="utf-8"))
+    m["default_mode"] = verdict["default_mode"]
+    winner = verdict.get("default_answer_candidate")
+    if winner:
+        cand = m["candidates"][winner]
+        m["default_mode_decision"] = (
+            f"set by the S0 answer bench (docs/evidence/S0/model_selection.md): {winner} met all three "
+            f"ship-rule bars and ships as the default answer model; see docs/evidence/S0/eval/ship_rule.json")
+        role = m["roles"]["answer"]
+        if role.get("file") != cand.get("file"):
+            promoted = {k: cand[k] for k in ("name", "repo", "revision", "file", "url", "sha256",
+                                             "size_bytes", "license", "prompt_family") if k in cand}
+            if cand.get("patch"):
+                promoted["patch"] = cand["patch"]
+            if cand.get("aux_files"):
+                promoted["aux_files"] = cand["aux_files"]
+            promoted["license_check"] = f"candidate entry for {winner}, verified at S0 pin time"
+            m["roles"]["answer"] = promoted
+    else:
+        m["default_mode_decision"] = (
+            "set by the S0 answer bench (docs/evidence/S0/model_selection.md): no candidate met all "
+            "three ship-rule bars, so the BM25 top-passage baseline ships as the default answer mode "
+            "('find passages') and the SLM numbers are published")
+    manifest_path.write_text(json.dumps(m, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     per = {}
     for c in CANDIDATES:
@@ -76,8 +107,9 @@ def main() -> int:
         }
     out = EVAL / "ship_rule.json"
     out.write_text(json.dumps(verdict, indent=2) + "\n")
+    apply_to_manifest(verdict, pathlib.Path(__file__).resolve().parents[1] / "scripts" / "model_manifest.json")
     print(f"ship rule verdict: default_mode={verdict['default_mode']} "
-          f"default={verdict.get('default_answer_candidate')} -> {out}")
+          f"default={verdict.get('default_answer_candidate')} -> {out} (manifest applied)")
     return 0
 
 

@@ -61,7 +61,10 @@ def test_a04_candidate_eval(candidate, data_dir, corpus_path, qa_lines):
 
 
 def test_a04_ship_rule_applied_and_consistent():
-    """The committed ship-rule verdict matches what the recorded numbers actually say."""
+    """The committed ship-rule verdict matches what the recorded numbers actually say,
+    AND the manifest carries that verdict (default_mode + the winning candidate
+    promoted to the shipped answer role) — the verdict is applied by machine, never
+    by hand."""
     if os.environ.get("FOLDERCHAT_RUN_BENCH") != "1":
         pytest.skip("ship-rule check runs on the building host only")
     verdict = json.loads((EVAL_OUT / "ship_rule.json").read_text(encoding="utf-8"))
@@ -82,7 +85,16 @@ def test_a04_ship_rule_applied_and_consistent():
     else:
         assert not eligible or verdict.get("default_answer_candidate") is None, \
             "an eligible candidate exists but passages mode was recorded"
-    print(f"ship rule: default_mode={verdict['default_mode']} default={verdict.get('default_answer_candidate')}")
+    manifest_path = pathlib.Path(__file__).resolve().parents[2] / "scripts" / "model_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["default_mode"] == verdict["default_mode"], \
+        f"manifest default_mode={manifest['default_mode']} does not match the recorded ship rule"
+    winner = verdict.get("default_answer_candidate")
+    if winner:
+        assert manifest["roles"]["answer"].get("file") == manifest["candidates"][winner]["file"], \
+            "the recorded winner is not the manifest's shipped answer role"
+    print(f"ship rule: default_mode={verdict['default_mode']} default={verdict.get('default_answer_candidate')} "
+          f"(manifest consistent)")
 
 
 def test_a04_latency_pass_4_threads(data_dir, corpus_path):

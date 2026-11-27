@@ -111,7 +111,7 @@ def test_a04_ask_travel_question_cited(cli, data_dir, corpus_path):
     """A04/S0 goal: the demo question returns a cited answer with a verified quote."""
     add = cli(["add", str(corpus_path)], timeout=900)
     assert add.returncode == 0, add.stderr
-    r = cli(["ask", "What is the travel reimbursement limit?"], timeout=900)
+    r = cli(["ask", "--mode", "slm", "What is the travel reimbursement limit?"], timeout=900)
     assert r.returncode == 0, f"exit {r.returncode}\nstdout={r.stdout}\nstderr={r.stderr}"
     assert "$500" in r.stdout, f"answer missing the gold value:\n{r.stdout}"
     assert "[1]" in r.stdout, f"no numbered citation:\n{r.stdout}"
@@ -122,20 +122,28 @@ def test_a04_ask_travel_question_cited(cli, data_dir, corpus_path):
 
     from folderchat.config import data_dir as resolve_data_dir
 
-    m = re.search(r'\[1\][^\"]*"([^"]+)"', r.stdout)
+    m = re.search(r'Sources:\s*\n\s*\[1\][^"]*"([^"]+)"', r.stdout)
     assert m, f"no quoted citation span found:\n{r.stdout}"
     quote = m.group(1)
     db = sqlite3.connect(resolve_data_dir() / "index.db")
     rows = [t for (t,) in db.execute("SELECT text FROM chunks").fetchall()]
     db.close()
-    assert any(quote in t for t in rows), f"citation quote not found verbatim in any chunk: {quote!r}"
+
+    def _norm(s: str) -> str:
+        return re.sub(r"\s+", " ", s).strip()
+
+    # A05's definition: whitespace-normalized verbatim substring of the cited
+    # chunk (the same rule cite.verify_citation applies; the raw string can
+    # differ across a heading/newline boundary).
+    assert any(_norm(quote) in _norm(t) for t in rows), \
+        f"citation quote not found verbatim in any chunk: {quote!r}"
 
 
 def test_a06_ask_unanswerable_says_not_found(cli, data_dir, corpus_path):
     """A06: an unanswerable question prints 'not found' with the closest passages."""
     add = cli(["add", str(corpus_path)], timeout=900)
     assert add.returncode == 0, add.stderr
-    r = cli(["ask", "What is the CEO's favourite colour?"], timeout=900)
+    r = cli(["ask", "--mode", "slm", "What is the CEO's favourite colour?"], timeout=900)
     assert r.returncode == 0, f"exit {r.returncode}\nstdout={r.stdout}\nstderr={r.stderr}"
     low = r.stdout.lower()
     assert "not found" in low, f"missing 'not found':\n{r.stdout}"

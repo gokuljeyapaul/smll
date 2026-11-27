@@ -80,14 +80,6 @@ if stage vector-choice; then
   [ "$VEC" = 0 ] && mv "$EV/junit/bench-vector.staging.xml" "$EV/junit/bench-vector.xml" && mark vector-choice
 fi
 
-if stage demo; then
-  echo "== demo (the issue #93 observable result, offline) ==" | tee -a "$EV/green.log"
-  bash scripts/demo.sh 2>&1 | tee -a "$EV/green.log"
-  DEMO=$?
-  [ "$DEMO" = 0 ] && mark demo
-  echo "demo exit=$DEMO" | tee -a "$EV/green.log"
-fi
-
 if stage bench-retrieval; then
   echo "== full retrieval eval (A03; building host bench) ==" | tee -a "$EV/green.log"
   FOLDERCHAT_RUN_BENCH=1 $PY -m pytest tests/eval -k test_a03_recall_full_eval_recorded \
@@ -141,6 +133,14 @@ if stage bench-answers; then
   fi
   [ "$BA_FAIL" = 0 ] && mark bench-answers
   echo "bench-answers exit=$BA_FAIL" | tee -a "$EV/green.log"
+fi
+
+if stage demo; then
+  echo "== demo (the issue #93 observable result, offline; runs AFTER the bench so it demos the SHIPPED default) ==" | tee -a "$EV/green.log"
+  bash scripts/demo.sh 2>&1 | tee -a "$EV/green.log"
+  DEMO=$?
+  [ "$DEMO" = 0 ] && mark demo
+  echo "demo exit=$DEMO" | tee -a "$EV/green.log"
 fi
 
 if stage versions; then
