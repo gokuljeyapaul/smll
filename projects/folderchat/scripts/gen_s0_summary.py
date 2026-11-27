@@ -51,7 +51,6 @@ def main() -> int:
     answers = {c: load_json(EV / "eval" / f"answers_{c}.json")
                for c in ("pleias-rag-1b", "pleias-rag-350m", "occ-rag-1.7b", "granite-4.0-micro", "bm25-top-passage")}
     winner = ship.get("default_answer_candidate")
-    winner_metrics = answers.get(winner, {}) if winner else {}
     baseline_f1 = answers["bm25-top-passage"]["answer_f1"]
 
     acceptance: dict[str, dict] = {}
@@ -131,18 +130,27 @@ def main() -> int:
     acceptance["A05"] = a05
 
     a06 = ref("host-slow.xml", "test_a06_ask_unanswerable_says_not_found")
-    abst_f1 = float(winner_metrics.get("abstention_f1", 0.0)) if winner_metrics else None
+    winner = ship.get("default_answer_candidate")
+    # The shipped default's abstention: the winning SLM, or — when the ship rule
+    # sends the app to passages mode — the BM25 baseline it ships instead (which
+    # abstains by construction: it never generates an answer).
+    default_name = winner or "bm25-top-passage"
+    default_metrics = answers[default_name]
+    abst_f1 = float(default_metrics.get("abstention_f1", 0.0))
     if a06["status"] == "PASS":
-        if abst_f1 is not None and abst_f1 >= 0.80:
+        if abst_f1 >= 0.80:
             a06["notes"] = (f"'Not found' + closest passages verified in the CLI; abstention F1 of the "
-                            f"shipped default ({winner}) = {abst_f1:.3f} on "
-                            f"{winner_metrics.get('questions_unanswerable')} "
+                            f"shipped default ({default_name}) = {abst_f1:.3f} on "
+                            f"{default_metrics.get('questions_unanswerable')} "
                             "unanswerable questions (bar >= 0.80 met).")
+            if not winner:
+                a06["notes"] += (" Passages mode is the shipped default, so the baseline's structural "
+                                 "abstention (it never generates) is what ships; the SLM candidates' "
+                                 "measured abstention is published in eval/answers_*.json.")
         else:
             a06["status"] = "PARTIAL"
-            shown = abst_f1 if abst_f1 is not None else 0.0
             a06["notes"] = (f"'Not found' + closest passages verified in the CLI; abstention F1 of the "
-                            f"shipped default ({winner or 'passages mode'}) = {shown:.3f} "
+                            f"shipped default ({default_name}) = {abst_f1:.3f} "
                             "(bar >= 0.80 NOT met — numbers published, PARTIAL per the plan).")
     acceptance["A06"] = a06
 

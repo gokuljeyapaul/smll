@@ -1,0 +1,10 @@
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 3078.25it/s]
+bm25-top-passage: f1=0.000 cite_prec=0.000 abstain_f1=1.000
+.
+=============================== warnings summary ===============================
+tests/bench/test_answer_bench.py::test_a04_candidate_eval[bm25-top-passage]
+  /opt/data/workspace/smll/projects/folderchat/src/folderchat/embedder.py:19: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+    dim = self._model.get_sentence_embedding_dimension()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 179.92s (0:02:59)

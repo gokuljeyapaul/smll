@@ -1,0 +1,4 @@
+s
+=========================== short test summary info ============================
+SKIPPED [1] tests/bench/test_answer_bench.py:34: candidate pleias-rag-1b not fetched: /opt/data/workspace/smll/projects/folderchat/tests/.cache/models/Pleias-RAG-1B.gguf
+1 skipped in 0.12s

@@ -20,7 +20,7 @@ def _model_path(name):
         _pathlib.Path(__file__).resolve().parents[2] / "scripts" / "model_manifest.json"))
     models_dir = _pathlib.Path(_os.environ.get(
         "FOLDERCHAT_MODEL_DIR",
-        _pathlib.Path(__file__).resolve().parents[1] / ".cache" / "models"))
+        _pathlib.Path(__file__).resolve().parents[2] / ".cache" / "models"))
     manifest = _json.loads(manifest_path.read_text(encoding="utf-8"))
     entry = manifest["candidates"][name]
     if entry.get("kind") == "baseline":

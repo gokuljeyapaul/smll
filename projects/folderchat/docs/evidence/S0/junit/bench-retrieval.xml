@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="1309.998" timestamp="2026-11-27T14:32:30.113306+00:00" hostname="a3a76cec2ba0"><testcase classname="tests.eval.test_retrieval_eval" name="test_a03_recall_full_eval_recorded" time="1309.956" /></testsuite></testsuites>

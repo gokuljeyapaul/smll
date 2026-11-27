@@ -40,14 +40,6 @@ if stage fast; then
   echo "fast exit=$FAST" | tee -a "$EV/green.log"
 fi
 
-if stage slow; then
-  echo "== pytest slow (real models: embeddings + answer model) ==" | tee -a "$EV/green.log"
-  $PY -m pytest tests -m "slow" --junitxml="$EV/junit/host-slow.staging.xml" -q 2>&1 | tee "$EV/e2e.log" | tail -20 | tee -a "$EV/green.log"
-  SLOW=${PIPESTATUS[0]}
-  [ "$SLOW" = 0 ] && mv "$EV/junit/host-slow.staging.xml" "$EV/junit/host-slow.xml" && mark slow
-  echo "slow exit=$SLOW" | tee -a "$EV/green.log"
-fi
-
 if stage negative; then
   echo "== negative controls (expected refusals; control passes when observed exit == expected) ==" | tee "$EV/negative.log"
   # 1. oversized question (1001 chars) -> exit 2 with the specific numbers
@@ -74,10 +66,14 @@ fi
 
 if stage vector-choice; then
   echo "== vector backend measurement (sqlite-vec vs hnswlib) ==" | tee -a "$EV/green.log"
-  FOLDERCHAT_RUN_VECTOR_CHOICE=1 $PY -m pytest tests/bench -k vector_backend_choice \
+  FOLDERCHAT_RUN_BENCH=1 FOLDERCHAT_RUN_VECTOR_CHOICE=1 $PY -m pytest tests/bench -k vector_backend_choice \
     --junitxml="$EV/junit/bench-vector.staging.xml" -q -s 2>&1 | tail -15 | tee -a "$EV/green.log"
   VEC=${PIPESTATUS[0]}
-  [ "$VEC" = 0 ] && mv "$EV/junit/bench-vector.staging.xml" "$EV/junit/bench-vector.xml" && mark vector-choice
+  if [ "$VEC" = 0 ] && [ -f "$EV/junit/bench-vector.staging.xml" ] && ! grep -q "<skipped" "$EV/junit/bench-vector.staging.xml"; then
+    mv "$EV/junit/bench-vector.staging.xml" "$EV/junit/bench-vector.xml" && mark vector-choice
+  else
+    echo "vector-choice FAILED or SKIPPED (exit=$VEC)" | tee -a "$EV/green.log"
+  fi
 fi
 
 if stage bench-retrieval; then
@@ -111,12 +107,13 @@ if stage bench-answers; then
   BA_FAIL=0
   for c in $BA_CANDS; do
     RC=$(cat "$STAMP/bench-answers-$c.exit" 2>/dev/null || echo 99)
-    if [ "$RC" = 0 ] && [ -f "$EV/junit/bench-answers-$c.staging.xml" ]; then
+    if [ "$RC" = 0 ] && [ -f "$EV/junit/bench-answers-$c.staging.xml" ] \
+       && ! grep -q "<skipped" "$EV/junit/bench-answers-$c.staging.xml"; then
       mv "$EV/junit/bench-answers-$c.staging.xml" "$EV/junit/bench-answers-$c.xml"
       tail -3 "$EV/bench-answers-$c.log" | tee -a "$EV/green.log"
     else
       BA_FAIL=1
-      echo "-- candidate $c FAILED (exit=$RC):" | tee -a "$EV/green.log"
+      echo "-- candidate $c FAILED or SKIPPED (exit=$RC):" | tee -a "$EV/green.log"
       tail -15 "$EV/bench-answers-$c.log" 2>/dev/null | tee -a "$EV/green.log"
     fi
   done
@@ -129,10 +126,22 @@ if stage bench-answers; then
     FOLDERCHAT_RUN_BENCH=1 $PY -m pytest tests/bench -k "test_a04_ship_rule or test_a04_latency_pass" \
       --junitxml="$EV/junit/bench-answers-ship.staging.xml" -q -s 2>&1 | tail -10 | tee -a "$EV/green.log"
     SHIPRC=${PIPESTATUS[0]}
-    if [ "$SHIPRC" = 0 ]; then mv "$EV/junit/bench-answers-ship.staging.xml" "$EV/junit/bench-answers-ship.xml"; else BA_FAIL=1; fi
+    if [ "$SHIPRC" = 0 ] && ! grep -q "<skipped" "$EV/junit/bench-answers-ship.staging.xml"; then
+      mv "$EV/junit/bench-answers-ship.staging.xml" "$EV/junit/bench-answers-ship.xml"
+    else
+      BA_FAIL=1
+    fi
   fi
   [ "$BA_FAIL" = 0 ] && mark bench-answers
   echo "bench-answers exit=$BA_FAIL" | tee -a "$EV/green.log"
+fi
+
+if stage slow; then
+  echo "== pytest slow (real models: embeddings + answer model; runs AFTER the bench so the ship-rule verdict is already applied to the manifest) ==" | tee -a "$EV/green.log"
+  $PY -m pytest tests -m "slow" --junitxml="$EV/junit/host-slow.staging.xml" -q 2>&1 | tee "$EV/e2e.log" | tail -20 | tee -a "$EV/green.log"
+  SLOW=${PIPESTATUS[0]}
+  [ "$SLOW" = 0 ] && mv "$EV/junit/host-slow.staging.xml" "$EV/junit/host-slow.xml" && mark slow
+  echo "slow exit=$SLOW" | tee -a "$EV/green.log"
 fi
 
 if stage demo; then

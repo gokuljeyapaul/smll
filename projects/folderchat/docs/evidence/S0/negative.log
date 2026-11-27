@@ -5,3 +5,12 @@ Question too long: 1001 > 1000 characters.
 configuration refused at startup: max_file_mb=5000 outside its safe range [1, 50]
 -- add /nonexistent-folder-xyz  EXPECTED exit=1  OBSERVED exit=1
 add failed: folder not found: /nonexistent-folder-xyz
+......                                                                   [100%]
+=============================== warnings summary ===============================
+tests/negative/test_negative.py::test_a24_timeout_falls_back_to_passage_mode
+  /opt/data/workspace/smll/projects/folderchat/src/folderchat/embedder.py:19: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+    dim = self._model.get_sentence_embedding_dimension()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 1 warning in 213.06s (0:03:33)
+negative exit=0 (junit promoted only if all observed==expected)

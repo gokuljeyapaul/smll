@@ -3,7 +3,7 @@
 # with size+sha256 verification (A01). Idempotent; offline-safe once models are fetched.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-source scripts/_phase.sh
+PHASE="$(bash "$(dirname "${BASH_SOURCE[0]}")/_phase.sh")"
 echo "setup: phase=$PHASE"
 if [ "$PHASE" = "PLAN_ONLY" ]; then
   echo "setup: FAIL phase is PLAN_ONLY but this is the real setup script" >&2

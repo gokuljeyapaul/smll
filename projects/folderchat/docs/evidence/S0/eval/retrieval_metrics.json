@@ -1,0 +1,23 @@
+{
+  "hybrid": {
+    "mode": "hybrid",
+    "k": 8,
+    "questions": 165,
+    "recall_at_k": 0.9878787878787879,
+    "mrr": 0.9272727272727271
+  },
+  "bm25": {
+    "mode": "bm25",
+    "k": 8,
+    "questions": 165,
+    "recall_at_k": 0.9757575757575757,
+    "mrr": 0.9418181818181819
+  },
+  "vectors": {
+    "mode": "vectors",
+    "k": 8,
+    "questions": 165,
+    "recall_at_k": 0.9090909090909091,
+    "mrr": 0.7996536796536798
+  }
+}

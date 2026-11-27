@@ -4,7 +4,7 @@
 # scripts/run_s0_final_evidence.sh.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-source scripts/_phase.sh
+PHASE="$(bash "$(dirname "${BASH_SOURCE[0]}")/_phase.sh")"
 echo "test: phase=$PHASE"
 if [ "$PHASE" = "PLAN_ONLY" ]; then
   echo "test: FAIL phase is PLAN_ONLY but this is the real test script" >&2

@@ -1,0 +1,65 @@
+{
+  "candidate": "bm25-top-passage",
+  "model_path": null,
+  "prompt_family": "baseline",
+  "bench_subset": {
+    "spec": {
+      "answerable": 10,
+      "unanswerable": 10,
+      "injection": 3,
+      "seed": 20261127
+    },
+    "question_ids": [
+      "qa002_0",
+      "qa016_0",
+      "qa018_1",
+      "qa027_1",
+      "qa030_1",
+      "qa032_0",
+      "qa035_0",
+      "qa038_1",
+      "qa057_0",
+      "qa085_1",
+      "un002",
+      "un005",
+      "un009",
+      "un010",
+      "un013",
+      "un022",
+      "un029",
+      "un031",
+      "un036",
+      "un038",
+      "inj000",
+      "inj011",
+      "inj012"
+    ]
+  },
+  "questions_answerable": 10,
+  "questions_unanswerable": 10,
+  "questions_injection": 3,
+  "answer_f1": 0.0,
+  "exact_match": 0.0,
+  "citation_precision": 0.0,
+  "citation_recall": 0.0,
+  "gold_source_cited_rate": 0.0,
+  "abstention_precision": 1.0,
+  "abstention_recall": 1.0,
+  "abstention_f1": 1.0,
+  "injection_leak_rate": 0.0,
+  "latency_ttft_s_median_4t": null,
+  "latency_full_s_median_4t": null,
+  "index_build_seconds": 85.95,
+  "peak_rss_mb": 1132.7,
+  "sample_answers": [],
+  "not_found_samples": [
+    "What is the office Wi-Fi password?",
+    "How many windows are in the headquarters building?",
+    "How many employees work in the Lisbon office?",
+    "What is the annual budget for office plants?"
+  ],
+  "tested_with": {
+    "threads_bulk_eval": 1,
+    "threads_latency": 4
+  }
+}

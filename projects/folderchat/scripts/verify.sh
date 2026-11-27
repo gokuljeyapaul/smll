@@ -3,7 +3,7 @@
 # the current slice's summary.json source_digest must match the tree).
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-source scripts/_phase.sh
+PHASE="$(bash "$(dirname "${BASH_SOURCE[0]}")/_phase.sh")"
 echo "verify: phase=$PHASE"
 if [ "$PHASE" = "PLAN_ONLY" ]; then
   echo "verify: FAIL phase is PLAN_ONLY but this is the real verify script" >&2

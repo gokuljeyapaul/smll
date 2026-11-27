@@ -5,7 +5,7 @@
 #   folderchat ask <unanswerable> -> "not found" + closest passages
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-source scripts/_phase.sh
+PHASE="$(bash "$(dirname "${BASH_SOURCE[0]}")/_phase.sh")"
 echo "demo: phase=$PHASE"
 if [ "$PHASE" = "PLAN_ONLY" ]; then
   echo "demo: FAIL phase is PLAN_ONLY but this is the real demo script" >&2
